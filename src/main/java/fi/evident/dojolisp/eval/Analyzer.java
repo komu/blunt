@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static fi.evident.dojolisp.types.Symbol.symbol;
+import static java.util.Arrays.asList;
 
 public final class Analyzer {
 
@@ -14,36 +15,55 @@ public final class Analyzer {
     private static final Symbol LAMBDA = symbol("lambda");
     private static final Symbol QUOTE = symbol("quote");
 
-    public Expression analyze(Object form) {
+    public Expression analyze(Object form, StaticEnvironment env) {
         if (form instanceof Symbol)
-            return new VariableExpression((Symbol) form);
+            return analyzeVariable((Symbol) form, env);
         if (isSelfEvaluating(form))
             return new ConstantExpression(form);
         else if (form instanceof List)
-            return analyzeList((List<?>) form);
+            return analyzeList((List<?>) form, env);
         else
             throw new SyntaxException("unknown form: " + form);
     }
 
-    private Expression analyzeList(List<?> form) {
+    private Expression analyzeVariable(Symbol var, StaticEnvironment env) {
+        if (env.contains(var))
+            return new VariableExpression(var);
+        else
+            throw new AnalyzationException("Unbound variable: " + var);
+    }
+
+    private Expression analyzeList(List<?> form, StaticEnvironment env) {
         if (form.isEmpty()) throw new SyntaxException("empty list can't be evaluated");
 
         Object head = form.get(0);
         
         if (IF.equals(head))
-            return analyzeIf(form);
+            return analyzeIf(form, env);
         else if (QUOTE.equals(head))
             return analyzeQuote(form);
         else if (LAMBDA.equals(head))
-            return analyzeLambda(form);
+            return analyzeLambda(form, env);
         else
-            return new ApplicationExpression(analyze(form.get(0)), analyzeAll(form.subList(1, form.size())));
+            return analyzeApplication(form, env);
     }
 
-    private Expression analyzeLambda(List<?> form) {
+    private Expression analyzeApplication(List<?> form, StaticEnvironment env) {
+        Expression func = analyze(form.get(0), env);
+        List<Expression> args = analyzeAll(form.subList(1, form.size()), env);
+
+        return new ApplicationExpression(func, args);
+    }
+
+    private Expression analyzeLambda(List<?> form, StaticEnvironment env) {
         if (form.size() != 3) throw new SyntaxException("invalid lambda form: " + form);
 
-        return new LambdaExpression(asParameterList(form.get(1)), analyze(form.get(2)));
+        StaticEnvironment newEnv = new StaticEnvironment(env);
+
+        Symbol[] names = asParameterList(form.get(1));
+        newEnv.defineAll(asList(names));
+
+        return new LambdaExpression(names, analyze(form.get(2), newEnv));
     }
 
     private static Symbol[] asParameterList(Object form) {
@@ -67,11 +87,11 @@ public final class Analyzer {
         }
     }
 
-    private List<Expression> analyzeAll(List<?> forms) {
+    private List<Expression> analyzeAll(List<?> forms, StaticEnvironment env) {
         List<Expression> exps = new ArrayList<Expression>(forms.size());
         
         for (Object form : forms)
-            exps.add(analyze(form));
+            exps.add(analyze(form, env));
 
         return exps;
     }
@@ -83,9 +103,9 @@ public final class Analyzer {
             throw new SyntaxException("invalid quote form: " + form);
     }
 
-    private Expression analyzeIf(List<?> form) {
+    private Expression analyzeIf(List<?> form, StaticEnvironment env) {
         if (form.size() == 4)
-            return new IfExpression(analyze(form.get(1)), analyze(form.get(2)), analyze(form.get(3)));
+            return new IfExpression(analyze(form.get(1), env), analyze(form.get(2), env), analyze(form.get(3), env));
         else
             throw new SyntaxException("invalid if form: " + form);
     }

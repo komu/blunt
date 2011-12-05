@@ -1,6 +1,7 @@
 package fi.evident.dojolisp.stdlib;
 
 import fi.evident.dojolisp.eval.Environment;
+import fi.evident.dojolisp.eval.StaticEnvironment;
 import fi.evident.dojolisp.types.PrimitiveFunction;
 import fi.evident.dojolisp.utils.Objects;
 
@@ -10,11 +11,12 @@ import java.lang.reflect.Modifier;
 @SuppressWarnings("unused")
 public class BasicFunctions {
     
-    public static void register(Environment env) {
+    public static void register(StaticEnvironment staticEnv, Environment env) {
         for (Method m : BasicFunctions.class.getMethods()) {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null && Modifier.isStatic(m.getModifiers())) {
                 env.define(func.value(), new PrimitiveFunction(func.value(), m));
+                staticEnv.define(func.value());
             }
         }
     }

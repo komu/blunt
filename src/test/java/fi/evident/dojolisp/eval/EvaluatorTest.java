@@ -1,5 +1,6 @@
 package fi.evident.dojolisp.eval;
 
+import fi.evident.dojolisp.eval.ast.Expression;
 import fi.evident.dojolisp.reader.LispReader;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import static fi.evident.dojolisp.types.Symbol.symbol;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class EvaluatorTest {
 
@@ -53,8 +55,30 @@ public class EvaluatorTest {
         assertThatEvaluating("(= 1 2 2)", produces(false));
     }
 
+    @Test
+    public void staticErrors() {
+        assertStaticError("(lambda (x x) 0)");
+        assertStaticError("(lambda (x) y)");
+    }
+
+    private void assertStaticError(String expr) {
+        try {
+            analyze(expr);
+            fail("Expected error when analyzing: " + expr);
+        }  catch (AnalyzationException e) {
+        }
+    }
+
     private static void assertThatEvaluating(String expr, Matcher<Object> matcher) {
-        assertThat(new Evaluator().evaluate(LispReader.parse(expr)), matcher);
+        assertThat(evaluate(expr), matcher);
+    }
+
+    private static Expression analyze(String expr) {
+        return new Evaluator().analyze(LispReader.parse(expr));
+    }
+
+    private static Object evaluate(String expr) {
+        return new Evaluator().evaluate(LispReader.parse(expr));
     }
 
     private static Matcher<Object> produces(final Object value) {
