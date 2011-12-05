@@ -1,12 +1,12 @@
 package fi.evident.dojolisp.eval;
 
-import fi.evident.dojolisp.types.Symbol;
+import fi.evident.dojolisp.objects.Symbol;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static fi.evident.dojolisp.types.Symbol.symbol;
+import static fi.evident.dojolisp.objects.Symbol.symbol;
 
 public final class StaticEnvironment {
 

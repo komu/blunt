@@ -1,4 +1,4 @@
-package fi.evident.dojolisp.types;
+package fi.evident.dojolisp.objects;
 
 import fi.evident.dojolisp.eval.Environment;
 import fi.evident.dojolisp.eval.ast.Expression;

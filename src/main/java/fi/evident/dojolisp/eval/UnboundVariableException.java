@@ -1,6 +1,6 @@
 package fi.evident.dojolisp.eval;
 
-import fi.evident.dojolisp.types.Symbol;
+import fi.evident.dojolisp.objects.Symbol;
 
 public class UnboundVariableException extends AnalyzationException {
     public UnboundVariableException(Symbol var) {

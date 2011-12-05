@@ -1,4 +1,4 @@
-package fi.evident.dojolisp.types;
+package fi.evident.dojolisp.objects;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -1,4 +1,4 @@
-package fi.evident.dojolisp.types;
+package fi.evident.dojolisp.objects;
 
 public class EvaluationException extends RuntimeException {
     public EvaluationException(String message) {

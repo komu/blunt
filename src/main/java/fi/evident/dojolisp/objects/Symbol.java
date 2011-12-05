@@ -1,4 +1,4 @@
-package fi.evident.dojolisp.types;
+package fi.evident.dojolisp.objects;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 

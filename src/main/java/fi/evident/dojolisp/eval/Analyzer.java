@@ -1,12 +1,12 @@
 package fi.evident.dojolisp.eval;
 
 import fi.evident.dojolisp.eval.ast.*;
-import fi.evident.dojolisp.types.Symbol;
+import fi.evident.dojolisp.objects.Symbol;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static fi.evident.dojolisp.types.Symbol.symbol;
+import static fi.evident.dojolisp.objects.Symbol.symbol;
 import static java.util.Arrays.asList;
 
 public final class Analyzer {

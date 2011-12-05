@@ -1,9 +1,9 @@
 package fi.evident.dojolisp;
 
 import fi.evident.dojolisp.eval.Evaluator;
-import fi.evident.dojolisp.types.Symbol;
+import fi.evident.dojolisp.objects.Symbol;
 
-import static fi.evident.dojolisp.types.Symbol.symbol;
+import static fi.evident.dojolisp.objects.Symbol.symbol;
 
 public class Main {
     

@@ -1,7 +1,7 @@
 package fi.evident.dojolisp.eval.ast;
 
 import fi.evident.dojolisp.eval.Environment;
-import fi.evident.dojolisp.types.Function;
+import fi.evident.dojolisp.objects.Function;
 
 import java.util.List;
 

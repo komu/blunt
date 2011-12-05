@@ -3,7 +3,7 @@ package fi.evident.dojolisp.stdlib;
 import fi.evident.dojolisp.eval.Environment;
 import fi.evident.dojolisp.eval.StaticEnvironment;
 import fi.evident.dojolisp.eval.VariableReference;
-import fi.evident.dojolisp.types.PrimitiveFunction;
+import fi.evident.dojolisp.objects.PrimitiveFunction;
 import fi.evident.dojolisp.utils.Objects;
 
 import java.lang.reflect.Method;

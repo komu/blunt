@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fi.evident.dojolisp.types.Symbol.symbol;
+import static fi.evident.dojolisp.objects.Symbol.symbol;
 import static java.util.Arrays.asList;
 
 public final class LispReader {

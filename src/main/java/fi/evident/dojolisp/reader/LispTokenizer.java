@@ -1,13 +1,13 @@
 package fi.evident.dojolisp.reader;
 
-import fi.evident.dojolisp.types.Symbol;
+import fi.evident.dojolisp.objects.Symbol;
 
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 
+import static fi.evident.dojolisp.objects.Symbol.symbol;
 import static fi.evident.dojolisp.reader.Token.*;
-import static fi.evident.dojolisp.types.Symbol.symbol;
 import static java.lang.Character.*;
 import static java.lang.Integer.parseInt;
 

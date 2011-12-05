@@ -6,7 +6,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.StringReader;
 
-import static fi.evident.dojolisp.types.Symbol.symbol;
+import static fi.evident.dojolisp.objects.Symbol.symbol;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
