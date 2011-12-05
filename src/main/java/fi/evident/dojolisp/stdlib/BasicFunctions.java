@@ -1,24 +1,23 @@
 package fi.evident.dojolisp.stdlib;
 
-import fi.evident.dojolisp.eval.Environment;
-import fi.evident.dojolisp.eval.StaticEnvironment;
-import fi.evident.dojolisp.eval.VariableReference;
+import fi.evident.dojolisp.eval.StaticBinding;
 import fi.evident.dojolisp.objects.PrimitiveFunction;
 import fi.evident.dojolisp.utils.Objects;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class BasicFunctions {
     
-    public static void register(StaticEnvironment staticEnv, Environment env) {
+    public static void register(List<StaticBinding> bindings) {
         for (Method m : BasicFunctions.class.getMethods()) {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null && Modifier.isStatic(m.getModifiers())) {
                 String name = func.value();
-                VariableReference ref = staticEnv.define(name);
-                env.set(ref, new PrimitiveFunction(name, m));
+                
+                bindings.add(new StaticBinding(name, new PrimitiveFunction(name, m)));
             }
         }
     }

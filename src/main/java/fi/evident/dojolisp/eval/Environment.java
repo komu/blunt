@@ -7,9 +7,8 @@ public final class Environment {
     private final Object[] bindings;
     private final Environment parent;
 
-    public Environment() {
-        // TODO: currently there's a static limit of 1024 bindings for root-env, make this dynamic
-        this.bindings = new Object[1024];
+    public Environment(int size) {
+        this.bindings = new Object[size];
         this.parent = null;
     }
 
