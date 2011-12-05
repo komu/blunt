@@ -45,14 +45,15 @@ public final class Analyzer {
         return new LambdaExpression(asParameterList(form.get(1)), analyze(form.get(2)));
     }
 
-    private static List<Symbol> asParameterList(Object form) {
+    private static Symbol[] asParameterList(Object form) {
         if (form instanceof List<?>) {
             List<?> list = (List<?>) form;
-            List<Symbol> names = new ArrayList<Symbol>(list.size());
+            Symbol[] names = new Symbol[list.size()];
             
-            for (Object obj : list) {
+            for (int i = 0; i < names.length; i++) {
+                Object obj = list.get(i);
                 if (obj instanceof Symbol) {
-                    names.add((Symbol) obj);
+                    names[i] = (Symbol) obj;
                 } else {
                     throw new SyntaxException("invalid argument list: " + form);
                 }
