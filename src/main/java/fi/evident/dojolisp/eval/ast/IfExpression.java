@@ -1,6 +1,7 @@
 package fi.evident.dojolisp.eval.ast;
 
 import fi.evident.dojolisp.eval.Environment;
+import fi.evident.dojolisp.eval.types.Type;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
@@ -23,5 +24,17 @@ public final class IfExpression extends Expression {
             return consequent.evaluate(env);
         else
             return alternative.evaluate(env);
+    }
+
+    @Override
+    public Type typeCheck() {
+        Type conditionType = condition.typeCheck();
+        
+        conditionType.unify(Type.BOOLEAN);
+
+        Type consequentType = consequent.typeCheck();
+        Type alternativeType = alternative.typeCheck();
+
+        return consequentType.unify(alternativeType);
     }
 }

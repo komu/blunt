@@ -1,11 +1,14 @@
 package fi.evident.dojolisp.stdlib;
 
 import fi.evident.dojolisp.eval.StaticBinding;
+import fi.evident.dojolisp.eval.types.FunctionType;
+import fi.evident.dojolisp.eval.types.Type;
 import fi.evident.dojolisp.objects.PrimitiveFunction;
 import fi.evident.dojolisp.utils.Objects;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -16,13 +19,30 @@ public class BasicFunctions {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null && Modifier.isStatic(m.getModifiers())) {
                 String name = func.value();
-                
-                bindings.add(new StaticBinding(name, new PrimitiveFunction(name, m)));
+                Type type = createFunctionType(func, m);
+                bindings.add(new StaticBinding(name, type, new PrimitiveFunction(name, m)));
             }
         }
     }
 
+    private static Type createFunctionType(LibraryFunction func, Method m) {
+        // TODO: support parsing signatures from 'func'
+
+        List<Type> argumentTypes = new ArrayList<Type>(m.getParameterTypes().length);
+        for (Class<?> type : m.getParameterTypes())
+            argumentTypes.add(Type.fromClass(type));
+        
+        Type returnType = Type.fromClass(m.getReturnType());
+        
+        return new FunctionType(argumentTypes, returnType);
+    }
+
     @LibraryFunction("+")
+    public static int intPlus(int x, int y) {
+        return x + y;
+    }
+    
+    @LibraryFunction("++")
     public static Number plus(Number... xs) {
         int sum = 0;
                  

@@ -23,4 +23,9 @@ public final class Lambda implements Function {
 
         return body.evaluate(definitionEnv.extend(args));
     }
+
+    @Override
+    public String toString() {
+        return "<#lambda>";
+    }
 }

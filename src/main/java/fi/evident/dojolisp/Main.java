@@ -1,6 +1,7 @@
 package fi.evident.dojolisp;
 
 import fi.evident.dojolisp.eval.Evaluator;
+import fi.evident.dojolisp.eval.ResultWithType;
 import fi.evident.dojolisp.objects.Symbol;
 
 import static fi.evident.dojolisp.objects.Symbol.symbol;
@@ -20,7 +21,7 @@ public class Main {
                 if (EXIT.equals(form))
                     break;
                 
-                Object result = evaluator.evaluate(form);
+                ResultWithType result = evaluator.evaluateWithType(form);
 
                 System.out.println(result);
             } catch (Exception e) {

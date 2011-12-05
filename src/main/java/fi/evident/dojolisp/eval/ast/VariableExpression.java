@@ -2,6 +2,7 @@ package fi.evident.dojolisp.eval.ast;
 
 import fi.evident.dojolisp.eval.Environment;
 import fi.evident.dojolisp.eval.VariableReference;
+import fi.evident.dojolisp.eval.types.Type;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
@@ -16,5 +17,10 @@ public final class VariableExpression extends Expression {
     @Override
     public Object evaluate(Environment env) {
         return env.lookup(var);
+    }
+
+    @Override
+    public Type typeCheck() {
+        return var.type;
     }
 }

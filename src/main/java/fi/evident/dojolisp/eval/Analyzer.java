@@ -1,13 +1,13 @@
 package fi.evident.dojolisp.eval;
 
 import fi.evident.dojolisp.eval.ast.*;
+import fi.evident.dojolisp.eval.types.Type;
 import fi.evident.dojolisp.objects.Symbol;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static fi.evident.dojolisp.objects.Symbol.symbol;
-import static java.util.Arrays.asList;
 
 public final class Analyzer {
 
@@ -57,27 +57,37 @@ public final class Analyzer {
 
         StaticEnvironment newEnv = new StaticEnvironment(env);
 
-        Symbol[] names = asParameterList(form.get(1));
-        newEnv.defineAll(asList(names));
-
-        return new LambdaExpression(names.length, analyze(form.get(2), newEnv));
+        Binding[] arguments = asParameterList(form.get(1));
+    
+        for (Binding argument : arguments)
+            newEnv.define(argument.name, argument.type);
+        
+        return new LambdaExpression(arguments, analyze(form.get(2), newEnv));
     }
 
-    private static Symbol[] asParameterList(Object form) {
+    private static Binding[] asParameterList(Object form) {
         if (form instanceof List<?>) {
             List<?> list = (List<?>) form;
-            Symbol[] names = new Symbol[list.size()];
+            Binding[] arguments = new Binding[list.size()];
             
-            for (int i = 0; i < names.length; i++) {
+            for (int i = 0; i < arguments.length; i++) {
                 Object obj = list.get(i);
-                if (obj instanceof Symbol) {
-                    names[i] = (Symbol) obj;
+                if (obj instanceof List && ((List<?>) obj).size() == 2) {
+                    List<?> arg = (List<?>) obj;
+                    
+                    if (arg.get(0) instanceof Symbol && arg.get(1) instanceof Symbol) {
+                        Symbol name = (Symbol) arg.get(0);
+                        Symbol type = (Symbol) arg.get(1);
+                        arguments[i] = new Binding(name, Type.forName(type.toString()));
+                    } else {
+                        throw new SyntaxException("invalid argument list: " + form);
+                    }
                 } else {
                     throw new SyntaxException("invalid argument list: " + form);
                 }
             }
             
-            return names;
+            return arguments;
 
         } else {
             throw new SyntaxException("invalid argument list: " + form);
@@ -101,10 +111,14 @@ public final class Analyzer {
     }
 
     private Expression analyzeIf(List<?> form, StaticEnvironment env) {
-        if (form.size() == 4)
-            return new IfExpression(analyze(form.get(1), env), analyze(form.get(2), env), analyze(form.get(3), env));
-        else
+        if (form.size() != 4)
             throw new SyntaxException("invalid if form: " + form);
+
+        Expression test = analyze(form.get(1), env);
+        Expression consequent = analyze(form.get(2), env);
+        Expression alternative = analyze(form.get(3), env);
+
+        return new IfExpression(test, consequent, alternative);
     }
 
     private static boolean isSelfEvaluating(Object form) {

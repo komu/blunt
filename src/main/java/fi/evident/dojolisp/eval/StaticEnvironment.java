@@ -1,17 +1,15 @@
 package fi.evident.dojolisp.eval;
 
+import fi.evident.dojolisp.eval.types.Type;
 import fi.evident.dojolisp.objects.Symbol;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import static fi.evident.dojolisp.objects.Symbol.symbol;
 
 public final class StaticEnvironment {
 
     private final StaticEnvironment parent;
-    private final Map<Symbol, Integer> variables = new HashMap<Symbol, Integer>();
+    private final Map<Symbol, VariableInfo> variables = new HashMap<Symbol, VariableInfo>();
 
     public StaticEnvironment() {
         this(null);
@@ -25,31 +23,27 @@ public final class StaticEnvironment {
         return lookup(var, 0);
     }
 
-    public VariableReference lookup(Symbol var, int depth) {
-        Integer ref = variables.get(var);
-        if (ref != null)
-            return new VariableReference(depth, ref);
+    private VariableReference lookup(Symbol name, int depth) {
+        VariableInfo var = variables.get(name);
+        if (var != null)
+            return new VariableReference(depth, var.offset, var.type);
         else if (parent != null)
-            return parent.lookup(var, depth+1);
+            return parent.lookup(name, depth+1);
         else
-            throw new UnboundVariableException(var);
+            throw new UnboundVariableException(name);
     }
 
-    public VariableReference define(String var) {
-        return define(symbol(var));
-    }
-    
-    public VariableReference define(Symbol var) {
-        if (variables.containsKey(var))
-            throw new AnalyzationException("Variable " + var + " is already defined in this scope.");
+    public VariableReference define(Symbol name, Type type) {
+        if (variables.containsKey(name))
+            throw new AnalyzationException("Variable " + name + " is already defined in this scope.");
 
         int offset = variables.size();
-        variables.put(var, offset);
-        return new VariableReference(0, offset);
+        variables.put(name, new VariableInfo(name, offset, type));
+        return new VariableReference(0, offset, type);
     }
 
-    public void defineAll(Collection<Symbol> variables) {
-        for (Symbol var : variables)
-            define(var);
+    public void dump() {
+        for (VariableInfo var : variables.values())
+            System.out.printf("%-10s: %s\n", var.name, var.type);
     }
 }

@@ -1,8 +1,11 @@
 package fi.evident.dojolisp.eval.ast;
 
 import fi.evident.dojolisp.eval.Environment;
+import fi.evident.dojolisp.eval.types.FunctionType;
+import fi.evident.dojolisp.eval.types.Type;
 import fi.evident.dojolisp.objects.Function;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
@@ -31,5 +34,22 @@ public final class ApplicationExpression extends Expression {
         for (Expression arg : args)
             result[i++] = arg.evaluate(env);
         return result;
+    }
+
+    @Override
+    public Type typeCheck() {
+        FunctionType funcType = func.typeCheck().asFunctionType();
+        List<Type> argTypes = typeCheckArgs();
+
+        return funcType.typeCheckCall(argTypes);
+    }
+    
+    private List<Type> typeCheckArgs() {
+        List<Type> types = new ArrayList<Type>(args.size());
+        
+        for (Expression arg : args)
+            types.add(arg.typeCheck());
+        
+        return types;
     }
 }

@@ -5,19 +5,22 @@ import fi.evident.dojolisp.objects.Symbol;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
-public final class StaticBinding {
+public final class VariableInfo {
 
     public final Symbol name;
+    public final int offset;
     public final Type type;
-    public final Object value;
-    
-    public StaticBinding(String name, Type type, Object value) {
-        this(Symbol.symbol(name), type, value);
+
+    public VariableInfo(Symbol name, int offset, Type type) {
+        if (offset < 0) throw new IllegalArgumentException("negative offset: " + offset);
+
+        this.name = requireNonNull(name);
+        this.offset = offset;
+        this.type = requireNonNull(type);
     }
 
-    public StaticBinding(Symbol name, Type type, Object value) {
-        this.name = requireNonNull(name);
-        this.type = requireNonNull(type);
-        this.value = value;
+    @Override
+    public String toString() {
+        return name + ": " + type;
     }
 }

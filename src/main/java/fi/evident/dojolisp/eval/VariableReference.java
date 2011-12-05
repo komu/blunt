@@ -1,5 +1,9 @@
 package fi.evident.dojolisp.eval;
 
+import fi.evident.dojolisp.eval.types.Type;
+
+import static fi.evident.dojolisp.utils.Objects.requireNonNull;
+
 public final class VariableReference {
 
     /** Reference to the frame of variable, 0 being local frame */
@@ -7,13 +11,16 @@ public final class VariableReference {
 
     /** 0-based offset of variable within frame */
     public final int offset;
-
-    public VariableReference(int frame, int offset) {
+    
+    public final Type type;
+    
+    public VariableReference(int frame, int offset, Type type) {
         if (frame < 0) throw new IllegalArgumentException("negative frame: " + frame);
         if (offset < 0) throw new IllegalArgumentException("negative offset: " + offset);
 
         this.frame = frame;
         this.offset = offset;
+        this.type = requireNonNull(type);
     }
 
     @Override

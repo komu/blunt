@@ -1,19 +1,25 @@
 package fi.evident.dojolisp.eval.ast;
 
 import fi.evident.dojolisp.eval.Environment;
+import fi.evident.dojolisp.eval.types.Type;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
 public final class ConstantExpression extends Expression {
 
-    private final Object form;
+    private final Object value;
 
-    public ConstantExpression(Object form) {
-        this.form = requireNonNull(form);
+    public ConstantExpression(Object value) {
+        this.value = requireNonNull(value);
     }
 
     @Override
     public Object evaluate(Environment env) {
-        return form;
+        return value;
+    }
+
+    @Override
+    public Type typeCheck() {
+        return (value == null) ? Type.UNIT : Type.fromClass(value.getClass());
     }
 }
