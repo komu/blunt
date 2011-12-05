@@ -18,8 +18,8 @@ public final class Evaluator {
     }
     
     public void define(String name, Object value) {
-        rootRuntimeEnvironment.define(name, value);
-        rootStaticEnvironment.define(name);
+        VariableReference ref = rootStaticEnvironment.define(name);
+        rootRuntimeEnvironment.set(ref, value);
     }
     
     public Expression analyze(Object form) {

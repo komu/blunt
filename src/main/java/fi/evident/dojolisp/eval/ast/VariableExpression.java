@@ -1,15 +1,15 @@
 package fi.evident.dojolisp.eval.ast;
 
 import fi.evident.dojolisp.eval.Environment;
-import fi.evident.dojolisp.types.Symbol;
+import fi.evident.dojolisp.eval.VariableReference;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
 public final class VariableExpression extends Expression {
     
-    private final Symbol var;
+    private final VariableReference var;
 
-    public VariableExpression(Symbol var) {
+    public VariableExpression(VariableReference var) {
         this.var = requireNonNull(var);
     }
 

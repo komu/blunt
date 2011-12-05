@@ -2,6 +2,7 @@ package fi.evident.dojolisp.stdlib;
 
 import fi.evident.dojolisp.eval.Environment;
 import fi.evident.dojolisp.eval.StaticEnvironment;
+import fi.evident.dojolisp.eval.VariableReference;
 import fi.evident.dojolisp.types.PrimitiveFunction;
 import fi.evident.dojolisp.utils.Objects;
 
@@ -15,8 +16,9 @@ public class BasicFunctions {
         for (Method m : BasicFunctions.class.getMethods()) {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null && Modifier.isStatic(m.getModifiers())) {
-                env.define(func.value(), new PrimitiveFunction(func.value(), m));
-                staticEnv.define(func.value());
+                String name = func.value();
+                VariableReference ref = staticEnv.define(name);
+                env.set(ref, new PrimitiveFunction(name, m));
             }
         }
     }

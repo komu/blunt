@@ -27,10 +27,7 @@ public final class Analyzer {
     }
 
     private Expression analyzeVariable(Symbol var, StaticEnvironment env) {
-        if (env.contains(var))
-            return new VariableExpression(var);
-        else
-            throw new AnalyzationException("Unbound variable: " + var);
+        return new VariableExpression(env.lookup(var));
     }
 
     private Expression analyzeList(List<?> form, StaticEnvironment env) {
@@ -61,9 +58,9 @@ public final class Analyzer {
         StaticEnvironment newEnv = new StaticEnvironment(env);
 
         Symbol[] names = asParameterList(form.get(1));
-        newEnv.defineAll(asList(names));
+        VariableReference[] vars = newEnv.defineAll(asList(names));
 
-        return new LambdaExpression(names, analyze(form.get(2), newEnv));
+        return new LambdaExpression(vars, analyze(form.get(2), newEnv));
     }
 
     private static Symbol[] asParameterList(Object form) {
