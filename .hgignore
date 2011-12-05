@@ -1,0 +1,9 @@
+syntax: glob
+
+*~
+out
+target
+.idea/workspace.xml
+.idea/uiDesigner.xml
+.idea/dictionaries/*
+.DS_Store
