@@ -1,4 +1,6 @@
-package fi.evident.dojolisp.eval;
+package fi.evident.dojolisp.eval.ast;
+
+import fi.evident.dojolisp.eval.Environment;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
