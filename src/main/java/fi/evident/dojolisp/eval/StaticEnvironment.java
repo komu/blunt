@@ -48,11 +48,8 @@ public final class StaticEnvironment {
         return new VariableReference(0, offset);
     }
 
-    public VariableReference[] defineAll(Collection<Symbol> variables) {
-        VariableReference[] result = new VariableReference[variables.size()];
-        int i = 0;
+    public void defineAll(Collection<Symbol> variables) {
         for (Symbol var : variables)
-            result[i++] = define(var);
-        return result;
+            define(var);
     }
 }

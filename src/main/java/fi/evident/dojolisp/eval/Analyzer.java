@@ -58,9 +58,9 @@ public final class Analyzer {
         StaticEnvironment newEnv = new StaticEnvironment(env);
 
         Symbol[] names = asParameterList(form.get(1));
-        VariableReference[] vars = newEnv.defineAll(asList(names));
+        newEnv.defineAll(asList(names));
 
-        return new LambdaExpression(vars, analyze(form.get(2), newEnv));
+        return new LambdaExpression(names.length, analyze(form.get(2), newEnv));
     }
 
     private static Symbol[] asParameterList(Object form) {
