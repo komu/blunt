@@ -9,12 +9,13 @@ import java.util.Map;
 public abstract class Type {
     
     private static final Map<String, Type> basicTypes = new HashMap<String, Type>();
-    Type() {
-    }
+
+    Type() { }
     
     public static final Type UNIT = basicType("Unit");
     public static final Type INTEGER = basicType("Integer");
     public static final Type BOOLEAN = basicType("Boolean");
+    public static final Type STRING = basicType("String");
 
     private static Type basicType(String name) {
         Type type = basicTypes.get(name);
@@ -34,14 +35,11 @@ public abstract class Type {
     }
 
     public static Type fromClass(Class<?> type) {
-        if (type == Void.class)
-            return UNIT;
-        if (type == Boolean.class || type == boolean.class)
-            return BOOLEAN;
-        if (type == Integer.class || type == int.class)
-            return INTEGER;
-        else
-            return basicType(type.getName());
+        return (type == Void.class)                             ? UNIT
+             : (type == Boolean.class || type == boolean.class) ? BOOLEAN
+             : (type == Integer.class || type == int.class)     ? INTEGER
+             : (type == String.class)                           ? STRING
+             : basicType(type.getName());
     }
 
     public Type unify(Type type) {
