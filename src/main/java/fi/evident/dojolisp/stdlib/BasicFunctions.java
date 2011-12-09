@@ -37,7 +37,6 @@ public class BasicFunctions {
         if (m.isVarArgs()) {
             int last = argumentTypes.size()-1;
             argumentTypes.set(last, Type.fromClass(m.getParameterTypes()[last].getComponentType()));
-            System.out.println(func.value() + ": " + argumentTypes);
 
             return new FunctionType(argumentTypes, returnType, true);
         } else {
