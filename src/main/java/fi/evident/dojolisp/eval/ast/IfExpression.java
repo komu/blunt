@@ -30,7 +30,7 @@ public final class IfExpression extends Expression {
     public Type typeCheck() {
         Type conditionType = condition.typeCheck();
         
-        conditionType.unify(Type.BOOLEAN);
+        Type.BOOLEAN.assignFrom(conditionType);
 
         Type consequentType = consequent.typeCheck();
         Type alternativeType = alternative.typeCheck();

@@ -6,6 +6,7 @@ public abstract class Type {
     
     Type() { }
     
+    public static final Type ANY = BasicType.createOrGet("Any");
     public static final Type UNIT = BasicType.createOrGet("Unit");
     public static final Type INTEGER = BasicType.createOrGet("Integer");
     public static final Type BOOLEAN = BasicType.createOrGet("Boolean");
@@ -13,6 +14,7 @@ public abstract class Type {
 
     public static Type fromClass(Class<?> type) {
         return (type == Void.class)                             ? UNIT
+             : (type == Object.class)                           ? ANY
              : (type == Boolean.class || type == boolean.class) ? BOOLEAN
              : (type == Integer.class || type == int.class)     ? INTEGER
              : (type == String.class)                           ? STRING
@@ -24,12 +26,19 @@ public abstract class Type {
     }
 
     public Type unify(Type type) {
+        if (this == ANY || type == ANY)
+            return ANY;
+
         if (this.equals(type))
             return type;
         else
             throw new TypeCheckException(this, type);
     }
-
+    
+    public void assignFrom(Type type) {
+        unify(type);
+    }
+    
     public FunctionType asFunctionType() {
         throw new TypeCheckException("not a function type: " + this);
     }

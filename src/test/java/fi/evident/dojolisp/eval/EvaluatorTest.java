@@ -4,7 +4,6 @@ import fi.evident.dojolisp.eval.ast.Expression;
 import fi.evident.dojolisp.reader.LispReader;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static fi.evident.dojolisp.objects.Symbol.symbol;
@@ -45,7 +44,6 @@ public class EvaluatorTest {
     }
 
     @Test
-    @Ignore
     public void equality() {
         assertThatEvaluating("(= 1)", produces(true));
         assertThatEvaluating("(= 1 1)", produces(true));
@@ -54,6 +52,11 @@ public class EvaluatorTest {
         assertThatEvaluating("(= 1 2 1)", produces(false));
         assertThatEvaluating("(= 1 1 2)", produces(false));
         assertThatEvaluating("(= 1 2 2)", produces(false));
+    }
+
+    @Test
+    public void equalityBetweenDifferentTypes() {
+        assertThatEvaluating("(= 2 \"foo\")", produces(false));
     }
 
     @Test

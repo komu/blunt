@@ -44,22 +44,21 @@ public final class FunctionType extends Type {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        FunctionType that = (FunctionType) o;
-
-        if (argumentTypes != null ? !argumentTypes.equals(that.argumentTypes) : that.argumentTypes != null)
-            return false;
-        if (returnType != null ? !returnType.equals(that.returnType) : that.returnType != null) return false;
-
-        return true;
+        if (o instanceof FunctionType) {
+            FunctionType rhs = (FunctionType) o;
+            
+            return argumentTypes.equals(rhs.argumentTypes)
+                || returnType.equals(rhs.returnType)
+                || varArgs == rhs.varArgs;
+        }
+        
+        return false;
     }
 
     @Override
     public int hashCode() {
-        int result = argumentTypes != null ? argumentTypes.hashCode() : 0;
-        result = 31 * result + (returnType != null ? returnType.hashCode() : 0);
-        return result;
+        return argumentTypes.hashCode() * 31 + returnType.hashCode();
     }
 
     public Type typeCheckCall(List<Type> paramTypes) {
@@ -76,7 +75,7 @@ public final class FunctionType extends Type {
             throw new TypeCheckException("invalid call: expected " + argumentTypes + ", but got " + paramTypes);
 
         for (int i = 0; i < argumentTypes.size(); i++)
-            argumentTypes.get(0).unify(paramTypes.get(i));
+            argumentTypes.get(0).assignFrom(paramTypes.get(i));
     }
 
     private void typeCheckVarArgs(List<Type> paramTypes) {
@@ -84,12 +83,12 @@ public final class FunctionType extends Type {
             throw new TypeCheckException("not enough arguments for var-args call (required " + argumentTypes.size() + ", but got " + paramTypes.size() + ")");
 
         for (int i = 0; i < argumentTypes.size() - 1; i++)
-            argumentTypes.get(0).unify(paramTypes.get(i));
+            argumentTypes.get(0).assignFrom(paramTypes.get(i));
         
         Type varArgType = argumentTypes.get(argumentTypes.size()-1);
         List<Type> rest = paramTypes.subList(argumentTypes.size()-1, paramTypes.size());
         
         for (Type arg : rest)
-            varArgType.unify(arg);
+            varArgType.assignFrom(arg);
     }
 }
