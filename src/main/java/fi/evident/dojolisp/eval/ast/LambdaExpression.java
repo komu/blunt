@@ -30,7 +30,6 @@ public final class LambdaExpression extends Expression {
 
     @Override
     public Type typeCheck() {
-        // TODO: extend the static env with arguments
-        return new FunctionType(arguments, body.typeCheck());
+        return new FunctionType(arguments, body.typeCheck(), false);
     }
 }

@@ -45,7 +45,7 @@ public class EvaluatorTest {
     }
 
     @Test
-    @Ignore("varargs functions not implemented")
+    @Ignore
     public void equality() {
         assertThatEvaluating("(= 1)", produces(true));
         assertThatEvaluating("(= 1 1)", produces(true));
@@ -54,6 +54,13 @@ public class EvaluatorTest {
         assertThatEvaluating("(= 1 2 1)", produces(false));
         assertThatEvaluating("(= 1 1 2)", produces(false));
         assertThatEvaluating("(= 1 2 2)", produces(false));
+    }
+
+    @Test
+    public void varargsInvocation() {
+        assertThatEvaluating("(++)", produces(0));
+        assertThatEvaluating("(++ 2)", produces(2));
+        assertThatEvaluating("(++ 2 3 4)", produces(9));
     }
 
     @Test

@@ -34,7 +34,15 @@ public class BasicFunctions {
         
         Type returnType = Type.fromClass(m.getReturnType());
         
-        return new FunctionType(argumentTypes, returnType);
+        if (m.isVarArgs()) {
+            int last = argumentTypes.size()-1;
+            argumentTypes.set(last, Type.fromClass(m.getParameterTypes()[last].getComponentType()));
+            System.out.println(func.value() + ": " + argumentTypes);
+
+            return new FunctionType(argumentTypes, returnType, true);
+        } else {
+            return new FunctionType(argumentTypes, returnType, false);
+        }
     }
 
     @LibraryFunction("+")
@@ -43,7 +51,7 @@ public class BasicFunctions {
     }
     
     @LibraryFunction("++")
-    public static Number plus(Number... xs) {
+    public static int plus(int... xs) {
         int sum = 0;
                  
         for (Number x : xs)
