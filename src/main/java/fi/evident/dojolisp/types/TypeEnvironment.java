@@ -13,13 +13,36 @@ public class TypeEnvironment {
     }    
     
     public Type unify(Type left, Type right) {
-        if (left == ANY || right == ANY)
+        if (left instanceof TypeVariable && right instanceof TypeVariable)
+            return unifyVariables((TypeVariable) left, (TypeVariable) right);
+        else if (left instanceof TypeVariable)
+            return unifyVariable((TypeVariable) left, right);
+        else if (right instanceof TypeVariable)
+            return unifyVariable((TypeVariable) right, left);
+        else if (left == ANY || right == ANY)
             return ANY;
-
-        if (left.equals(right))
+        else if (left.equals(right))
             return left;
         else
             throw new TypeCheckException(left, right);
+    }
+
+    private Type unifyVariables(TypeVariable left, TypeVariable right) {
+        if (left.isAssigned())
+            return unifyVariable(right, left.getAssignedType());
+        else if (right.isAssigned())
+            return unifyVariable(left, right.getAssignedType());
+
+        left.assign(right);
+        return left;
+    }
+
+    private Type unifyVariable(TypeVariable var, Type type) {
+        if (var.isAssigned())
+            return unify(var.getAssignedType(), type);
+
+        var.assign(type);
+        return type;
     }
 
     public Type call(Type func, List<Type> argTypes) {

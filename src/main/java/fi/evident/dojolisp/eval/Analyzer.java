@@ -3,6 +3,7 @@ package fi.evident.dojolisp.eval;
 import fi.evident.dojolisp.ast.*;
 import fi.evident.dojolisp.objects.Symbol;
 import fi.evident.dojolisp.types.Type;
+import fi.evident.dojolisp.types.TypeVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +83,9 @@ public final class Analyzer {
                     } else {
                         throw new SyntaxException("invalid argument list: " + form);
                     }
+                } else if (obj instanceof Symbol) {
+                    Symbol name = (Symbol) obj;
+                    arguments[i] = new Binding(name, new TypeVariable());
                 } else {
                     throw new SyntaxException("invalid argument list: " + form);
                 }

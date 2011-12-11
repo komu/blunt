@@ -1,5 +1,6 @@
 package fi.evident.dojolisp;
 
+import fi.evident.dojolisp.eval.AnalyzationException;
 import fi.evident.dojolisp.eval.Evaluator;
 import fi.evident.dojolisp.eval.ResultWithType;
 import fi.evident.dojolisp.objects.EvaluationException;
@@ -25,6 +26,8 @@ public class Main {
                 ResultWithType result = evaluator.evaluateWithType(form);
 
                 System.out.println(result);
+            } catch (AnalyzationException e) {
+                System.out.println(e);
             } catch (EvaluationException e) {
                 System.out.println(e);
             } catch (Exception e) {

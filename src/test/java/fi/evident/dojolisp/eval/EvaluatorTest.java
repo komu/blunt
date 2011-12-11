@@ -2,12 +2,13 @@ package fi.evident.dojolisp.eval;
 
 import fi.evident.dojolisp.ast.Expression;
 import fi.evident.dojolisp.reader.LispReader;
-import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import static fi.evident.dojolisp.objects.Symbol.symbol;
 import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.anything;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -39,8 +40,8 @@ public class EvaluatorTest {
 
     @Test
     public void lambdaExpression() {
-        assertThatEvaluating("((lambda ((x Integer)) (+ x 1)) 2)", produces(3));
-        assertThatEvaluating("(((lambda ((x Integer)) (lambda ((y Integer)) (+ x y))) 3) 4)", produces(7));
+        assertThatEvaluating("((lambda (x) (+ x 1)) 2)", produces(3));
+        assertThatEvaluating("(((lambda (x) (lambda (y) (+ x y))) 3) 4)", produces(7));
     }
 
     @Test
@@ -81,6 +82,12 @@ public class EvaluatorTest {
         assertStaticError("(if 0 1 2)");
     }
 
+    @Test
+    public void typeInference() {
+        assertThatEvaluating("(lambda (n) n)", is(anything()));
+        assertThatEvaluating("((lambda (n) n) 42)", produces(42));
+    }
+
     private void assertStaticError(String expr) {
         try {
             analyze(expr);
@@ -102,6 +109,6 @@ public class EvaluatorTest {
     }
 
     private static Matcher<Object> produces(final Object value) {
-        return CoreMatchers.is(value);
+        return is(value);
     }
 }
