@@ -2,6 +2,7 @@ package fi.evident.dojolisp.asm;
 
 import fi.evident.dojolisp.eval.Environment;
 import fi.evident.dojolisp.eval.VariableReference;
+import fi.evident.dojolisp.objects.CompoundProcedure;
 import fi.evident.dojolisp.objects.Function;
 
 import java.lang.reflect.Array;
@@ -109,7 +110,8 @@ public abstract class OpCode {
         @Override
         public void execute(VM vm) {
             Environment environment = (Environment) vm.get(Register.ENV);
-            CompoundProcedure procedure = new CompoundProcedure(label, environment);
+            int address = vm.labelOffSet(label);
+            CompoundProcedure procedure = new CompoundProcedure(address, environment);
             vm.set(target, procedure);
         }
 
@@ -215,7 +217,7 @@ public abstract class OpCode {
             Environment env = procedure.env.extend(args);
             vm.save(Register.ENV, Register.PC, Register.PROCEDURE, Register.ARGV);
             vm.set(Register.ENV, env);
-            vm.jump(procedure.label);
+            vm.set(Register.PC, procedure.address);
         }
 
         @Override

@@ -1,4 +1,4 @@
-package fi.evident.dojolisp.asm;
+package fi.evident.dojolisp.objects;
 
 import fi.evident.dojolisp.eval.Environment;
 
@@ -6,16 +6,16 @@ import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
 public final class CompoundProcedure {
     
-    final Label label;
-    final Environment env;
+    public final int address;
+    public final Environment env;
 
-    public CompoundProcedure(Label label, Environment env) {
-        this.label = requireNonNull(label);
+    public CompoundProcedure(int address, Environment env) {
+        this.address = address;
         this.env = requireNonNull(env);
     }
 
     @Override
     public String toString() {
-        return "<#CompoundProcedure " + label + ">";
+        return "<#CompoundProcedure " + address + ">";
     }
 }
