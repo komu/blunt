@@ -5,6 +5,7 @@ import fi.evident.dojolisp.asm.Label;
 import fi.evident.dojolisp.asm.Linkage;
 import fi.evident.dojolisp.asm.Register;
 import fi.evident.dojolisp.types.Type;
+import fi.evident.dojolisp.types.TypeEnvironment;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
@@ -41,14 +42,14 @@ public final class IfExpression extends Expression {
     }
 
     @Override
-    public Type typeCheck() {
-        Type conditionType = condition.typeCheck();
+    public Type typeCheck(TypeEnvironment env) {
+        Type conditionType = condition.typeCheck(env);
         
-        Type.BOOLEAN.assignFrom(conditionType);
+        env.assign(Type.BOOLEAN, conditionType);
 
-        Type consequentType = consequent.typeCheck();
-        Type alternativeType = alternative.typeCheck();
+        Type consequentType = consequent.typeCheck(env);
+        Type alternativeType = alternative.typeCheck(env);
 
-        return consequentType.unify(alternativeType);
+        return env.unify(consequentType, alternativeType);
     }
 }

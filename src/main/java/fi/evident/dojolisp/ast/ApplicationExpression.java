@@ -3,8 +3,8 @@ package fi.evident.dojolisp.ast;
 import fi.evident.dojolisp.asm.Instructions;
 import fi.evident.dojolisp.asm.Linkage;
 import fi.evident.dojolisp.asm.Register;
-import fi.evident.dojolisp.types.FunctionType;
 import fi.evident.dojolisp.types.Type;
+import fi.evident.dojolisp.types.TypeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,18 +22,17 @@ public final class ApplicationExpression extends Expression {
     }
 
     @Override
-    public Type typeCheck() {
-        FunctionType funcType = func.typeCheck().asFunctionType();
-        List<Type> argTypes = typeCheckArgs();
+    public Type typeCheck(TypeEnvironment env) {
+        List<Type> argTypes = typeCheckArgs(env);
 
-        return funcType.typeCheckCall(argTypes);
+        return env.call(func.typeCheck(env), argTypes);
     }
     
-    private List<Type> typeCheckArgs() {
+    private List<Type> typeCheckArgs(TypeEnvironment env) {
         List<Type> types = new ArrayList<Type>(args.size());
         
         for (Expression arg : args)
-            types.add(arg.typeCheck());
+            types.add(arg.typeCheck(env));
         
         return types;
     }

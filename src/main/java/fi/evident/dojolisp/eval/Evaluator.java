@@ -10,6 +10,7 @@ import fi.evident.dojolisp.stdlib.BasicFunctions;
 import fi.evident.dojolisp.stdlib.LibraryFunction;
 import fi.evident.dojolisp.types.FunctionType;
 import fi.evident.dojolisp.types.Type;
+import fi.evident.dojolisp.types.TypeEnvironment;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -64,7 +65,7 @@ public final class Evaluator {
 
     public Expression analyze(Object form) {
         Expression exp = analyzer.analyze(form, environments.staticEnvironment);
-        exp.typeCheck();
+        exp.typeCheck(new TypeEnvironment());
         return exp;
     }
 
@@ -74,7 +75,7 @@ public final class Evaluator {
     
     public ResultWithType evaluateWithType(Object form) {
         Expression expression = analyzer.analyze(form, environments.staticEnvironment);
-        Type type = expression.typeCheck();
+        Type type = expression.typeCheck(new TypeEnvironment());
 
         Instructions instructions = new Instructions();
         expression.assemble(instructions, Register.VAL, Linkage.NEXT);

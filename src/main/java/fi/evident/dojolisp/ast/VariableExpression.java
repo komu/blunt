@@ -5,6 +5,7 @@ import fi.evident.dojolisp.asm.Linkage;
 import fi.evident.dojolisp.asm.Register;
 import fi.evident.dojolisp.eval.VariableReference;
 import fi.evident.dojolisp.types.Type;
+import fi.evident.dojolisp.types.TypeEnvironment;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
@@ -17,7 +18,7 @@ public final class VariableExpression extends Expression {
     }
 
     @Override
-    public Type typeCheck() {
+    public Type typeCheck(TypeEnvironment env) {
         return var.type;
     }
 

@@ -25,20 +25,6 @@ public abstract class Type {
         return BasicType.get(name);
     }
 
-    public Type unify(Type type) {
-        if (this == ANY || type == ANY)
-            return ANY;
-
-        if (this.equals(type))
-            return type;
-        else
-            throw new TypeCheckException(this, type);
-    }
-    
-    public void assignFrom(Type type) {
-        unify(type);
-    }
-    
     public FunctionType asFunctionType() {
         throw new TypeCheckException("not a function type: " + this);
     }

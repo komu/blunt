@@ -7,6 +7,7 @@ import fi.evident.dojolisp.asm.Register;
 import fi.evident.dojolisp.eval.Binding;
 import fi.evident.dojolisp.types.FunctionType;
 import fi.evident.dojolisp.types.Type;
+import fi.evident.dojolisp.types.TypeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +27,9 @@ public final class LambdaExpression extends Expression {
     }
 
     @Override
-    public Type typeCheck() {
-        return new FunctionType(arguments, body.typeCheck(), false);
+    public Type typeCheck(TypeEnvironment env) {
+        TypeEnvironment bodyEnv = env.extend(arguments);
+        return new FunctionType(arguments, body.typeCheck(bodyEnv), false);
     }
 
     @Override

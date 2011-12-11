@@ -61,34 +61,34 @@ public final class FunctionType extends Type {
         return argumentTypes.hashCode() * 31 + returnType.hashCode();
     }
 
-    public Type typeCheckCall(List<Type> paramTypes) {
+    public Type typeCheckCall(TypeEnvironment env, List<Type> paramTypes) {
         if (varArgs)
-            typeCheckVarArgs(paramTypes);
+            typeCheckVarArgs(env, paramTypes);
         else
-            typeCheckNonVarArgs(paramTypes);
+            typeCheckNonVarArgs(env, paramTypes);
 
         return returnType;
     }
 
-    private void typeCheckNonVarArgs(List<Type> paramTypes) {
+    private void typeCheckNonVarArgs(TypeEnvironment env, List<Type> paramTypes) {
         if (argumentTypes.size() != paramTypes.size())
             throw new TypeCheckException("invalid call: expected " + argumentTypes + ", but got " + paramTypes);
 
         for (int i = 0; i < argumentTypes.size(); i++)
-            argumentTypes.get(0).assignFrom(paramTypes.get(i));
+            env.assign(argumentTypes.get(0), paramTypes.get(i));
     }
 
-    private void typeCheckVarArgs(List<Type> paramTypes) {
+    private void typeCheckVarArgs(TypeEnvironment env, List<Type> paramTypes) {
         if (paramTypes.size() < argumentTypes.size() - 1)
             throw new TypeCheckException("not enough arguments for var-args call (required " + argumentTypes.size() + ", but got " + paramTypes.size() + ")");
 
         for (int i = 0; i < argumentTypes.size() - 1; i++)
-            argumentTypes.get(0).assignFrom(paramTypes.get(i));
+            env.assign(argumentTypes.get(0), paramTypes.get(i));
         
         Type varArgType = argumentTypes.get(argumentTypes.size()-1);
         List<Type> rest = paramTypes.subList(argumentTypes.size()-1, paramTypes.size());
         
         for (Type arg : rest)
-            varArgType.assignFrom(arg);
+            env.assign(varArgType, arg);
     }
 }
