@@ -61,9 +61,9 @@ public class EvaluatorTest {
 
     @Test
     public void varargsInvocation() {
-        assertThatEvaluating("(++)", produces(0));
-        assertThatEvaluating("(++ 2)", produces(2));
-        assertThatEvaluating("(++ 2 3 4)", produces(9));
+        assertThatEvaluating("(+)", produces(0));
+        assertThatEvaluating("(+ 2)", produces(2));
+        assertThatEvaluating("(+ 2 3 4)", produces(9));
     }
 
     @Test
