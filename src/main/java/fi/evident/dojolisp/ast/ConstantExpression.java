@@ -1,6 +1,8 @@
 package fi.evident.dojolisp.ast;
 
-import fi.evident.dojolisp.eval.Environment;
+import fi.evident.dojolisp.asm.Instructions;
+import fi.evident.dojolisp.asm.Linkage;
+import fi.evident.dojolisp.asm.Register;
 import fi.evident.dojolisp.types.Type;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
@@ -14,12 +16,13 @@ public final class ConstantExpression extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        return value;
+    public Type typeCheck() {
+        return (value == null) ? Type.UNIT : Type.fromClass(value.getClass());
     }
 
     @Override
-    public Type typeCheck() {
-        return (value == null) ? Type.UNIT : Type.fromClass(value.getClass());
+    public void assemble(Instructions instructions, Register target, Linkage linkage) {
+        instructions.loadConstant(target, value);
+        instructions.finishWithLinkage(linkage);
     }
 }

@@ -1,5 +1,9 @@
 package fi.evident.dojolisp.eval;
 
+import fi.evident.dojolisp.asm.Instructions;
+import fi.evident.dojolisp.asm.Linkage;
+import fi.evident.dojolisp.asm.Register;
+import fi.evident.dojolisp.asm.VM;
 import fi.evident.dojolisp.ast.Expression;
 import fi.evident.dojolisp.objects.PrimitiveFunction;
 import fi.evident.dojolisp.stdlib.BasicFunctions;
@@ -65,14 +69,19 @@ public final class Evaluator {
     }
 
     public Object evaluate(Object form) {
-        Expression expression = analyze(form);
-        return expression.evaluate(environments.runtimeEnvironment);
+        return evaluateWithType(form).result;
     }
     
     public ResultWithType evaluateWithType(Object form) {
         Expression expression = analyzer.analyze(form, environments.staticEnvironment);
         Type type = expression.typeCheck();
-        Object result = expression.evaluate(environments.runtimeEnvironment);
+
+        Instructions instructions = new Instructions();
+        expression.assemble(instructions, Register.VAL, Linkage.NEXT);
+
+        VM vm = new VM(instructions, environments.runtimeEnvironment);
+        Object result = vm.run();
+
         return new ResultWithType(result, type);
     }
 }

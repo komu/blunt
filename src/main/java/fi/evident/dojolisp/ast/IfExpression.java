@@ -1,6 +1,9 @@
 package fi.evident.dojolisp.ast;
 
-import fi.evident.dojolisp.eval.Environment;
+import fi.evident.dojolisp.asm.Instructions;
+import fi.evident.dojolisp.asm.Label;
+import fi.evident.dojolisp.asm.Linkage;
+import fi.evident.dojolisp.asm.Register;
 import fi.evident.dojolisp.types.Type;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
@@ -18,12 +21,23 @@ public final class IfExpression extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        Object result = condition.evaluate(env);
-        if (!Boolean.FALSE.equals(result))
-            return consequent.evaluate(env);
-        else
-            return alternative.evaluate(env);
+    public void assemble(Instructions instructions, Register target, Linkage linkage) {
+        Label after = instructions.newLabel("if-after");
+        Label falseBranch = instructions.newLabel("if-false");
+
+        Linkage trueLinkage = (linkage == Linkage.NEXT) ? Linkage.jump(after) : linkage;
+
+        // Since the target register is safe to overwrite, we borrow it
+        // for evaluating the condition as well.
+        condition.assemble(instructions, target, Linkage.NEXT);
+        instructions.jumpIfFalse(target, falseBranch);
+
+        consequent.assemble(instructions, target, trueLinkage);
+        instructions.label(falseBranch);
+        alternative.assemble(instructions, target, linkage);
+        instructions.label(after);
+
+        instructions.finishWithLinkage(linkage);
     }
 
     @Override

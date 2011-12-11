@@ -26,7 +26,7 @@ public final class StaticEnvironment {
     private VariableReference lookup(Symbol name, int depth) {
         VariableInfo var = variables.get(name);
         if (var != null)
-            return new VariableReference(depth, var.offset, var.type);
+            return new VariableReference(depth, var.offset, var.type, name);
         else if (parent != null)
             return parent.lookup(name, depth+1);
         else
@@ -39,7 +39,7 @@ public final class StaticEnvironment {
 
         int offset = variables.size();
         variables.put(name, new VariableInfo(name, offset, type));
-        return new VariableReference(0, offset, type);
+        return new VariableReference(0, offset, type, name);
     }
 
     @SuppressWarnings("unused")

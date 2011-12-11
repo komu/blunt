@@ -1,8 +1,10 @@
 package fi.evident.dojolisp.ast;
 
+import fi.evident.dojolisp.asm.Instructions;
+import fi.evident.dojolisp.asm.Label;
+import fi.evident.dojolisp.asm.Linkage;
+import fi.evident.dojolisp.asm.Register;
 import fi.evident.dojolisp.eval.Binding;
-import fi.evident.dojolisp.eval.Environment;
-import fi.evident.dojolisp.objects.Lambda;
 import fi.evident.dojolisp.types.FunctionType;
 import fi.evident.dojolisp.types.Type;
 
@@ -24,12 +26,25 @@ public final class LambdaExpression extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        return new Lambda(arguments.size(), body, env);
+    public Type typeCheck() {
+        return new FunctionType(arguments, body.typeCheck(), false);
     }
 
     @Override
-    public Type typeCheck() {
-        return new FunctionType(arguments, body.typeCheck(), false);
+    public void assemble(Instructions instructions, Register target, Linkage linkage) {
+        // TODO: place the lambda in a new code section
+        Label lambda = instructions.newLabel("lambda");
+        Label afterLambda = instructions.newLabel("after-lambda");
+
+        instructions.loadLambda(target, lambda);
+        if (linkage == Linkage.NEXT) {
+            instructions.jump(afterLambda);
+        } else {
+            instructions.finishWithLinkage(linkage);
+        }
+
+        instructions.label(lambda);
+        body.assemble(instructions, Register.VAL, Linkage.RETURN);
+        instructions.label(afterLambda);
     }
 }

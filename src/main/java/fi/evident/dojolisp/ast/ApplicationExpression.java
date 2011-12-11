@@ -1,7 +1,8 @@
 package fi.evident.dojolisp.ast;
 
-import fi.evident.dojolisp.eval.Environment;
-import fi.evident.dojolisp.objects.Function;
+import fi.evident.dojolisp.asm.Instructions;
+import fi.evident.dojolisp.asm.Linkage;
+import fi.evident.dojolisp.asm.Register;
 import fi.evident.dojolisp.types.FunctionType;
 import fi.evident.dojolisp.types.Type;
 
@@ -21,22 +22,6 @@ public final class ApplicationExpression extends Expression {
     }
 
     @Override
-    public Object evaluate(Environment env) {
-        Function f = (Function) func.evaluate(env);
-        Object[] parameters = evaluateArguments(env);
-        
-        return f.apply(parameters);
-    }
-
-    private Object[] evaluateArguments(Environment env) {
-        Object[] result = new Object[args.size()];
-        int i = 0;
-        for (Expression arg : args)
-            result[i++] = arg.evaluate(env);
-        return result;
-    }
-
-    @Override
     public Type typeCheck() {
         FunctionType funcType = func.typeCheck().asFunctionType();
         List<Type> argTypes = typeCheckArgs();
@@ -51,5 +36,25 @@ public final class ApplicationExpression extends Expression {
             types.add(arg.typeCheck());
         
         return types;
+    }
+
+    @Override
+    public void assemble(Instructions instructions, Register target, Linkage linkage) {
+        // TODO: preserve registers
+        func.assemble(instructions, Register.PROCEDURE, Linkage.NEXT);
+
+        instructions.loadNewArray(Register.ARGV, args.size());
+        for (int i = 0; i < args.size(); i++) {
+            args.get(i).assemble(instructions, Register.VAL, Linkage.NEXT);
+            instructions.arrayStore(Register.ARGV, i, Register.VAL);
+        }
+
+        // TODO: tail calls
+
+        instructions.apply(Register.PROCEDURE, Register.ARGV);
+        if (target != Register.VAL)
+            instructions.copy(target, Register.VAL);
+
+        instructions.finishWithLinkage(linkage);
     }
 }
