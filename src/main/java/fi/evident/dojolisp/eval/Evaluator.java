@@ -1,11 +1,11 @@
 package fi.evident.dojolisp.eval;
 
-import fi.evident.dojolisp.eval.ast.Expression;
-import fi.evident.dojolisp.eval.types.FunctionType;
-import fi.evident.dojolisp.eval.types.Type;
+import fi.evident.dojolisp.ast.Expression;
 import fi.evident.dojolisp.objects.PrimitiveFunction;
 import fi.evident.dojolisp.stdlib.BasicFunctions;
 import fi.evident.dojolisp.stdlib.LibraryFunction;
+import fi.evident.dojolisp.types.FunctionType;
+import fi.evident.dojolisp.types.Type;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

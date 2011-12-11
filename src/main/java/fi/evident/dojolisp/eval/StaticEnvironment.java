@@ -1,7 +1,7 @@
 package fi.evident.dojolisp.eval;
 
-import fi.evident.dojolisp.eval.types.Type;
 import fi.evident.dojolisp.objects.Symbol;
+import fi.evident.dojolisp.types.Type;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +42,7 @@ public final class StaticEnvironment {
         return new VariableReference(0, offset, type);
     }
 
+    @SuppressWarnings("unused")
     public void dump() {
         for (VariableInfo var : variables.values())
             System.out.printf("%-10s: %s\n", var.name, var.type);

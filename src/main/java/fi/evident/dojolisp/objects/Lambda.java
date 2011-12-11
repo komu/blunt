@@ -1,7 +1,7 @@
 package fi.evident.dojolisp.objects;
 
+import fi.evident.dojolisp.ast.Expression;
 import fi.evident.dojolisp.eval.Environment;
-import fi.evident.dojolisp.eval.ast.Expression;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 

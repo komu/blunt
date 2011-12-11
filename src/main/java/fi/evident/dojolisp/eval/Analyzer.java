@@ -1,8 +1,8 @@
 package fi.evident.dojolisp.eval;
 
-import fi.evident.dojolisp.eval.ast.*;
-import fi.evident.dojolisp.eval.types.Type;
+import fi.evident.dojolisp.ast.*;
 import fi.evident.dojolisp.objects.Symbol;
+import fi.evident.dojolisp.types.Type;
 
 import java.util.ArrayList;
 import java.util.List;

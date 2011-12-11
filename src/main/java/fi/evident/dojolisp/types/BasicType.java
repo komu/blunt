@@ -1,4 +1,4 @@
-package fi.evident.dojolisp.eval.types;
+package fi.evident.dojolisp.types;
 
 import fi.evident.dojolisp.eval.AnalyzationException;
 

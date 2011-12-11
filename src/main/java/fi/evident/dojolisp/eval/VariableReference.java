@@ -1,6 +1,6 @@
 package fi.evident.dojolisp.eval;
 
-import fi.evident.dojolisp.eval.types.Type;
+import fi.evident.dojolisp.types.Type;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 

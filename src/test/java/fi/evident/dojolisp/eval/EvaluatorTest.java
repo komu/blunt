@@ -1,6 +1,6 @@
 package fi.evident.dojolisp.eval;
 
-import fi.evident.dojolisp.eval.ast.Expression;
+import fi.evident.dojolisp.ast.Expression;
 import fi.evident.dojolisp.reader.LispReader;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;

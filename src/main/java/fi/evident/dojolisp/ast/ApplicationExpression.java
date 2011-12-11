@@ -1,9 +1,9 @@
-package fi.evident.dojolisp.eval.ast;
+package fi.evident.dojolisp.ast;
 
 import fi.evident.dojolisp.eval.Environment;
-import fi.evident.dojolisp.eval.types.FunctionType;
-import fi.evident.dojolisp.eval.types.Type;
 import fi.evident.dojolisp.objects.Function;
+import fi.evident.dojolisp.types.FunctionType;
+import fi.evident.dojolisp.types.Type;
 
 import java.util.ArrayList;
 import java.util.List;

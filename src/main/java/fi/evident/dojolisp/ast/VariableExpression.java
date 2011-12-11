@@ -1,8 +1,8 @@
-package fi.evident.dojolisp.eval.ast;
+package fi.evident.dojolisp.ast;
 
 import fi.evident.dojolisp.eval.Environment;
 import fi.evident.dojolisp.eval.VariableReference;
-import fi.evident.dojolisp.eval.types.Type;
+import fi.evident.dojolisp.types.Type;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
