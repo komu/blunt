@@ -7,26 +7,44 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+
 public class NativeTypeConversions {
 
     public static Type createFunctionType(Method m) {
         // TODO: support parsing signatures from 'func'
 
         Map<java.lang.reflect.TypeVariable<?>,TypeVariable> typeVariableMap = new HashMap<java.lang.reflect.TypeVariable<?>, TypeVariable>();
-        
-        List<Type> argumentTypes = new ArrayList<Type>(m.getGenericParameterTypes().length);
-        for (java.lang.reflect.Type type : m.getGenericParameterTypes())
-            argumentTypes.add(resolve(typeVariableMap, type));
 
+        List<Type> argumentTypes = resolveArguments(m, typeVariableMap);
         Type returnType = resolve(typeVariableMap, m.getGenericReturnType());
 
-        if (m.isVarArgs()) {
-            int last = argumentTypes.size()-1;
-            argumentTypes.set(last, resolve(typeVariableMap, m.getParameterTypes()[last].getComponentType()));
+        return new FunctionType(argumentTypes, returnType, m.isVarArgs());
+    }
 
-            return new FunctionType(argumentTypes, returnType, true);
+    private static List<Type> resolveArguments(Method m, Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap) {
+        List<Type> result = new ArrayList<Type>(m.getGenericParameterTypes().length);
+
+        List<java.lang.reflect.Type> argumentTypes = asList(m.getGenericParameterTypes());
+        if (m.isVarArgs()) {
+            for (java.lang.reflect.Type type : argumentTypes.subList(0, argumentTypes.size()-1))
+                result.add(resolve(typeVariableMap, type));
+
+            int last = argumentTypes.size()-1;
+            result.add(resolve(typeVariableMap, componentType(argumentTypes.get(last))));
         } else {
-            return new FunctionType(argumentTypes, returnType, false);
+            for (java.lang.reflect.Type type : argumentTypes)
+                result.add(resolve(typeVariableMap, type));
+        }
+
+        return result;
+    }
+    
+    private static java.lang.reflect.Type componentType(java.lang.reflect.Type type) {
+        if (type instanceof GenericArrayType) {
+            return ((GenericArrayType) type).getGenericComponentType();
+        } else {
+            return ((Class<?>) type).getComponentType();
         }
     }
 

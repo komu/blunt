@@ -51,7 +51,11 @@ public class BasicFunctions {
     }
 
     @LibraryFunction("=")
-    public static <T> boolean equal(T x, T y) {
-        return Objects.equal(x, y);
+    public static <T> boolean equal(T x, T... ys) {
+        for (T y : ys)
+            if (!Objects.equal(x, y))
+                return false;
+
+        return true;
     }
 }
