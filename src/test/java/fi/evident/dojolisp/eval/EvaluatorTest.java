@@ -46,18 +46,13 @@ public class EvaluatorTest {
 
     @Test
     public void equality() {
-        assertThatEvaluating("(= 1)", produces(true));
         assertThatEvaluating("(= 1 1)", produces(true));
         assertThatEvaluating("(= 1 2)", produces(false));
-        assertThatEvaluating("(= 1 1 1)", produces(true));
-        assertThatEvaluating("(= 1 2 1)", produces(false));
-        assertThatEvaluating("(= 1 1 2)", produces(false));
-        assertThatEvaluating("(= 1 2 2)", produces(false));
     }
 
     @Test
     public void equalityBetweenDifferentTypes() {
-        assertThatEvaluating("(= 2 \"foo\")", produces(false));
+        assertStaticError("(= 2 \"foo\")");
     }
 
     @Test

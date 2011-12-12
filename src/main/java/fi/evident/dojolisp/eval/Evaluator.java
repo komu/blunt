@@ -8,14 +8,12 @@ import fi.evident.dojolisp.ast.Expression;
 import fi.evident.dojolisp.objects.PrimitiveFunction;
 import fi.evident.dojolisp.stdlib.BasicFunctions;
 import fi.evident.dojolisp.stdlib.LibraryFunction;
-import fi.evident.dojolisp.types.FunctionType;
+import fi.evident.dojolisp.types.NativeTypeConversions;
 import fi.evident.dojolisp.types.Type;
 import fi.evident.dojolisp.types.TypeEnvironment;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class Evaluator {
 
@@ -38,28 +36,9 @@ public final class Evaluator {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null && Modifier.isStatic(m.getModifiers())) {
                 String name = func.value();
-                Type type = createFunctionType(m);
+                Type type = NativeTypeConversions.createFunctionType(m);
                 bindings.bind(name, type, new PrimitiveFunction(name, m));
             }
-        }
-    }
-
-    private static Type createFunctionType(Method m) {
-        // TODO: support parsing signatures from 'func'
-
-        List<Type> argumentTypes = new ArrayList<Type>(m.getParameterTypes().length);
-        for (Class<?> type : m.getParameterTypes())
-            argumentTypes.add(Type.fromClass(type));
-        
-        Type returnType = Type.fromClass(m.getReturnType());
-        
-        if (m.isVarArgs()) {
-            int last = argumentTypes.size()-1;
-            argumentTypes.set(last, Type.fromClass(m.getParameterTypes()[last].getComponentType()));
-
-            return new FunctionType(argumentTypes, returnType, true);
-        } else {
-            return new FunctionType(argumentTypes, returnType, false);
         }
     }
 
