@@ -21,6 +21,10 @@ public abstract class Type {
              : BasicType.createOrGet(type.getName());
     }
     
+    public static Type arrayOf(Type type) {
+        throw new UnsupportedOperationException("arrays are not yet supported");
+    }
+    
     public static Type forName(String name) {
         return BasicType.get(name);
     }

@@ -12,8 +12,6 @@ import static java.util.Arrays.asList;
 public class NativeTypeConversions {
 
     public static Type createFunctionType(Method m) {
-        // TODO: support parsing signatures from 'func'
-
         Map<java.lang.reflect.TypeVariable<?>,TypeVariable> typeVariableMap = new HashMap<java.lang.reflect.TypeVariable<?>, TypeVariable>();
 
         List<Type> argumentTypes = resolveArguments(m, typeVariableMap);
@@ -49,8 +47,12 @@ public class NativeTypeConversions {
     }
 
     private static Type resolve(Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap, java.lang.reflect.Type type) {
-        if (type instanceof Class<?>) { 
-            return Type.fromClass((Class<?>) type);
+        if (type instanceof Class<?>) {
+            Class<?> cl = (Class<?>) type;
+            if (cl.isArray())
+                return Type.arrayOf(resolve(typeVariableMap, cl.getComponentType()));
+            else
+                return Type.fromClass(cl);
         } else if (type instanceof java.lang.reflect.TypeVariable<?>) {
             java.lang.reflect.TypeVariable<?> tv = (java.lang.reflect.TypeVariable<?>) type;
             TypeVariable var = typeVariableMap.get(tv);
@@ -60,9 +62,10 @@ public class NativeTypeConversions {
             }
             return var;
         } else if (type instanceof GenericArrayType) {
-            // TODO: implement generic arrays
-            throw new IllegalArgumentException("array types not yet supported");
-        } else
-            throw new IllegalArgumentException("unsupported type: " + type.getClass());
+            GenericArrayType arrayType = (GenericArrayType) type;
+            return Type.arrayOf(resolve(typeVariableMap, arrayType.getGenericComponentType()));
+        } else {
+            throw new IllegalArgumentException("unsupported type: " + type);
+        }
     }
 }
