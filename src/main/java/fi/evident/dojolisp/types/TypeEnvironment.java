@@ -4,8 +4,6 @@ import fi.evident.dojolisp.eval.TypeCheckException;
 
 import java.util.List;
 
-import static fi.evident.dojolisp.types.Type.ANY;
-
 public class TypeEnvironment {
     
     public void assign(Type left, Type right) {
@@ -19,8 +17,6 @@ public class TypeEnvironment {
             return unifyVariable((TypeVariable) left, right);
         else if (right instanceof TypeVariable)
             return unifyVariable((TypeVariable) right, left);
-        else if (left == ANY || right == ANY)
-            return ANY;
         else if (left.equals(right))
             return left;
         else

@@ -6,7 +6,7 @@ public abstract class Type {
     
     Type() { }
     
-    public static final Type ANY = BasicType.createOrGet("Any");
+    public static final Type OBJECT = BasicType.createOrGet("Object");
     public static final Type UNIT = BasicType.createOrGet("Unit");
     public static final Type INTEGER = BasicType.createOrGet("Integer");
     public static final Type BOOLEAN = BasicType.createOrGet("Boolean");
@@ -14,7 +14,7 @@ public abstract class Type {
 
     public static Type fromClass(Class<?> type) {
         return (type == Void.class)                             ? UNIT
-             : (type == Object.class)                           ? ANY
+             : (type == Object.class)                           ? OBJECT
              : (type == Boolean.class || type == boolean.class) ? BOOLEAN
              : (type == Integer.class || type == int.class)     ? INTEGER
              : (type == String.class)                           ? STRING
