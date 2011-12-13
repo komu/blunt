@@ -17,7 +17,7 @@ public final class Instructions {
     }
     
     public void label(Label label) {
-        instructions.add(requireNonNull(label));
+        label.setAddress(instructions.size());
     }
 
     @SuppressWarnings("unused")
@@ -95,13 +95,5 @@ public final class Instructions {
     
     public OpCode get(int pc) {
         return instructions.get(pc);
-    }
-
-    public int labelOffSet(Label label) {
-        for (int i = 0; i < instructions.size(); i++)
-            if (label.equals(instructions.get(i)))
-                return i;
-
-        throw new RuntimeException("unknown label: " + label);
     }
 }

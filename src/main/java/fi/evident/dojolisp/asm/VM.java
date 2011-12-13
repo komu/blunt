@@ -41,13 +41,9 @@ public final class VM {
     }
     
     public void jump(Label label) {
-        set(Register.PC, instructions.labelOffSet(label));
+        set(Register.PC, label.getAddress());
     }
     
-    int labelOffSet(Label label) {
-        return instructions.labelOffSet(label);
-    }
-
     public void push(Object object) {
         stack.add(object);
     }

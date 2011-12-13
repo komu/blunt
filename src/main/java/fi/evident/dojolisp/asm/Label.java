@@ -2,33 +2,28 @@ package fi.evident.dojolisp.asm;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
-public final class Label extends OpCode {
+public final class Label {
     
     private final String name;
+    private int address = -1;
     
     Label(String name) {
         this.name = requireNonNull(name);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
+    void setAddress(int address) {
+        if (address < 0) throw new IllegalArgumentException("negative address");
         
-        if (obj instanceof Label) {
-            Label rhs = (Label) obj;
-            return name.equals(rhs.name);
-        }
-
-        return false;
+        if (this.address != -1)
+            throw new IllegalStateException("address already set");
+        
+        this.address = address;
     }
+    
+    int getAddress() {
+        if (address == -1) throw new IllegalStateException("address not initialized");
 
-    @Override
-    public void execute(VM vm) {
-    }
-
-    @Override
-    public int hashCode() {
-        return name.hashCode();
+        return address;
     }
 
     @Override

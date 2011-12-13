@@ -110,8 +110,7 @@ public abstract class OpCode {
         @Override
         public void execute(VM vm) {
             Environment environment = (Environment) vm.get(Register.ENV);
-            int address = vm.labelOffSet(label);
-            CompoundProcedure procedure = new CompoundProcedure(address, environment);
+            CompoundProcedure procedure = new CompoundProcedure(label.getAddress(), environment);
             vm.set(target, procedure);
         }
 
@@ -176,8 +175,7 @@ public abstract class OpCode {
 
         @Override
         public void execute(VM vm) {
-            int offset = vm.labelOffSet(label);
-            vm.push(offset);
+            vm.push(label.getAddress());
         }
 
         @Override
