@@ -51,6 +51,16 @@ public class EvaluatorTest {
     }
 
     @Test
+    public void nestedCalls() {
+        assertThatEvaluating("(+ (* 2 3) (* (+ 5 6) (* 7 8)))", produces(622));
+    }
+
+    @Test
+    public void polymorphicTypeWithDifferentInstantiations() {
+        assertThatEvaluating("(= true (= 1 1))", produces(true));
+    }
+
+    @Test
     public void equalityBetweenDifferentTypes() {
         assertStaticError("(= 2 \"foo\")");
     }

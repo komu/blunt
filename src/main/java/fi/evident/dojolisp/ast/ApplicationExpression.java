@@ -39,14 +39,20 @@ public final class ApplicationExpression extends Expression {
 
     @Override
     public void assemble(Instructions instructions, Register target, Linkage linkage) {
-        // TODO: preserve registers
+        // TODO: preserve registers only if needed
+
         func.assemble(instructions, Register.PROCEDURE, Linkage.NEXT);
+        instructions.pushRegister(Register.PROCEDURE);
 
         instructions.loadNewArray(Register.ARGV, args.size());
         for (int i = 0; i < args.size(); i++) {
+            instructions.pushRegister(Register.ARGV);
             args.get(i).assemble(instructions, Register.VAL, Linkage.NEXT);
+            instructions.popRegister(Register.ARGV);
             instructions.arrayStore(Register.ARGV, i, Register.VAL);
         }
+
+        instructions.popRegister(Register.PROCEDURE);
 
         // TODO: tail calls
 
