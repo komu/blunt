@@ -5,9 +5,8 @@ import fi.evident.dojolisp.asm.Label;
 import fi.evident.dojolisp.asm.Linkage;
 import fi.evident.dojolisp.asm.Register;
 import fi.evident.dojolisp.eval.Binding;
-import fi.evident.dojolisp.types.FunctionType;
-import fi.evident.dojolisp.types.Type;
-import fi.evident.dojolisp.types.TypeEnvironment;
+import fi.evident.dojolisp.objects.Symbol;
+import fi.evident.dojolisp.types.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,20 +15,28 @@ import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
 public final class LambdaExpression extends Expression {
 
-    private final List<Type> arguments;
+    private final List<Symbol> argumentNames;
     private final Expression body;
 
     public LambdaExpression(Binding[] bindings, Expression body) {
-        arguments = new ArrayList<Type>(bindings.length);
+        argumentNames = new ArrayList<Symbol>(bindings.length);
         for (Binding binding : bindings)
-            arguments.add(binding.type);
+            argumentNames.add(binding.name);
         this.body = requireNonNull(body);
     }
 
     @Override
     public Type typeCheck(TypeEnvironment env) {
-        TypeEnvironment bodyEnv = env.extend(arguments);
-        return new FunctionType(arguments, body.typeCheck(bodyEnv), false);
+        TypeEnvironment bodyEnv = new TypeEnvironment(env);
+
+        List<Type> argumentTypes = new ArrayList<Type>(argumentNames.size());
+        for (Symbol symbol : argumentNames) {
+            TypeVariable var = TypeVariable.newVar(Kind.STAR);
+            env.bind(symbol, new TypeScheme(var));
+            argumentTypes.add(var);
+        }
+
+        return new FunctionType(argumentTypes, body.typeCheck(bodyEnv), false);
     }
 
     @Override

@@ -2,8 +2,10 @@ package fi.evident.dojolisp.types;
 
 import fi.evident.dojolisp.eval.TypeCheckException;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
@@ -90,5 +92,40 @@ public final class FunctionType extends Type {
         
         for (Type arg : rest)
             env.assign(varArgType, arg);
+    }
+
+    @Override
+    protected Kind getKind() {
+        return Kind.STAR; // TODO
+    }
+
+    @Override
+    protected Type apply(Substitution substitution) {
+        List<Type> newArgumentTypes = new ArrayList<Type>(argumentTypes.size());
+        for (Type argumentType : argumentTypes)
+            newArgumentTypes.add(argumentType.apply(substitution));
+        
+        Type newReturnType = returnType.apply(substitution);
+        
+        return new FunctionType(newArgumentTypes, newReturnType, varArgs);
+    }
+
+    @Override
+    public Type instantiate(List<TypeVariable> vars) {
+        List<Type> newArgumentTypes = new ArrayList<Type>(argumentTypes.size());
+        for (Type argumentType : argumentTypes)
+            newArgumentTypes.add(argumentType.instantiate(vars));
+
+        Type newReturnType = returnType.instantiate(vars);
+
+        return new FunctionType(newArgumentTypes, newReturnType, varArgs);
+    }
+
+    @Override
+    protected void addTypeVariables(Set<TypeVariable> result) {
+        for (Type arg : argumentTypes)
+            arg.addTypeVariables(result);
+
+        returnType.addTypeVariables(result);
     }
 }

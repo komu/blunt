@@ -10,7 +10,7 @@ import fi.evident.dojolisp.stdlib.BasicFunctions;
 import fi.evident.dojolisp.stdlib.LibraryFunction;
 import fi.evident.dojolisp.types.NativeTypeConversions;
 import fi.evident.dojolisp.types.Type;
-import fi.evident.dojolisp.types.TypeEnvironment;
+import fi.evident.dojolisp.types.TypeScheme;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -36,7 +36,7 @@ public final class Evaluator {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null && Modifier.isStatic(m.getModifiers())) {
                 String name = func.value();
-                Type type = NativeTypeConversions.createFunctionType(m);
+                TypeScheme type = NativeTypeConversions.createFunctionType(m);
                 bindings.bind(name, type, new PrimitiveFunction(name, m));
             }
         }
@@ -44,7 +44,7 @@ public final class Evaluator {
 
     public Expression analyze(Object form) {
         Expression exp = analyzer.analyze(form, environments.staticEnvironment);
-        exp.typeCheck(new TypeEnvironment());
+        exp.typeCheck(environments.typeEnvironment);
         return exp;
     }
 
@@ -54,7 +54,7 @@ public final class Evaluator {
     
     public ResultWithType evaluateWithType(Object form) {
         Expression expression = analyzer.analyze(form, environments.staticEnvironment);
-        Type type = expression.typeCheck(new TypeEnvironment());
+        Type type = expression.typeCheck(environments.typeEnvironment);
 
         Instructions instructions = new Instructions();
         expression.assemble(instructions, Register.VAL, Linkage.NEXT);

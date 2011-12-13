@@ -11,13 +11,13 @@ import static java.util.Arrays.asList;
 
 public class NativeTypeConversions {
 
-    public static Type createFunctionType(Method m) {
+    public static TypeScheme createFunctionType(Method m) {
         Map<java.lang.reflect.TypeVariable<?>,TypeVariable> typeVariableMap = new HashMap<java.lang.reflect.TypeVariable<?>, TypeVariable>();
 
         List<Type> argumentTypes = resolveArguments(m, typeVariableMap);
         Type returnType = resolve(typeVariableMap, m.getGenericReturnType());
 
-        return new FunctionType(argumentTypes, returnType, m.isVarArgs());
+        return new FunctionType(argumentTypes, returnType, m.isVarArgs()).quantifyAll();
     }
 
     private static List<Type> resolveArguments(Method m, Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap) {
@@ -57,7 +57,7 @@ public class NativeTypeConversions {
             java.lang.reflect.TypeVariable<?> tv = (java.lang.reflect.TypeVariable<?>) type;
             TypeVariable var = typeVariableMap.get(tv);
             if (var == null) {
-                var = new TypeVariable();
+                var = new TypeVariable(tv.getName(), Kind.STAR); // TODO: kind
                 typeVariableMap.put(tv, var);
             }
             return var;

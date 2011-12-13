@@ -1,7 +1,7 @@
 package fi.evident.dojolisp.eval;
 
 import fi.evident.dojolisp.objects.Symbol;
-import fi.evident.dojolisp.types.Type;
+import fi.evident.dojolisp.types.TypeScheme;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,7 +33,7 @@ public final class StaticEnvironment {
             throw new UnboundVariableException(name);
     }
 
-    public VariableReference define(Symbol name, Type type) {
+    public VariableReference define(Symbol name, TypeScheme type) {
         if (variables.containsKey(name))
             throw new AnalyzationException("Variable " + name + " is already defined in this scope.");
 

@@ -50,6 +50,8 @@ public final class IfExpression extends Expression {
         Type consequentType = consequent.typeCheck(env);
         Type alternativeType = alternative.typeCheck(env);
 
-        return env.unify(consequentType, alternativeType);
+        env.unify(consequentType, alternativeType);
+
+        return consequentType;
     }
 }
