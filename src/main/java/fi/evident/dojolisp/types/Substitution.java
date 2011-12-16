@@ -17,14 +17,8 @@ public final class Substitution {
             mapping.put(var, new TypeGen(index++));
     }
     
-    private Substitution(Substitution parent) {
-        mapping.putAll(parent.mapping);
-    }
-
-    static Substitution join(Substitution s2, Substitution s1) {
-        if (s1 == null || s2 == null) return null;
-
-        return s2.apply(s1).union(s1);
+    Substitution join(Substitution s2) {
+        return s2.apply(this).union(this);
     }
 
     public Type lookup(TypeVariable variable) {
@@ -32,20 +26,18 @@ public final class Substitution {
     }
 
     public Substitution apply(Substitution subst) {
-        Substitution result = new Substitution(this);
+        Substitution result = new Substitution();
         
-        for (Map.Entry<TypeVariable,Type> entry : result.mapping.entrySet())
-            entry.setValue(entry.getValue().apply(subst));
+        for (Map.Entry<TypeVariable,Type> entry : mapping.entrySet())
+            result.mapping.put(entry.getKey(), entry.getValue().apply(subst));
 
         return result;
     }
 
     public Substitution union(Substitution subst) {
-        Substitution result = new Substitution(this);
-        
-        for (Map.Entry<TypeVariable,Type> entry : subst.mapping.entrySet())
-            result.mapping.put(entry.getKey(), entry.getValue());
-
+        Substitution result = new Substitution();
+        result.mapping.putAll(mapping);
+        result.mapping.putAll(subst.mapping);
         return result;
     }
 

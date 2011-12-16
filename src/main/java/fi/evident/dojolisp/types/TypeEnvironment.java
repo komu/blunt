@@ -32,12 +32,8 @@ public final class TypeEnvironment {
 
         Type lhs = left.apply(subst);
         Type rhs = right.apply(subst);
-        
-        Substitution s = mostGeneralUnifier(lhs, rhs);
-        if (s != null)
-            extendSubstitution(s);
-        else
-            throw new TypeCheckException("type unification failed: " + left + " - " + right);
+
+        extendSubstitution(mostGeneralUnifier(lhs, rhs));
     }
 
     private void extendSubstitution(Substitution newSubstitution) {
@@ -49,25 +45,21 @@ public final class TypeEnvironment {
             return varBind((TypeVariable) lhs, rhs);
         else if (rhs instanceof TypeVariable)
             return varBind((TypeVariable) rhs, lhs);
-
-        if (lhs.equals(rhs))
+        else if (lhs.equals(rhs))
             return Substitution.empty();
-
-        if (lhs instanceof TypeApplication && rhs instanceof TypeApplication)
+        else if (lhs instanceof TypeApplication && rhs instanceof TypeApplication)
             return unifyApplication((TypeApplication) lhs, (TypeApplication) rhs);
-
-        if (lhs instanceof TypeConstructor && rhs instanceof TypeConstructor && lhs.equals(rhs))
+        else if (lhs instanceof TypeConstructor && rhs instanceof TypeConstructor && lhs.equals(rhs))
             return Substitution.empty();
-
-        return null;
+        else
+            throw new TypeCheckException("type unification failed: " + lhs + " - " + rhs);
     }
 
     private Substitution unifyApplication(TypeApplication lhs, TypeApplication rhs) {
         Substitution s1 = mostGeneralUnifier(lhs.left, rhs.left);
-        if (s1 == null) return null;
         Substitution s2 = mostGeneralUnifier(lhs.right.apply(s1), rhs.right.apply(s1));
 
-        return Substitution.join(s2, s1);
+        return s2.join(s1);
     }
 
     private Substitution varBind(TypeVariable u, Type t) {
@@ -75,12 +67,12 @@ public final class TypeEnvironment {
             return Substitution.empty();
         
         if (t.getTypeVariables().contains(u))
-            return null;
+            throw new TypeCheckException("type unification failed: " + u + " - " + t);
         
         if (u.getKind().equals(t.getKind()))
             return Substitution.singleton(u, t);
 
-        return null;
+        throw new TypeCheckException("type unification failed: " + u + " - " + t);
     }
 
     public Substitution getSubstitution() {
