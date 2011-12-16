@@ -11,15 +11,15 @@ public abstract class Kind {
         }
     };
     
-    public static Kind function(Kind left, Kind right) {
-        return new KindFunction(left, right);
+    public static Kind arrow(Kind left, Kind right) {
+        return new ArrowKind(left, right);
     }
 
-    private static final class KindFunction extends Kind {
+    private static final class ArrowKind extends Kind {
         private final Kind left;
         private final Kind right;
 
-        private KindFunction(Kind left, Kind right) {
+        private ArrowKind(Kind left, Kind right) {
             this.right = requireNonNull(right);
             this.left = requireNonNull(left);
         }
@@ -28,8 +28,8 @@ public abstract class Kind {
         public boolean equals(Object obj) {
             if (obj == this) return true;
 
-            if (obj instanceof KindFunction) {
-                KindFunction rhs = (KindFunction) obj;
+            if (obj instanceof ArrowKind) {
+                ArrowKind rhs = (ArrowKind) obj;
 
                 return left.equals(rhs.left)
                     && right.equals(rhs.right);
