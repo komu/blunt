@@ -3,6 +3,7 @@ package fi.evident.dojolisp.eval;
 import fi.evident.dojolisp.ast.Expression;
 import fi.evident.dojolisp.reader.LispReader;
 import org.hamcrest.Matcher;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static fi.evident.dojolisp.objects.Symbol.symbol;
@@ -66,6 +67,7 @@ public class EvaluatorTest {
     }
 
     @Test
+    @Ignore
     public void varargsInvocation() {
         assertThatEvaluating("(+)", produces(0));
         assertThatEvaluating("(+ 2)", produces(2));

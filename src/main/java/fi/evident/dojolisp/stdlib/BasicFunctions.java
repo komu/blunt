@@ -6,28 +6,18 @@ import fi.evident.dojolisp.utils.Objects;
 public class BasicFunctions {
     
     @LibraryFunction("+")
-    public static int plus(int... xs) {
-        int sum = 0;
-                 
-        for (int x : xs)
-            sum += x;
-        
-        return sum;
+    public static int plus(int x, int y) {
+        return x + y;
     }
     
     @LibraryFunction("-")
-    public static int minus(int x, int... ys) {
-        return ys.length == 0 ? -x : (x - plus(ys));
+    public static int minus(int x, int y) {
+        return x - y;
     }
 
     @LibraryFunction("*")
-    public static int multiply(int... xs) {
-        int product = 1;
-
-        for (int x : xs)
-            product *= x;
-
-        return product;
+    public static int multiply(int x, int y) {
+        return x * y;
     }
 
     @LibraryFunction("<")
@@ -51,11 +41,7 @@ public class BasicFunctions {
     }
 
     @LibraryFunction("=")
-    public static <T> boolean equal(T x, T... ys) {
-        for (T y : ys)
-            if (!Objects.equal(x, y))
-                return false;
-
-        return true;
+    public static <T> boolean equal(T x, T y) {
+        return Objects.equal(x, y);
     }
 }

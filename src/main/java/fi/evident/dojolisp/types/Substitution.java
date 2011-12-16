@@ -21,6 +21,12 @@ public final class Substitution {
         mapping.putAll(parent.mapping);
     }
 
+    static Substitution join(Substitution s2, Substitution s1) {
+        if (s1 == null || s2 == null) return null;
+
+        return s2.apply(s1).union(s1);
+    }
+
     public Type lookup(TypeVariable variable) {
         return mapping.get(variable);
     }

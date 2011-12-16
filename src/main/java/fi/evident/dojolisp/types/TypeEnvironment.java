@@ -4,7 +4,6 @@ import fi.evident.dojolisp.eval.TypeCheckException;
 import fi.evident.dojolisp.objects.Symbol;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public final class TypeEnvironment {
@@ -33,7 +32,7 @@ public final class TypeEnvironment {
         Type lhs = left.apply(subst);
         Type rhs = right.apply(subst);
         
-        Substitution s = mgu(lhs, rhs);
+        Substitution s = mostGeneralUnifier(lhs, rhs);
         if (s != null)
             extendSubstitution(s);
         else
@@ -44,7 +43,7 @@ public final class TypeEnvironment {
         setSubstitution(getSubstitution().apply(newSubstitution).union(newSubstitution));
     }
 
-    private Substitution mgu(Type lhs, Type rhs) {
+    private Substitution mostGeneralUnifier(Type lhs, Type rhs) {
         if (lhs instanceof TypeVariable)
             return varBind((TypeVariable) lhs, rhs);
         else if (rhs instanceof TypeVariable)
@@ -53,19 +52,23 @@ public final class TypeEnvironment {
         if (lhs.equals(rhs))
             return Substitution.empty();
 
-        /*
-> mgu :: Type -> Type -> Maybe Subst
-> mgu (TAp l r)  (TAp l' r')          = do s1 <- mgu l l'
->                                          s2 <- mgu (apply s1 r) (apply s1 r')
->                                          Just (s2 @@ s1)
-> mgu (TCon c1)  (TCon c2) | c1 == c2 = Just nullSubst
-> mgu _         _                     = Nothing
+        if (lhs instanceof TypeApplication && rhs instanceof TypeApplication)
+            return unifyApplication((TypeApplication) lhs, (TypeApplication) rhs);
 
-         */
-        // TODO
+        if (lhs instanceof TypeConstructor && rhs instanceof TypeConstructor && lhs.equals(rhs))
+            return Substitution.empty();
+
         return null;
     }
-    
+
+    private Substitution unifyApplication(TypeApplication lhs, TypeApplication rhs) {
+        Substitution s1 = mostGeneralUnifier(lhs.left, rhs.left);
+        if (s1 == null) return null;
+        Substitution s2 = mostGeneralUnifier(lhs.right.apply(s1), rhs.right.apply(s1));
+
+        return Substitution.join(s2, s1);
+    }
+
     private Substitution varBind(TypeVariable u, Type t) {
         if (t.equals(u)) 
             return Substitution.empty();
@@ -89,11 +92,7 @@ public final class TypeEnvironment {
         else
             this.substitution = substitution;
     }
-
-    public Type call(Type func, List<Type> argTypes) {
-        return func.asFunctionType().typeCheckCall(this, argTypes);
-    }
-
+    
     public void bind(Symbol symbol, TypeScheme typeScheme) {
         bindings.put(symbol, typeScheme);
     }

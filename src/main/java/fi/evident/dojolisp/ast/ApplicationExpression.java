@@ -3,8 +3,10 @@ package fi.evident.dojolisp.ast;
 import fi.evident.dojolisp.asm.Instructions;
 import fi.evident.dojolisp.asm.Linkage;
 import fi.evident.dojolisp.asm.Register;
+import fi.evident.dojolisp.types.Kind;
 import fi.evident.dojolisp.types.Type;
 import fi.evident.dojolisp.types.TypeEnvironment;
+import fi.evident.dojolisp.types.TypeVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,26 @@ public final class ApplicationExpression extends Expression {
     public Type typeCheck(TypeEnvironment env) {
         List<Type> argTypes = typeCheckArgs(env);
 
-        return env.call(func.typeCheck(env), argTypes);
+        Type returnType = TypeVariable.newVar(Kind.STAR);
+
+        Type ty = Type.makeFunctionType(argTypes, returnType, false);
+        
+        env.unify(func.typeCheck(env), ty);
+        return returnType;
+        
+        
+        /*
+        > tiExp ass (Apply f a)        = do tyF <- tiExp ass f
+        >                                   tyA <- tiExp ass a
+        >                                   ty <- newTVar Star
+        >                                   unify (tyA `fn` ty) tyF
+        >                                   return ty
+        */
+        
+        //return func.asFunctionType().typeCheckCall(this, argTypes);
+
+        
+        //return env.call(func.typeCheck(env), argTypes);
     }
     
     private List<Type> typeCheckArgs(TypeEnvironment env) {

@@ -17,7 +17,7 @@ public class NativeTypeConversions {
         List<Type> argumentTypes = resolveArguments(m, typeVariableMap);
         Type returnType = resolve(typeVariableMap, m.getGenericReturnType());
 
-        return new FunctionType(argumentTypes, returnType, m.isVarArgs()).quantifyAll();
+        return Type.makeFunctionType(argumentTypes, returnType, m.isVarArgs()).quantifyAll();
     }
 
     private static List<Type> resolveArguments(Method m, Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap) {
