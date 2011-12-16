@@ -2,6 +2,8 @@ package fi.evident.dojolisp.types;
 
 import java.util.*;
 
+import static java.util.Arrays.asList;
+
 public abstract class Type {
 
     Type() { }
@@ -34,17 +36,21 @@ public abstract class Type {
     }
 
     public static Type makeFunctionType(List<Type> argumentTypes, Type returnType) {
-        List<Type> params = new ArrayList<Type>(argumentTypes.size() + 1);
-        params.addAll(argumentTypes);
-        params.add(returnType);
-        
-        return genericType("->", params);
+        return genericType("->", tupleType(argumentTypes), returnType);
+    }
+    
+    public static Type tupleType(List<Type> types) {
+        return genericType(",", types);
     }
     
     public static Type genericType(Class<?> cl, List<Type> params) {
         return genericType(mapName(cl), params);
     }
 
+    public static Type genericType(String name, Type... params) {
+        return genericType(name, asList(params));
+    }
+    
     public static Type genericType(String name, List<Type> params) {
         Type type = new TypeConstructor(name, Kind.ofParams(params.size()));
 
