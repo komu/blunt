@@ -1,6 +1,5 @@
 package fi.evident.dojolisp.objects;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -23,11 +22,9 @@ public final class PrimitiveFunction implements Function {
     public Object apply(Object[] args) {
         try {
             if (isStatic) {
-                return method.invoke(null, prepareArgs(args));
+                return method.invoke(null, args);
             } else {
-                Object receiver = args[0];
-                args = Arrays.copyOfRange(args, 1, args.length);
-                return method.invoke(receiver, prepareArgs(args));
+                return method.invoke(args[0], Arrays.copyOfRange(args, 1, args.length));
             }
 
         } catch (IllegalAccessException e) {
@@ -35,35 +32,6 @@ public final class PrimitiveFunction implements Function {
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private Object[] prepareArgs(Object[] args) {
-        return method.isVarArgs()
-            ? prepareVarArgs(args, method.getParameterTypes())
-            : args;
-    }
-
-    private static Object[] prepareVarArgs(Object[] args, Class<?>[] types) {
-        Object[] realArgs = Arrays.copyOf(args, types.length);
-        realArgs[realArgs.length-1] = createVarArgArray(args, types);
-        return realArgs;
-    }
-
-    private static Object createVarArgArray(Object[] args, Class<?>[] types) {
-        int offset = types.length-1;
-        Class<?> varArgType = types[offset].getComponentType();
-
-        int len = args.length - offset;
-        Object array = Array.newInstance(varArgType, len);
-        
-        if (varArgType.isPrimitive()) {
-            for (int i = 0; i < len; i++)
-                Array.set(array, i, Array.get(args, offset+i));
-        } else {
-            System.arraycopy(args, offset, array, 0, len);
-        }
-
-        return array;
     }
 
     @Override
