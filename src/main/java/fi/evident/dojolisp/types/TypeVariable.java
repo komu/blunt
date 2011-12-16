@@ -36,7 +36,7 @@ public final class TypeVariable extends Type {
     }
 
     @Override
-    public Type instantiate(List<TypeVariable> vars) {
+    protected Type instantiate(List<TypeVariable> vars) {
         return this;
     }
 

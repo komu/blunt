@@ -23,7 +23,7 @@ public final class TypeApplication extends Type {
     }
 
     @Override
-    public Type instantiate(List<TypeVariable> vars) {
+    protected Type instantiate(List<TypeVariable> vars) {
         return new TypeApplication(left.instantiate(vars), right.instantiate(vars));
     }
 

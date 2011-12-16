@@ -21,7 +21,7 @@ public final class TypeConstructor extends Type {
     }
 
     @Override
-    public Type instantiate(List<TypeVariable> vars) {
+    protected Type instantiate(List<TypeVariable> vars) {
         return this;
     }
 

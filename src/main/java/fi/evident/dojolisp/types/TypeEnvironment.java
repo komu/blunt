@@ -1,5 +1,6 @@
 package fi.evident.dojolisp.types;
 
+import fi.evident.dojolisp.ast.Expression;
 import fi.evident.dojolisp.eval.TypeCheckException;
 import fi.evident.dojolisp.objects.Symbol;
 
@@ -82,7 +83,7 @@ public final class TypeEnvironment {
         return null;
     }
 
-    private Substitution getSubstitution() {
+    public Substitution getSubstitution() {
         return parent != null ? parent.getSubstitution() : substitution;
     }
 
@@ -110,5 +111,10 @@ public final class TypeEnvironment {
 
     public TypeVariable newVar(Kind kind) {
         return TypeVariable.newVar(kind);
+    }
+
+    public Type typeCheck(Expression expression) {
+        Type type = expression.typeCheck(this);
+        return type.apply(getSubstitution());
     }
 }

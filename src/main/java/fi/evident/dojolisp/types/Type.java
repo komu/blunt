@@ -58,7 +58,7 @@ public abstract class Type {
     }
 
     protected abstract Type apply(Substitution substitution);
-    public abstract Type instantiate(List<TypeVariable> vars);
+    protected abstract Type instantiate(List<TypeVariable> vars);
     protected abstract void addTypeVariables(Set<TypeVariable> result);
     
     protected abstract Kind getKind();

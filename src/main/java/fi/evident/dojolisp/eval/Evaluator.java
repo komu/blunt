@@ -44,7 +44,7 @@ public final class Evaluator {
 
     public Expression analyze(Object form) {
         Expression exp = analyzer.analyze(form, environments.staticEnvironment);
-        exp.typeCheck(environments.typeEnvironment);
+        environments.typeEnvironment.typeCheck(exp);
         return exp;
     }
 
@@ -54,7 +54,7 @@ public final class Evaluator {
     
     public ResultWithType evaluateWithType(Object form) {
         Expression expression = analyzer.analyze(form, environments.staticEnvironment);
-        Type type = expression.typeCheck(environments.typeEnvironment);
+        Type type = environments.typeEnvironment.typeCheck(expression);
 
         Instructions instructions = new Instructions();
         expression.assemble(instructions, Register.VAL, Linkage.NEXT);

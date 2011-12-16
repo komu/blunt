@@ -17,7 +17,7 @@ public final class TypeGen extends Type {
     }
 
     @Override
-    public Type instantiate(List<TypeVariable> vars) {
+    protected Type instantiate(List<TypeVariable> vars) {
         return vars.get(index);
     }
 
