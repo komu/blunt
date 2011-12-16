@@ -1,20 +1,16 @@
 package fi.evident.dojolisp.types;
 
-import fi.evident.dojolisp.eval.AnalyzationException;
-
 import java.util.*;
 
 public abstract class Type {
 
-    private static final Map<String, Type> basicTypes = new HashMap<String, Type>();
-
     Type() { }
     
-    public static final Type OBJECT = createOrGetBasic("Object");
-    public static final Type UNIT = createOrGetBasic("Unit");
-    public static final Type INTEGER = createOrGetBasic("Integer");
-    public static final Type BOOLEAN = createOrGetBasic("Boolean");
-    public static final Type STRING = createOrGetBasic("String");
+    public static final Type OBJECT = basicType("Object");
+    public static final Type UNIT = basicType("Unit");
+    public static final Type INTEGER = basicType("Integer");
+    public static final Type BOOLEAN = basicType("Boolean");
+    public static final Type STRING = basicType("String");
 
     public static Type fromClass(Class<?> type) {
         return (type == Void.class)                             ? UNIT
@@ -22,28 +18,19 @@ public abstract class Type {
              : (type == Boolean.class || type == boolean.class) ? BOOLEAN
              : (type == Integer.class || type == int.class)     ? INTEGER
              : (type == String.class)                           ? STRING
-             : createOrGetBasic(type.getName());
+             : basicType(type.getName());
     }
 
-    private static Type createOrGetBasic(String name) {
-        Type type = basicTypes.get(name);
-        if (type == null) {
-            type = new TypeConstructor(name, Kind.STAR);
-            basicTypes.put(name, type);
-        }
-        return type;
+    private static Type basicType(String name) {
+        return new TypeConstructor(name, Kind.STAR);
     }
 
     public static Type arrayOf(Type type) {
-        throw new UnsupportedOperationException("arrays are not yet supported");
+        return new TypeApplication(new TypeConstructor("[]", Kind.ofParams(1)), type);
     }
     
     public static TypeScheme forName(String name) {
-        Type type = basicTypes.get(name);
-        if (type != null)
-            return new TypeScheme(type);
-        else
-            throw new AnalyzationException("unknown type: '" + name + "'");
+        return new TypeScheme(basicType(name));
     }
 
     public static Type makeFunctionType(List<Type> argumentTypes, Type returnType) {
