@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.asList;
 
 public class NativeTypeConversions {
@@ -15,7 +16,12 @@ public class NativeTypeConversions {
     public static TypeScheme createFunctionType(Method m) {
         Map<java.lang.reflect.TypeVariable<?>,TypeVariable> typeVariableMap = new HashMap<java.lang.reflect.TypeVariable<?>, TypeVariable>();
 
-        List<Type> argumentTypes = resolveArguments(m, typeVariableMap);
+        List<Type> argumentTypes = new ArrayList<Type>();
+
+        if (!isStatic(m.getModifiers()))
+            argumentTypes.add(resolve(typeVariableMap, m.getDeclaringClass()));
+
+        argumentTypes.addAll(resolveArguments(m, typeVariableMap));
         Type returnType = resolve(typeVariableMap, m.getGenericReturnType());
 
         if (m.isVarArgs())
@@ -55,8 +61,12 @@ public class NativeTypeConversions {
             Class<?> cl = (Class<?>) type;
             if (cl.isArray())
                 return Type.arrayOf(resolve(typeVariableMap, cl.getComponentType()));
-            else
-                return Type.fromClass(cl);
+            else {
+                List<Type> params = resolveAll(typeVariableMap, asList(cl.getTypeParameters()));
+
+                return Type.genericType(cl.getSimpleName(), params);
+            }
+
         } else if (type instanceof java.lang.reflect.TypeVariable<?>) {
             java.lang.reflect.TypeVariable<?> tv = (java.lang.reflect.TypeVariable<?>) type;
             TypeVariable var = typeVariableMap.get(tv);
@@ -80,7 +90,7 @@ public class NativeTypeConversions {
         }
     }
     
-    private static List<Type> resolveAll(Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap, List<java.lang.reflect.Type> types) {
+    private static List<Type> resolveAll(Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap, List<? extends java.lang.reflect.Type> types) {
         List<Type> result = new ArrayList<Type>(types.size());
         
         for (java.lang.reflect.Type type : types)

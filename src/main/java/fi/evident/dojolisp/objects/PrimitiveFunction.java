@@ -11,22 +11,24 @@ public final class PrimitiveFunction implements Function {
 
     private final Method method;
     private final String name;
-    private final Object receiver;
+    private final boolean isStatic;
 
-    public PrimitiveFunction(String name, Method method) {
-        this(name, method, null);
-    }
-
-    public PrimitiveFunction(String name, Method method, Object receiver) {
+    public PrimitiveFunction(String name, Method method, boolean isStatic) {
         this.name = requireNonNull(name);
         this.method = requireNonNull(method);
-        this.receiver = receiver;
+        this.isStatic = isStatic;
     }
     
     @Override
     public Object apply(Object[] args) {
         try {
-            return method.invoke(receiver, prepareArgs(args));
+            if (isStatic) {
+                return method.invoke(null, prepareArgs(args));
+            } else {
+                Object receiver = args[0];
+                args = Arrays.copyOfRange(args, 1, args.length);
+                return method.invoke(receiver, prepareArgs(args));
+            }
 
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);

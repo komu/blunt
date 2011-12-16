@@ -14,7 +14,8 @@ import fi.evident.dojolisp.types.Type;
 import fi.evident.dojolisp.types.TypeScheme;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+
+import static java.lang.reflect.Modifier.isStatic;
 
 public final class Evaluator {
 
@@ -34,12 +35,14 @@ public final class Evaluator {
     }
     
     private static void register(Class<?> cl, StaticBindings bindings) {
-        for (Method m : cl.getMethods()) {
+        for (Method m : cl.getDeclaredMethods()) {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
-            if (func != null && Modifier.isStatic(m.getModifiers())) {
+            if (func != null) {
                 String name = func.value();
                 TypeScheme type = NativeTypeConversions.createFunctionType(m);
-                bindings.bind(name, type, new PrimitiveFunction(name, m));
+
+                boolean isStatic = isStatic(m.getModifiers());
+                bindings.bind(name, type, new PrimitiveFunction(name, m, isStatic));
             }
         }
     }

@@ -13,39 +13,46 @@ public abstract class ConsList<T> {
         }
 
         @Override
-        protected T getHead() {
+        public T getHead() {
             return head;
         }
 
         @Override
-        protected ConsList<T> getTail() {
+        public ConsList<T> getTail() {
             return tail;
         }
     }
     
     private static final class Nil<T> extends ConsList<T> {
         @Override
-        protected T getHead() {
+        public T getHead() {
             throw new UnsupportedOperationException("head of nil");
         }
 
         @Override
-        protected ConsList<T> getTail() {
+        public ConsList<T> getTail() {
             throw new UnsupportedOperationException("tail of nil");
         }
     }
-    
-    protected abstract T getHead();
-    protected abstract ConsList<T> getTail();
+
+    @LibraryFunction("head")
+    public abstract T getHead();
+
+    @LibraryFunction("tail")
+    public abstract ConsList<T> getTail();
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        
+
+        sb.append("[");
+
         ConsList<T> item = this;
         while (item instanceof Cons<?>) {
             Cons<T> cons = (Cons<T>) item;
-            sb.append(sb.length() == 0 ? "[" : ", ");
+
+            if (sb.length() > 1)
+                sb.append(", ");
             
             sb.append(cons.head);
             item = cons.tail;
@@ -63,15 +70,5 @@ public abstract class ConsList<T> {
     @LibraryFunction("cons")
     public static <T> ConsList<T> cons(T head, ConsList<T> tail) {
         return new Cons<T>(head, tail);
-    }
-    
-    @LibraryFunction("head")
-    public static <T> T head(ConsList<T> list) {
-        return list.getHead();
-    }
-
-    @LibraryFunction("tail")
-    public static <T> ConsList<T> tail(ConsList<T> list) {
-        return list.getTail();
     }
 }
