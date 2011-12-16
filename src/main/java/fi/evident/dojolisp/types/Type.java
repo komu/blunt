@@ -34,13 +34,19 @@ public abstract class Type {
     }
 
     public static Type makeFunctionType(List<Type> argumentTypes, Type returnType) {
-        Type type = new TypeConstructor("->", Kind.ofParams(argumentTypes.size() + 1));
+        List<Type> params = new ArrayList<Type>(argumentTypes.size() + 1);
+        params.addAll(argumentTypes);
+        params.add(returnType);
+        
+        return genericType("->", params);
+    }
+    
+    public static Type genericType(String name, List<Type> params) {
+        Type type = new TypeConstructor(name, Kind.ofParams(params.size()));
 
-        for (Type argumentType : argumentTypes)
-            type = new TypeApplication(type, argumentType);
-
-        type = new TypeApplication(type, returnType);
-
+        for (Type param : params)
+            type = new TypeApplication(type, param);
+        
         return type;
     }
 

@@ -2,6 +2,7 @@ package fi.evident.dojolisp.types;
 
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -67,8 +68,24 @@ public class NativeTypeConversions {
         } else if (type instanceof GenericArrayType) {
             GenericArrayType arrayType = (GenericArrayType) type;
             return Type.arrayOf(resolve(typeVariableMap, arrayType.getGenericComponentType()));
+        } else if (type instanceof ParameterizedType) {
+            ParameterizedType pt = (ParameterizedType) type;
+
+            Class<?> ownerType = (Class<?>) pt.getRawType();
+            List<Type> params = resolveAll(typeVariableMap, asList(pt.getActualTypeArguments()));
+            
+            return Type.genericType(ownerType.getSimpleName(), params);
         } else {
-            throw new IllegalArgumentException("unsupported type: " + type);
+            throw new IllegalArgumentException("unsupported type: " + type.getClass());
         }
+    }
+    
+    private static List<Type> resolveAll(Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap, List<java.lang.reflect.Type> types) {
+        List<Type> result = new ArrayList<Type>(types.size());
+        
+        for (java.lang.reflect.Type type : types)
+            result.add(resolve(typeVariableMap, type));
+        
+        return result;
     }
 }

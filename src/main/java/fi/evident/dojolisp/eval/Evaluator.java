@@ -7,6 +7,7 @@ import fi.evident.dojolisp.asm.VM;
 import fi.evident.dojolisp.ast.Expression;
 import fi.evident.dojolisp.objects.PrimitiveFunction;
 import fi.evident.dojolisp.stdlib.BasicFunctions;
+import fi.evident.dojolisp.stdlib.ConsList;
 import fi.evident.dojolisp.stdlib.LibraryFunction;
 import fi.evident.dojolisp.types.NativeTypeConversions;
 import fi.evident.dojolisp.types.Type;
@@ -27,6 +28,7 @@ public final class Evaluator {
         bindings.bind("false", Type.BOOLEAN, false);
 
         register(BasicFunctions.class, bindings);
+        register(ConsList.class, bindings);
 
         this.environments = bindings.createEnvironments();
     }
