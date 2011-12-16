@@ -29,24 +29,11 @@ public final class ApplicationExpression extends Expression {
 
         Type returnType = TypeVariable.newVar(Kind.STAR);
 
-        Type ty = Type.makeFunctionType(argTypes, returnType, false);
+        Type ty = Type.makeFunctionType(argTypes, returnType);
         
         env.unify(func.typeCheck(env), ty);
-        return returnType;
-        
-        
-        /*
-        > tiExp ass (Apply f a)        = do tyF <- tiExp ass f
-        >                                   tyA <- tiExp ass a
-        >                                   ty <- newTVar Star
-        >                                   unify (tyA `fn` ty) tyF
-        >                                   return ty
-        */
-        
-        //return func.asFunctionType().typeCheckCall(this, argTypes);
 
-        
-        //return env.call(func.typeCheck(env), argTypes);
+        return returnType;
     }
     
     private List<Type> typeCheckArgs(TypeEnvironment env) {

@@ -36,7 +36,7 @@ public final class LambdaExpression extends Expression {
             argumentTypes.add(var);
         }
 
-        return Type.makeFunctionType(argumentTypes, body.typeCheck(bodyEnv), false);
+        return Type.makeFunctionType(argumentTypes, body.typeCheck(bodyEnv));
     }
 
     @Override

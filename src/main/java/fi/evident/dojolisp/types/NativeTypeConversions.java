@@ -17,7 +17,10 @@ public class NativeTypeConversions {
         List<Type> argumentTypes = resolveArguments(m, typeVariableMap);
         Type returnType = resolve(typeVariableMap, m.getGenericReturnType());
 
-        return Type.makeFunctionType(argumentTypes, returnType, m.isVarArgs()).quantifyAll();
+        if (m.isVarArgs())
+            throw new UnsupportedOperationException("varargs are not supported by type-system.");
+
+        return Type.makeFunctionType(argumentTypes, returnType).quantifyAll();
     }
 
     private static List<Type> resolveArguments(Method m, Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap) {

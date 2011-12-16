@@ -46,9 +46,7 @@ public abstract class Type {
             throw new AnalyzationException("unknown type: '" + name + "'");
     }
 
-    public static Type makeFunctionType(List<Type> argumentTypes, Type returnType, boolean varArgs) {
-        if (varArgs) throw new UnsupportedOperationException("varargs");
-
+    public static Type makeFunctionType(List<Type> argumentTypes, Type returnType) {
         Type type = new TypeConstructor("->", Kind.ofParams(argumentTypes.size() + 1));
 
         for (Type argumentType : argumentTypes)
