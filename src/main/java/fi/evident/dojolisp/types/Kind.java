@@ -6,11 +6,18 @@ public abstract class Kind {
     
     public static final Kind STAR = new Kind() {
         @Override
-        public String toString() {
+        public String toString(boolean l) {
             return "*";
         }
     };
-    
+
+    @Override
+    public String toString() {
+        return toString(false);
+    }
+
+    protected abstract String toString(boolean l);
+
     public static Kind arrow(Kind left, Kind right) {
         return new ArrowKind(left, right);
     }
@@ -44,8 +51,12 @@ public abstract class Kind {
         }
 
         @Override
-        public String toString() {
-            return "(" + left + " -> " + right + ")";
+        public String toString(boolean l) {
+            if (l) {
+                return "(" + left.toString(true) + " -> " + right.toString(false) + ")";
+            } else {
+                return left.toString(true) + " -> " + right.toString(false);
+            }
         }
     }
 }
