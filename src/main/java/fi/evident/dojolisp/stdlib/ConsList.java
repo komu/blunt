@@ -43,8 +43,8 @@ public abstract class ConsList<T> {
         StringBuilder sb = new StringBuilder();
         
         ConsList<T> item = this;
-        while (item instanceof Cons) {
-            Cons cons = (Cons) item;
+        while (item instanceof Cons<?>) {
+            Cons<T> cons = (Cons<T>) item;
             sb.append(sb.length() == 0 ? "[" : ", ");
             
             sb.append(cons.head);
