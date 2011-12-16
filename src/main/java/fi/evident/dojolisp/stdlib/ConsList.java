@@ -21,6 +21,11 @@ public abstract class ConsList<T> {
         public ConsList<T> getTail() {
             return tail;
         }
+
+        @Override
+        public boolean isNil() {
+            return false;
+        }
     }
     
     private static final class Nil<T> extends ConsList<T> {
@@ -33,7 +38,15 @@ public abstract class ConsList<T> {
         public ConsList<T> getTail() {
             throw new UnsupportedOperationException("tail of nil");
         }
+
+        @Override
+        public boolean isNil() {
+            return true;
+        }
     }
+
+    @LibraryFunction("nil?")
+    public abstract boolean isNil();
 
     @LibraryFunction("head")
     public abstract T getHead();
