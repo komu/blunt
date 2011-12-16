@@ -6,20 +6,20 @@ public abstract class Type {
 
     Type() { }
     
-    public static final Type OBJECT = basicType("Object");
     public static final Type UNIT = basicType("Unit");
-    public static final Type INTEGER = basicType("Integer");
     public static final Type BOOLEAN = basicType("Boolean");
-    public static final Type STRING = basicType("String");
 
     public static Type fromClass(Class<?> type) {
-        return (type == Void.class)                             ? UNIT
-             : (type == Object.class)                           ? OBJECT
-             : (type == Boolean.class || type == boolean.class) ? BOOLEAN
-             : (type == Integer.class || type == int.class)     ? INTEGER
-             : (type == String.class)                           ? STRING
-             : basicType(type.getName());
+        return basicType(mapName(type));
     }
+    
+    private static String mapName(Class<?> type) {
+        return (type == Void.class)                             ? "Unit"
+             : (type == Boolean.class || type == boolean.class) ? "Boolean"
+             : (type == Integer.class || type == int.class)     ? "Integer"
+             : type.getSimpleName();
+    }
+   
 
     private static Type basicType(String name) {
         return new TypeConstructor(name, Kind.STAR);
@@ -41,12 +41,16 @@ public abstract class Type {
         return genericType("->", params);
     }
     
+    public static Type genericType(Class<?> cl, List<Type> params) {
+        return genericType(mapName(cl), params);
+    }
+
     public static Type genericType(String name, List<Type> params) {
         Type type = new TypeConstructor(name, Kind.ofParams(params.size()));
 
         for (Type param : params)
             type = new TypeApplication(type, param);
-        
+
         return type;
     }
 

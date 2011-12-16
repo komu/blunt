@@ -64,7 +64,7 @@ public class NativeTypeConversions {
             else {
                 List<Type> params = resolveAll(typeVariableMap, asList(cl.getTypeParameters()));
 
-                return Type.genericType(cl.getSimpleName(), params);
+                return Type.genericType(cl, params);
             }
 
         } else if (type instanceof java.lang.reflect.TypeVariable<?>) {
@@ -84,7 +84,7 @@ public class NativeTypeConversions {
             Class<?> ownerType = (Class<?>) pt.getRawType();
             List<Type> params = resolveAll(typeVariableMap, asList(pt.getActualTypeArguments()));
             
-            return Type.genericType(ownerType.getSimpleName(), params);
+            return Type.genericType(ownerType, params);
         } else {
             throw new IllegalArgumentException("unsupported type: " + type.getClass());
         }
