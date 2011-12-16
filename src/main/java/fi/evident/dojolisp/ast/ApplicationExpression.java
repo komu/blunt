@@ -6,7 +6,6 @@ import fi.evident.dojolisp.asm.Register;
 import fi.evident.dojolisp.types.Kind;
 import fi.evident.dojolisp.types.Type;
 import fi.evident.dojolisp.types.TypeEnvironment;
-import fi.evident.dojolisp.types.TypeVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +26,7 @@ public final class ApplicationExpression extends Expression {
     public Type typeCheck(TypeEnvironment env) {
         List<Type> argTypes = typeCheckArgs(env);
 
-        Type returnType = TypeVariable.newVar(Kind.STAR);
+        Type returnType = env.newVar(Kind.STAR);
 
         Type ty = Type.makeFunctionType(argTypes, returnType);
         

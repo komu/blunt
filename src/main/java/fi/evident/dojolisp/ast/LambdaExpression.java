@@ -31,7 +31,7 @@ public final class LambdaExpression extends Expression {
 
         List<Type> argumentTypes = new ArrayList<Type>(argumentNames.size());
         for (Symbol symbol : argumentNames) {
-            TypeVariable var = TypeVariable.newVar(Kind.STAR);
+            TypeVariable var = env.newVar(Kind.STAR);
             env.bind(symbol, new TypeScheme(var));
             argumentTypes.add(var);
         }

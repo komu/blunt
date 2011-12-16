@@ -19,7 +19,7 @@ public final class VariableExpression extends Expression {
 
     @Override
     public Type typeCheck(TypeEnvironment env) {
-        return env.lookup(var.name).freshInstance();
+        return env.lookup(var.name).freshInstance(env);
     }
 
     @Override

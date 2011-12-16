@@ -107,4 +107,8 @@ public final class TypeEnvironment {
         else
             throw new IllegalArgumentException("unknown binding: " + name);
     }
+
+    public TypeVariable newVar(Kind kind) {
+        return TypeVariable.newVar(kind);
+    }
 }

@@ -21,10 +21,11 @@ public final class TypeScheme {
         this(Collections.<Kind>emptyList(), type);
     }
     
-    public Type freshInstance() {
+    public Type freshInstance(TypeEnvironment env) {
         List<TypeVariable> vars = new ArrayList<TypeVariable>(kinds.size());
+
         for (Kind kind : kinds)
-            vars.add(TypeVariable.newVar(kind));
+            vars.add(env.newVar(kind));
 
         return type.instantiate(vars);
     }
