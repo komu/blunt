@@ -9,93 +9,84 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.reflect.Modifier.isStatic;
-import static java.util.Arrays.asList;
 
-public class NativeTypeConversions {
+public final class NativeTypeConversions {
+
+    private final Map<java.lang.reflect.TypeVariable<?>,TypeVariable> typeVariableMap = new HashMap<java.lang.reflect.TypeVariable<?>, TypeVariable>();
+
+    private NativeTypeConversions() { }
 
     public static TypeScheme createFunctionType(Method m) {
-        Map<java.lang.reflect.TypeVariable<?>,TypeVariable> typeVariableMap = new HashMap<java.lang.reflect.TypeVariable<?>, TypeVariable>();
-
-        List<Type> argumentTypes = new ArrayList<Type>();
-
-        if (!isStatic(m.getModifiers()))
-            argumentTypes.add(resolve(typeVariableMap, m.getDeclaringClass()));
-
-        argumentTypes.addAll(resolveArguments(m, typeVariableMap));
-        Type returnType = resolve(typeVariableMap, m.getGenericReturnType());
-
+        return new NativeTypeConversions().resolveFunctionType(m);
+    }
+    
+    private TypeScheme resolveFunctionType(Method m) {
         if (m.isVarArgs())
-            throw new UnsupportedOperationException("varargs are not supported by type-system.");
+            throw new IllegalArgumentException("varargs are not supported by type-system.");
+
+        List<Type> argumentTypes = resolveArgumentTypes(m);
+        Type returnType = resolve(m.getGenericReturnType());
 
         return Type.makeFunctionType(argumentTypes, returnType).quantifyAll();
     }
 
-    private static List<Type> resolveArguments(Method m, Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap) {
-        List<Type> result = new ArrayList<Type>(m.getGenericParameterTypes().length);
+    private List<Type> resolveArgumentTypes(Method m) {
+        List<Type> result = new ArrayList<Type>(m.getParameterTypes().length + 1);
 
-        List<java.lang.reflect.Type> argumentTypes = asList(m.getGenericParameterTypes());
-        if (m.isVarArgs()) {
-            for (java.lang.reflect.Type type : argumentTypes.subList(0, argumentTypes.size()-1))
-                result.add(resolve(typeVariableMap, type));
+        // If the method is not static, the receiver is considered as an argument
+        if (!isStatic(m.getModifiers()))
+            result.add(resolve(m.getDeclaringClass()));
 
-            int last = argumentTypes.size()-1;
-            result.add(resolve(typeVariableMap, componentType(argumentTypes.get(last))));
-        } else {
-            for (java.lang.reflect.Type type : argumentTypes)
-                result.add(resolve(typeVariableMap, type));
-        }
+        for (java.lang.reflect.Type type : m.getGenericParameterTypes())
+            result.add(resolve(type));
 
         return result;
     }
-    
-    private static java.lang.reflect.Type componentType(java.lang.reflect.Type type) {
-        if (type instanceof GenericArrayType) {
-            return ((GenericArrayType) type).getGenericComponentType();
-        } else {
-            return ((Class<?>) type).getComponentType();
-        }
-    }
 
-    private static Type resolve(Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap, java.lang.reflect.Type type) {
+    private Type resolve(java.lang.reflect.Type type) {
         if (type instanceof Class<?>) {
-            Class<?> cl = (Class<?>) type;
-            if (cl.isArray())
-                return Type.arrayOf(resolve(typeVariableMap, cl.getComponentType()));
-            else {
-                List<Type> params = resolveAll(typeVariableMap, asList(cl.getTypeParameters()));
-
-                return Type.genericType(cl, params);
-            }
+            return resolveClass((Class<?>) type);
 
         } else if (type instanceof java.lang.reflect.TypeVariable<?>) {
-            java.lang.reflect.TypeVariable<?> tv = (java.lang.reflect.TypeVariable<?>) type;
-            TypeVariable var = typeVariableMap.get(tv);
-            if (var == null) {
-                var = new TypeVariable(tv.getName(), Kind.STAR); // TODO: kind
-                typeVariableMap.put(tv, var);
-            }
-            return var;
+            return variableFor((java.lang.reflect.TypeVariable<?>) type);
+
         } else if (type instanceof GenericArrayType) {
-            GenericArrayType arrayType = (GenericArrayType) type;
-            return Type.arrayOf(resolve(typeVariableMap, arrayType.getGenericComponentType()));
+            return Type.arrayOf(resolve(((GenericArrayType) type).getGenericComponentType()));
+
         } else if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
 
             Class<?> ownerType = (Class<?>) pt.getRawType();
-            List<Type> params = resolveAll(typeVariableMap, asList(pt.getActualTypeArguments()));
+            List<Type> params = resolveAll(pt.getActualTypeArguments());
             
             return Type.genericType(ownerType, params);
         } else {
             throw new IllegalArgumentException("unsupported type: " + type.getClass());
         }
     }
-    
-    private static List<Type> resolveAll(Map<java.lang.reflect.TypeVariable<?>, TypeVariable> typeVariableMap, List<? extends java.lang.reflect.Type> types) {
-        List<Type> result = new ArrayList<Type>(types.size());
-        
+
+    private Type resolveClass(Class<?> cl) {
+        if (cl.isArray())
+            return Type.arrayOf(resolve(cl.getComponentType()));
+        else
+            return Type.genericType(cl, resolveAll(cl.getTypeParameters()));
+    }
+
+    private TypeVariable variableFor(java.lang.reflect.TypeVariable<?> tv) {
+        TypeVariable var = typeVariableMap.get(tv);
+        if (var == null) {
+            var = new TypeVariable(tv.getName(), Kind.STAR); // TODO: kind
+            typeVariableMap.put(tv, var);
+        }
+        return var;
+    }
+
+    private List<Type> resolveAll(java.lang.reflect.Type[] types) {
+        List<Type> result = new ArrayList<Type>(types.length);
+
         for (java.lang.reflect.Type type : types)
-            result.add(resolve(typeVariableMap, type));
-        
+            result.add(resolve(type));
+
         return result;
     }
 }
