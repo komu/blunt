@@ -115,6 +115,11 @@ public class EvaluatorTest {
         assertThatEvaluating("(let ((x 1)) (set! x 2) x)", produces(2));
     }
 
+    @Test
+    public void letRec() {
+        assertThatEvaluating("(letrec ((f (lambda (n) (if (= 0 n) 1 (* n (f (- n 1))))))) (f 10))", produces(3628800));
+    }
+
     private void assertStaticError(String expr) {
         try {
             analyze(expr);

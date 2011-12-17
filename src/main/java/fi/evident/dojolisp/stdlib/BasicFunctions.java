@@ -44,4 +44,9 @@ public class BasicFunctions {
     public static <T> boolean equal(T x, T y) {
         return Objects.equal(x, y);
     }
+
+    @LibraryFunction("unsafe-null")
+    public static <T> T unsafeNull() {
+        return null;
+    }
 }

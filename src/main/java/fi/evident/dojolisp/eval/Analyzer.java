@@ -8,9 +8,11 @@ import fi.evident.dojolisp.types.TypeScheme;
 import fi.evident.dojolisp.types.TypeVariable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static fi.evident.dojolisp.objects.Symbol.symbol;
+import static java.util.Arrays.asList;
 
 public final class Analyzer {
 
@@ -18,6 +20,7 @@ public final class Analyzer {
     private static final Symbol LAMBDA = symbol("lambda");
     private static final Symbol QUOTE = symbol("quote");
     private static final Symbol LET = symbol("let");
+    private static final Symbol LETREC = symbol("letrec");
     private static final Symbol BEGIN = symbol("begin");
     private static final Symbol SET = symbol("set!");
 
@@ -45,6 +48,7 @@ public final class Analyzer {
             : QUOTE.equals(head)  ? analyzeQuote(form)
             : LAMBDA.equals(head) ? analyzeLambda(form, env)
             : LET.equals(head)    ? analyzeLet(form, env)
+            : LETREC.equals(head) ? analyzeLetRec(form, env)
             : BEGIN.equals(head)  ? analyzeSequence(tail(form), env)
             : SET.equals(head)    ? analyzeSet(form, env)
             : analyzeApplication(form, env);
@@ -76,25 +80,42 @@ public final class Analyzer {
         if (form.size() < 3) throw new SyntaxException("invalid let form: " + form);
 
         List<?> bindings = (List<?>) form.get(1);
-        List<Object> vars = new ArrayList<Object>();
-        List<Object> values = new ArrayList<Object>();
-        
-        for (Object binding : bindings) {
-            List<?> bnd = (List<?>) binding;
-            vars.add(bnd.get(0));
-            values.add(bnd.get(1));
-        }
 
-        List<Object> call = new ArrayList<Object>(values.size() + 1);
-        
         List<Object> lambda = new ArrayList<Object>();
         lambda.add(LAMBDA);
-        lambda.add(vars);
+        lambda.add(bindingVariables(bindings));
         lambda.addAll(form.subList(2, form.size()));
+
+        List<Object> call = new ArrayList<Object>();
         call.add(lambda);
-        call.addAll(values);
+        call.addAll(bindingValues(bindings));
 
         return analyze(call, env);
+    }
+    
+    // (letrec ((x v) ...) body) -> (let ((x (unsafe-null)) ...) (set! x v) ... body)
+    private Expression analyzeLetRec(List<?> form, StaticEnvironment env) {
+        Object undefinedExpr = asList(symbol("unsafe-null"));
+        List<?> bindings = (List<?>) form.get(1);
+        List<?> body = form.subList(2, form.size());
+
+        List<Object> vars = bindingVariables(bindings);
+        List<Object> values = bindingValues(bindings);
+
+        List<Object> newBindings = new ArrayList<Object>(bindings.size());
+        for (Object var : vars)
+            newBindings.add(asList(var, undefinedExpr));
+
+        List<Object> let = new ArrayList<Object>();
+        let.add(LET);
+        let.add(newBindings);
+
+        for (int i = 0; i < bindings.size(); i++)
+            let.add(Arrays.asList(SET, vars.get(i), values.get(i)));
+
+        let.addAll(body);
+        
+        return analyze(let, env);
     }
 
     private Expression analyzeLambda(List<?> form, StaticEnvironment env) {
@@ -178,5 +199,19 @@ public final class Analyzer {
 
     private static <T> List<T> tail(List<T> list) {
         return list.subList(1, list.size());
+    }
+
+    private static List<Object> bindingValues(List<?> bindings) {
+        List<Object> values = new ArrayList<Object>(bindings.size());
+        for (Object binding : bindings)
+            values.add(((List<?>) binding).get(1));
+        return values;
+    }
+
+    private static List<Object> bindingVariables(List<?> bindings) {
+        List<Object> vars = new ArrayList<Object>(bindings.size());
+        for (Object binding : bindings)
+            vars.add(((List<?>) binding).get(0));
+        return vars;
     }
 }
