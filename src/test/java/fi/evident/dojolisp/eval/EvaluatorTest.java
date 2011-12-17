@@ -110,6 +110,11 @@ public class EvaluatorTest {
         assertThatEvaluating("(let ((x 1)) (begin (set! x 2) x))", produces(2));
     }
 
+    @Test
+    public void letSequencing() {
+        assertThatEvaluating("(let ((x 1)) (set! x 2) x)", produces(2));
+    }
+
     private void assertStaticError(String expr) {
         try {
             analyze(expr);

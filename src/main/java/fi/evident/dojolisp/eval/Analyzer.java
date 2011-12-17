@@ -8,7 +8,6 @@ import fi.evident.dojolisp.types.TypeScheme;
 import fi.evident.dojolisp.types.TypeVariable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static fi.evident.dojolisp.objects.Symbol.symbol;
@@ -46,7 +45,7 @@ public final class Analyzer {
             : QUOTE.equals(head)  ? analyzeQuote(form)
             : LAMBDA.equals(head) ? analyzeLambda(form, env)
             : LET.equals(head)    ? analyzeLet(form, env)
-            : BEGIN.equals(head)  ? analyzeSequence(form, env)
+            : BEGIN.equals(head)  ? analyzeSequence(tail(form), env)
             : SET.equals(head)    ? analyzeSet(form, env)
             : analyzeApplication(form, env);
     }
@@ -61,20 +60,20 @@ public final class Analyzer {
     }
     
     private Expression analyzeSequence(List<?> form, StaticEnvironment env) {
-        if (form.size() == 1) throw new SyntaxException("invalid begin form: " + form);
+        if (form.isEmpty()) throw new SyntaxException("invalid sequence: " + form);
 
-        return new SequenceExpression(analyzeAll(form.subList(1, form.size()), env));
+        return new SequenceExpression(analyzeAll(form, env));
     }
 
     private Expression analyzeApplication(List<?> form, StaticEnvironment env) {
         Expression func = analyze(form.get(0), env);
-        List<Expression> args = analyzeAll(form.subList(1, form.size()), env);
+        List<Expression> args = analyzeAll(tail(form), env);
 
         return new ApplicationExpression(func, args);
     }
     
     private Expression analyzeLet(List<?> form, StaticEnvironment env) {
-        if (form.size() != 3) throw new SyntaxException("invalid let form: " + form);
+        if (form.size() < 3) throw new SyntaxException("invalid let form: " + form);
 
         List<?> bindings = (List<?>) form.get(1);
         List<Object> vars = new ArrayList<Object>();
@@ -86,16 +85,20 @@ public final class Analyzer {
             values.add(bnd.get(1));
         }
 
-        Object body = form.get(2);
         List<Object> call = new ArrayList<Object>(values.size() + 1);
-        call.add(Arrays.<Object>asList(LAMBDA, vars, body));
+        
+        List<Object> lambda = new ArrayList<Object>();
+        lambda.add(LAMBDA);
+        lambda.add(vars);
+        lambda.addAll(form.subList(2, form.size()));
+        call.add(lambda);
         call.addAll(values);
 
         return analyze(call, env);
     }
 
     private Expression analyzeLambda(List<?> form, StaticEnvironment env) {
-        if (form.size() != 3) throw new SyntaxException("invalid lambda form: " + form);
+        if (form.size() < 3) throw new SyntaxException("invalid lambda form: " + form);
 
         StaticEnvironment newEnv = new StaticEnvironment(env);
 
@@ -103,8 +106,10 @@ public final class Analyzer {
     
         for (Binding argument : arguments)
             newEnv.define(argument.name, argument.type);
-        
-        return new LambdaExpression(arguments, analyze(form.get(2), newEnv));
+
+        Expression body = analyzeSequence(form.subList(2, form.size()), newEnv);
+
+        return new LambdaExpression(arguments, body);
     }
 
     private static Binding[] asParameterList(Object form) {
@@ -169,5 +174,9 @@ public final class Analyzer {
     private static boolean isSelfEvaluating(Object form) {
         return form instanceof Number
             || form instanceof String;
+    }
+
+    private static <T> List<T> tail(List<T> list) {
+        return list.subList(1, list.size());
     }
 }
