@@ -22,12 +22,12 @@ final class StaticBindings {
     public Environments createEnvironments() {
         StaticEnvironment staticEnvironment = new StaticEnvironment();
         TypeEnvironment typeEnvironment = new TypeEnvironment();
-        Environment runtimeEnvironment = new RootEnvironment(bindings.size());
+        RootEnvironment runtimeEnvironment = new RootEnvironment();
 
         for (StaticBinding binding : bindings) {
             VariableReference ref = staticEnvironment.define(binding.name, binding.type);
             typeEnvironment.bind(binding.name, binding.type);
-            runtimeEnvironment.set(ref, binding.value);
+            runtimeEnvironment.define(ref, binding.value);
         }
 
         return new Environments(staticEnvironment, typeEnvironment, runtimeEnvironment);
