@@ -8,6 +8,7 @@ import fi.evident.dojolisp.types.TypeScheme;
 import fi.evident.dojolisp.types.TypeVariable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static fi.evident.dojolisp.objects.Symbol.symbol;
@@ -17,6 +18,7 @@ public final class Analyzer {
     private static final Symbol IF = symbol("if");
     private static final Symbol LAMBDA = symbol("lambda");
     private static final Symbol QUOTE = symbol("quote");
+    private static final Symbol LET = symbol("let");
 
     public Expression analyze(Object form, StaticEnvironment env) {
         if (form instanceof Symbol)
@@ -37,15 +39,12 @@ public final class Analyzer {
         if (form.isEmpty()) throw new SyntaxException("empty list can't be evaluated");
 
         Object head = form.get(0);
-        
-        if (IF.equals(head))
-            return analyzeIf(form, env);
-        else if (QUOTE.equals(head))
-            return analyzeQuote(form);
-        else if (LAMBDA.equals(head))
-            return analyzeLambda(form, env);
-        else
-            return analyzeApplication(form, env);
+
+        return IF.equals(head)    ? analyzeIf(form, env)
+            : QUOTE.equals(head)  ? analyzeQuote(form)
+            : LAMBDA.equals(head) ? analyzeLambda(form, env)
+            : LET.equals(head)    ? analyzeLet(form, env)
+            : analyzeApplication(form, env);
     }
 
     private Expression analyzeApplication(List<?> form, StaticEnvironment env) {
@@ -53,6 +52,27 @@ public final class Analyzer {
         List<Expression> args = analyzeAll(form.subList(1, form.size()), env);
 
         return new ApplicationExpression(func, args);
+    }
+    
+    private Expression analyzeLet(List<?> form, StaticEnvironment env) {
+        if (form.size() != 3) throw new SyntaxException("invalid let form: " + form);
+
+        List<?> bindings = (List<?>) form.get(1);
+        List<Object> vars = new ArrayList<Object>();
+        List<Object> values = new ArrayList<Object>();
+        
+        for (Object binding : bindings) {
+            List<?> bnd = (List<?>) binding;
+            vars.add(bnd.get(0));
+            values.add(bnd.get(1));
+        }
+
+        Object body = form.get(2);
+        List<Object> call = new ArrayList<Object>(values.size() + 1);
+        call.add(Arrays.<Object>asList(LAMBDA, vars, body));
+        call.addAll(values);
+
+        return analyze(call, env);
     }
 
     private Expression analyzeLambda(List<?> form, StaticEnvironment env) {

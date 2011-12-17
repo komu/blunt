@@ -95,6 +95,11 @@ public class EvaluatorTest {
         assertThatEvaluating("((lambda (n) n) 42)", produces(42));
     }
 
+    @Test
+    public void let() {
+        assertThatEvaluating("(let ((x 1) (y 2)) (+ x y))", produces(3));
+    }
+
     private void assertStaticError(String expr) {
         try {
             analyze(expr);
