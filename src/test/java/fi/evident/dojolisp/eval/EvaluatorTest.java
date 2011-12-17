@@ -100,6 +100,11 @@ public class EvaluatorTest {
         assertThatEvaluating("(let ((x 1) (y 2)) (+ x y))", produces(3));
     }
 
+    @Test
+    public void sequence() {
+        assertThatEvaluating("(begin 1 2 3)", produces(3));
+    }
+
     private void assertStaticError(String expr) {
         try {
             analyze(expr);

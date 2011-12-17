@@ -19,6 +19,7 @@ public final class Analyzer {
     private static final Symbol LAMBDA = symbol("lambda");
     private static final Symbol QUOTE = symbol("quote");
     private static final Symbol LET = symbol("let");
+    private static final Symbol BEGIN = symbol("begin");
 
     public Expression analyze(Object form, StaticEnvironment env) {
         if (form instanceof Symbol)
@@ -44,7 +45,14 @@ public final class Analyzer {
             : QUOTE.equals(head)  ? analyzeQuote(form)
             : LAMBDA.equals(head) ? analyzeLambda(form, env)
             : LET.equals(head)    ? analyzeLet(form, env)
+            : BEGIN.equals(head)  ? analyzeSequence(form, env)
             : analyzeApplication(form, env);
+    }
+
+    private Expression analyzeSequence(List<?> form, StaticEnvironment env) {
+        if (form.size() == 1) throw new SyntaxException("invalid begin form: " + form);
+
+        return new SequenceExpression(analyzeAll(form.subList(1, form.size()), env));
     }
 
     private Expression analyzeApplication(List<?> form, StaticEnvironment env) {
