@@ -98,6 +98,28 @@ public abstract class OpCode {
         }
     }
 
+    public static final class StoreVariable extends OpCode {
+        private final VariableReference variable;
+        private final Register register;
+
+        public StoreVariable(VariableReference variable, Register register) {
+            this.variable = requireNonNull(variable);
+            this.register = requireNonNull(register);
+        }
+
+        @Override
+        public void execute(VM vm) {
+            Environment env = (Environment) vm.get(Register.ENV);
+            Object value = vm.get(register);
+            env.set(variable, value);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(store (variable %d %d) %s) ; %s", variable.frame, variable.offset, register, variable.name);
+        }
+    }
+
     public static final class LoadLambda extends OpCode {
         private final Register target;
         private final Label label;
@@ -295,4 +317,3 @@ public abstract class OpCode {
         }
     }
 }
-

@@ -20,6 +20,7 @@ public final class Analyzer {
     private static final Symbol QUOTE = symbol("quote");
     private static final Symbol LET = symbol("let");
     private static final Symbol BEGIN = symbol("begin");
+    private static final Symbol SET = symbol("set!");
 
     public Expression analyze(Object form, StaticEnvironment env) {
         if (form instanceof Symbol)
@@ -46,9 +47,19 @@ public final class Analyzer {
             : LAMBDA.equals(head) ? analyzeLambda(form, env)
             : LET.equals(head)    ? analyzeLet(form, env)
             : BEGIN.equals(head)  ? analyzeSequence(form, env)
+            : SET.equals(head)    ? analyzeSet(form, env)
             : analyzeApplication(form, env);
     }
 
+    private Expression analyzeSet(List<?> form, StaticEnvironment env) {
+        if (form.size() != 3) throw new SyntaxException("invalid set! form: " + form);
+
+        VariableReference var = env.lookup((Symbol) form.get(1));
+        Expression exp = analyze(form.get(2), env);
+        
+        return new SetExpression(var, exp); 
+    }
+    
     private Expression analyzeSequence(List<?> form, StaticEnvironment env) {
         if (form.size() == 1) throw new SyntaxException("invalid begin form: " + form);
 

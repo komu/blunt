@@ -52,7 +52,11 @@ public final class Instructions {
     public void loadVariable(Register target, VariableReference variable) {
         instructions.add(new OpCode.LoadVariable(target, variable));
     }
-
+    
+    public void storeVariable(VariableReference var, Register val) {
+        instructions.add(new OpCode.StoreVariable(var, val));
+    }
+    
     public void loadLambda(Register target, Label label) {
         instructions.add(new OpCode.LoadLambda(target, label));
     }

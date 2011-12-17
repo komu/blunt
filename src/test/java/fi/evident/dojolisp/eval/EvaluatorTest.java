@@ -104,6 +104,11 @@ public class EvaluatorTest {
     public void sequence() {
         assertThatEvaluating("(begin 1 2 3)", produces(3));
     }
+    
+    @Test
+    public void setExpression() {
+        assertThatEvaluating("(let ((x 1)) (begin (set! x 2) x))", produces(2));
+    }
 
     private void assertStaticError(String expr) {
         try {
