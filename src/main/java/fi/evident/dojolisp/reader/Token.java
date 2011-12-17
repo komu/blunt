@@ -1,5 +1,5 @@
 package fi.evident.dojolisp.reader;
 
-enum Token {
+public enum Token {
     EOF, QUOTE, LPAREN, RPAREN
 }

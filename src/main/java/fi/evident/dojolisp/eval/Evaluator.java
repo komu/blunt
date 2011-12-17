@@ -6,6 +6,8 @@ import fi.evident.dojolisp.asm.Register;
 import fi.evident.dojolisp.asm.VM;
 import fi.evident.dojolisp.ast.Expression;
 import fi.evident.dojolisp.objects.PrimitiveFunction;
+import fi.evident.dojolisp.reader.LispReader;
+import fi.evident.dojolisp.reader.Token;
 import fi.evident.dojolisp.stdlib.BasicFunctions;
 import fi.evident.dojolisp.stdlib.ConsList;
 import fi.evident.dojolisp.stdlib.LibraryFunction;
@@ -13,6 +15,8 @@ import fi.evident.dojolisp.types.NativeTypeConversions;
 import fi.evident.dojolisp.types.Type;
 import fi.evident.dojolisp.types.TypeScheme;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Method;
 
 import static java.lang.reflect.Modifier.isStatic;
@@ -49,6 +53,18 @@ public final class Evaluator {
         Expression exp = analyzer.analyze(form, rootBindings.staticEnvironment);
         rootBindings.typeEnvironment.typeCheck(exp);
         return exp;
+    }
+    
+    public void load(InputStream in) throws IOException {
+        try {
+            LispReader reader = new LispReader(in);
+            Object form;
+            while ((form = reader.readForm()) != Token.EOF) {
+                evaluate(form);
+            }
+        } finally {
+            in.close();
+        }
     }
 
     public Object evaluate(Object form) {

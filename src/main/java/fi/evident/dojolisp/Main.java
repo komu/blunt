@@ -6,6 +6,9 @@ import fi.evident.dojolisp.eval.ResultWithType;
 import fi.evident.dojolisp.objects.EvaluationException;
 import fi.evident.dojolisp.objects.Symbol;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
 import static fi.evident.dojolisp.objects.Symbol.symbol;
 
 public class Main {
@@ -15,7 +18,9 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Evaluator evaluator = new Evaluator();
         Prompt prompt = new Prompt();
-
+        
+        evaluator.load(openResource("prologue.lisp"));
+        
         while (true) {
             try {
                 Object form = prompt.readForm(">>> ");
@@ -34,5 +39,15 @@ public class Main {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static InputStream openResource(String path) throws FileNotFoundException {
+        ClassLoader loader = Main.class.getClassLoader();
+
+        InputStream in = loader.getResourceAsStream("prologue.lisp");
+        if (in != null)
+            return in;
+        else
+            throw new FileNotFoundException("file not found: " + path);
     }
 }
