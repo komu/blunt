@@ -1,38 +1,20 @@
 package fi.evident.dojolisp.eval;
 
-import static fi.evident.dojolisp.utils.Objects.requireNonNull;
-
-public final class Environment {
+public abstract class Environment {
     
-    private final Object[] bindings;
-    private final Environment parent;
-
-    public Environment(int size) {
-        this.bindings = new Object[size];
-        this.parent = null;
+    public final Object lookup(VariableReference var) {
+        return lookup(var.frame, var.offset);
     }
 
-    private Environment(Object[] bindings, Environment parent) {
-        this.bindings = requireNonNull(bindings);
-        this.parent = parent;
+    public final void set(VariableReference var, Object value) {
+        set(var.frame, var.offset, value);
     }
 
-    public Object lookup(VariableReference var) {
-        return bindingsForFrame(var.frame)[var.offset];
-    }
+    protected abstract void set(int frame, int offset, Object value);
 
-    public void set(VariableReference var, Object value) {
-        bindingsForFrame(var.frame)[var.offset] = value;
-    }
-
-    private Object[] bindingsForFrame(int depth) {
-        Environment env = this;
-        for (int i = 0; i < depth; i++)
-            env = env.parent;
-        return env.bindings;
-    }
+    protected abstract Object lookup(int frame, int offset);
 
     public Environment extend(Object[] args) {
-        return new Environment(args, this);
+        return new NestedEnvironment(args, this);
     }
 }
