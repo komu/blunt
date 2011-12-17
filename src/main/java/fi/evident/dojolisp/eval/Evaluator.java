@@ -20,21 +20,17 @@ import static java.lang.reflect.Modifier.isStatic;
 public final class Evaluator {
 
     private final Analyzer analyzer = new Analyzer();
-    private final Environments environments;
+    private final RootBindings rootBindings = new RootBindings();
 
     public Evaluator() {
-        StaticBindings bindings = new StaticBindings();
-        
-        bindings.bind("true", Type.BOOLEAN, true);
-        bindings.bind("false", Type.BOOLEAN, false);
+        rootBindings.bind("true", Type.BOOLEAN, true);
+        rootBindings.bind("false", Type.BOOLEAN, false);
 
-        register(BasicFunctions.class, bindings);
-        register(ConsList.class, bindings);
-
-        this.environments = bindings.createEnvironments();
+        register(BasicFunctions.class, rootBindings);
+        register(ConsList.class, rootBindings);
     }
     
-    private static void register(Class<?> cl, StaticBindings bindings) {
+    private static void register(Class<?> cl, RootBindings bindings) {
         for (Method m : cl.getDeclaredMethods()) {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null) {
@@ -48,8 +44,8 @@ public final class Evaluator {
     }
 
     public Expression analyze(Object form) {
-        Expression exp = analyzer.analyze(form, environments.staticEnvironment);
-        environments.typeEnvironment.typeCheck(exp);
+        Expression exp = analyzer.analyze(form, rootBindings.staticEnvironment);
+        rootBindings.typeEnvironment.typeCheck(exp);
         return exp;
     }
 
@@ -58,13 +54,13 @@ public final class Evaluator {
     }
     
     public ResultWithType evaluateWithType(Object form) {
-        Expression expression = analyzer.analyze(form, environments.staticEnvironment);
-        Type type = environments.typeEnvironment.typeCheck(expression);
+        Expression expression = analyzer.analyze(form, rootBindings.staticEnvironment);
+        Type type = rootBindings.typeEnvironment.typeCheck(expression);
 
         Instructions instructions = new Instructions();
         expression.assemble(instructions, Register.VAL, Linkage.NEXT);
 
-        VM vm = new VM(instructions, environments.runtimeEnvironment);
+        VM vm = new VM(instructions, rootBindings.runtimeEnvironment);
         Object result = vm.run();
 
         return new ResultWithType(result, type);
