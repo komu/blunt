@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static fi.evident.dojolisp.objects.Symbol.symbol;
+import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 import static java.util.Arrays.asList;
 
 public final class Analyzer {
@@ -23,6 +24,13 @@ public final class Analyzer {
     private static final Symbol LETREC = symbol("letrec");
     private static final Symbol BEGIN = symbol("begin");
     private static final Symbol SET = symbol("set!");
+    private static final Symbol DEFINE = symbol("define");
+
+    private final RootBindings rootBindings;
+
+    public Analyzer(RootBindings rootBindings) {
+        this.rootBindings = requireNonNull(rootBindings);
+    }
 
     public Expression analyze(Object form, StaticEnvironment env) {
         if (form instanceof Symbol)
@@ -51,6 +59,7 @@ public final class Analyzer {
             : LETREC.equals(head) ? analyzeLetRec(form, env)
             : BEGIN.equals(head)  ? analyzeSequence(tail(form), env)
             : SET.equals(head)    ? analyzeSet(form, env)
+            : DEFINE.equals(head) ? analyzeDefine(form, env)
             : analyzeApplication(form, env);
     }
 
@@ -67,6 +76,17 @@ public final class Analyzer {
         if (form.isEmpty()) throw new SyntaxException("invalid sequence: " + form);
 
         return new SequenceExpression(analyzeAll(form, env));
+    }
+    
+    private Expression analyzeDefine(List<?> form, StaticEnvironment env) {
+        if (env != rootBindings.staticEnvironment)
+            throw new AnalyzationException("only top-level defines are supported");
+        
+        Symbol name = (Symbol) form.get(1);
+
+        TypeScheme scheme = Type.UNIT.quantifyAll(); // TODO: proper scheme
+        VariableReference var = rootBindings.staticEnvironment.define(name, scheme);
+        return new DefineExpression(name, analyze(form.get(2), env), var);
     }
 
     private Expression analyzeApplication(List<?> form, StaticEnvironment env) {

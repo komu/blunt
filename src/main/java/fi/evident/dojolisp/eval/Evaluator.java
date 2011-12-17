@@ -19,8 +19,10 @@ import static java.lang.reflect.Modifier.isStatic;
 
 public final class Evaluator {
 
-    private final Analyzer analyzer = new Analyzer();
     private final RootBindings rootBindings = new RootBindings();
+    private final Analyzer analyzer = new Analyzer(rootBindings);
+    private final Instructions instructions = new Instructions();
+    private final VM vm = new VM(instructions, rootBindings.runtimeEnvironment);
 
     public Evaluator() {
         rootBindings.bind("true", Type.BOOLEAN, true);
@@ -52,15 +54,15 @@ public final class Evaluator {
     public Object evaluate(Object form) {
         return evaluateWithType(form).result;
     }
-    
+
     public ResultWithType evaluateWithType(Object form) {
         Expression expression = analyzer.analyze(form, rootBindings.staticEnvironment);
         Type type = rootBindings.typeEnvironment.typeCheck(expression);
 
-        Instructions instructions = new Instructions();
+        int pos = instructions.pos();
         expression.assemble(instructions, Register.VAL, Linkage.NEXT);
 
-        VM vm = new VM(instructions, rootBindings.runtimeEnvironment);
+        vm.set(Register.PC, pos);
         Object result = vm.run();
 
         return new ResultWithType(result, type);

@@ -54,7 +54,9 @@ public final class ApplicationExpression extends Expression {
         instructions.loadNewArray(Register.ARGV, args.size());
         for (int i = 0; i < args.size(); i++) {
             instructions.pushRegister(Register.ARGV);
+            instructions.pushRegister(Register.ENV);
             args.get(i).assemble(instructions, Register.VAL, Linkage.NEXT);
+            instructions.popRegister(Register.ENV);
             instructions.popRegister(Register.ARGV);
             instructions.arrayStore(Register.ARGV, i, Register.VAL);
         }

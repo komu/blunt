@@ -100,4 +100,8 @@ public final class Instructions {
     public OpCode get(int pc) {
         return instructions.get(pc);
     }
+
+    public int pos() {
+        return instructions.size();
+    }
 }
