@@ -2,8 +2,6 @@ package fi.evident.dojolisp.eval;
 
 import fi.evident.dojolisp.ast.*;
 import fi.evident.dojolisp.objects.Symbol;
-import fi.evident.dojolisp.types.Type;
-import fi.evident.dojolisp.types.TypeScheme;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,8 +80,7 @@ public final class Analyzer {
         
         Symbol name = (Symbol) form.get(1);
 
-        TypeScheme scheme = Type.UNIT.quantifyAll(); // TODO: proper scheme
-        VariableReference var = rootBindings.staticEnvironment.define(name, scheme);
+        VariableReference var = rootBindings.staticEnvironment.define(name);
         return new DefineExpression(name, analyze(form.get(2), env), var);
     }
 

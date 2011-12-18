@@ -21,7 +21,7 @@ final class RootBindings {
     }
 
     public void bind(Symbol name, TypeScheme type, Object value) {
-        VariableReference ref = staticEnvironment.define(name, type);
+        VariableReference ref = staticEnvironment.define(name);
         typeEnvironment.bind(name, type);
         runtimeEnvironment.define(ref, value);
     }

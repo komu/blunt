@@ -1,8 +1,6 @@
 package fi.evident.dojolisp.eval;
 
 import fi.evident.dojolisp.objects.Symbol;
-import fi.evident.dojolisp.types.Type;
-import fi.evident.dojolisp.types.TypeScheme;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,30 +26,20 @@ public final class StaticEnvironment {
     private VariableReference lookup(Symbol name, int depth) {
         VariableInfo var = variables.get(name);
         if (var != null)
-            return new VariableReference(depth, var.offset, var.type, name);
+            return new VariableReference(depth, var.offset, name);
         else if (parent != null)
             return parent.lookup(name, depth+1);
         else
             throw new UnboundVariableException(name);
     }
 
-    public VariableReference define(Symbol name, TypeScheme type) {
+    public VariableReference define(Symbol name) {
         if (variables.containsKey(name))
             throw new AnalyzationException("Variable " + name + " is already defined in this scope.");
 
         int offset = variables.size();
-        variables.put(name, new VariableInfo(name, offset, type));
-        return new VariableReference(0, offset, type, name);
-    }
-
-    @SuppressWarnings("unused")
-    public void dump() {
-        for (VariableInfo var : variables.values())
-            System.out.printf("%-10s: %s\n", var.name, var.type);
-    }
-
-    private void define(Symbol name) {
-        define(name, new TypeScheme(Type.UNIT));
+        variables.put(name, new VariableInfo(name, offset));
+        return new VariableReference(0, offset, name);
     }
 
     public StaticEnvironment extend(List<Symbol> arguments) {
