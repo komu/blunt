@@ -11,8 +11,6 @@ import fi.evident.dojolisp.types.Type;
 import fi.evident.dojolisp.types.TypeEnvironment;
 import fi.evident.dojolisp.types.TypeVariable;
 
-import java.util.Collections;
-
 import static fi.evident.dojolisp.utils.Objects.requireNonNull;
 
 public final class DefineExpression extends Expression {
@@ -29,12 +27,14 @@ public final class DefineExpression extends Expression {
 
     @Override
     public Type typeCheck(TypeEnvironment env) {
+        TypeEnvironment newEnv = new TypeEnvironment(env);
+
         TypeVariable type = env.newVar(Kind.STAR);
-        env.bind(name, type.quantify(Collections.<TypeVariable>emptySet()));
+        newEnv.bind(name, type.quantifyAll());
+        
+        Type varType = newEnv.typeCheck(expression);
 
-        Type varType = expression.typeCheck(env);
-
-        env.unify(type, varType);
+        env.bind(name, varType.quantifyAll());
 
         return Type.UNIT;
     }
