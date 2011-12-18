@@ -1,9 +1,11 @@
 package fi.evident.dojolisp.eval;
 
 import fi.evident.dojolisp.objects.Symbol;
+import fi.evident.dojolisp.types.Type;
 import fi.evident.dojolisp.types.TypeScheme;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class StaticEnvironment {
@@ -46,5 +48,18 @@ public final class StaticEnvironment {
     public void dump() {
         for (VariableInfo var : variables.values())
             System.out.printf("%-10s: %s\n", var.name, var.type);
+    }
+
+    private void define(Symbol name) {
+        define(name, new TypeScheme(Type.UNIT));
+    }
+
+    public StaticEnvironment extend(List<Symbol> arguments) {
+        StaticEnvironment env = new StaticEnvironment(this);
+
+        for (Symbol symbol : arguments)
+            env.define(symbol);
+
+        return env;
     }
 }

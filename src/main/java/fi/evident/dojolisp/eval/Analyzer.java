@@ -2,10 +2,8 @@ package fi.evident.dojolisp.eval;
 
 import fi.evident.dojolisp.ast.*;
 import fi.evident.dojolisp.objects.Symbol;
-import fi.evident.dojolisp.types.Kind;
 import fi.evident.dojolisp.types.Type;
 import fi.evident.dojolisp.types.TypeScheme;
-import fi.evident.dojolisp.types.TypeVariable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -101,16 +99,10 @@ public final class Analyzer {
 
         List<?> bindings = (List<?>) form.get(1);
 
-        List<Object> lambda = new ArrayList<Object>();
-        lambda.add(LAMBDA);
-        lambda.add(bindingVariables(bindings));
-        lambda.addAll(form.subList(2, form.size()));
+        StaticEnvironment newEnv = env.extend(bindingVariables(bindings));
 
-        List<Object> call = new ArrayList<Object>();
-        call.add(lambda);
-        call.addAll(bindingValues(bindings));
-
-        return analyze(call, env);
+        Expression body = analyzeSequence(form.subList(2, form.size()), newEnv);
+        return new LetExpression(analyzeBindings(bindings, env), body);
     }
     
     // (letrec ((x v) ...) body) -> (let ((x (unsafe-null)) ...) (set! x v) ... body)
@@ -119,11 +111,11 @@ public final class Analyzer {
         List<?> bindings = (List<?>) form.get(1);
         List<?> body = form.subList(2, form.size());
 
-        List<Object> vars = bindingVariables(bindings);
+        List<Symbol> vars = bindingVariables(bindings);
         List<Object> values = bindingValues(bindings);
 
         List<Object> newBindings = new ArrayList<Object>(bindings.size());
-        for (Object var : vars)
+        for (Symbol var : vars)
             newBindings.add(asList(var, undefinedExpr));
 
         List<Object> let = new ArrayList<Object>();
@@ -141,48 +133,23 @@ public final class Analyzer {
     private Expression analyzeLambda(List<?> form, StaticEnvironment env) {
         if (form.size() < 3) throw new SyntaxException("invalid lambda form: " + form);
 
-        StaticEnvironment newEnv = new StaticEnvironment(env);
 
-        Binding[] arguments = asParameterList(form.get(1));
-    
-        for (Binding argument : arguments)
-            newEnv.define(argument.name, argument.type);
+        List<Symbol> arguments = asParameterList(form.get(1));
+        StaticEnvironment newEnv = env.extend(arguments);
 
         Expression body = analyzeSequence(form.subList(2, form.size()), newEnv);
 
         return new LambdaExpression(arguments, body);
     }
 
-    private static Binding[] asParameterList(Object form) {
-        if (form instanceof List<?>) {
-            List<?> list = (List<?>) form;
-            Binding[] arguments = new Binding[list.size()];
-            
-            for (int i = 0; i < arguments.length; i++) {
-                Object obj = list.get(i);
-                if (obj instanceof List && ((List<?>) obj).size() == 2) {
-                    List<?> arg = (List<?>) obj;
-                    
-                    if (arg.get(0) instanceof Symbol && arg.get(1) instanceof Symbol) {
-                        Symbol name = (Symbol) arg.get(0);
-                        Symbol type = (Symbol) arg.get(1);
-                        arguments[i] = new Binding(name, Type.forName(type.toString()));
-                    } else {
-                        throw new SyntaxException("invalid argument list: " + form);
-                    }
-                } else if (obj instanceof Symbol) {
-                    Symbol name = (Symbol) obj;
-                    arguments[i] = new Binding(name, new TypeScheme(TypeVariable.newVar(Kind.STAR))); // TODO: is this correct?
-                } else {
-                    throw new SyntaxException("invalid argument list: " + form);
-                }
-            }
-            
-            return arguments;
+    private static List<Symbol> asParameterList(Object form) {
+        List<?> list = (List<?>) form;
+        
+        List<Symbol> result = new ArrayList<Symbol>(list.size());
+        for (Object object : list)
+            result.add((Symbol) object);
 
-        } else {
-            throw new SyntaxException("invalid argument list: " + form);
-        }
+        return result;
     }
 
     private List<Expression> analyzeAll(List<?> forms, StaticEnvironment env) {
@@ -228,10 +195,21 @@ public final class Analyzer {
         return values;
     }
 
-    private static List<Object> bindingVariables(List<?> bindings) {
-        List<Object> vars = new ArrayList<Object>(bindings.size());
+    private static List<Symbol> bindingVariables(List<?> bindings) {
+        List<Symbol> vars = new ArrayList<Symbol>(bindings.size());
         for (Object binding : bindings)
-            vars.add(((List<?>) binding).get(0));
+            vars.add((Symbol) ((List<?>) binding).get(0));
         return vars;
+    }
+
+    private List<VariableBinding> analyzeBindings(List<?> bindings, StaticEnvironment env) {
+        List<VariableBinding> result = new ArrayList<VariableBinding>(bindings.size());
+        for (Object binding : bindings) {
+            List<?> bnd = (List<?>) binding;
+            Symbol name = (Symbol) bnd.get(0);
+            Expression value = analyze(bnd.get(1), env);
+            result.add(new VariableBinding(name, value));
+        }
+        return result;
     }
 }

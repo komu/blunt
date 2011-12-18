@@ -4,7 +4,6 @@ import fi.evident.dojolisp.asm.Instructions;
 import fi.evident.dojolisp.asm.Label;
 import fi.evident.dojolisp.asm.Linkage;
 import fi.evident.dojolisp.asm.Register;
-import fi.evident.dojolisp.eval.Binding;
 import fi.evident.dojolisp.objects.Symbol;
 import fi.evident.dojolisp.types.*;
 
@@ -18,10 +17,8 @@ public final class LambdaExpression extends Expression {
     private final List<Symbol> argumentNames;
     private final Expression body;
 
-    public LambdaExpression(Binding[] bindings, Expression body) {
-        argumentNames = new ArrayList<Symbol>(bindings.length);
-        for (Binding binding : bindings)
-            argumentNames.add(binding.name);
+    public LambdaExpression(List<Symbol> argumentNames, Expression body) {
+        this.argumentNames = new ArrayList<Symbol>(argumentNames);
         this.body = requireNonNull(body);
     }
 

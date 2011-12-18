@@ -76,12 +76,12 @@ public class EvaluatorTest {
 
     @Test
     public void tryingToDefineSameVariableMultipleTimes() {
-        assertStaticError("(lambda ((x Integer) (x Integer)) 0)");
+        assertStaticError("(lambda (x x) 0)");
     }
 
     @Test
     public void accessingUnboundVariable() {
-        assertStaticError("(lambda ((x Integer)) y)");
+        assertStaticError("(lambda (x) y)");
     }
 
     @Test
