@@ -2,6 +2,7 @@ package fi.evident.dojolisp.types;
 
 import fi.evident.dojolisp.eval.TypeCheckException;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -44,6 +45,20 @@ public final class TypeApplication extends Type {
 
     @Override
     public String toString() {
-        return "(" + left + " " + right + ")";
+        return toString(new LinkedList<Type>());
+    }
+
+    private String toString(LinkedList<Type> arguments) {
+        arguments.addFirst(right);
+        if (left instanceof TypeApplication) {
+            return ((TypeApplication)left).toString(arguments);
+            
+        } else if (left instanceof TypeConstructor) {
+            TypeConstructor ct = (TypeConstructor) left;
+            return ct.toString(arguments);
+
+        } else {
+            return "(" + left + " " + arguments + ")";
+        }
     }
 }

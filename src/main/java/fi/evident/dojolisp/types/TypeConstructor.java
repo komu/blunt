@@ -1,5 +1,6 @@
 package fi.evident.dojolisp.types;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -9,7 +10,7 @@ public final class TypeConstructor extends Type {
     
     private final String name;
     private final Kind kind;
-
+    
     public TypeConstructor(String name, Kind kind) {
         this.name = requireNonNull(name);
         this.kind = requireNonNull(kind);
@@ -56,5 +57,25 @@ public final class TypeConstructor extends Type {
     @Override
     public int hashCode() {
         return name.hashCode() * 79 + kind.hashCode();
+    }
+
+    String toString(List<Type> arguments) {
+        if (name.equals("->") && arguments.size() == 2) {
+            return "(" + arguments.get(0) + " -> " + arguments.get(1) + ")";
+        } else if (name.equals("ConsList") && arguments.size() == 1) {
+            return "[" + arguments.get(0) + "]";
+        } else if (name.equals(",")) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("(");
+            for (Iterator<Type> iterator = arguments.iterator(); iterator.hasNext(); ) {
+                sb.append(iterator.next().toString());
+                if (iterator.hasNext())
+                    sb.append(", ");
+            }
+            sb.append(")");
+            return sb.toString();
+        } else {
+            return "(" + name + " " + arguments + ")";
+        }
     }
 }
