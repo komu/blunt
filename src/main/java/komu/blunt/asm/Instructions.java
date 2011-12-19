@@ -1,15 +1,20 @@
 package komu.blunt.asm;
 
-import komu.blunt.eval.VariableReference;
+import static komu.blunt.utils.Objects.requireNonNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import komu.blunt.eval.VariableReference;
 
 public final class Instructions {
     
     private final List<OpCode> instructions = new ArrayList<OpCode>();
+    private final Map<Integer,Set<Label>> labelMap = new HashMap<Integer,Set<Label>>();
     private int labelCounter = 0;
 
     public void jumpIfFalse(Register register, Label label) {
@@ -18,16 +23,25 @@ public final class Instructions {
     
     public void label(Label label) {
         label.setAddress(instructions.size());
+        getLabels(label.getAddress()).add(label);
     }
 
-    @SuppressWarnings("unused")
+    private Set<Label> getLabels(int address) {
+        Set<Label> labels = labelMap.get(address);
+        if (labels == null) {
+            labels = new HashSet<Label>();
+            labelMap.put(address, labels);
+        }
+        return labels;
+    }
+
     public void dump() {
+        int address = 0;
         for (Object instruction : instructions) {
-            if (instruction instanceof Label) {
-                System.out.println(instruction + ":");
-            } else {
-                System.out.println("    " + instruction);
-            }
+            for (Label label : getLabels(address++))
+                System.out.println(label + ":");
+
+            System.out.println("    " + instruction);
         }
     }
 

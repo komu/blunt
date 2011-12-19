@@ -1,5 +1,11 @@
 package komu.blunt.eval;
 
+import static java.lang.reflect.Modifier.isStatic;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
@@ -14,12 +20,6 @@ import komu.blunt.stdlib.LibraryFunction;
 import komu.blunt.types.NativeTypeConversions;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeScheme;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-
-import static java.lang.reflect.Modifier.isStatic;
 
 public final class Evaluator {
 
@@ -82,5 +82,9 @@ public final class Evaluator {
         Object result = vm.run();
 
         return new ResultWithType(result, type);
+    }
+
+    public void dump() {
+        instructions.dump();
     }
 }
