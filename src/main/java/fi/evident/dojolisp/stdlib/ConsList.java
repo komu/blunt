@@ -75,7 +75,7 @@ public abstract class ConsList<T> {
         return sb.toString();
     }
 
-    @LibraryFunction("nil")
+    @LibraryFunction("make-nil")
     public static <T> ConsList<T> nil() {
         return new Nil<T>();
     }
