@@ -9,15 +9,10 @@ public final class TypeVariable extends Type {
     
     private final String name;
     private final Kind kind;
-    private static int index = 0;
 
     public TypeVariable(String name, Kind kind) {
         this.name = requireNonNull(name);
         this.kind = requireNonNull(kind);
-    }
-
-    public static TypeVariable newVar(Kind kind) {
-        return new TypeVariable("?v" + index++, kind);
     }
 
     @Override

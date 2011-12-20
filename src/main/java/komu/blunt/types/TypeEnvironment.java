@@ -12,6 +12,7 @@ public final class TypeEnvironment {
     private final Map<Symbol, TypeScheme> bindings = new HashMap<Symbol, TypeScheme>();
     private final TypeEnvironment parent;
     private Substitution substitution; // TODO: move to some type-checker
+    private int typeVarSequence = 0;
 
     public TypeEnvironment() {
         this(null);
@@ -102,7 +103,7 @@ public final class TypeEnvironment {
     }
 
     public TypeVariable newVar(Kind kind) {
-        return TypeVariable.newVar(kind);
+        return new TypeVariable("?v" + typeVarSequence++, kind);
     }
 
     public Type typeCheck(Expression expression) {
