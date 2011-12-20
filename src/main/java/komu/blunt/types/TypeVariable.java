@@ -1,9 +1,9 @@
 package komu.blunt.types;
 
+import static komu.blunt.utils.Objects.requireNonNull;
+
 import java.util.List;
 import java.util.Set;
-
-import static komu.blunt.utils.Objects.requireNonNull;
 
 public final class TypeVariable extends Type {
     
@@ -20,6 +20,7 @@ public final class TypeVariable extends Type {
         return name;
     }
 
+    @Override
     public Kind getKind() {
         return kind;
     }
