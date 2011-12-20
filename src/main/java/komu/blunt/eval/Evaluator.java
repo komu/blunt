@@ -1,11 +1,5 @@
 package komu.blunt.eval;
 
-import static java.lang.reflect.Modifier.isStatic;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
@@ -20,6 +14,12 @@ import komu.blunt.stdlib.LibraryFunction;
 import komu.blunt.types.NativeTypeConversions;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeScheme;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+
+import static java.lang.reflect.Modifier.isStatic;
 
 public final class Evaluator {
 
@@ -51,7 +51,7 @@ public final class Evaluator {
 
     public Expression analyze(Object form) {
         Expression exp = analyzer.analyze(form, rootBindings.staticEnvironment);
-        rootBindings.typeEnvironment.typeCheck(exp);
+        rootBindings.createTypeEnvironment().typeCheck(exp);
         return exp;
     }
     
@@ -73,7 +73,7 @@ public final class Evaluator {
 
     public ResultWithType evaluateWithType(Object form) {
         Expression expression = analyzer.analyze(form, rootBindings.staticEnvironment);
-        Type type = rootBindings.typeEnvironment.typeCheck(expression);
+        Type type = rootBindings.createTypeEnvironment().typeCheck(expression);
 
         int pos = instructions.pos();
         expression.assemble(instructions, Register.VAL, Linkage.NEXT);

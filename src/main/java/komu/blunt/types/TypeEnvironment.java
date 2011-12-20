@@ -103,7 +103,15 @@ public final class TypeEnvironment {
     }
 
     public TypeVariable newVar(Kind kind) {
-        return new TypeVariable("?v" + typeVarSequence++, kind);
+        return new TypeVariable(typeName(typeVarSequence++), kind);
+    }
+    
+    private static String typeName(int index) {
+        if (index < 5) {
+            return String.valueOf((char) ('a' + index));
+        } else {
+            return "t" + (index-5);
+        }
     }
 
     public Type typeCheck(Expression expression) {

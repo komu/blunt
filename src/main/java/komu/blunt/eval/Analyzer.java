@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static komu.blunt.objects.Symbol.symbol;
 import static komu.blunt.utils.Objects.requireNonNull;
-import static java.util.Arrays.asList;
 
 public final class Analyzer {
 
@@ -81,7 +81,7 @@ public final class Analyzer {
         Symbol name = (Symbol) form.get(1);
 
         VariableReference var = rootBindings.staticEnvironment.define(name);
-        return new DefineExpression(name, analyze(form.get(2), env), var);
+        return new DefineExpression(name, analyze(form.get(2), env), var, rootBindings);
     }
 
     private Expression analyzeApplication(List<?> form, StaticEnvironment env) {

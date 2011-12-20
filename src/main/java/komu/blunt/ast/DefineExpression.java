@@ -3,6 +3,7 @@ package komu.blunt.ast;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
+import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.VariableReference;
 import komu.blunt.objects.Symbol;
 import komu.blunt.objects.Unit;
@@ -17,12 +18,14 @@ public final class DefineExpression extends Expression {
 
     private final Symbol name;
     private final Expression expression;
-    private final VariableReference var;
+    private final RootBindings rootBindings;
+    private VariableReference var;
 
-    public DefineExpression(Symbol name, Expression expression, VariableReference var) {
+    public DefineExpression(Symbol name, Expression expression, VariableReference var, RootBindings rootBindings) {
         this.name = requireNonNull(name);
         this.expression = requireNonNull(expression);
         this.var = requireNonNull(var);
+        this.rootBindings = requireNonNull(rootBindings);
     }
 
     @Override
@@ -34,7 +37,7 @@ public final class DefineExpression extends Expression {
         
         Type varType = newEnv.typeCheck(expression);
 
-        env.bind(name, varType.quantifyAll());
+        rootBindings.defineVariableType(name, varType.quantifyAll());
 
         return Type.UNIT;
     }

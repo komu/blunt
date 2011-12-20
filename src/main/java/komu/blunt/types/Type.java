@@ -67,7 +67,7 @@ public abstract class Type {
     protected abstract Kind getKind();
 
     protected final Set<TypeVariable> getTypeVariables() {
-        Set<TypeVariable> vars = new HashSet<TypeVariable>();
+        Set<TypeVariable> vars = new LinkedHashSet<TypeVariable>();
         addTypeVariables(vars);
         return vars;
     }
