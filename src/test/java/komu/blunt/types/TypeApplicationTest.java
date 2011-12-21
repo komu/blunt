@@ -12,7 +12,7 @@ public class TypeApplicationTest {
     public void printingArrowTypes() {
         Type type = genericType("->", var("a"), var("b"));
 
-        assertThat(type.toString(), is("(a -> b)"));
+        assertThat(type.toString(), is("a -> b"));
     }
 
     private static TypeVariable var(String name) {
