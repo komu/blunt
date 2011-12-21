@@ -4,6 +4,8 @@ import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
+import komu.blunt.ast.ASTBuilder;
+import komu.blunt.ast.ASTExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.PrimitiveFunction;
 import komu.blunt.reader.LispReader;
@@ -50,7 +52,7 @@ public final class Evaluator {
     }
 
     public CoreExpression analyze(Object form) {
-        CoreExpression exp = analyzer.analyze(form, rootBindings.staticEnvironment);
+        CoreExpression exp = toCore(form);
         rootBindings.createTypeEnvironment().typeCheck(exp);
         return exp;
     }
@@ -72,7 +74,7 @@ public final class Evaluator {
     }
 
     public ResultWithType evaluateWithType(Object form) {
-        CoreExpression expression = analyzer.analyze(form, rootBindings.staticEnvironment);
+        CoreExpression expression = toCore(form);
         Type type = rootBindings.createTypeEnvironment().typeCheck(expression);
 
         int pos = instructions.pos();
@@ -82,6 +84,11 @@ public final class Evaluator {
         Object result = vm.run();
 
         return new ResultWithType(result, type);
+    }
+
+    private CoreExpression toCore(Object form) {
+        ASTExpression ast = new ASTBuilder().parse(form);
+        return analyzer.analyze(ast, rootBindings.staticEnvironment);
     }
 
     public void dump() {

@@ -16,11 +16,7 @@ public final class Analyzer {
         this.rootBindings = requireNonNull(rootBindings);
     }
     
-    public CoreExpression analyze(Object form, StaticEnvironment env) {
-        return analyzeInternal(new ASTBuilder().parse(form), env);
-    }
-    
-    private CoreExpression analyzeInternal(ASTExpression exp, StaticEnvironment env) {
+    public CoreExpression analyze(ASTExpression exp, StaticEnvironment env) {
         if (exp instanceof ASTVariable)
             return new CoreVariableExpression(env.lookup(((ASTVariable) exp).var));
         else if (exp instanceof ASTConstant)
@@ -45,7 +41,7 @@ public final class Analyzer {
 
     private CoreExpression analyzeSet(ASTSet form, StaticEnvironment env) {
         VariableReference var = env.lookup(form.var);
-        CoreExpression exp = analyzeInternal(form.exp, env);
+        CoreExpression exp = analyze(form.exp, env);
         
         return new CoreSetExpression(var, exp);
     }
@@ -58,11 +54,11 @@ public final class Analyzer {
     
     private CoreExpression analyzeDefine(ASTDefine form, StaticEnvironment env) {
         VariableReference var = rootBindings.staticEnvironment.define(form.name);
-        return new CoreDefineExpression(form.name, analyzeInternal(form.value, env), var, rootBindings);
+        return new CoreDefineExpression(form.name, analyze(form.value, env), var, rootBindings);
     }
 
     private CoreExpression analyzeApplication(ASTApplication form, StaticEnvironment env) {
-        CoreExpression func = analyzeInternal(form.func, env);
+        CoreExpression func = analyze(form.func, env);
         List<CoreExpression> args = analyzeAll(form.args, env);
 
         return new CoreApplicationExpression(func, args);
@@ -71,14 +67,14 @@ public final class Analyzer {
     private CoreExpression analyzeLet(ASTLet form, StaticEnvironment env) {
         StaticEnvironment newEnv = env.extend(form.getVariables());
 
-        CoreExpression body = analyzeInternal(form.body, newEnv);
+        CoreExpression body = analyze(form.body, newEnv);
         return new CoreLetExpression(analyzeBindings(form.bindings, env), body);
     }
 
     private CoreExpression analyzeLambda(ASTLambda form, StaticEnvironment env) {
         StaticEnvironment newEnv = env.extend(form.arguments);
 
-        CoreExpression body = analyzeInternal(form.body, newEnv);
+        CoreExpression body = analyze(form.body, newEnv);
 
         return new CoreLambdaExpression(form.arguments, body);
     }
@@ -87,15 +83,15 @@ public final class Analyzer {
         List<CoreExpression> exps = new ArrayList<CoreExpression>(forms.size());
         
         for (ASTExpression form : forms)
-            exps.add(analyzeInternal(form, env));
+            exps.add(analyze(form, env));
 
         return exps;
     }
 
     private CoreExpression analyzeIf(ASTIf form, StaticEnvironment env) {
-        CoreExpression test = analyzeInternal(form.test, env);
-        CoreExpression consequent = analyzeInternal(form.consequent, env);
-        CoreExpression alternative = analyzeInternal(form.alternative, env);
+        CoreExpression test = analyze(form.test, env);
+        CoreExpression consequent = analyze(form.consequent, env);
+        CoreExpression alternative = analyze(form.alternative, env);
 
         return new CoreIfExpression(test, consequent, alternative);
     }
@@ -103,7 +99,7 @@ public final class Analyzer {
     private List<VariableBinding> analyzeBindings(List<ASTBinding> bindings, StaticEnvironment env) {
         List<VariableBinding> result = new ArrayList<VariableBinding>(bindings.size());
         for (ASTBinding binding : bindings)
-            result.add(new VariableBinding(binding.name, analyzeInternal(binding.expr, env)));
+            result.add(new VariableBinding(binding.name, analyze(binding.expr, env)));
         return result;
     }
 }
