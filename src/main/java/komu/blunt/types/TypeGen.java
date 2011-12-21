@@ -30,4 +30,9 @@ public final class TypeGen extends Type {
     protected Kind getKind() {
         throw new RuntimeException("can't access kind of TypeGen");
     }
+
+    @Override
+    protected String toString(final int precedence) {
+        return "TypeGen[" + index + "]";
+    }
 }

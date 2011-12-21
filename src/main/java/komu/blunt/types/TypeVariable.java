@@ -16,7 +16,7 @@ public final class TypeVariable extends Type {
     }
 
     @Override
-    public String toString() {
+    protected String toString(final int precedence) {
         return name;
     }
 

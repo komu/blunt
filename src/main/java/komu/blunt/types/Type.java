@@ -1,8 +1,12 @@
 package komu.blunt.types;
 
-import java.util.*;
-
 import static java.util.Arrays.asList;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 public abstract class Type {
 
@@ -90,4 +94,11 @@ public abstract class Type {
 
         return new TypeScheme(kinds, apply(substitution));
     }
+
+    @Override
+    public final String toString() {
+        return toString(0);
+    }
+    
+    protected abstract String toString(int precedence);
 }

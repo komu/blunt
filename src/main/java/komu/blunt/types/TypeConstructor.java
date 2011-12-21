@@ -36,7 +36,7 @@ public final class TypeConstructor extends Type {
     }
 
     @Override
-    public String toString() {
+    protected String toString(final int precedence) {
         return name;
     }
 
@@ -59,18 +59,24 @@ public final class TypeConstructor extends Type {
         return name.hashCode() * 79 + kind.hashCode();
     }
 
-    String toString(List<Type> arguments) {
+    String toString(List<Type> arguments, int precedence) {
         if (name.equals("->") && arguments.size() == 2) {
-            return "(" + arguments.get(0) + " -> " + arguments.get(1) + ")";
+            StringBuilder sb = new StringBuilder();
+            
+            if (precedence != 0) sb.append("(");
+            sb.append(arguments.get(0).toString(1)).append(" -> ").append(arguments.get(1).toString(0));
+            if (precedence != 0) sb.append(")");
+            
+            return sb.toString();
         } else if (name.equals("ConsList") && arguments.size() == 1) {
             return "[" + arguments.get(0) + "]";
         } else if (name.equals(",") && arguments.size() == 1) {
-            return arguments.get(0).toString();
+            return arguments.get(0).toString(precedence);
         } else if (name.equals(",")) {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
             for (Iterator<Type> iterator = arguments.iterator(); iterator.hasNext(); ) {
-                sb.append(iterator.next().toString());
+                sb.append(iterator.next().toString(0));
                 if (iterator.hasNext())
                     sb.append(", ");
             }

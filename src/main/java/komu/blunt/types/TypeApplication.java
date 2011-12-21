@@ -1,12 +1,12 @@
 package komu.blunt.types;
 
-import komu.blunt.eval.TypeCheckException;
+import static komu.blunt.utils.Objects.requireNonNull;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import komu.blunt.eval.TypeCheckException;
 
 public final class TypeApplication extends Type {
     
@@ -44,18 +44,18 @@ public final class TypeApplication extends Type {
     }
 
     @Override
-    public String toString() {
-        return toString(new LinkedList<Type>());
+    protected String toString(int precedence) {
+        return toString(new LinkedList<Type>(), precedence);
     }
 
-    private String toString(LinkedList<Type> arguments) {
+    private String toString(LinkedList<Type> arguments, int precedence) {
         arguments.addFirst(right);
         if (left instanceof TypeApplication) {
-            return ((TypeApplication)left).toString(arguments);
+            return ((TypeApplication) left).toString(arguments, precedence);
             
         } else if (left instanceof TypeConstructor) {
             TypeConstructor ct = (TypeConstructor) left;
-            return ct.toString(arguments);
+            return ct.toString(arguments, precedence);
 
         } else {
             return "(" + left + " " + arguments + ")";
