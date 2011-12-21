@@ -1,10 +1,10 @@
 package komu.blunt.types;
 
+import static komu.blunt.utils.Objects.requireNonNull;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
-import static komu.blunt.utils.Objects.requireNonNull;
 
 public final class TypeConstructor extends Type {
     
@@ -64,6 +64,8 @@ public final class TypeConstructor extends Type {
             return "(" + arguments.get(0) + " -> " + arguments.get(1) + ")";
         } else if (name.equals("ConsList") && arguments.size() == 1) {
             return "[" + arguments.get(0) + "]";
+        } else if (name.equals(",") && arguments.size() == 1) {
+            return arguments.get(0).toString();
         } else if (name.equals(",")) {
             StringBuilder sb = new StringBuilder();
             sb.append("(");
