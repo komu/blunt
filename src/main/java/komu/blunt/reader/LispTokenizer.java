@@ -6,10 +6,10 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 
-import static komu.blunt.objects.Symbol.symbol;
-import static komu.blunt.reader.Token.*;
 import static java.lang.Character.*;
 import static java.lang.Integer.parseInt;
+import static komu.blunt.objects.Symbol.symbol;
+import static komu.blunt.reader.Token.*;
 
 public final class LispTokenizer {
     
@@ -20,8 +20,7 @@ public final class LispTokenizer {
     }
     
     public Object readToken() throws IOException {
-        while (isWhitespace(peek()))
-            read();
+        skipWhitespace();
 
         if (peek() == -1)
             return EOF;
@@ -40,6 +39,28 @@ public final class LispTokenizer {
         else
             throw parseError("unexpected token: '" + read() + "'");
     }
+
+    private void skipWhitespace() throws IOException {
+        while (isWhiteSpaceOrComment(peek())) {
+            char ch = read();
+            if (ch == ';') {
+                skipToEndOfLine();
+            }
+        }
+    }
+
+    private void skipToEndOfLine() throws IOException {
+        while (true) {
+            char ch = read();
+            if (ch == -1 || ch == '\n')
+                break;
+        }
+    }
+
+    private static boolean isWhiteSpaceOrComment(int ch) {
+        return ch == ';' || isWhitespace(ch);
+    }
+
     private Symbol readSymbol() throws IOException {
         StringBuilder sb = new StringBuilder();
 
