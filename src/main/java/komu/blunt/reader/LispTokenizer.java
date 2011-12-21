@@ -129,6 +129,6 @@ public final class LispTokenizer {
     }
     
     private RuntimeException parseError(String message) {
-        return new RuntimeException("parse error: " + message);
+        return new RuntimeException("value error: " + message);
     }
 }
