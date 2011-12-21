@@ -1,4 +1,4 @@
-package komu.blunt.ast;
+package komu.blunt.core;
 
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
@@ -9,17 +9,17 @@ import komu.blunt.types.TypeEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class SequenceExpression extends Expression {
+public final class CoreSequenceExpression extends CoreExpression {
 
-    private final List<Expression> expressions;
+    private final List<CoreExpression> expressions;
     
-    public SequenceExpression(List<Expression> expressions) {
-        this.expressions = new ArrayList<Expression>(expressions);
+    public CoreSequenceExpression(List<CoreExpression> expressions) {
+        this.expressions = new ArrayList<CoreExpression>(expressions);
     }
     
     @Override
     public Type typeCheck(TypeEnvironment env) {
-        for (Expression exp : allButLast())
+        for (CoreExpression exp : allButLast())
             exp.typeCheck(env);
 
         return last().typeCheck(env);
@@ -27,17 +27,17 @@ public final class SequenceExpression extends Expression {
 
     @Override
     public void assemble(Instructions instructions, Register target, Linkage linkage) {
-        for (Expression exp : allButLast())
+        for (CoreExpression exp : allButLast())
             exp.assemble(instructions, target, Linkage.NEXT);
 
         last().assemble(instructions, target, linkage);
     }
 
-    private Expression last() {
+    private CoreExpression last() {
         return expressions.get(expressions.size()-1);
     }
 
-    private List<Expression> allButLast() {
+    private List<CoreExpression> allButLast() {
         return expressions.subList(0, expressions.size()-1);
     }
 }

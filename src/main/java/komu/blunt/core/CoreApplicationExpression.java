@@ -1,4 +1,4 @@
-package komu.blunt.ast;
+package komu.blunt.core;
 
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
@@ -12,12 +12,12 @@ import java.util.List;
 
 import static komu.blunt.utils.Objects.requireNonNull;
 
-public final class ApplicationExpression extends Expression {
+public final class CoreApplicationExpression extends CoreExpression {
     
-    private final Expression func;
-    private final List<Expression> args;
+    private final CoreExpression func;
+    private final List<CoreExpression> args;
 
-    public ApplicationExpression(Expression func, List<Expression> args) {
+    public CoreApplicationExpression(CoreExpression func, List<CoreExpression> args) {
         this.func = requireNonNull(func);
         this.args = requireNonNull(args);
     }
@@ -38,7 +38,7 @@ public final class ApplicationExpression extends Expression {
     private List<Type> typeCheckArgs(TypeEnvironment env) {
         List<Type> types = new ArrayList<Type>(args.size());
         
-        for (Expression arg : args)
+        for (CoreExpression arg : args)
             types.add(arg.typeCheck(env));
         
         return types;

@@ -4,7 +4,7 @@ import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
-import komu.blunt.ast.Expression;
+import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.PrimitiveFunction;
 import komu.blunt.reader.LispReader;
 import komu.blunt.reader.Token;
@@ -49,8 +49,8 @@ public final class Evaluator {
         }
     }
 
-    public Expression analyze(Object form) {
-        Expression exp = analyzer.analyze(form, rootBindings.staticEnvironment);
+    public CoreExpression analyze(Object form) {
+        CoreExpression exp = analyzer.analyze(form, rootBindings.staticEnvironment);
         rootBindings.createTypeEnvironment().typeCheck(exp);
         return exp;
     }
@@ -72,7 +72,7 @@ public final class Evaluator {
     }
 
     public ResultWithType evaluateWithType(Object form) {
-        Expression expression = analyzer.analyze(form, rootBindings.staticEnvironment);
+        CoreExpression expression = analyzer.analyze(form, rootBindings.staticEnvironment);
         Type type = rootBindings.createTypeEnvironment().typeCheck(expression);
 
         int pos = instructions.pos();

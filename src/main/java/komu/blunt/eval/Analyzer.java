@@ -1,6 +1,6 @@
 package komu.blunt.eval;
 
-import komu.blunt.ast.*;
+import komu.blunt.core.*;
 import komu.blunt.objects.Symbol;
 
 import java.util.ArrayList;
@@ -28,22 +28,22 @@ public final class Analyzer {
         this.rootBindings = requireNonNull(rootBindings);
     }
 
-    public Expression analyze(Object form, StaticEnvironment env) {
+    public CoreExpression analyze(Object form, StaticEnvironment env) {
         if (form instanceof Symbol)
             return analyzeVariable((Symbol) form, env);
         if (isSelfEvaluating(form))
-            return new ConstantExpression(form);
+            return new CoreConstantExpression(form);
         else if (form instanceof List)
             return analyzeList((List<?>) form, env);
         else
             throw new SyntaxException("unknown form: " + form);
     }
 
-    private Expression analyzeVariable(Symbol var, StaticEnvironment env) {
-        return new VariableExpression(env.lookup(var));
+    private CoreExpression analyzeVariable(Symbol var, StaticEnvironment env) {
+        return new CoreVariableExpression(env.lookup(var));
     }
 
-    private Expression analyzeList(List<?> form, StaticEnvironment env) {
+    private CoreExpression analyzeList(List<?> form, StaticEnvironment env) {
         if (form.isEmpty()) throw new SyntaxException("empty list can't be evaluated");
 
         Object head = form.get(0);
@@ -59,22 +59,22 @@ public final class Analyzer {
             : analyzeApplication(form, env);
     }
 
-    private Expression analyzeSet(List<?> form, StaticEnvironment env) {
+    private CoreExpression analyzeSet(List<?> form, StaticEnvironment env) {
         if (form.size() != 3) throw new SyntaxException("invalid set! form: " + form);
 
         VariableReference var = env.lookup((Symbol) form.get(1));
-        Expression exp = analyze(form.get(2), env);
+        CoreExpression exp = analyze(form.get(2), env);
         
-        return new SetExpression(var, exp); 
+        return new CoreSetExpression(var, exp);
     }
     
-    private Expression analyzeSequence(List<?> form, StaticEnvironment env) {
+    private CoreExpression analyzeSequence(List<?> form, StaticEnvironment env) {
         if (form.isEmpty()) throw new SyntaxException("invalid sequence: " + form);
 
-        return new SequenceExpression(analyzeAll(form, env));
+        return new CoreSequenceExpression(analyzeAll(form, env));
     }
     
-    private Expression analyzeDefine(List<?> form, StaticEnvironment env) {
+    private CoreExpression analyzeDefine(List<?> form, StaticEnvironment env) {
         if (env != rootBindings.staticEnvironment)
             throw new AnalyzationException("only top-level defines are supported");
 
@@ -85,7 +85,7 @@ public final class Analyzer {
             Symbol name = (Symbol) form.get(1);
 
             VariableReference var = rootBindings.staticEnvironment.define(name);
-            return new DefineExpression(name, analyze(form.get(2), env), var, rootBindings);
+            return new CoreDefineExpression(name, analyze(form.get(2), env), var, rootBindings);
         }
     }
 
@@ -105,26 +105,26 @@ public final class Analyzer {
         return define;
     }
 
-    private Expression analyzeApplication(List<?> form, StaticEnvironment env) {
-        Expression func = analyze(form.get(0), env);
-        List<Expression> args = analyzeAll(tail(form), env);
+    private CoreExpression analyzeApplication(List<?> form, StaticEnvironment env) {
+        CoreExpression func = analyze(form.get(0), env);
+        List<CoreExpression> args = analyzeAll(tail(form), env);
 
-        return new ApplicationExpression(func, args);
+        return new CoreApplicationExpression(func, args);
     }
     
-    private Expression analyzeLet(List<?> form, StaticEnvironment env) {
+    private CoreExpression analyzeLet(List<?> form, StaticEnvironment env) {
         if (form.size() < 3) throw new SyntaxException("invalid let form: " + form);
 
         List<?> bindings = (List<?>) form.get(1);
 
         StaticEnvironment newEnv = env.extend(bindingVariables(bindings));
 
-        Expression body = analyzeSequence(form.subList(2, form.size()), newEnv);
-        return new LetExpression(analyzeBindings(bindings, env), body);
+        CoreExpression body = analyzeSequence(form.subList(2, form.size()), newEnv);
+        return new CoreLetExpression(analyzeBindings(bindings, env), body);
     }
     
     // (letrec ((x v) ...) body) -> (let ((x (unsafe-null)) ...) (set! x v) ... body)
-    private Expression analyzeLetRec(List<?> form, StaticEnvironment env) {
+    private CoreExpression analyzeLetRec(List<?> form, StaticEnvironment env) {
         Object undefinedExpr = asList(symbol("unsafe-null"));
         List<?> bindings = (List<?>) form.get(1);
         List<?> body = form.subList(2, form.size());
@@ -148,16 +148,16 @@ public final class Analyzer {
         return analyze(let, env);
     }
 
-    private Expression analyzeLambda(List<?> form, StaticEnvironment env) {
+    private CoreExpression analyzeLambda(List<?> form, StaticEnvironment env) {
         if (form.size() < 3) throw new SyntaxException("invalid lambda form: " + form);
 
 
         List<Symbol> arguments = asParameterList(form.get(1));
         StaticEnvironment newEnv = env.extend(arguments);
 
-        Expression body = analyzeSequence(form.subList(2, form.size()), newEnv);
+        CoreExpression body = analyzeSequence(form.subList(2, form.size()), newEnv);
 
-        return new LambdaExpression(arguments, body);
+        return new CoreLambdaExpression(arguments, body);
     }
 
     private static List<Symbol> asParameterList(Object form) {
@@ -170,8 +170,8 @@ public final class Analyzer {
         return result;
     }
 
-    private List<Expression> analyzeAll(List<?> forms, StaticEnvironment env) {
-        List<Expression> exps = new ArrayList<Expression>(forms.size());
+    private List<CoreExpression> analyzeAll(List<?> forms, StaticEnvironment env) {
+        List<CoreExpression> exps = new ArrayList<CoreExpression>(forms.size());
         
         for (Object form : forms)
             exps.add(analyze(form, env));
@@ -179,22 +179,22 @@ public final class Analyzer {
         return exps;
     }
 
-    private Expression analyzeQuote(List<?> form) {
+    private CoreExpression analyzeQuote(List<?> form) {
         if (form.size() == 2)
-            return new ConstantExpression(form.get(1));
+            return new CoreConstantExpression(form.get(1));
         else
             throw new SyntaxException("invalid quote form: " + form);
     }
 
-    private Expression analyzeIf(List<?> form, StaticEnvironment env) {
+    private CoreExpression analyzeIf(List<?> form, StaticEnvironment env) {
         if (form.size() != 4)
             throw new SyntaxException("invalid if form: " + form);
 
-        Expression test = analyze(form.get(1), env);
-        Expression consequent = analyze(form.get(2), env);
-        Expression alternative = analyze(form.get(3), env);
+        CoreExpression test = analyze(form.get(1), env);
+        CoreExpression consequent = analyze(form.get(2), env);
+        CoreExpression alternative = analyze(form.get(3), env);
 
-        return new IfExpression(test, consequent, alternative);
+        return new CoreIfExpression(test, consequent, alternative);
     }
 
     private static boolean isSelfEvaluating(Object form) {
@@ -225,7 +225,7 @@ public final class Analyzer {
         for (Object binding : bindings) {
             List<?> bnd = (List<?>) binding;
             Symbol name = (Symbol) bnd.get(0);
-            Expression value = analyze(bnd.get(1), env);
+            CoreExpression value = analyze(bnd.get(1), env);
             result.add(new VariableBinding(name, value));
         }
         return result;

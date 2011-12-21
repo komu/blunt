@@ -1,4 +1,4 @@
-package komu.blunt.ast;
+package komu.blunt.core;
 
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
@@ -8,12 +8,12 @@ import komu.blunt.objects.Unit;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeEnvironment;
 
-public final class SetExpression extends Expression {
+public final class CoreSetExpression extends CoreExpression {
 
     private final VariableReference var;
-    private final Expression exp;
+    private final CoreExpression exp;
 
-    public SetExpression(VariableReference var, Expression exp) {
+    public CoreSetExpression(VariableReference var, CoreExpression exp) {
         this.var = var;
         this.exp = exp;
     }

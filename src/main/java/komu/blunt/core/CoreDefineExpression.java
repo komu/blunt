@@ -1,4 +1,4 @@
-package komu.blunt.ast;
+package komu.blunt.core;
 
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
@@ -14,14 +14,14 @@ import komu.blunt.types.TypeVariable;
 
 import static komu.blunt.utils.Objects.requireNonNull;
 
-public final class DefineExpression extends Expression {
+public final class CoreDefineExpression extends CoreExpression {
 
     private final Symbol name;
-    private final Expression expression;
+    private final CoreExpression expression;
     private final RootBindings rootBindings;
     private VariableReference var;
 
-    public DefineExpression(Symbol name, Expression expression, VariableReference var, RootBindings rootBindings) {
+    public CoreDefineExpression(Symbol name, CoreExpression expression, VariableReference var, RootBindings rootBindings) {
         this.name = requireNonNull(name);
         this.expression = requireNonNull(expression);
         this.var = requireNonNull(var);

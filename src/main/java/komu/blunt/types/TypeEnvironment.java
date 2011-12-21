@@ -1,11 +1,11 @@
 package komu.blunt.types;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import komu.blunt.ast.Expression;
+import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.TypeCheckException;
 import komu.blunt.objects.Symbol;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public final class TypeEnvironment {
     
@@ -115,7 +115,7 @@ public final class TypeEnvironment {
         }
     }
 
-    public Type typeCheck(Expression expression) {
+    public Type typeCheck(CoreExpression expression) {
         Type type = expression.typeCheck(this);
         return type.apply(getSubstitution());
     }

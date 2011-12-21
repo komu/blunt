@@ -1,29 +1,30 @@
-package komu.blunt.ast;
+package komu.blunt.core;
 
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
+import komu.blunt.eval.VariableReference;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeEnvironment;
 
 import static komu.blunt.utils.Objects.requireNonNull;
 
-public final class ConstantExpression extends Expression {
+public final class CoreVariableExpression extends CoreExpression {
+    
+    private final VariableReference var;
 
-    private final Object value;
-
-    public ConstantExpression(Object value) {
-        this.value = requireNonNull(value);
+    public CoreVariableExpression(VariableReference var) {
+        this.var = requireNonNull(var);
     }
 
     @Override
     public Type typeCheck(TypeEnvironment env) {
-        return (value == null) ? Type.UNIT : Type.fromClass(value.getClass());
+        return env.lookup(var.name).freshInstance(env);
     }
 
     @Override
     public void assemble(Instructions instructions, Register target, Linkage linkage) {
-        instructions.loadConstant(target, value);
+        instructions.loadVariable(target, var);
         instructions.finishWithLinkage(linkage);
     }
 }

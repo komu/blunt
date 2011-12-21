@@ -1,4 +1,4 @@
-package komu.blunt.ast;
+package komu.blunt.core;
 
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
@@ -11,12 +11,12 @@ import komu.blunt.types.TypeScheme;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class LetExpression extends Expression {
+public final class CoreLetExpression extends CoreExpression {
 
     private final List<VariableBinding> bindings;
-    private final Expression body;
+    private final CoreExpression body;
 
-    public LetExpression(List<VariableBinding> bindings, Expression body) {
+    public CoreLetExpression(List<VariableBinding> bindings, CoreExpression body) {
         this.bindings = new ArrayList<VariableBinding>(bindings);
         this.body = body;
     }
@@ -37,8 +37,8 @@ public final class LetExpression extends Expression {
     public void assemble(Instructions instructions, Register target, Linkage linkage) {
         // TODO: let is implemented as lambda, which is not quite optimal
 
-        Expression func = new LambdaExpression(variables(), body);
-        new ApplicationExpression(func, values()).assemble(instructions, target, linkage);
+        CoreExpression func = new CoreLambdaExpression(variables(), body);
+        new CoreApplicationExpression(func, values()).assemble(instructions, target, linkage);
     }
     
     private List<Symbol> variables() {
@@ -50,8 +50,8 @@ public final class LetExpression extends Expression {
         return variables;
     }
     
-    private List<Expression> values() {
-        List<Expression> values = new ArrayList<Expression>(bindings.size());
+    private List<CoreExpression> values() {
+        List<CoreExpression> values = new ArrayList<CoreExpression>(bindings.size());
         
         for (VariableBinding binding : bindings)
             values.add(binding.value);

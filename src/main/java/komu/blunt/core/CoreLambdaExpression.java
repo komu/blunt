@@ -1,4 +1,4 @@
-package komu.blunt.ast;
+package komu.blunt.core;
 
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Label;
@@ -12,12 +12,12 @@ import java.util.List;
 
 import static komu.blunt.utils.Objects.requireNonNull;
 
-public final class LambdaExpression extends Expression {
+public final class CoreLambdaExpression extends CoreExpression {
 
     private final List<Symbol> argumentNames;
-    private final Expression body;
+    private final CoreExpression body;
 
-    public LambdaExpression(List<Symbol> argumentNames, Expression body) {
+    public CoreLambdaExpression(List<Symbol> argumentNames, CoreExpression body) {
         this.argumentNames = new ArrayList<Symbol>(argumentNames);
         this.body = requireNonNull(body);
     }

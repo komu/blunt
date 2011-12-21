@@ -1,13 +1,13 @@
 package komu.blunt.eval;
 
-import komu.blunt.ast.Expression;
+import komu.blunt.core.CoreExpression;
 import komu.blunt.reader.LispReader;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static komu.blunt.objects.Symbol.symbol;
 import static java.util.Arrays.asList;
+import static komu.blunt.objects.Symbol.symbol;
 import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -132,7 +132,7 @@ public class EvaluatorTest {
         assertThat(evaluate(expr), matcher);
     }
 
-    private static Expression analyze(String expr) {
+    private static CoreExpression analyze(String expr) {
         return new Evaluator().analyze(LispReader.parse(expr));
     }
 
