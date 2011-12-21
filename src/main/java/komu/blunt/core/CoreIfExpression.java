@@ -1,4 +1,4 @@
-package komu.blunt.ast;
+package komu.blunt.core;
 
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Label;
@@ -9,13 +9,13 @@ import komu.blunt.types.TypeEnvironment;
 
 import static komu.blunt.utils.Objects.requireNonNull;
 
-public final class IfExpression extends Expression {
+public final class CoreIfExpression extends CoreExpression {
 
-    private final Expression condition;
-    private final Expression consequent;
-    private final Expression alternative;
+    private final CoreExpression condition;
+    private final CoreExpression consequent;
+    private final CoreExpression alternative;
 
-    public IfExpression(Expression condition, Expression consequent, Expression alternative) {
+    public CoreIfExpression(CoreExpression condition, CoreExpression consequent, CoreExpression alternative) {
         this.condition = requireNonNull(condition);
         this.consequent = requireNonNull(consequent);
         this.alternative = requireNonNull(alternative);
