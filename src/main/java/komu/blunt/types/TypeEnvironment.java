@@ -1,11 +1,11 @@
 package komu.blunt.types;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import komu.blunt.ast.Expression;
 import komu.blunt.eval.TypeCheckException;
 import komu.blunt.objects.Symbol;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public final class TypeEnvironment {
     
@@ -76,15 +76,16 @@ public final class TypeEnvironment {
         throw new TypeCheckException("type unification failed: " + u + " - " + t);
     }
 
-    public Substitution getSubstitution() {
-        return parent != null ? parent.getSubstitution() : substitution;
+    private TypeEnvironment getRoot() {
+        return parent != null ? parent.getRoot() : this;        
     }
-
+    
+    public Substitution getSubstitution() {
+        return getRoot().substitution;
+    }
+    
     private void setSubstitution(Substitution substitution) {
-        if (parent != null)
-            parent.setSubstitution(substitution);
-        else
-            this.substitution = substitution;
+        getRoot().substitution = substitution;
     }
     
     public void bind(Symbol symbol, TypeScheme typeScheme) {
@@ -103,7 +104,7 @@ public final class TypeEnvironment {
     }
 
     public TypeVariable newVar(Kind kind) {
-        return new TypeVariable(typeName(typeVarSequence++), kind);
+        return new TypeVariable(typeName(getRoot().typeVarSequence++), kind);
     }
     
     private static String typeName(int index) {
