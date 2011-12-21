@@ -77,11 +77,32 @@ public final class Analyzer {
     private Expression analyzeDefine(List<?> form, StaticEnvironment env) {
         if (env != rootBindings.staticEnvironment)
             throw new AnalyzationException("only top-level defines are supported");
-        
-        Symbol name = (Symbol) form.get(1);
 
-        VariableReference var = rootBindings.staticEnvironment.define(name);
-        return new DefineExpression(name, analyze(form.get(2), env), var, rootBindings);
+        if (form.get(1) instanceof List<?>) {
+            // (define (foo x ...) body ...) -> (define foo (lambda (x ...) body ...))
+            return analyzeDefine(rewriteFunctionDefine(form), env);
+        } else {
+            Symbol name = (Symbol) form.get(1);
+
+            VariableReference var = rootBindings.staticEnvironment.define(name);
+            return new DefineExpression(name, analyze(form.get(2), env), var, rootBindings);
+        }
+    }
+
+    private static List<Object> rewriteFunctionDefine(List<?> form) {
+        List<?> list = (List<?>) form.get(1);
+
+        Symbol name = (Symbol) list.get(0);
+        List<Object> lambda = new ArrayList<Object>();
+        lambda.add(LAMBDA);
+        lambda.add(list.subList(1, list.size()));
+        lambda.addAll(form.subList(2, form.size()));
+
+        List<Object> define = new ArrayList<Object>();
+        define.add(DEFINE);
+        define.add(name);
+        define.add(lambda);
+        return define;
     }
 
     private Expression analyzeApplication(List<?> form, StaticEnvironment env) {
