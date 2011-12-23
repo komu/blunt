@@ -1,4 +1,4 @@
-package komu.blunt.reader;
+package komu.blunt.parser;
 
 import java.io.IOException;
 import java.io.PushbackReader;
@@ -7,14 +7,14 @@ import java.io.Reader;
 import static java.lang.Character.*;
 import static java.lang.Integer.parseInt;
 import static komu.blunt.objects.Symbol.symbol;
-import static komu.blunt.reader.Token.*;
+import static komu.blunt.parser.Token.*;
 
-public final class LispTokenizer {
+public final class Lexer {
     
     private final PushbackReader reader;
     private Object nextToken = null;
     
-    public LispTokenizer(Reader reader) {
+    public Lexer(Reader reader) {
         this.reader = new PushbackReader(reader);
     }
     
@@ -58,10 +58,10 @@ public final class LispTokenizer {
             return RPAREN;
         else if (readIf(';'))
             return SEMICOLON;
-        else if (readIf('\''))
-            return QUOTE;
-        else if (isSymbolCharacter(peek()))
-            return readSymbolOrKeyword();
+        else if (isOperatorCharacter(peek()))
+            return readOperator();
+        else if (isJavaIdentifierStart(peek()))
+            return readIdentifierOrKeyword();
         else
             throw parseError("unexpected token: '" + read() + "'");
     }
@@ -85,15 +85,24 @@ public final class LispTokenizer {
         return ch == '#' || isWhitespace(ch);
     }
 
-    private Object readSymbolOrKeyword() throws IOException {
+    private Object readIdentifierOrKeyword() throws IOException {
         StringBuilder sb = new StringBuilder();
 
-        while (isSymbolCharacter(peek()))
+        while (isJavaIdentifierPart(peek()))
             sb.append(read());
 
         String name = sb.toString();
         Token token = Token.keyword(name);
         return token != null ? token : symbol(sb.toString());
+    }
+
+    private Operator readOperator() throws IOException {
+        StringBuilder sb = new StringBuilder();
+
+        while (isOperatorCharacter(peek()))
+            sb.append(read());
+
+        return new Operator(sb.toString());
     }
 
     private String readString() throws IOException {
@@ -150,8 +159,8 @@ public final class LispTokenizer {
             throw parseError("unexpected char: " + ch);
     }
     
-    private static boolean isSymbolCharacter(int ch) {
-        return isLetterOrDigit(ch) || "=-_+*/<>%?!".indexOf(ch) != -1;
+    private static boolean isOperatorCharacter(int ch) {
+        return "=-+*/<>%?!".indexOf(ch) != -1;
     }
     
     private RuntimeException parseError(String message) {

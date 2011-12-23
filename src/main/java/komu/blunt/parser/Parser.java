@@ -3,8 +3,6 @@ package komu.blunt.parser;
 import komu.blunt.ast.*;
 import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.Symbol;
-import komu.blunt.reader.LispTokenizer;
-import komu.blunt.reader.Token;
 
 import java.io.*;
 import java.util.List;
@@ -14,14 +12,14 @@ import static komu.blunt.objects.Symbol.symbol;
 
 public final class Parser {
 
-    private final LispTokenizer lexer;
+    private final Lexer lexer;
 
     public Parser(InputStream in) {
         this(new InputStreamReader(in));
     }
 
     public Parser(Reader reader) {
-        this.lexer = new LispTokenizer(reader);
+        this.lexer = new Lexer(reader);
     }
 
     public static ASTExpression parse(String input) {
@@ -36,13 +34,13 @@ public final class Parser {
         ASTExpression lhs = parseTerm();
 
         while (true) {
-            if (lexer.readMatchingToken(Token.EQUAL)) {
+            if (lexer.readMatchingToken(Operator.EQUAL)) {
                 ASTExpression rhs = parseTerm();
                 lhs = binary("=", lhs, rhs);
-            } else if (lexer.readMatchingToken(Token.PLUS)) {
+            } else if (lexer.readMatchingToken(Operator.PLUS)) {
                 ASTExpression rhs = parseTerm();
                 lhs = binary("+", lhs, rhs);
-            } else if (lexer.readMatchingToken(Token.MINUS)) {
+            } else if (lexer.readMatchingToken(Operator.MINUS)) {
                 ASTExpression rhs = parseTerm();
                 lhs = binary("-", lhs, rhs);
             } else if (lexer.readMatchingToken(Token.SEMICOLON)) {
@@ -58,10 +56,10 @@ public final class Parser {
         ASTExpression lhs = parsePrimitive();
 
         while (true) {
-            if (lexer.readMatchingToken(Token.MULTIPLY)) {
+            if (lexer.readMatchingToken(Operator.MULTIPLY)) {
                 ASTExpression rhs = parsePrimitive();
                 lhs = binary("*", lhs, rhs);
-            } else if (lexer.readMatchingToken(Token.DIVIDE)) {
+            } else if (lexer.readMatchingToken(Operator.DIVIDE)) {
                 ASTExpression rhs = parsePrimitive();
                 lhs = binary("/", lhs, rhs);
             } else {
@@ -113,7 +111,7 @@ public final class Parser {
         boolean recursive = lexer.readMatchingToken(Token.REC);
         
         Symbol name = parseIdentifier();
-        expectToken(Token.EQUAL);
+        expectToken(Operator.EQUAL);
         ASTExpression value = parseExpression();
         expectToken(Token.IN);
         ASTExpression body = parseExpression();
@@ -128,7 +126,7 @@ public final class Parser {
     // fn <ident> -> expr
     private ASTExpression parseLambda() throws IOException {
         Symbol arg = parseIdentifier();
-        expectToken(Token.RIGHT_ARROW);
+        expectToken(Operator.RIGHT_ARROW);
         ASTExpression body = parseExpression();
         
         return new ASTLambda(asList(arg), body);
@@ -149,10 +147,10 @@ public final class Parser {
             throw new SyntaxException("expected identifier, got " + obj);
     }
 
-    private void expectToken(Token expected) throws IOException {
+    private void expectToken(Object expected) throws IOException {
         Object token = lexer.readToken();
 
-        if (token != expected)
+        if (!expected.equals(token))
             throw new SyntaxException("expected " + expected + " but got " + token);
     }
 
