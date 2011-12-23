@@ -3,7 +3,7 @@ package komu.blunt.parser;
 public enum Token {
     EOF,
     IF("if"), THEN("then"), ELSE("else"), LET("let"), REC("rec"), IN("in"), FN("fn"),
-    LPAREN("("), RPAREN(")"), SEMICOLON(";");
+    LPAREN("("), RPAREN(")"), SEMICOLON(";"), DOUBLE_SEMI(";;");
 
     private final String name;
     

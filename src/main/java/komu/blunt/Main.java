@@ -18,7 +18,7 @@ public class Main {
         Evaluator evaluator = new Evaluator();
         Prompt prompt = new Prompt();
         
-        evaluator.load(openResource("prelude.lisp"));
+        evaluator.load(openResource("prelude.blunt"));
         
         while (true) {
             try {
@@ -54,7 +54,7 @@ public class Main {
     private static InputStream openResource(String path) throws FileNotFoundException {
         ClassLoader loader = Main.class.getClassLoader();
 
-        InputStream in = loader.getResourceAsStream("prelude.lisp");
+        InputStream in = loader.getResourceAsStream("prelude.blunt");
         if (in != null)
             return in;
         else

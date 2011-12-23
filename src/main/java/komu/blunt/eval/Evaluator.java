@@ -4,6 +4,7 @@ import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
+import komu.blunt.ast.ASTDefine;
 import komu.blunt.ast.ASTExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.PrimitiveFunction;
@@ -57,9 +58,9 @@ public final class Evaluator {
     public void load(InputStream in) throws IOException {
         try {
             Parser parser = new Parser(in);
-            ASTExpression exp;
-            while ((exp = parser.parseExpression()) != null)
-                evaluate(exp);
+
+            for (ASTDefine define : parser.parseDefinitions())
+                evaluate(define);
 
         } finally {
             in.close();

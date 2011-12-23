@@ -57,7 +57,7 @@ public final class Lexer {
         else if (readIf(')'))
             return RPAREN;
         else if (readIf(';'))
-            return SEMICOLON;
+            return readIf(';') ? DOUBLE_SEMI : SEMICOLON;
         else if (isOperatorCharacter(peek()))
             return readOperator();
         else if (isJavaIdentifierStart(peek()))
@@ -88,12 +88,16 @@ public final class Lexer {
     private Object readIdentifierOrKeyword() throws IOException {
         StringBuilder sb = new StringBuilder();
 
-        while (isJavaIdentifierPart(peek()))
+        while (isIdentifierPart(peek()))
             sb.append(read());
 
         String name = sb.toString();
         Token token = Token.keyword(name);
         return token != null ? token : symbol(sb.toString());
+    }
+
+    private static boolean isIdentifierPart(int ch) {
+        return isJavaIdentifierPart(ch) || "?!".indexOf(ch) != -1;
     }
 
     private Operator readOperator() throws IOException {

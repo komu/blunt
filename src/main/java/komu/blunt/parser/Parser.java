@@ -5,6 +5,7 @@ import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.Symbol;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,6 +32,25 @@ public final class Parser {
         }
     }
     
+    public List<ASTDefine> parseDefinitions() throws IOException {
+        List<ASTDefine> result = new ArrayList<ASTDefine>();
+        
+        while (lexer.peekToken() != Token.EOF)
+            result.add(parseDefinition());
+        
+        return result;
+    }
+
+    // <ident> = <expr> ;;
+    private ASTDefine parseDefinition() throws IOException {
+        Symbol name = parseIdentifier();
+        expectToken(Operator.EQUAL);
+        ASTExpression value = parseExpression();
+        expectToken(Token.DOUBLE_SEMI);
+        
+        return new ASTDefine(name, value);
+    }
+
     public ASTExpression parseExpression() throws IOException {
         ASTExpression exp = parserExp2();
 
