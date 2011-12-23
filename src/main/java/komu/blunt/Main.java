@@ -1,15 +1,15 @@
 package komu.blunt;
 
-import static komu.blunt.objects.Symbol.symbol;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import komu.blunt.eval.AnalyzationException;
 import komu.blunt.eval.Evaluator;
 import komu.blunt.eval.ResultWithType;
 import komu.blunt.objects.EvaluationException;
 import komu.blunt.objects.Symbol;
+
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
+import static komu.blunt.objects.Symbol.symbol;
 
 public class Main {
     
@@ -20,7 +20,7 @@ public class Main {
         Evaluator evaluator = new Evaluator();
         Prompt prompt = new Prompt();
         
-        evaluator.load(openResource("prologue.lisp"));
+        evaluator.load(openResource("prelude.lisp"));
         
         while (true) {
             try {
@@ -47,7 +47,7 @@ public class Main {
     private static InputStream openResource(String path) throws FileNotFoundException {
         ClassLoader loader = Main.class.getClassLoader();
 
-        InputStream in = loader.getResourceAsStream("prologue.lisp");
+        InputStream in = loader.getResourceAsStream("prelude.lisp");
         if (in != null)
             return in;
         else

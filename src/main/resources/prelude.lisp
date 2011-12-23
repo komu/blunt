@@ -29,10 +29,13 @@
 (define (square x)
   (* x x))
 
-(define (range min max)
+(define (range2 step min max)
   (if (< min max)
-    (cons min (range (+ min 1) max))
+    (cons min (range2 step (+ min step) max))
     nil))
+
+(define (range min max)
+  (range2 1 min max))
 
 (define (or x y)
   (if x true y))
