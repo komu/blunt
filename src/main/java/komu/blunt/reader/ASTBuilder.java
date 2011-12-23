@@ -1,5 +1,6 @@
-package komu.blunt.ast;
+package komu.blunt.reader;
 
+import komu.blunt.ast.*;
 import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.Symbol;
 

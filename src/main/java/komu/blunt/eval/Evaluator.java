@@ -4,12 +4,10 @@ import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
-import komu.blunt.ast.ASTBuilder;
 import komu.blunt.ast.ASTExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.PrimitiveFunction;
-import komu.blunt.reader.LispReader;
-import komu.blunt.reader.Token;
+import komu.blunt.parser.Parser;
 import komu.blunt.stdlib.BasicFunctions;
 import komu.blunt.stdlib.ConsList;
 import komu.blunt.stdlib.LibraryFunction;
@@ -50,30 +48,30 @@ public final class Evaluator {
         }
     }
 
-    public CoreExpression analyze(Object form) {
-        CoreExpression exp = toCore(form);
+    public CoreExpression analyze(ASTExpression expr) {
+        CoreExpression exp = toCore(expr);
         rootBindings.createTypeEnvironment().typeCheck(exp);
         return exp;
     }
     
     public void load(InputStream in) throws IOException {
         try {
-            LispReader reader = new LispReader(in);
-            Object form;
-            while ((form = reader.readForm()) != Token.EOF) {
-                evaluate(form);
-            }
+            Parser parser = new Parser(in);
+            ASTExpression exp;
+            while ((exp = parser.parseExpression()) != null)
+                evaluate(exp);
+
         } finally {
             in.close();
         }
     }
 
-    public Object evaluate(Object form) {
-        return evaluateWithType(form).result;
+    public Object evaluate(ASTExpression exp) {
+        return evaluateWithType(exp).result;
     }
 
-    public ResultWithType evaluateWithType(Object form) {
-        CoreExpression expression = toCore(form);
+    public ResultWithType evaluateWithType(ASTExpression exp) {
+        CoreExpression expression = toCore(exp);
         Type type = rootBindings.createTypeEnvironment().typeCheck(expression);
 
         int pos = instructions.pos();
@@ -85,9 +83,8 @@ public final class Evaluator {
         return new ResultWithType(result, type);
     }
 
-    private CoreExpression toCore(Object form) {
-        ASTExpression ast = new ASTBuilder().parse(form);
-        return ast.analyze(rootBindings.staticEnvironment, rootBindings);
+    private CoreExpression toCore(ASTExpression exp) {
+        return exp.analyze(rootBindings.staticEnvironment, rootBindings);
     }
 
     public void dump() {

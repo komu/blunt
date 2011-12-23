@@ -1,7 +1,7 @@
 package komu.blunt.eval;
 
 import komu.blunt.core.CoreExpression;
-import komu.blunt.reader.LispReader;
+import komu.blunt.parser.Parser;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -133,11 +133,11 @@ public class EvaluatorTest {
     }
 
     private static CoreExpression analyze(String expr) {
-        return new Evaluator().analyze(LispReader.parse(expr));
+        return new Evaluator().analyze(Parser.parse(expr));
     }
 
     private static Object evaluate(String expr) {
-        return new Evaluator().evaluate(LispReader.parse(expr));
+        return new Evaluator().evaluate(Parser.parse(expr));
     }
 
     private static Matcher<Object> produces(final Object value) {

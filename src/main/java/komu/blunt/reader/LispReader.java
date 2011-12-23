@@ -1,19 +1,17 @@
 package komu.blunt.reader;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static komu.blunt.objects.Symbol.symbol;
 import static java.util.Arrays.asList;
+import static komu.blunt.objects.Symbol.symbol;
 
 public final class LispReader {
 
     private final LispTokenizer tokenizer;
-
-    public LispReader(InputStream in) {
-        this(new InputStreamReader(in));
-    }
 
     public LispReader(Reader reader) {
         this.tokenizer = new LispTokenizer(reader);
