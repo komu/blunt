@@ -1,6 +1,6 @@
 package komu.blunt.asm;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Label {
     
@@ -8,7 +8,7 @@ public final class Label {
     private int address = -1;
     
     Label(String name) {
-        this.name = requireNonNull(name);
+        this.name = checkNotNull(name);
     }
 
     void setAddress(int address) {

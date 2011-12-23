@@ -1,6 +1,6 @@
 package komu.blunt.ast;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTIf extends ASTExpression {
     public final ASTExpression test;
@@ -8,9 +8,9 @@ public final class ASTIf extends ASTExpression {
     public final ASTExpression alternative;
 
     public ASTIf(ASTExpression test, ASTExpression consequent, ASTExpression alternative) {
-        this.test = requireNonNull(test);
-        this.consequent = requireNonNull(consequent);
-        this.alternative = requireNonNull(alternative);
+        this.test = checkNotNull(test);
+        this.consequent = checkNotNull(consequent);
+        this.alternative = checkNotNull(alternative);
     }
 
     @Override

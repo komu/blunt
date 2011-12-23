@@ -7,14 +7,14 @@ import komu.blunt.eval.VariableReference;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeEnvironment;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreVariableExpression extends CoreExpression {
     
     private final VariableReference var;
 
     public CoreVariableExpression(VariableReference var) {
-        this.var = requireNonNull(var);
+        this.var = checkNotNull(var);
     }
 
     @Override

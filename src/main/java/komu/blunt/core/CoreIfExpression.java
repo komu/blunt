@@ -7,7 +7,7 @@ import komu.blunt.asm.Register;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeEnvironment;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreIfExpression extends CoreExpression {
 
@@ -16,9 +16,9 @@ public final class CoreIfExpression extends CoreExpression {
     private final CoreExpression alternative;
 
     public CoreIfExpression(CoreExpression condition, CoreExpression consequent, CoreExpression alternative) {
-        this.condition = requireNonNull(condition);
-        this.consequent = requireNonNull(consequent);
-        this.alternative = requireNonNull(alternative);
+        this.condition = checkNotNull(condition);
+        this.consequent = checkNotNull(consequent);
+        this.alternative = checkNotNull(alternative);
     }
 
     @Override

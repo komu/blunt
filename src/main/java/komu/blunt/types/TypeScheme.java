@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class TypeScheme {
 
@@ -13,7 +13,7 @@ public final class TypeScheme {
     
     public TypeScheme(List<Kind> kinds, Type type) {
         this.kinds = new ArrayList<Kind>(kinds);
-        this.type = requireNonNull(type);
+        this.type = checkNotNull(type);
     }
 
     // TODO

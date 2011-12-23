@@ -2,15 +2,15 @@ package komu.blunt.ast;
 
 import komu.blunt.objects.Symbol;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTBinding {
     public final Symbol name;
     public final ASTExpression expr;
 
     public ASTBinding(Symbol name, ASTExpression expr) {
-        this.name = requireNonNull(name);
-        this.expr = requireNonNull(expr);
+        this.name = checkNotNull(name);
+        this.expr = checkNotNull(expr);
     }
 
     @Override

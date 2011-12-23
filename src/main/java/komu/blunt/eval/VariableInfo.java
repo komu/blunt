@@ -2,7 +2,7 @@ package komu.blunt.eval;
 
 import komu.blunt.objects.Symbol;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class VariableInfo {
 
@@ -12,7 +12,7 @@ public final class VariableInfo {
     public VariableInfo(Symbol name, int offset) {
         if (offset < 0) throw new IllegalArgumentException("negative offset: " + offset);
 
-        this.name = requireNonNull(name);
+        this.name = checkNotNull(name);
         this.offset = offset;
     }
 

@@ -2,7 +2,7 @@ package komu.blunt.ast;
 
 import komu.blunt.objects.Symbol;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTDefine extends ASTExpression {
 
@@ -10,8 +10,8 @@ public final class ASTDefine extends ASTExpression {
     public final ASTExpression value;
 
     public ASTDefine(Symbol name, ASTExpression value) {
-        this.name = requireNonNull(name);
-        this.value = requireNonNull(value);
+        this.name = checkNotNull(name);
+        this.value = checkNotNull(value);
     }
 
     @Override

@@ -7,7 +7,7 @@ import komu.blunt.objects.Function;
 
 import java.lang.reflect.Array;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class OpCode {
     OpCode() { }
@@ -20,8 +20,8 @@ public abstract class OpCode {
         private final Label label;
 
         JumpIfFalse(Register register, Label label) {
-            this.register = requireNonNull(register);
-            this.label = requireNonNull(label);
+            this.register = checkNotNull(register);
+            this.label = checkNotNull(label);
         }
 
         @Override
@@ -42,7 +42,7 @@ public abstract class OpCode {
         private final Label label;
 
         public Jump(Label label) {
-            this.label = requireNonNull(label);
+            this.label = checkNotNull(label);
         }
 
         @Override
@@ -61,7 +61,7 @@ public abstract class OpCode {
         private final Object value;
 
         public LoadConstant(Register register, Object value) {
-            this.register = requireNonNull(register);
+            this.register = checkNotNull(register);
             this.value = value;
         }
 
@@ -81,8 +81,8 @@ public abstract class OpCode {
         private final VariableReference variable;
 
         public LoadVariable(Register register, VariableReference variable) {
-            this.register = requireNonNull(register);
-            this.variable = requireNonNull(variable);
+            this.register = checkNotNull(register);
+            this.variable = checkNotNull(variable);
         }
 
         @Override
@@ -103,8 +103,8 @@ public abstract class OpCode {
         private final Register register;
 
         public StoreVariable(VariableReference variable, Register register) {
-            this.variable = requireNonNull(variable);
-            this.register = requireNonNull(register);
+            this.variable = checkNotNull(variable);
+            this.register = checkNotNull(register);
         }
 
         @Override
@@ -125,8 +125,8 @@ public abstract class OpCode {
         private final Label label;
 
         public LoadLambda(Register target, Label label) {
-            this.target = requireNonNull(target);
-            this.label = requireNonNull(label);
+            this.target = checkNotNull(target);
+            this.label = checkNotNull(label);
         }
 
         @Override
@@ -147,7 +147,7 @@ public abstract class OpCode {
         private final int size;
 
         public LoadNewArray(Register target, int size) {
-            this.target = requireNonNull(target);
+            this.target = checkNotNull(target);
             this.size = size;
         }
 
@@ -169,9 +169,9 @@ public abstract class OpCode {
         private final Register valueRegister;
 
         public ArrayStore(Register arrayRegister, int index, Register valueRegister) {
-            this.arrayRegister = requireNonNull(arrayRegister);
+            this.arrayRegister = checkNotNull(arrayRegister);
             this.index = index;
-            this.valueRegister = requireNonNull(valueRegister);
+            this.valueRegister = checkNotNull(valueRegister);
         }
 
         @Override
@@ -192,7 +192,7 @@ public abstract class OpCode {
         private final Label label;
 
         public PushLabel(Label label) {
-            this.label = requireNonNull(label);
+            this.label = checkNotNull(label);
         }
 
         @Override
@@ -263,7 +263,7 @@ public abstract class OpCode {
         private final Register register;
 
         public PushRegister(Register register) {
-            this.register = requireNonNull(register);
+            this.register = checkNotNull(register);
         }
 
         @Override
@@ -282,7 +282,7 @@ public abstract class OpCode {
         private final Register register;
 
         public PopRegister(Register register) {
-            this.register = requireNonNull(register);
+            this.register = checkNotNull(register);
         }
 
         @Override
@@ -302,8 +302,8 @@ public abstract class OpCode {
 
 
         public CopyRegister(Register target, Register source) {
-            this.target = requireNonNull(target);
-            this.source = requireNonNull(source);
+            this.target = checkNotNull(target);
+            this.source = checkNotNull(source);
         }
 
         @Override

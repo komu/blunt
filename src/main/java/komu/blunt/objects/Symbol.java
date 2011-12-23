@@ -1,13 +1,13 @@
 package komu.blunt.objects;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Symbol {
     
     private final String value;
     
     private Symbol(String value) {
-        this.value = requireNonNull(value);
+        this.value = checkNotNull(value);
     }
     
     public static Symbol symbol(String symbol) {

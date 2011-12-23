@@ -2,7 +2,7 @@ package komu.blunt.objects;
 
 import komu.blunt.eval.Environment;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CompoundProcedure {
     
@@ -11,7 +11,7 @@ public final class CompoundProcedure {
 
     public CompoundProcedure(int address, Environment env) {
         this.address = address;
-        this.env = requireNonNull(env);
+        this.env = checkNotNull(env);
     }
 
     @Override

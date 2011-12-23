@@ -6,14 +6,14 @@ import komu.blunt.core.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Analyzer {
 
     private final RootBindings rootBindings;
 
     public Analyzer(RootBindings rootBindings) {
-        this.rootBindings = requireNonNull(rootBindings);
+        this.rootBindings = checkNotNull(rootBindings);
     }
     
     public CoreExpression analyze(ASTExpression exp, StaticEnvironment env) {

@@ -1,15 +1,10 @@
 package komu.blunt.asm;
 
-import static komu.blunt.utils.Objects.requireNonNull;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import komu.blunt.eval.VariableReference;
+
+import java.util.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Instructions {
     
@@ -46,7 +41,7 @@ public final class Instructions {
     }
 
     public Label newLabel(String prefix) {
-        return new Label(requireNonNull(prefix) + "-" + labelCounter++);
+        return new Label(checkNotNull(prefix) + "-" + labelCounter++);
     }
 
     public void finishWithLinkage(Linkage linkage) {

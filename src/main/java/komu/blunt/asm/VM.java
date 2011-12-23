@@ -5,7 +5,7 @@ import komu.blunt.eval.Environment;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class VM {
     
@@ -14,7 +14,7 @@ public final class VM {
     private final ArrayList<Object> stack = new ArrayList<Object>();
 
     public VM(Instructions instructions, Environment env) {
-        this.instructions = requireNonNull(instructions);
+        this.instructions = checkNotNull(instructions);
         registers.put(Register.ENV, env);
         registers.put(Register.PC, 0);
     }

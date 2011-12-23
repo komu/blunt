@@ -10,7 +10,7 @@ import komu.blunt.types.TypeEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreApplicationExpression extends CoreExpression {
     
@@ -18,8 +18,8 @@ public final class CoreApplicationExpression extends CoreExpression {
     private final List<CoreExpression> args;
 
     public CoreApplicationExpression(CoreExpression func, List<CoreExpression> args) {
-        this.func = requireNonNull(func);
-        this.args = requireNonNull(args);
+        this.func = checkNotNull(func);
+        this.args = checkNotNull(args);
     }
 
     @Override

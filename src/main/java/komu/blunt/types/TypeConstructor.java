@@ -1,10 +1,10 @@
 package komu.blunt.types;
 
-import static komu.blunt.utils.Objects.requireNonNull;
-
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class TypeConstructor extends Type {
     
@@ -12,8 +12,8 @@ public final class TypeConstructor extends Type {
     private final Kind kind;
     
     public TypeConstructor(String name, Kind kind) {
-        this.name = requireNonNull(name);
-        this.kind = requireNonNull(kind);
+        this.name = checkNotNull(name);
+        this.kind = checkNotNull(kind);
     }
 
     @Override

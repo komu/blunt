@@ -2,13 +2,13 @@ package komu.blunt.ast;
 
 import java.util.List;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTSequence extends ASTExpression {
     public final List<ASTExpression> exps;
 
     public ASTSequence(List<ASTExpression> exps) {
-        this.exps = requireNonNull(exps);
+        this.exps = checkNotNull(exps);
     }
 
     @Override

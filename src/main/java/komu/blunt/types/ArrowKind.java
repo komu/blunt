@@ -1,14 +1,14 @@
 package komu.blunt.types;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 final class ArrowKind extends Kind {
     final Kind left;
     final Kind right;
 
     ArrowKind(Kind left, Kind right) {
-        this.left = requireNonNull(left);
-        this.right = requireNonNull(right);
+        this.left = checkNotNull(left);
+        this.right = checkNotNull(right);
     }
 
     @Override

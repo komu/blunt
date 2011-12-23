@@ -4,15 +4,15 @@ import komu.blunt.objects.Symbol;
 
 import java.util.List;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTLambda extends ASTExpression {
     public final List<Symbol> arguments;
     public final ASTExpression body;
 
     public ASTLambda(List<Symbol> arguments, ASTExpression body) {
-        this.arguments = requireNonNull(arguments);
-        this.body = requireNonNull(body);
+        this.arguments = checkNotNull(arguments);
+        this.body = checkNotNull(body);
     }
 
     @Override

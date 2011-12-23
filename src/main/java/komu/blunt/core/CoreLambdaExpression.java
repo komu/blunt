@@ -10,7 +10,7 @@ import komu.blunt.types.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreLambdaExpression extends CoreExpression {
 
@@ -19,7 +19,7 @@ public final class CoreLambdaExpression extends CoreExpression {
 
     public CoreLambdaExpression(List<Symbol> argumentNames, CoreExpression body) {
         this.argumentNames = new ArrayList<Symbol>(argumentNames);
-        this.body = requireNonNull(body);
+        this.body = checkNotNull(body);
     }
 
     @Override

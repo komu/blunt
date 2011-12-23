@@ -3,7 +3,7 @@ package komu.blunt.ast;
 import java.util.Arrays;
 import java.util.List;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTApplication extends ASTExpression {
 
@@ -11,8 +11,8 @@ public final class ASTApplication extends ASTExpression {
     public final List<ASTExpression> args;
 
     public ASTApplication(ASTExpression func, List<ASTExpression> args) {
-        this.func = requireNonNull(func);
-        this.args = requireNonNull(args);
+        this.func = checkNotNull(func);
+        this.args = checkNotNull(args);
     }
 
     public ASTApplication(ASTExpression func, ASTExpression... args) {

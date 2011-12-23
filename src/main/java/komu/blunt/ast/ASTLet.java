@@ -6,15 +6,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTLet extends ASTExpression {
     public final List<ASTBinding> bindings;
     public final ASTExpression body;
 
     public ASTLet(List<ASTBinding> bindings, ASTExpression body) {
-        this.bindings = requireNonNull(bindings);
-        this.body = requireNonNull(body);
+        this.bindings = checkNotNull(bindings);
+        this.body = checkNotNull(body);
     }
 
     public List<Symbol> getVariables() {

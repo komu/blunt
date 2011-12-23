@@ -12,7 +12,7 @@ import komu.blunt.types.Type;
 import komu.blunt.types.TypeEnvironment;
 import komu.blunt.types.TypeVariable;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreDefineExpression extends CoreExpression {
 
@@ -22,10 +22,10 @@ public final class CoreDefineExpression extends CoreExpression {
     private VariableReference var;
 
     public CoreDefineExpression(Symbol name, CoreExpression expression, VariableReference var, RootBindings rootBindings) {
-        this.name = requireNonNull(name);
-        this.expression = requireNonNull(expression);
-        this.var = requireNonNull(var);
-        this.rootBindings = requireNonNull(rootBindings);
+        this.name = checkNotNull(name);
+        this.expression = checkNotNull(expression);
+        this.var = checkNotNull(var);
+        this.rootBindings = checkNotNull(rootBindings);
     }
 
     @Override

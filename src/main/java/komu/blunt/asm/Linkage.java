@@ -1,6 +1,6 @@
 package komu.blunt.asm;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Linkage {
     
@@ -11,12 +11,12 @@ public final class Linkage {
     public final Label label;
 
     private Linkage(String name, Label label) {
-        this.name = requireNonNull(name);
+        this.name = checkNotNull(name);
         this.label = label;
     }
 
     public static Linkage jump(Label label) {
-        return new Linkage("jump", requireNonNull(label));
+        return new Linkage("jump", checkNotNull(label));
     }
 
     @Override

@@ -1,6 +1,6 @@
 package komu.blunt.stdlib;
 
-import komu.blunt.utils.Objects;
+import com.google.common.base.Objects;
 
 @SuppressWarnings("unused")
 public class BasicFunctions {

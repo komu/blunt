@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class PrimitiveFunction implements Function {
 
@@ -13,8 +13,8 @@ public final class PrimitiveFunction implements Function {
     private final boolean isStatic;
 
     public PrimitiveFunction(String name, Method method, boolean isStatic) {
-        this.name = requireNonNull(name);
-        this.method = requireNonNull(method);
+        this.name = checkNotNull(name);
+        this.method = checkNotNull(method);
         this.isStatic = isStatic;
     }
     

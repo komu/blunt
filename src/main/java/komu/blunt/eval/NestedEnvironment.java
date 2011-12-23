@@ -1,6 +1,6 @@
 package komu.blunt.eval;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class NestedEnvironment extends Environment {
 
@@ -8,8 +8,8 @@ public final class NestedEnvironment extends Environment {
     private final Environment parent;
 
     public NestedEnvironment(Object[] bindings, Environment parent) {
-        this.bindings = requireNonNull(bindings);
-        this.parent = requireNonNull(parent);
+        this.bindings = checkNotNull(bindings);
+        this.parent = checkNotNull(parent);
     }
 
     @Override

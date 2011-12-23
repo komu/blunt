@@ -1,12 +1,12 @@
 package komu.blunt.types;
 
-import static komu.blunt.utils.Objects.requireNonNull;
+import komu.blunt.eval.TypeCheckException;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import komu.blunt.eval.TypeCheckException;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class TypeApplication extends Type {
     
@@ -14,8 +14,8 @@ public final class TypeApplication extends Type {
     final Type right;
 
     public TypeApplication(Type left, Type right) {
-        this.left = requireNonNull(left);
-        this.right = requireNonNull(right);
+        this.left = checkNotNull(left);
+        this.right = checkNotNull(right);
     }
 
     @Override
