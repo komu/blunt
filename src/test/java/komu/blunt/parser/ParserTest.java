@@ -16,8 +16,8 @@ public class ParserTest {
         assertThat(parsing(""),      producesEof());
         assertThat(parsing("  "),    producesEof());
         assertThat(parsing("\n "),   producesEof());
-        assertThat(parsing(" ; \n"), producesEof());
-        assertThat(parsing(" ; "),   producesEof());
+        assertThat(parsing(" # \n"), producesEof());
+        assertThat(parsing(" # "),   producesEof());
     }
 
     @Test
@@ -59,6 +59,19 @@ public class ParserTest {
     public void parenthesizedExpression() {
         assertThat(parsing("(42)"), producesConstant(42));
         assertThat(parsing("(((43)))"), producesConstant(43));
+    }
+
+    @Test
+    public void binaryOperators() {
+        assertThat(parsing("a = b"), producesExpressionMatching("(= a b)"));
+        assertThat(parsing("a + b"), producesExpressionMatching("(+ a b)"));
+        assertThat(parsing("a - b"), producesExpressionMatching("(- a b)"));
+    }
+
+    @Test
+    public void sequences() {
+        assertThat(parsing("a; b"), producesExpressionMatching("(begin a b)"));
+        assertThat(parsing("a; b; c"), producesExpressionMatching("(begin a (begin b c))"));
     }
 
     private static ASTExpression parsing(String s) {

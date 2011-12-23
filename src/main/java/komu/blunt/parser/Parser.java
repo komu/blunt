@@ -10,6 +10,7 @@ import java.io.*;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static komu.blunt.objects.Symbol.symbol;
 
 public final class Parser {
 
@@ -24,6 +25,30 @@ public final class Parser {
     }
     
     public ASTExpression parseExpression() throws IOException {
+        ASTExpression lhs = parsePrimitive();
+        
+        if (lexer.readMatchingToken(Token.EQUAL)) {
+            ASTExpression rhs = parseExpression();
+            return binary("=", lhs, rhs);
+        } else if (lexer.readMatchingToken(Token.PLUS)) {
+            ASTExpression rhs = parseExpression();
+            return binary("+", lhs, rhs);
+        } else if (lexer.readMatchingToken(Token.MINUS)) {
+            ASTExpression rhs = parseExpression();
+            return binary("-", lhs, rhs);
+        } else if (lexer.readMatchingToken(Token.SEMICOLON)) {
+            ASTExpression rhs = parseExpression();
+            return new ASTSequence(lhs, rhs);
+        } else {
+            return lhs;
+        }
+    }
+
+    private static ASTExpression binary(String op, ASTExpression lhs, ASTExpression rhs) {
+        return new ASTApplication(new ASTVariable(symbol(op)), lhs, rhs);
+    }
+
+    private ASTExpression parsePrimitive() throws IOException {
         Object token = lexer.readToken();
 
         if (token == Token.EOF)
@@ -34,7 +59,7 @@ public final class Parser {
 
         if (token == Token.LET)
             return parseLet();
-        
+
         if (token == Token.FN)
             return parseLambda();
 
@@ -66,7 +91,7 @@ public final class Parser {
         boolean recursive = lexer.readMatchingToken(Token.REC);
         
         Symbol name = parseIdentifier();
-        expectToken(Token.EQ);
+        expectToken(Token.EQUAL);
         ASTExpression value = parseExpression();
         expectToken(Token.IN);
         ASTExpression body = parseExpression();

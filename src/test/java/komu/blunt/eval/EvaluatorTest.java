@@ -30,16 +30,14 @@ public class EvaluatorTest {
     }
     
     @Test
-    @Ignore
-    public void primitiveApplication() {
-        assertThatEvaluating("(+ 1 2)", produces(3));
+    public void primitiveOperators() {
+        assertThatEvaluating("1 + 2", produces(3));
     }
 
     @Test
     public void ifExpression() {
-        assertThatEvaluating("if true then 1 else 2", produces(1));
-        //assertThatEvaluating("(if true (+ 1 2) (+ 3 4))", produces(3));
-        //assertThatEvaluating("(if false (+ 1 2) (+ 3 4))", produces(7));
+        assertThatEvaluating("if true then 1 + 2 else 3 + 4", produces(3));
+        assertThatEvaluating("if false then 1 + 2 else 3 + 4", produces(7));
     }
 
     @Test
@@ -50,10 +48,9 @@ public class EvaluatorTest {
     }
 
     @Test
-    @Ignore
     public void equality() {
-        assertThatEvaluating("(= 1 1)", produces(true));
-        assertThatEvaluating("(= 1 2)", produces(false));
+        assertThatEvaluating("1 = 1", produces(true));
+        assertThatEvaluating("1 = 2", produces(false));
     }
 
     @Test
@@ -63,15 +60,13 @@ public class EvaluatorTest {
     }
 
     @Test
-    @Ignore
     public void polymorphicTypeWithDifferentInstantiations() {
-        assertThatEvaluating("(= true (= 1 1))", produces(true));
+        assertThatEvaluating("true = (1 = 1)", produces(true));
     }
 
     @Test
-    @Ignore
     public void equalityBetweenDifferentTypes() {
-        assertStaticError("(= 2 \"foo\")");
+        assertStaticError("2 = \"foo\"");
     }
 
     @Test
@@ -114,9 +109,8 @@ public class EvaluatorTest {
     }
 
     @Test
-    @Ignore
     public void sequence() {
-        assertThatEvaluating("(begin 1 2 3)", produces(3));
+        assertThatEvaluating("1; 2; 3", produces(3));
     }
     
     @Test
@@ -134,7 +128,7 @@ public class EvaluatorTest {
     @Test
     @Ignore
     public void letRec() {
-        //assertThatEvaluating("(letrec ((f (lambda (n) (if (= 0 n) 1 (* n (f (- n 1))))))) (f 10))", produces(3628800));
+        assertThatEvaluating("let rec f = fn n -> if (0 = n) then 1 else (f (n - 1)) in f 10)", produces(3628800));
     }
 
     private void assertStaticError(String expr) {

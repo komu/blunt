@@ -56,6 +56,8 @@ public final class LispTokenizer {
             return LPAREN;
         else if (readIf(')'))
             return RPAREN;
+        else if (readIf(';'))
+            return SEMICOLON;
         else if (readIf('\''))
             return QUOTE;
         else if (isSymbolCharacter(peek()))
@@ -67,7 +69,7 @@ public final class LispTokenizer {
     private void skipWhitespace() throws IOException {
         while (isWhiteSpaceOrComment(peek())) {
             char ch = read();
-            if (ch == ';') {
+            if (ch == '#') {
                 skipToEndOfLine();
             }
         }
@@ -80,7 +82,7 @@ public final class LispTokenizer {
     }
 
     private static boolean isWhiteSpaceOrComment(int ch) {
-        return ch == ';' || isWhitespace(ch);
+        return ch == '#' || isWhitespace(ch);
     }
 
     private Object readSymbolOrKeyword() throws IOException {

@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum Token {
-    EOF, QUOTE, LPAREN, RPAREN, EQ, IF, THEN, ELSE, LET, REC, IN, FN, RIGHT_ARROW;
+    EOF, QUOTE, LPAREN, RPAREN, EQUAL, IF, THEN, ELSE, LET, REC, IN, FN, RIGHT_ARROW, PLUS, MINUS,
+    SEMICOLON;
 
     private static final Map<String, Token> keywords = createKeywordMap();
 
@@ -20,9 +21,12 @@ public enum Token {
         keywords.put("let", LET);
         keywords.put("rec", REC);
         keywords.put("in", IN);
-        keywords.put("=", EQ);
+        keywords.put("=", EQUAL);
         keywords.put("fn", FN);
         keywords.put("->", RIGHT_ARROW);
+        keywords.put("+", PLUS);
+        keywords.put("-", MINUS);
+        keywords.put(";", SEMICOLON);
         return keywords;
     }
 }
