@@ -26,7 +26,6 @@ import static java.lang.reflect.Modifier.isStatic;
 public final class Evaluator {
 
     private final RootBindings rootBindings = new RootBindings();
-    private final Analyzer analyzer = new Analyzer(rootBindings);
     private final Instructions instructions = new Instructions();
     private final VM vm = new VM(instructions, rootBindings.runtimeEnvironment);
 
@@ -88,7 +87,7 @@ public final class Evaluator {
 
     private CoreExpression toCore(Object form) {
         ASTExpression ast = new ASTBuilder().parse(form);
-        return analyzer.analyze(ast, rootBindings.staticEnvironment);
+        return ast.analyze(rootBindings.staticEnvironment, rootBindings);
     }
 
     public void dump() {

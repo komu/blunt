@@ -1,5 +1,10 @@
 package komu.blunt.ast;
 
+import komu.blunt.core.CoreApplicationExpression;
+import komu.blunt.core.CoreExpression;
+import komu.blunt.eval.RootBindings;
+import komu.blunt.eval.StaticEnvironment;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,6 +22,11 @@ public final class ASTApplication extends ASTExpression {
 
     public ASTApplication(ASTExpression func, ASTExpression... args) {
         this(func, Arrays.asList(args));
+    }
+
+    @Override
+    public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
+        return new CoreApplicationExpression(func.analyze(env, rootBindings), analyzeAll(args, env, rootBindings));
     }
 
     @Override

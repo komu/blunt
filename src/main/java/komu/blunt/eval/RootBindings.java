@@ -11,7 +11,7 @@ import java.util.Map;
 import static komu.blunt.objects.Symbol.symbol;
 
 public final class RootBindings {
-    final StaticEnvironment staticEnvironment = new StaticEnvironment();
+    public final StaticEnvironment staticEnvironment = new StaticEnvironment();
     final RootEnvironment runtimeEnvironment = new RootEnvironment();
     private final Map<Symbol, TypeScheme> types = new HashMap<Symbol, TypeScheme>();
 

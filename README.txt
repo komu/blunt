@@ -19,7 +19,7 @@ The main flow:
          v
   ast.ASTExpression
          |
-         |  eval.Analyzer
+         |  ASTExpression.analyze
          |
          v
   core.CoreExpression

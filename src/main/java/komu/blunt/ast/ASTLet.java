@@ -1,5 +1,10 @@
 package komu.blunt.ast;
 
+import komu.blunt.core.CoreExpression;
+import komu.blunt.core.CoreLetExpression;
+import komu.blunt.core.VariableBinding;
+import komu.blunt.eval.RootBindings;
+import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
 
 import java.util.ArrayList;
@@ -17,7 +22,23 @@ public final class ASTLet extends ASTExpression {
         this.body = checkNotNull(body);
     }
 
-    public List<Symbol> getVariables() {
+    @Override
+    public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
+        StaticEnvironment newEnv = env.extend(getVariables());
+
+        return new CoreLetExpression(analyzeBindings(bindings, env, rootBindings), body.analyze(newEnv, rootBindings));
+    }
+
+    private static List<VariableBinding> analyzeBindings(List<ASTBinding> bindings, StaticEnvironment env, RootBindings rootBindings) {
+        List<VariableBinding> result = new ArrayList<VariableBinding>(bindings.size());
+
+        for (ASTBinding binding : bindings)
+            result.add(new VariableBinding(binding.name, binding.expr.analyze(env, rootBindings)));
+
+        return result;
+    }
+
+    private List<Symbol> getVariables() {
         List<Symbol> vars = new ArrayList<Symbol>(bindings.size());
         for (ASTBinding binding : bindings)
             vars.add(binding.name);
