@@ -23,22 +23,30 @@ public final class Parser {
     public Parser(Reader reader) {
         this.lexer = new LispTokenizer(reader);
     }
+
+    public static ASTExpression parse(String input) {
+        try {
+            return new Parser(new StringReader(input)).parseExpression();
+        } catch (IOException e) {
+            throw new RuntimeException("unexpected IOException: " + e, e);
+        }
+    }
     
     public ASTExpression parseExpression() throws IOException {
-        ASTExpression lhs = parsePrimitive();
+        ASTExpression lhs = parseTerm();
 
         while (true) {
             if (lexer.readMatchingToken(Token.EQUAL)) {
-                ASTExpression rhs = parsePrimitive();
+                ASTExpression rhs = parseTerm();
                 lhs = binary("=", lhs, rhs);
             } else if (lexer.readMatchingToken(Token.PLUS)) {
-                ASTExpression rhs = parsePrimitive();
+                ASTExpression rhs = parseTerm();
                 lhs = binary("+", lhs, rhs);
             } else if (lexer.readMatchingToken(Token.MINUS)) {
-                ASTExpression rhs = parsePrimitive();
+                ASTExpression rhs = parseTerm();
                 lhs = binary("-", lhs, rhs);
             } else if (lexer.readMatchingToken(Token.SEMICOLON)) {
-                ASTExpression rhs = parsePrimitive();
+                ASTExpression rhs = parseTerm();
                 lhs = new ASTSequence(lhs, rhs);
             } else {
                 return lhs;
@@ -46,8 +54,20 @@ public final class Parser {
         }
     }
 
-    private static ASTExpression binary(String op, ASTExpression lhs, ASTExpression rhs) {
-        return new ASTApplication(new ASTVariable(symbol(op)), lhs, rhs);
+    private ASTExpression parseTerm() throws IOException {
+        ASTExpression lhs = parsePrimitive();
+
+        while (true) {
+            if (lexer.readMatchingToken(Token.MULTIPLY)) {
+                ASTExpression rhs = parsePrimitive();
+                lhs = binary("*", lhs, rhs);
+            } else if (lexer.readMatchingToken(Token.DIVIDE)) {
+                ASTExpression rhs = parsePrimitive();
+                lhs = binary("/", lhs, rhs);
+            } else {
+                return lhs;
+            }
+        }
     }
 
     private ASTExpression parsePrimitive() throws IOException {
@@ -136,11 +156,7 @@ public final class Parser {
             throw new SyntaxException("expected " + expected + " but got " + token);
     }
 
-    public static ASTExpression parse(String input) {
-        try {
-            return new Parser(new StringReader(input)).parseExpression();
-        } catch (IOException e) {
-            throw new RuntimeException("unexpected IOException: " + e, e);
-        }
+    private static ASTExpression binary(String op, ASTExpression lhs, ASTExpression rhs) {
+        return new ASTApplication(new ASTVariable(symbol(op)), lhs, rhs);
     }
 }

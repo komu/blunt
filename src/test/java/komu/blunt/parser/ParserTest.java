@@ -72,6 +72,11 @@ public class ParserTest {
     public void binaryOperatorAssociativity() {
         assertThat(parsing("a - b + c - d + e"), producesExpressionMatching("(+ (- (+ (- a b) c) d) e)"));
     }
+    
+    @Test
+    public void operatorPrecedence() {
+        assertThat(parsing("a + b * c - d"), producesExpressionMatching("(- (+ a (* b c)) d)"));
+    }
 
     @Test
     public void sequences() {
