@@ -5,6 +5,7 @@ import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.Symbol;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -31,68 +32,81 @@ public final class Parser {
     }
     
     public ASTExpression parseExpression() throws IOException {
-        ASTExpression lhs = parseTerm();
+        ASTExpression exp = parserExp2();
 
         while (true) {
             if (lexer.readMatchingToken(Operator.EQUAL)) {
-                ASTExpression rhs = parseTerm();
-                lhs = binary("=", lhs, rhs);
+                ASTExpression rhs = parserExp2();
+                exp = binary("=", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.PLUS)) {
-                ASTExpression rhs = parseTerm();
-                lhs = binary("+", lhs, rhs);
+                ASTExpression rhs = parserExp2();
+                exp = binary("+", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.MINUS)) {
-                ASTExpression rhs = parseTerm();
-                lhs = binary("-", lhs, rhs);
+                ASTExpression rhs = parserExp2();
+                exp = binary("-", exp, rhs);
             } else if (lexer.readMatchingToken(Token.SEMICOLON)) {
-                ASTExpression rhs = parseTerm();
-                lhs = new ASTSequence(lhs, rhs);
+                ASTExpression rhs = parserExp2();
+                exp = new ASTSequence(exp, rhs);
             } else {
-                return lhs;
+                return exp;
             }
         }
     }
 
-    private ASTExpression parseTerm() throws IOException {
-        ASTExpression lhs = parsePrimitive();
+    private ASTExpression parserExp2() throws IOException {
+        ASTExpression exp = parseExp3();
 
         while (true) {
             if (lexer.readMatchingToken(Operator.MULTIPLY)) {
-                ASTExpression rhs = parsePrimitive();
-                lhs = binary("*", lhs, rhs);
+                ASTExpression rhs = parseExp3();
+                exp = binary("*", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.DIVIDE)) {
-                ASTExpression rhs = parsePrimitive();
-                lhs = binary("/", lhs, rhs);
+                ASTExpression rhs = parseExp3();
+                exp = binary("/", exp, rhs);
             } else {
-                return lhs;
+                return exp;
             }
         }
     }
 
-    private ASTExpression parsePrimitive() throws IOException {
+    private ASTExpression parseExp3() throws IOException {
+        ASTExpression exp = parseExp4();
+        
+        while (isExpressionStart(lexer.peekToken()))
+            exp = new ASTApplication(exp, parseExp4());
+
+        return exp;
+    }
+
+    private boolean isExpressionStart(Object o) {
+        List<?> startTokens = Arrays.asList(Token.IF, Token.LET, Token.FN, Token.LPAREN);
+
+        return startTokens.contains(o) || isConstant(o) || o instanceof Symbol;
+    }
+
+    private ASTExpression parseExp4() throws IOException {
         Object token = lexer.readToken();
 
         if (token == Token.EOF)
             return null;
-
-        if (token == Token.IF)
+        else if (token == Token.IF)
             return parseIf();
-
-        if (token == Token.LET)
+        else if (token == Token.LET)
             return parseLet();
-
-        if (token == Token.FN)
+        else if (token == Token.FN)
             return parseLambda();
-
-        if (token == Token.LPAREN)
+        else if (token == Token.LPAREN)
             return parseParens();
-
-        if (token instanceof Number || token instanceof String)
+        else if (isConstant(token))
             return new ASTConstant(token);
-
-        if (token instanceof Symbol)
+        else if (token instanceof Symbol)
             return new ASTVariable((Symbol) token);
+        else
+            throw new SyntaxException("invalid token: " + token);
+    }
 
-        throw new SyntaxException("invalid token: " + token);
+    private static boolean isConstant(Object token) {
+        return token instanceof Number || token instanceof String;
     }
 
     // if <expr> then <expr> else <expr>

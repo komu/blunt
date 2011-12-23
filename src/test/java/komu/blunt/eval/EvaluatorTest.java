@@ -7,8 +7,6 @@ import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import static java.util.Arrays.asList;
-import static komu.blunt.objects.Symbol.symbol;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -23,13 +21,6 @@ public class EvaluatorTest {
     }
 
     @Test
-    @Ignore
-    public void quoted() {
-        assertThatEvaluating("'foo", produces(symbol("foo")));
-        assertThatEvaluating("'(1 2 3)", produces(asList(1, 2, 3)));
-    }
-    
-    @Test
     public void primitiveOperators() {
         assertThatEvaluating("1 + 2", produces(3));
     }
@@ -43,8 +34,8 @@ public class EvaluatorTest {
     @Test
     public void lambdaExpression() {
         assertThatEvaluating("fn x -> x", is(instanceOf(CompoundProcedure.class)));
-        //assertThatEvaluating("((lambda (x) (+ x 1)) 2)", produces(3));
-        //assertThatEvaluating("(((lambda (x) (lambda (y) (+ x y))) 3) 4)", produces(7));
+        assertThatEvaluating("(fn x -> x + 1) 2", produces(3));
+        assertThatEvaluating("(fn x -> fn y -> x + y) 3 4", produces(7));
     }
 
     @Test
@@ -54,9 +45,8 @@ public class EvaluatorTest {
     }
 
     @Test
-    @Ignore
     public void nestedCalls() {
-        assertThatEvaluating("(+ (* 2 3) (* (+ 5 6) (* 7 8)))", produces(622));
+        assertThatEvaluating("2 * 3 + ((5 + 6) * 7 * 8)", produces(622));
     }
 
     @Test
@@ -67,14 +57,6 @@ public class EvaluatorTest {
     @Test
     public void equalityBetweenDifferentTypes() {
         assertStaticError("2 = \"foo\"");
-    }
-
-    @Test
-    @Ignore
-    public void varargsInvocation() {
-        assertThatEvaluating("(+)", produces(0));
-        assertThatEvaluating("(+ 2)", produces(2));
-        assertThatEvaluating("(+ 2 3 4)", produces(9));
     }
 
     @Test
@@ -97,15 +79,14 @@ public class EvaluatorTest {
     @Test
     public void typeInference() {
         assertThatEvaluating("fn n -> n", is(anything()));
-        //assertThatEvaluating("((lambda (n) n) 42)", produces(42));
+        assertThatEvaluating("(fn n -> n) 42", produces(42));
     }
 
     @Test
     public void let() {
         assertThatEvaluating("let x = 42 in x", produces(42));
-        //assertThatEvaluating("(let ((x 1) (y 2)) (+ x y))", produces(3));
         // let x = 1; y = 2 in x + y
-        // let x = 1 in let y = 2 in x + y
+        assertThatEvaluating("let x = 42 in let y = 3 in x+y", produces(45));
     }
 
     @Test
@@ -126,9 +107,8 @@ public class EvaluatorTest {
     }
 
     @Test
-    @Ignore
     public void letRec() {
-        assertThatEvaluating("let rec f = fn n -> if (0 = n) then 1 else (f (n - 1)) in f 10)", produces(3628800));
+        assertThatEvaluating("let rec f = fn n -> if 0 = n then 1 else n * f (n - 1) in f 10)", produces(3628800));
     }
 
     private void assertStaticError(String expr) {

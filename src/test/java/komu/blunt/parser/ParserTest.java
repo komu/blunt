@@ -83,6 +83,13 @@ public class ParserTest {
         assertThat(parsing("a; b"), producesExpressionMatching("(begin a b)"));
         assertThat(parsing("a; b; c"), producesExpressionMatching("(begin (begin a b) c)"));
     }
+    
+    @Test
+    public void application() {
+        assertThat(parsing("a b"), producesExpressionMatching("(a b)"));
+        assertThat(parsing("a b c"), producesExpressionMatching("((a b) c)"));
+        assertThat(parsing("a (b c)"), producesExpressionMatching("(a (b c))"));
+    }
 
     private static ASTExpression parsing(String s) {
         return Parser.parse(s);
