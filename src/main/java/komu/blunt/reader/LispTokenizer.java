@@ -50,11 +50,9 @@ public final class LispTokenizer {
     }
 
     private void skipToEndOfLine() throws IOException {
-        while (true) {
-            char ch = read();
-            if (ch == -1 || ch == '\n')
+        while (peek() != -1)
+            if (read() == '\n')
                 break;
-        }
     }
 
     private static boolean isWhiteSpaceOrComment(int ch) {
