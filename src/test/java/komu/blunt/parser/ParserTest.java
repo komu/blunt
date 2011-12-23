@@ -69,9 +69,14 @@ public class ParserTest {
     }
 
     @Test
+    public void binaryOperatorAssociativity() {
+        assertThat(parsing("a - b + c - d + e"), producesExpressionMatching("(+ (- (+ (- a b) c) d) e)"));
+    }
+
+    @Test
     public void sequences() {
         assertThat(parsing("a; b"), producesExpressionMatching("(begin a b)"));
-        assertThat(parsing("a; b; c"), producesExpressionMatching("(begin a (begin b c))"));
+        assertThat(parsing("a; b; c"), producesExpressionMatching("(begin (begin a b) c)"));
     }
 
     private static ASTExpression parsing(String s) {

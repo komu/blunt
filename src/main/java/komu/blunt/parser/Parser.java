@@ -26,21 +26,23 @@ public final class Parser {
     
     public ASTExpression parseExpression() throws IOException {
         ASTExpression lhs = parsePrimitive();
-        
-        if (lexer.readMatchingToken(Token.EQUAL)) {
-            ASTExpression rhs = parseExpression();
-            return binary("=", lhs, rhs);
-        } else if (lexer.readMatchingToken(Token.PLUS)) {
-            ASTExpression rhs = parseExpression();
-            return binary("+", lhs, rhs);
-        } else if (lexer.readMatchingToken(Token.MINUS)) {
-            ASTExpression rhs = parseExpression();
-            return binary("-", lhs, rhs);
-        } else if (lexer.readMatchingToken(Token.SEMICOLON)) {
-            ASTExpression rhs = parseExpression();
-            return new ASTSequence(lhs, rhs);
-        } else {
-            return lhs;
+
+        while (true) {
+            if (lexer.readMatchingToken(Token.EQUAL)) {
+                ASTExpression rhs = parsePrimitive();
+                lhs = binary("=", lhs, rhs);
+            } else if (lexer.readMatchingToken(Token.PLUS)) {
+                ASTExpression rhs = parsePrimitive();
+                lhs = binary("+", lhs, rhs);
+            } else if (lexer.readMatchingToken(Token.MINUS)) {
+                ASTExpression rhs = parsePrimitive();
+                lhs = binary("-", lhs, rhs);
+            } else if (lexer.readMatchingToken(Token.SEMICOLON)) {
+                ASTExpression rhs = parsePrimitive();
+                lhs = new ASTSequence(lhs, rhs);
+            } else {
+                return lhs;
+            }
         }
     }
 
