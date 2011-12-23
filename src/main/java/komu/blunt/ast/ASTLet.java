@@ -55,7 +55,7 @@ public final class ASTLet extends ASTExpression {
             if (iterator.hasNext())
                 sb.append(' ');
         }
-        sb.append(")").append(body).append(')');
+        sb.append(") ").append(body).append(')');
         
         return sb.toString();
     }
