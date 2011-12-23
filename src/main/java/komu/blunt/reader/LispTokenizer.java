@@ -1,7 +1,5 @@
 package komu.blunt.reader;
 
-import komu.blunt.objects.Symbol;
-
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
@@ -14,12 +12,38 @@ import static komu.blunt.reader.Token.*;
 public final class LispTokenizer {
     
     private final PushbackReader reader;
+    private Object nextToken = null;
     
     public LispTokenizer(Reader reader) {
         this.reader = new PushbackReader(reader);
     }
     
+    public Object peekToken() throws IOException {
+        if (nextToken == null) 
+            nextToken = readTokenInternal();
+        return nextToken;
+    }
+    
+    public boolean readMatchingToken(Object token) throws IOException {
+        if (token.equals(peekToken())) {
+            readToken();
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
     public Object readToken() throws IOException {
+        if (nextToken != null) {
+            Object value = nextToken;
+            nextToken = null;
+            return value;
+        } else {
+            return readTokenInternal();
+        }
+    }
+
+    public Object readTokenInternal() throws IOException {
         skipWhitespace();
 
         if (peek() == -1)
@@ -35,7 +59,7 @@ public final class LispTokenizer {
         else if (readIf('\''))
             return QUOTE;
         else if (isSymbolCharacter(peek()))
-            return readSymbol();
+            return readSymbolOrKeyword();
         else
             throw parseError("unexpected token: '" + read() + "'");
     }
@@ -59,13 +83,15 @@ public final class LispTokenizer {
         return ch == ';' || isWhitespace(ch);
     }
 
-    private Symbol readSymbol() throws IOException {
+    private Object readSymbolOrKeyword() throws IOException {
         StringBuilder sb = new StringBuilder();
 
         while (isSymbolCharacter(peek()))
             sb.append(read());
-        
-        return symbol(sb.toString());
+
+        String name = sb.toString();
+        Token token = Token.keyword(name);
+        return token != null ? token : symbol(sb.toString());
     }
 
     private String readString() throws IOException {

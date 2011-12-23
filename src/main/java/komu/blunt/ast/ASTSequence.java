@@ -6,6 +6,7 @@ import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.eval.SyntaxException;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -13,14 +14,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class ASTSequence extends ASTExpression {
     public final List<ASTExpression> exps;
 
+    public ASTSequence() {
+        this.exps = new ArrayList<ASTExpression>();    
+    }
+    
     public ASTSequence(List<ASTExpression> exps) {
-        this.exps = checkNotNull(exps);
-
-        if (exps.isEmpty()) throw new SyntaxException("empty sequence");
+        this.exps = new ArrayList<ASTExpression>(exps);
+    }
+    
+    public void add(ASTExpression exp) {
+        exps.add(checkNotNull(exp));
     }
 
     @Override
     public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
+        if (exps.isEmpty()) throw new SyntaxException("empty sequence");
+        
         return new CoreSequenceExpression(analyzeAll(exps, env, rootBindings));
     }
 

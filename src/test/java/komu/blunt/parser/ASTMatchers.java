@@ -11,6 +11,20 @@ import static com.google.common.base.Objects.equal;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 final class ASTMatchers {
+    
+    static Matcher<ASTExpression> producesExpressionMatching(final String representation) {
+        return new ASTMatcher<ASTExpression>(ASTExpression.class) {
+            @Override
+            public boolean matches(ASTExpression exp) {
+                return equal(exp.toString(), representation);
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendValue(representation);
+            }
+        };        
+    }
 
     static Matcher<ASTExpression> producesVariable(final String name) {
         return new ASTMatcher<ASTVariable>(ASTVariable.class) {
