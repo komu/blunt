@@ -7,9 +7,9 @@ import komu.blunt.reader.LispTokenizer;
 import komu.blunt.reader.Token;
 
 import java.io.*;
+import java.util.List;
 
 import static java.util.Arrays.asList;
-import static komu.blunt.objects.Symbol.symbol;
 
 public final class Parser {
 
@@ -71,21 +71,11 @@ public final class Parser {
         expectToken(Token.IN);
         ASTExpression body = parseExpression();
 
+        List<ASTBinding> bindings = asList(new ASTBinding(name, value));
         if (recursive)
-            return createLetRec(name, value, body);
+            return new ASTLetRec(bindings, body);
         else
-            return new ASTLet(asList(new ASTBinding(name, value)), body);
-    }
-
-    // TODO: add letrec to AST
-    private ASTExpression createLetRec(Symbol name, ASTExpression value, ASTExpression body) {
-        ASTExpression undefined = new ASTApplication(new ASTVariable(symbol("unsafe-null")));
-        
-        ASTSequence exps = new ASTSequence();
-        exps.add(new ASTSet(name, value));
-        exps.add(body);
-
-        return new ASTLet(asList(new ASTBinding(name, undefined)), exps);
+            return new ASTLet(bindings, body);
     }
 
     // fn <ident> -> expr

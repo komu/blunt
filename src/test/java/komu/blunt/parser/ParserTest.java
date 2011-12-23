@@ -47,7 +47,7 @@ public class ParserTest {
 
     @Test
     public void letRecExpression() {
-        assertThat(parsing("let rec x = z in y"), producesExpressionMatching("(let ([x (unsafe-null)]) (begin (set! x z) y))"));
+        assertThat(parsing("let rec x = z in y"), producesExpressionMatching("(letrec ([x z]) y)"));
     }
     
     @Test

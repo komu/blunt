@@ -122,21 +122,11 @@ public final class ASTBuilder {
         return new ASTLet(parseBindings(bindings), body);
     }
 
-    // (letrec ((x v) ...) body) -> (let ((x (unsafe-null)) ...) (set! x v) ... body)
     private ASTExpression parseLetRec(List<?> form) {
         List<ASTBinding> bindings = parseBindings((List<?>) form.get(1));
         ASTSequence body = parseSequence(form.subList(2, form.size()));
 
-        List<ASTBinding> newBindings = new ArrayList<ASTBinding>(bindings.size());
-        List<ASTExpression> bodyExps = new ArrayList<ASTExpression>();
-        for (ASTBinding binding : bindings) {
-            newBindings.add(new ASTBinding(binding.name, new ASTApplication(new ASTVariable(symbol("unsafe-null")))));
-            bodyExps.add(new ASTSet(binding.name, binding.expr));
-        }
-        
-        bodyExps.addAll(body.exps);
-
-        return new ASTLet(newBindings, new ASTSequence(bodyExps));
+        return new ASTLetRec(bindings, body);
     }
 
     private static List<Symbol> asParameterList(Object form) {
