@@ -2,6 +2,7 @@ package komu.blunt.parser;
 
 import komu.blunt.ast.ASTExpression;
 import org.hamcrest.Matcher;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -14,6 +15,7 @@ import static org.junit.Assert.assertThat;
 public class ParserTest {
     
     @Test
+    @Ignore
     public void emptyInput() {
         assertThat(parsing(""),      producesEof());
         assertThat(parsing("  "),    producesEof());
@@ -54,7 +56,7 @@ public class ParserTest {
     
     @Test
     public void lambdaExpression() {
-        assertThat(parsing("fn x -> y"), producesExpressionMatching("(lambda [x] y)"));
+        assertThat(parsing("\\x -> y"), producesExpressionMatching("(lambda [x] y)"));
     }
     
     @Test

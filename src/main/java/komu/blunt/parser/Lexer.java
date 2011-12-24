@@ -64,6 +64,8 @@ public final class Lexer {
             return LBRACKET;
         else if (readIf(']'))
             return RBRACKET;
+        else if (readIf('\\'))
+            return Token.LAMBDA;
         else if (isOperatorCharacter(peek()))
             return readOperator();
         else if (isJavaIdentifierStart(peek()))

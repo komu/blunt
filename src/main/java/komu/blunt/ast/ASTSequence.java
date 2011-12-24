@@ -21,6 +21,8 @@ public final class ASTSequence extends ASTExpression {
     
     public ASTSequence(List<ASTExpression> exps) {
         this.exps = new ArrayList<ASTExpression>(exps);
+        for (ASTExpression exp : exps)
+            checkNotNull(exp);
     }
 
     public void add(ASTExpression exp) {

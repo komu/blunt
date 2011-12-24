@@ -36,9 +36,10 @@ public class EvaluatorTest {
 
     @Test
     public void lambdaExpression() {
-        assertThatEvaluating("fn x -> x", is(instanceOf(CompoundProcedure.class)));
-        assertThatEvaluating("(fn x -> x + 1) 2", produces(3));
-        assertThatEvaluating("(fn x -> fn y -> x + y) 3 4", produces(7));
+        assertThatEvaluating("\\ x -> x", is(instanceOf(CompoundProcedure.class)));
+        assertThatEvaluating("(\\ x -> x + 1) 2", produces(3));
+        assertThatEvaluating("(\\ x -> \\ y -> x + y) 3 4", produces(7));
+        assertThatEvaluating("(\\ x y -> x + y) 3 4", produces(7));
     }
 
     @Test
@@ -70,7 +71,7 @@ public class EvaluatorTest {
 
     @Test
     public void accessingUnboundVariable() {
-        assertStaticError("fn x -> y");
+        assertStaticError("\\ x -> y");
     }
 
     @Test
@@ -81,8 +82,8 @@ public class EvaluatorTest {
 
     @Test
     public void typeInference() {
-        assertThatEvaluating("fn n -> n", is(anything()));
-        assertThatEvaluating("(fn n -> n) 42", produces(42));
+        assertThatEvaluating("\\ n -> n", is(anything()));
+        assertThatEvaluating("(\\ n -> n) 42", produces(42));
     }
 
     @Test
@@ -111,7 +112,7 @@ public class EvaluatorTest {
 
     @Test
     public void letRec() {
-        assertThatEvaluating("let rec f = fn n -> if 0 = n then 1 else n * f (n - 1) in f 10)", produces(3628800));
+        assertThatEvaluating("let rec f = \\ n -> if 0 = n then 1 else n * f (n - 1) in f 10)", produces(3628800));
     }
 
     @Test

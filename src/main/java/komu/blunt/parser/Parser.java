@@ -52,32 +52,32 @@ public final class Parser {
     }
 
     public ASTExpression parseExpression() throws IOException {
-        ASTExpression exp = parserExp2();
+        ASTExpression exp = parseExp2();
 
         while (true) {
             if (lexer.readMatchingToken(Operator.EQUAL)) {
-                ASTExpression rhs = parserExp2();
+                ASTExpression rhs = parseExp2();
                 exp = binary("=", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.LT)) {
-                ASTExpression rhs = parserExp2();
+                ASTExpression rhs = parseExp2();
                 exp = binary("<", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.LE)) {
-                ASTExpression rhs = parserExp2();
+                ASTExpression rhs = parseExp2();
                 exp = binary("<=", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.GT)) {
-                ASTExpression rhs = parserExp2();
+                ASTExpression rhs = parseExp2();
                 exp = binary(">", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.GE)) {
-                ASTExpression rhs = parserExp2();
+                ASTExpression rhs = parseExp2();
                 exp = binary(">=", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.PLUS)) {
-                ASTExpression rhs = parserExp2();
+                ASTExpression rhs = parseExp2();
                 exp = binary("+", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.MINUS)) {
-                ASTExpression rhs = parserExp2();
+                ASTExpression rhs = parseExp2();
                 exp = binary("-", exp, rhs);
             } else if (lexer.readMatchingToken(Token.SEMICOLON)) {
-                ASTExpression rhs = parserExp2();
+                ASTExpression rhs = parseExp2();
                 exp = new ASTSequence(exp, rhs);
             } else {
                 return exp;
@@ -85,7 +85,7 @@ public final class Parser {
         }
     }
 
-    private ASTExpression parserExp2() throws IOException {
+    private ASTExpression parseExp2() throws IOException {
         ASTExpression exp = parseExp3();
 
         while (true) {
@@ -111,7 +111,7 @@ public final class Parser {
     }
 
     private static final List<?> startTokens =
-        asList(Token.IF, Token.LET, Token.FN, Token.LPAREN, Token.LBRACKET);
+        asList(Token.IF, Token.LET, Token.LAMBDA, Token.LPAREN, Token.LBRACKET);
 
     private boolean isExpressionStart(Object o) {
         return startTokens.contains(o) || o instanceof Constant || o instanceof Symbol;
@@ -121,12 +121,12 @@ public final class Parser {
         Object token = lexer.readToken();
 
         if (token == Token.EOF)
-            return null;
+            throw new SyntaxException("unexpected eof");
         else if (token == Token.IF)
             return parseIf();
         else if (token == Token.LET)
             return parseLet();
-        else if (token == Token.FN)
+        else if (token == Token.LAMBDA)
             return parseLambda();
         else if (token == Token.LPAREN)
             return parseParens();
@@ -170,11 +170,13 @@ public final class Parser {
 
     // fn <ident> -> expr
     private ASTExpression parseLambda() throws IOException {
-        Symbol arg = parseIdentifier();
-        expectToken(Operator.RIGHT_ARROW);
-        ASTExpression body = parseExpression();
+        List<Symbol> args = new ArrayList<Symbol>();
         
-        return new ASTLambda(asList(arg), body);
+        do {
+            args.add(parseIdentifier());
+        } while (!lexer.readMatchingToken(Operator.RIGHT_ARROW));
+
+        return new ASTLambda(args, parseExpression());
     }
 
     // () | ( <expr> )

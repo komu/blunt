@@ -1,74 +1,71 @@
-id = fn x -> x;;
+id = \x -> x;;
 
-const = fn x -> fn y -> x;;
+const = \x y -> x;;
 
-cons = fn x -> fn y -> primitiveCons (x,y);;
+cons = \x y -> primitiveCons (x,y);;
 
-foldr = fn f -> fn e -> fn ls ->
+foldr = \f e ls ->
   if nil? ls
     then e
     else (f (head ls) (foldr f e (tail ls)));;
 
-sum = foldr (fn x -> fn y -> x + y) 0;;
+sum = foldr (\x y -> x + y) 0;;
 
-product = foldr (fn x -> fn y -> x * y) 1;;
+product = foldr (\x y -> x * y) 1;;
 
-map = fn f -> foldr (fn x -> fn y -> cons (f x) y) [];;
+map = \f -> foldr (\x y -> cons (f x) y) [];;
 
-filter = fn p -> foldr (fn x -> fn y -> if p x then cons x y else y) [];;
+filter = \p -> foldr (\x y -> if p x then cons x y else y) [];;
 
-length = foldr (fn x -> fn y -> y + 1) 0;;
+length = foldr (\x y -> y + 1) 0;;
 
-square = fn x -> x * x;;
+square = \x -> x * x;;
 
-range2 = fn step -> fn min -> fn max ->
+range2 = \step min max ->
   if min < max
     then cons min (range2 step (min + step) max)
     else [];;
 
 range = range2 1;;
 
-or = fn x -> fn y -> if x then true else y;;
+or = \x y -> if x then true else y;;
 
-and = fn x -> fn y -> if x then y else false;;
+and = \x y -> if x then y else false;;
 
-not = fn x -> if x then false else true;;
+not = \x -> if x then false else true;;
 
-zero? = fn x -> x = 0;;
+zero? = \x -> x = 0;;
 
-take = fn n -> fn ls ->
+take = \n ls ->
   if or (nil? ls) (zero? n)
     then []
     else cons (head ls) (take (n - 1) (tail ls));;
 
-drop = fn n -> fn ls ->
+drop = \n ls ->
   if and (not (nil? ls)) (n > 0)
     then drop (n - 1) (tail ls)
     else ls;;
 
-compose = fn f -> fn g ->
-  fn x -> g (f x);;
+compose = \f g ->
+  \ x -> g (f x);;
 
-all = fn p ->
-  foldr (fn x -> fn y -> and (p x) y) true;;
+all = \p ->
+  foldr (\x y -> and (p x) y) true;;
 
-any = fn p ->
-  foldr (fn x -> fn y -> or (p x) y) false;;
+any = \p ->
+  foldr (\x y -> or (p x) y) false;;
 
-append = fn xs -> fn ys ->
+append = \xs ys ->
   foldr cons ys xs;;
 
 concat =
   foldr append [];;
 
-concatMap = fn f -> fn xs ->
+concatMap = \f xs ->
   concat (map f xs);;
 
-flip = fn f ->
-  fn x -> fn y -> f y x;;
+flip = \f x y -> f y x;;
 
-curry = fn f ->
-  fn x -> fn y -> f (x, y);;
+curry = \f x y -> f (x, y);;
 
-uncurry = fn f ->
-  fn p -> f (fst p) (snd p);;
+uncurry = \f p -> f (fst p) (snd p);;
