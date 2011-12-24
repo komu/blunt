@@ -66,4 +66,9 @@ public class BasicFunctions {
     public static <A, B> B snd(A a, B b) {
         return b;
     }
+    
+    @LibraryFunction("show")
+    public static <T> String show(T o) {
+        return String.valueOf(o);
+    }
 }
