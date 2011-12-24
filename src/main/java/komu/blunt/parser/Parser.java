@@ -11,11 +11,12 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static komu.blunt.objects.Symbol.symbol;
-import static komu.blunt.parser.Operator.*;
+import static komu.blunt.parser.Operator.EQUAL;
 
 public final class Parser {
 
     private final Lexer lexer;
+    private final OperatorSet operators = new OperatorSet();
 
     public Parser(InputStream in) {
         this(new InputStreamReader(in));
@@ -60,15 +61,15 @@ public final class Parser {
     }
 
     public ASTExpression parseExpression() throws IOException {
-        ASTExpression exp = parseExp2();
+        ASTExpression exp = parseExp(0);
 
         while (true) {
-            if (lexer.peekToken() instanceof Operator && !((Operator) lexer.peekToken()).isBuiltin()) {
+            if (customOperator(lexer.peekToken())) {
                 Operator operator = (Operator) lexer.readToken();
-                ASTExpression rhs = parseExp2();
+                ASTExpression rhs = parseExp(0);
                 exp = binary(operator.toString(), exp, rhs);
             } else if (lexer.readMatchingToken(Token.SEMICOLON)) {
-                ASTExpression rhs = parseExp2();
+                ASTExpression rhs = parseExp(0);
                 exp = new ASTSequence(exp, rhs);
             } else {
                 return exp;
@@ -76,13 +77,24 @@ public final class Parser {
         }
     }
 
-    private ASTExpression parseExp2() throws IOException {
-        ASTExpression exp = parseExp3();
+    private static boolean customOperator(Object o) {
+        return o instanceof Operator && !((Operator) o).isBuiltin();
+    }
+
+    private ASTExpression parseExp(int level) throws IOException {
+        if (level <= operators.getMaxLevel())
+            return parseExpN(level);
+        else
+            return parseApplicative();
+    }
+
+    private ASTExpression parseExpN(int level) throws IOException {
+        ASTExpression exp = parseExp(level+1);
 
         while (true) {
-            Operator op = lexer.readAnyMatchingToken(EQUAL, LT, LE, GT, GE);
+            Operator op = lexer.readAnyMatchingToken(operators.operator(level));
             if (op != null) {
-                ASTExpression rhs = parseExp3();
+                ASTExpression rhs = parseExp(level+1);
                 exp = binary(op.toString(), exp, rhs);
             } else {
                 return exp;
@@ -90,53 +102,16 @@ public final class Parser {
         }
     }
 
-    private ASTExpression parseExp3() throws IOException {
-        ASTExpression exp = parseExp4();
-
-        while (true) {
-            Operator op = lexer.readAnyMatchingToken(PLUS, MINUS);
-            if (op != null) {
-                ASTExpression rhs = parseExp4();
-                exp = binary(op.toString(), exp, rhs);
-            } else {
-                return exp;
-            }
-        }
-    }
-
-    private ASTExpression parseExp4() throws IOException {
-        ASTExpression exp = parseExp5();
-
-        while (true) {
-            if (lexer.readMatchingToken(Operator.MULTIPLY)) {
-                ASTExpression rhs = parseExp5();
-                exp = binary("*", exp, rhs);
-            } else if (lexer.readMatchingToken(Operator.DIVIDE)) {
-                ASTExpression rhs = parseExp5();
-                exp = binary("/", exp, rhs);
-            } else {
-                return exp;
-            }
-        }
-    }
-
-    private ASTExpression parseExp5() throws IOException {
-        ASTExpression exp = parseExp6();
+    private ASTExpression parseApplicative() throws IOException {
+        ASTExpression exp = parsePrimitive();
         
         while (isExpressionStart(lexer.peekToken()))
-            exp = new ASTApplication(exp, parseExp6());
+            exp = new ASTApplication(exp, parsePrimitive());
 
         return exp;
     }
 
-    private static final List<?> startTokens =
-        asList(Token.IF, Token.LET, Token.LAMBDA, Token.LPAREN, Token.LBRACKET);
-
-    private boolean isExpressionStart(Object o) {
-        return startTokens.contains(o) || o instanceof Constant || o instanceof Symbol;
-    }
-
-    private ASTExpression parseExp6() throws IOException {
+    private ASTExpression parsePrimitive() throws IOException {
         Object token = lexer.peekToken();
 
         if (token == Token.EOF)
@@ -155,6 +130,13 @@ public final class Parser {
             return new ASTConstant(((Constant) lexer.readToken()).value);
         else
             return new ASTVariable(parseIdentifier());
+    }
+
+    private static final List<?> startTokens =
+        asList(Token.IF, Token.LET, Token.LAMBDA, Token.LPAREN, Token.LBRACKET);
+
+    private boolean isExpressionStart(Object o) {
+        return startTokens.contains(o) || o instanceof Constant || o instanceof Symbol;
     }
 
     // if <expr> then <expr> else <expr>

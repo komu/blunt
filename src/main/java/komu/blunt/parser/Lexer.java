@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
 import java.math.BigInteger;
+import java.util.List;
 
 import static java.lang.Character.*;
 import static komu.blunt.objects.Symbol.symbol;
@@ -179,10 +180,10 @@ public final class Lexer {
         return new RuntimeException("value error: " + message);
     }
 
-    public Operator readAnyMatchingToken(Operator... ops) throws IOException {
-        for (Operator op : ops)
-            if (readMatchingToken(op))
-                return op;
+    public <T> T readAnyMatchingToken(List<T> tokens) throws IOException {
+        for (T token : tokens)
+            if (readMatchingToken(token))
+                return token;
         return null;
     }
 }
