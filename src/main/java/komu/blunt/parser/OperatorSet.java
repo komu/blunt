@@ -25,7 +25,11 @@ public final class OperatorSet {
 
         levels.get(precedence).addAll(asList(operators));    
     }
-    
+
+    public Associativity getAssociativity(Operator operator) {
+        return operator.toString().equals(":") ? Associativity.RIGHT : Associativity.LEFT;
+    }
+
     public int getMaxLevel() {
         return levels.size()-1;
     }

@@ -7,12 +7,13 @@
 (/) x y = primitiveOpDivide (x,y);;
 (+) x y = primitiveOpPlus (x,y);;
 (-) x y = primitiveOpMinus (x,y);;
-
-cons x y = primitiveCons (x,y);;
+(:) x y = primitiveCons (x,y);;
 
 id x = x;;
 
 const x y = x;;
+
+compose f g x = f (g x);;
 
 foldr f e ls =
   if nil? ls
@@ -23,9 +24,9 @@ sum = foldr (+) 0;;
 
 product = foldr (*) 1;;
 
-map f = foldr (\x y -> cons (f x) y) [];;
+map f = foldr (\x y -> f x : y) [];;
 
-filter p = foldr (\x y -> if p x then cons x y else y) [];;
+filter p = foldr (\x xs -> if p x then x : xs else xs) [];;
 
 length = foldr (\x y -> y + 1) 0;;
 
@@ -33,7 +34,7 @@ square x = x * x;;
 
 range2 step min max =
   if min < max
-    then cons min (range2 step (min + step) max)
+    then min : (range2 step (min + step) max)
     else [];;
 
 range = range2 1;;
@@ -53,7 +54,7 @@ zero? x = x = 0;;
 take n ls =
   if nil? ls || zero? n
     then []
-    else cons (head ls) (take (n - 1) (tail ls));;
+    else head ls : take (n - 1) (tail ls);;
 
 drop n ls =
   if not (nil? ls) && n > 0
@@ -67,13 +68,13 @@ any p =
   foldr (\x y -> p x || y) false;;
 
 (++) xs ys =
-  foldr cons ys xs;;
+  foldr (:) ys xs;;
 
 concat =
   foldr (++) [];;
 
-concatMap f xs =
-  concat (map f xs);;
+concatMap f =
+  compose concat (map f);;
 
 flip f x y = f y x;;
 

@@ -11,6 +11,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static komu.blunt.objects.Symbol.symbol;
+import static komu.blunt.parser.Associativity.LEFT;
 import static komu.blunt.parser.Operator.EQUAL;
 
 public final class Parser {
@@ -66,7 +67,8 @@ public final class Parser {
         while (true) {
             if (customOperator(lexer.peekToken())) {
                 Operator operator = (Operator) lexer.readToken();
-                ASTExpression rhs = parseExp(0);
+                Associativity associativity = operators.getAssociativity(operator);
+                ASTExpression rhs = associativity == LEFT ? parseExp(0) : parseExpression();
                 exp = binary(operator.toString(), exp, rhs);
             } else if (lexer.readMatchingToken(Token.SEMICOLON)) {
                 ASTExpression rhs = parseExp(0);
@@ -94,7 +96,8 @@ public final class Parser {
         while (true) {
             Operator op = lexer.readAnyMatchingToken(operators.operator(level));
             if (op != null) {
-                ASTExpression rhs = parseExp(level+1);
+                Associativity associativity = operators.getAssociativity(op);
+                ASTExpression rhs = parseExp(associativity == LEFT ? level+1 : level);
                 exp = binary(op.toString(), exp, rhs);
             } else {
                 return exp;

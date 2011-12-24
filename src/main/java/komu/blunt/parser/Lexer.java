@@ -173,7 +173,7 @@ public final class Lexer {
     }
     
     private static boolean isOperatorCharacter(int ch) {
-        return "=-+*/<>%?!|&".indexOf(ch) != -1;
+        return "=-+*/<>%?!|&:".indexOf(ch) != -1;
     }
     
     private RuntimeException parseError(String message) {
