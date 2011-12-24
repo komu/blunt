@@ -11,6 +11,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static komu.blunt.objects.Symbol.symbol;
+import static komu.blunt.parser.Operator.*;
 
 public final class Parser {
 
@@ -46,7 +47,7 @@ public final class Parser {
         Symbol name = parseIdentifier();
         List<Symbol> args = new ArrayList<Symbol>();
         
-        while (!lexer.readMatchingToken(Operator.EQUAL))
+        while (!lexer.readMatchingToken(EQUAL))
             args.add(parseIdentifier());
         
         ASTExpression value = parseExpression();
@@ -62,27 +63,14 @@ public final class Parser {
         ASTExpression exp = parseExp2();
 
         while (true) {
-            if (lexer.readMatchingToken(Operator.EQUAL)) {
+            Operator op = lexer.readAnyMatchingToken(EQUAL, LT, LE, GT, GE, PLUS, MINUS);
+            if (op != null) {
                 ASTExpression rhs = parseExp2();
-                exp = binary("=", exp, rhs);
-            } else if (lexer.readMatchingToken(Operator.LT)) {
+                exp = builtinBinary(op.toString(), exp, rhs);
+            } else if (lexer.peekToken() instanceof Operator && !((Operator) lexer.peekToken()).isBuiltin()) {
+                Operator operator = (Operator) lexer.readToken();
                 ASTExpression rhs = parseExp2();
-                exp = binary("<", exp, rhs);
-            } else if (lexer.readMatchingToken(Operator.LE)) {
-                ASTExpression rhs = parseExp2();
-                exp = binary("<=", exp, rhs);
-            } else if (lexer.readMatchingToken(Operator.GT)) {
-                ASTExpression rhs = parseExp2();
-                exp = binary(">", exp, rhs);
-            } else if (lexer.readMatchingToken(Operator.GE)) {
-                ASTExpression rhs = parseExp2();
-                exp = binary(">=", exp, rhs);
-            } else if (lexer.readMatchingToken(Operator.PLUS)) {
-                ASTExpression rhs = parseExp2();
-                exp = binary("+", exp, rhs);
-            } else if (lexer.readMatchingToken(Operator.MINUS)) {
-                ASTExpression rhs = parseExp2();
-                exp = binary("-", exp, rhs);
+                exp = binary(operator.toString(), exp, rhs);
             } else if (lexer.readMatchingToken(Token.SEMICOLON)) {
                 ASTExpression rhs = parseExp2();
                 exp = new ASTSequence(exp, rhs);
@@ -98,10 +86,10 @@ public final class Parser {
         while (true) {
             if (lexer.readMatchingToken(Operator.MULTIPLY)) {
                 ASTExpression rhs = parseExp3();
-                exp = binary("*", exp, rhs);
+                exp = builtinBinary("*", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.DIVIDE)) {
                 ASTExpression rhs = parseExp3();
-                exp = binary("/", exp, rhs);
+                exp = builtinBinary("/", exp, rhs);
             } else {
                 return exp;
             }
@@ -125,7 +113,7 @@ public final class Parser {
     }
 
     private ASTExpression parseExp4() throws IOException {
-        Object token = lexer.readToken();
+        Object token = lexer.peekToken();
 
         if (token == Token.EOF)
             throw new SyntaxException("unexpected eof");
@@ -140,15 +128,14 @@ public final class Parser {
         else if (token == Token.LBRACKET)
             return parseList();
         else if (token instanceof Constant)
-            return new ASTConstant(((Constant) token).value);
-        else if (token instanceof Symbol)
-            return new ASTVariable((Symbol) token);
+            return new ASTConstant(((Constant) lexer.readToken()).value);
         else
-            throw new SyntaxException("invalid token: " + token);
+            return new ASTVariable(parseIdentifier());
     }
 
     // if <expr> then <expr> else <expr>
     private ASTExpression parseIf() throws IOException {
+        expectToken(Token.IF);
         ASTExpression test = parseExpression();
         expectToken(Token.THEN);
         ASTExpression cons = parseExpression();
@@ -160,10 +147,11 @@ public final class Parser {
 
     // let [rec] <ident> = <expr> in <expr>
     private ASTExpression parseLet() throws IOException {
+        expectToken(Token.LET);
         boolean recursive = lexer.readMatchingToken(Token.REC);
         
         Symbol name = parseIdentifier();
-        expectToken(Operator.EQUAL);
+        expectToken(EQUAL);
         ASTExpression value = parseExpression();
         expectToken(Token.IN);
         ASTExpression body = parseExpression();
@@ -175,8 +163,10 @@ public final class Parser {
             return new ASTLet(bindings, body);
     }
 
-    // fn <ident> -> expr
+    // \ <ident> -> expr
     private ASTExpression parseLambda() throws IOException {
+        expectToken(Token.LAMBDA);
+        
         List<Symbol> args = new ArrayList<Symbol>();
         
         do {
@@ -186,10 +176,17 @@ public final class Parser {
         return new ASTLambda(args, parseExpression());
     }
 
-    // () | ( <expr> )
+    // () | (<op>) | ( <expr> )
     private ASTExpression parseParens() throws IOException {
+        expectToken(Token.LPAREN);
         if (lexer.readMatchingToken(Token.RPAREN))
             return new ASTConstant(Unit.INSTANCE);
+        
+        if (lexer.peekToken() instanceof Operator) {
+            Operator op = (Operator) lexer.readToken();
+            expectToken(Token.RPAREN);
+            return new ASTVariable(op.toString());
+        }
         
         List<ASTExpression> exps = new ArrayList<ASTExpression>();
         
@@ -207,6 +204,7 @@ public final class Parser {
     
     // []
     private ASTExpression parseList() throws IOException {
+        expectToken(Token.LBRACKET);
         expectToken(Token.RBRACKET);
         
         return new ASTApplication(new ASTVariable(symbol("primitiveNil")), new ASTConstant(Unit.INSTANCE));
@@ -216,7 +214,15 @@ public final class Parser {
         Object obj = lexer.readToken();
         if (obj instanceof Symbol)
             return (Symbol) obj;
-        else
+        if (obj == Token.LPAREN) {
+            Object op = lexer.readToken();
+            if (op instanceof Operator) {
+                expectToken(Token.RPAREN);
+                return Symbol.symbol(op.toString());
+            } else
+                throw new SyntaxException("expected operator name, got " + op);
+
+        } else
             throw new SyntaxException("expected identifier, got " + obj);
     }
 
@@ -227,7 +233,11 @@ public final class Parser {
             throw new SyntaxException("expected " + expected + " but got " + token);
     }
 
+    private static ASTExpression builtinBinary(String op, ASTExpression lhs, ASTExpression rhs) {
+        return binary(op, lhs, rhs);
+    }
+
     private static ASTExpression binary(String op, ASTExpression lhs, ASTExpression rhs) {
-        return new ASTApplication(new ASTVariable(symbol(op)), lhs, rhs);
+        return new ASTApplication(new ASTApplication(new ASTVariable(symbol(op)), lhs), rhs);
     }
 }

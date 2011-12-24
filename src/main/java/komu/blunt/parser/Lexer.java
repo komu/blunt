@@ -172,10 +172,17 @@ public final class Lexer {
     }
     
     private static boolean isOperatorCharacter(int ch) {
-        return "=-+*/<>%?!".indexOf(ch) != -1;
+        return "=-+*/<>%?!|&".indexOf(ch) != -1;
     }
     
     private RuntimeException parseError(String message) {
         return new RuntimeException("value error: " + message);
+    }
+
+    public Operator readAnyMatchingToken(Operator... ops) throws IOException {
+        for (Operator op : ops)
+            if (readMatchingToken(op))
+                return op;
+        return null;
     }
 }

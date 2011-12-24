@@ -1,17 +1,27 @@
+(=) x y = primitiveOpEq (x,y);;
+(<) x y = primitiveOpLt (x,y);;
+(<=) x y = primitiveOpLe (x,y);;
+(>) x y = primitiveOpGt (x,y);;
+(>=) x y = primitiveOpGe (x,y);;
+(*) x y = primitiveOpMultiply (x,y);;
+(/) x y = primitiveOpDivide (x,y);;
+(+) x y = primitiveOpPlus (x,y);;
+(-) x y = primitiveOpMinus (x,y);;
+
+cons x y = primitiveCons (x,y);;
+
 id x = x;;
 
 const x y = x;;
-
-cons x y = primitiveCons (x,y);;
 
 foldr f e ls =
   if nil? ls
     then e
     else (f (head ls) (foldr f e (tail ls)));;
 
-sum = foldr (\x y -> x + y) 0;;
+sum = foldr (+) 0;;
 
-product = foldr (\x y -> x * y) 1;;
+product = foldr (*) 1;;
 
 map f = foldr (\x y -> cons (f x) y) [];;
 
@@ -28,37 +38,35 @@ range2 step min max =
 
 range = range2 1;;
 
-or x y = if x then true else y;;
+(||) x y = if x then true else y;;
 
-and x y = if x then y else false;;
+(&&) x y = if x then y else false;;
 
 not x = if x then false else true;;
 
 zero? x = x = 0;;
 
 take n ls =
-  if or (nil? ls) (zero? n)
+  if (nil? ls) || (zero? n)
     then []
     else cons (head ls) (take (n - 1) (tail ls));;
 
 drop n ls =
-  if and (not (nil? ls)) (n > 0)
+  if (not (nil? ls)) && (n > 0)
     then drop (n - 1) (tail ls)
     else ls;;
 
-compose f g x = g (f x);;
-
 all p =
-  foldr (\x y -> and (p x) y) true;;
+  foldr (\x y -> (p x) && y) true;;
 
 any p =
-  foldr (\x y -> or (p x) y) false;;
+  foldr (\x y -> (p x) || y) false;;
 
-append xs ys =
+(++) xs ys =
   foldr cons ys xs;;
 
 concat =
-  foldr append [];;
+  foldr (++) [];;
 
 concatMap f xs =
   concat (map f xs);;

@@ -7,47 +7,47 @@ import java.math.BigInteger;
 @SuppressWarnings("unused")
 public class BasicFunctions {
     
-    @LibraryFunction("+")
+    @LibraryFunction("primitiveOpPlus")
     public static BigInteger plus(BigInteger x, BigInteger y) {
         return x.add(y);
     }
     
-    @LibraryFunction("-")
+    @LibraryFunction("primitiveOpMinus")
     public static BigInteger minus(BigInteger x, BigInteger y) {
         return x.subtract(y);
     }
 
-    @LibraryFunction("*")
+    @LibraryFunction("primitiveOpMultiply")
     public static BigInteger multiply(BigInteger x, BigInteger y) {
         return x.multiply(y);
     }
 
-    @LibraryFunction("/")
+    @LibraryFunction("primitiveOpDivide")
     public static BigInteger divide(BigInteger x, BigInteger y) {
         return x.divide(y);
     }
 
-    @LibraryFunction("<")
+    @LibraryFunction("primitiveOpLt")
     public static boolean lt(BigInteger x, BigInteger y) {
         return x.compareTo(y) < 0;
     }
 
-    @LibraryFunction(">")
+    @LibraryFunction("primitiveOpGt")
     public static boolean gt(BigInteger x, BigInteger y) {
         return x.compareTo(y) > 0;
     }
 
-    @LibraryFunction("<=")
+    @LibraryFunction("primitiveOpLe")
     public static boolean le(BigInteger x, BigInteger y) {
         return x.compareTo(y) <= 0;
     }
 
-    @LibraryFunction(">=")
+    @LibraryFunction("primitiveOpGe")
     public static boolean ge(BigInteger x, BigInteger y) {
         return x.compareTo(y) >= 0;
     }
 
-    @LibraryFunction("=")
+    @LibraryFunction("primitiveOpEq")
     public static <T> boolean equal(T x, T y) {
         return Objects.equal(x, y);
     }
