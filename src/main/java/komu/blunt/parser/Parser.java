@@ -44,11 +44,18 @@ public final class Parser {
     // <ident> = <expr> ;;
     private ASTDefine parseDefinition() throws IOException {
         Symbol name = parseIdentifier();
-        expectToken(Operator.EQUAL);
+        List<Symbol> args = new ArrayList<Symbol>();
+        
+        while (!lexer.readMatchingToken(Operator.EQUAL))
+            args.add(parseIdentifier());
+        
         ASTExpression value = parseExpression();
         expectToken(Token.DOUBLE_SEMI);
-        
-        return new ASTDefine(name, value);
+
+        if (args.isEmpty())
+            return new ASTDefine(name, value);
+        else
+            return new ASTDefine(name, new ASTLambda(args, value));
     }
 
     public ASTExpression parseExpression() throws IOException {

@@ -1,10 +1,10 @@
-id = \x -> x;;
+id x = x;;
 
-const = \x y -> x;;
+const x y = x;;
 
-cons = \x y -> primitiveCons (x,y);;
+cons x y = primitiveCons (x,y);;
 
-foldr = \f e ls ->
+foldr f e ls =
   if nil? ls
     then e
     else (f (head ls) (foldr f e (tail ls)));;
@@ -13,59 +13,58 @@ sum = foldr (\x y -> x + y) 0;;
 
 product = foldr (\x y -> x * y) 1;;
 
-map = \f -> foldr (\x y -> cons (f x) y) [];;
+map f = foldr (\x y -> cons (f x) y) [];;
 
-filter = \p -> foldr (\x y -> if p x then cons x y else y) [];;
+filter p = foldr (\x y -> if p x then cons x y else y) [];;
 
 length = foldr (\x y -> y + 1) 0;;
 
-square = \x -> x * x;;
+square x = x * x;;
 
-range2 = \step min max ->
+range2 step min max =
   if min < max
     then cons min (range2 step (min + step) max)
     else [];;
 
 range = range2 1;;
 
-or = \x y -> if x then true else y;;
+or x y = if x then true else y;;
 
-and = \x y -> if x then y else false;;
+and x y = if x then y else false;;
 
-not = \x -> if x then false else true;;
+not x = if x then false else true;;
 
-zero? = \x -> x = 0;;
+zero? x = x = 0;;
 
-take = \n ls ->
+take n ls =
   if or (nil? ls) (zero? n)
     then []
     else cons (head ls) (take (n - 1) (tail ls));;
 
-drop = \n ls ->
+drop n ls =
   if and (not (nil? ls)) (n > 0)
     then drop (n - 1) (tail ls)
     else ls;;
 
-compose = \f g ->
-  \ x -> g (f x);;
+compose f g x = g (f x);;
 
-all = \p ->
+all p =
   foldr (\x y -> and (p x) y) true;;
 
-any = \p ->
+any p =
   foldr (\x y -> or (p x) y) false;;
 
-append = \xs ys ->
+append xs ys =
   foldr cons ys xs;;
 
 concat =
   foldr append [];;
 
-concatMap = \f xs ->
+concatMap f xs =
   concat (map f xs);;
 
-flip = \f x y -> f y x;;
+flip f x y = f y x;;
 
-curry = \f x y -> f (x, y);;
+curry f x y = f (x, y);;
 
-uncurry = \f p -> f (fst p) (snd p);;
+uncurry f p = f (fst p) (snd p);;
