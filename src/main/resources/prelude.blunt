@@ -39,15 +39,15 @@ range2 step min max =
 
 range = range2 1;;
 
-(||) x y = if x then true else y;;
+(||) x y = if x then True else y;;
 
-(&&) x y = if x then y else false;;
+(&&) x y = if x then y else False;;
 
-not x = if x then false else true;;
+not x = if x then False else True;;
 
-and = foldr (&&) true;;
+and = foldr (&&) True;;
 
-or = foldr (||) false;;
+or = foldr (||) False;;
 
 zero? x = x = 0;;
 
@@ -78,10 +78,10 @@ dropWhile p ls =
            else ls;;
 
 all p =
-  foldr (\x y -> p x && y) true;;
+  foldr (\x y -> p x && y) True;;
 
 any p =
-  foldr (\x y -> p x || y) false;;
+  foldr (\x y -> p x || y) False;;
 
 xs ++ ys =
   foldr (:) ys xs;;

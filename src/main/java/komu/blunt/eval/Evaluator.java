@@ -31,8 +31,8 @@ public final class Evaluator {
     private final VM vm = new VM(instructions, rootBindings.runtimeEnvironment);
 
     public Evaluator() {
-        rootBindings.bind("true", Type.BOOLEAN, true);
-        rootBindings.bind("false", Type.BOOLEAN, false);
+        rootBindings.bind("True", Type.BOOLEAN, true);
+        rootBindings.bind("False", Type.BOOLEAN, false);
 
         register(BasicFunctions.class, rootBindings);
         register(ConsList.class, rootBindings);

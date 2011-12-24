@@ -28,8 +28,8 @@ public class EvaluatorTest {
     @Test
     public void selfEvaluatingObjects() {
         assertThatEvaluating("42", produces(42));
-        assertThatEvaluating("true", produces(true));
-        assertThatEvaluating("false", produces(false));
+        assertThatEvaluating("True", produces(true));
+        assertThatEvaluating("False", produces(false));
     }
 
     @Test
@@ -39,8 +39,8 @@ public class EvaluatorTest {
 
     @Test
     public void ifExpression() {
-        assertThatEvaluating("if true then 1 + 2 else 3 + 4", produces(3));
-        assertThatEvaluating("if false then 1 + 2 else 3 + 4", produces(7));
+        assertThatEvaluating("if True then 1 + 2 else 3 + 4", produces(3));
+        assertThatEvaluating("if False then 1 + 2 else 3 + 4", produces(7));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class EvaluatorTest {
 
     @Test
     public void polymorphicTypeWithDifferentInstantiations() {
-        assertThatEvaluating("true = (1 = 1)", produces(true));
+        assertThatEvaluating("True = (1 = 1)", produces(true));
     }
 
     @Test
