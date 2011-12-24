@@ -1,13 +1,13 @@
 (=) x y = primitiveOpEq (x,y);;
-(<) x y = primitiveOpLt (x,y);;
-(<=) x y = primitiveOpLe (x,y);;
-(>) x y = primitiveOpGt (x,y);;
-(>=) x y = primitiveOpGe (x,y);;
-(*) x y = primitiveOpMultiply (x,y);;
-(/) x y = primitiveOpDivide (x,y);;
-(+) x y = primitiveOpPlus (x,y);;
-(-) x y = primitiveOpMinus (x,y);;
-(:) x y = primitiveCons (x,y);;
+x <  y  = primitiveOpLt (x,y);;
+x <= y  = primitiveOpLe (x,y);;
+x >  y  = primitiveOpGt (x,y);;
+x >= y  = primitiveOpGe (x,y);;
+x * y   = primitiveOpMultiply (x,y);;
+x / y   = primitiveOpDivide (x,y);;
+x + y   = primitiveOpPlus (x,y);;
+x - y   = primitiveOpMinus (x,y);;
+x : y   = primitiveCons (x,y);;
 
 id x = x;;
 
@@ -67,7 +67,7 @@ all p =
 any p =
   foldr (\x y -> p x || y) false;;
 
-(++) xs ys =
+xs ++ ys =
   foldr (:) ys xs;;
 
 concat =

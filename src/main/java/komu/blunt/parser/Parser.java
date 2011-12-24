@@ -44,13 +44,23 @@ public final class Parser {
         return result;
     }
 
-    // <ident> = <expr> ;;
+    // <ident> <op> <ident> = <exp> ;;
+    // <ident> <ident>* = <exp> ;;
     private ASTDefine parseDefinition() throws IOException {
         Symbol name = parseIdentifier();
         List<Symbol> args = new ArrayList<Symbol>();
         
-        while (!lexer.readMatchingToken(EQUAL))
+        if (lexer.peekToken() instanceof Operator && !lexer.peekToken().toString().equals("=")) {
+            Operator op = (Operator) lexer.readToken();
+            args.add(name);
             args.add(parseIdentifier());
+            name = symbol(op.toString());
+
+            expectToken(EQUAL);
+        } else {
+            while (!lexer.readMatchingToken(EQUAL))
+                args.add(parseIdentifier());
+        }
         
         ASTExpression value = parseExpression();
         expectToken(Token.DOUBLE_SEMI);
