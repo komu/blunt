@@ -2,42 +2,49 @@ package komu.blunt.stdlib;
 
 import com.google.common.base.Objects;
 
+import java.math.BigInteger;
+
 @SuppressWarnings("unused")
 public class BasicFunctions {
     
     @LibraryFunction("+")
-    public static int plus(int x, int y) {
-        return x + y;
+    public static BigInteger plus(BigInteger x, BigInteger y) {
+        return x.add(y);
     }
     
     @LibraryFunction("-")
-    public static int minus(int x, int y) {
-        return x - y;
+    public static BigInteger minus(BigInteger x, BigInteger y) {
+        return x.subtract(y);
     }
 
     @LibraryFunction("*")
-    public static int multiply(int x, int y) {
-        return x * y;
+    public static BigInteger multiply(BigInteger x, BigInteger y) {
+        return x.multiply(y);
+    }
+
+    @LibraryFunction("/")
+    public static BigInteger divide(BigInteger x, BigInteger y) {
+        return x.divide(y);
     }
 
     @LibraryFunction("<")
-    public static boolean lt(int x, int y) {
-        return x < y;
+    public static boolean lt(BigInteger x, BigInteger y) {
+        return x.compareTo(y) < 0;
     }
 
     @LibraryFunction(">")
-    public static boolean gt(int x, int y) {
-        return x > y;
+    public static boolean gt(BigInteger x, BigInteger y) {
+        return x.compareTo(y) > 0;
     }
 
     @LibraryFunction("<=")
-    public static boolean le(int x, int y) {
-        return x <= y;
+    public static boolean le(BigInteger x, BigInteger y) {
+        return x.compareTo(y) <= 0;
     }
 
     @LibraryFunction(">=")
-    public static boolean ge(int x, int y) {
-        return x >= y;
+    public static boolean ge(BigInteger x, BigInteger y) {
+        return x.compareTo(y) >= 0;
     }
 
     @LibraryFunction("=")

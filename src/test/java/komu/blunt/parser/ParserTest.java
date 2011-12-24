@@ -4,6 +4,8 @@ import komu.blunt.ast.ASTExpression;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 
+import java.math.BigInteger;
+
 import static komu.blunt.parser.ASTMatchers.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
@@ -22,7 +24,7 @@ public class ParserTest {
 
     @Test
     public void numberLiterals() {
-        assertThat(parsing("42"), producesConstant(42));
+        assertThat(parsing("42"), producesConstant(BigInteger.valueOf(42)));
     }
 
     @Test
@@ -57,8 +59,8 @@ public class ParserTest {
     
     @Test
     public void parenthesizedExpression() {
-        assertThat(parsing("(42)"), producesConstant(42));
-        assertThat(parsing("(((43)))"), producesConstant(43));
+        assertThat(parsing("(42)"), producesConstant(BigInteger.valueOf(42)));
+        assertThat(parsing("(((43)))"), producesConstant(BigInteger.valueOf(43)));
     }
 
     @Test

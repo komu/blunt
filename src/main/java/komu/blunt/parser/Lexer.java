@@ -3,9 +3,9 @@ package komu.blunt.parser;
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
+import java.math.BigInteger;
 
 import static java.lang.Character.*;
-import static java.lang.Integer.parseInt;
 import static komu.blunt.objects.Symbol.symbol;
 import static komu.blunt.parser.Token.*;
 
@@ -134,7 +134,7 @@ public final class Lexer {
         while (isDigit(peek()))
             sb.append(read());
 
-        return new Constant(parseInt(sb.toString()));
+        return new Constant(new BigInteger(sb.toString()));
     }
     
     private char read() throws IOException {

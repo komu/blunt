@@ -1,5 +1,6 @@
 package komu.blunt.types;
 
+import java.math.BigInteger;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -18,7 +19,7 @@ public abstract class Type {
     private static String mapName(Class<?> type) {
         return (type == Void.class)                             ? "Unit"
              : (type == Boolean.class || type == boolean.class) ? "Boolean"
-             : (type == Integer.class || type == int.class)     ? "Integer"
+             : (type == BigInteger.class)                       ? "Integer"
              : type.getSimpleName();
     }
    

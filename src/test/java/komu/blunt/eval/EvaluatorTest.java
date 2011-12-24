@@ -3,9 +3,12 @@ package komu.blunt.eval;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.CompoundProcedure;
 import komu.blunt.parser.Parser;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import java.math.BigInteger;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
@@ -137,7 +140,15 @@ public class EvaluatorTest {
         return new Evaluator().evaluate(Parser.parse(expr));
     }
 
-    private static Matcher<Object> produces(final Object value) {
-        return is(value);
+    private static Matcher<Object> produces(final int value) {
+        return CoreMatchers.<Object>is(BigInteger.valueOf(value));
+    }
+
+    private static Matcher<Object> produces(final String value) {
+        return CoreMatchers.<Object>is(value);
+    }
+    
+    private static Matcher<Object> produces(final boolean value) {
+        return CoreMatchers.<Object>is(value);
     }
 }
