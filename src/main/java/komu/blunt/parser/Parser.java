@@ -3,6 +3,7 @@ package komu.blunt.parser;
 import komu.blunt.ast.*;
 import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.Symbol;
+import komu.blunt.objects.Unit;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -101,7 +102,7 @@ public final class Parser {
     private boolean isExpressionStart(Object o) {
         List<?> startTokens = Arrays.asList(Token.IF, Token.LET, Token.FN, Token.LPAREN);
 
-        return startTokens.contains(o) || isConstant(o) || o instanceof Symbol;
+        return startTokens.contains(o) || o instanceof Constant || o instanceof Symbol;
     }
 
     private ASTExpression parseExp4() throws IOException {
@@ -117,16 +118,12 @@ public final class Parser {
             return parseLambda();
         else if (token == Token.LPAREN)
             return parseParens();
-        else if (isConstant(token))
-            return new ASTConstant(token);
+        else if (token instanceof Constant)
+            return new ASTConstant(((Constant) token).value);
         else if (token instanceof Symbol)
             return new ASTVariable((Symbol) token);
         else
             throw new SyntaxException("invalid token: " + token);
-    }
-
-    private static boolean isConstant(Object token) {
-        return token instanceof Number || token instanceof String;
     }
 
     // if <expr> then <expr> else <expr>
@@ -166,8 +163,11 @@ public final class Parser {
         return new ASTLambda(asList(arg), body);
     }
 
-    // ( <expr> )
+    // () | ( <expr> )
     private ASTExpression parseParens() throws IOException {
+        if (lexer.readMatchingToken(Token.RPAREN))
+            return new ASTConstant(Unit.INSTANCE);
+        
         ASTExpression exp = parseExpression();
         expectToken(Token.RPAREN);
         return exp;

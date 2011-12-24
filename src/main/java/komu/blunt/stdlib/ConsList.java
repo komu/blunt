@@ -1,8 +1,12 @@
 package komu.blunt.stdlib;
 
+import komu.blunt.objects.Unit;
+
 @SuppressWarnings("unused")
 public abstract class ConsList<T> {
-    
+
+    public static final ConsList<?> NIL = new Nil<Object>();
+
     private static final class Cons<T> extends ConsList<T> {
         final T head;
         final ConsList<T> tail;
@@ -75,9 +79,10 @@ public abstract class ConsList<T> {
         return sb.toString();
     }
 
-    @LibraryFunction("make-nil")
-    public static <T> ConsList<T> nil() {
-        return new Nil<T>();
+    @LibraryFunction("makeNil")
+    @SuppressWarnings("unchecked")
+    public static <T> ConsList<T> nil(Unit unit) {
+        return (ConsList<T>) NIL;
     }
 
     @LibraryFunction("cons")

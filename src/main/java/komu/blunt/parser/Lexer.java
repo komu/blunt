@@ -1,5 +1,7 @@
 package komu.blunt.parser;
 
+import komu.blunt.stdlib.ConsList;
+
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
@@ -58,12 +60,19 @@ public final class Lexer {
             return RPAREN;
         else if (readIf(';'))
             return readIf(';') ? DOUBLE_SEMI : SEMICOLON;
+        else if (readIf('['))
+            return readList();
         else if (isOperatorCharacter(peek()))
             return readOperator();
         else if (isJavaIdentifierStart(peek()))
             return readIdentifierOrKeyword();
         else
             throw parseError("unexpected token: '" + read() + "'");
+    }
+
+    private Object readList() throws IOException {
+        expect(']');
+        return new Constant(ConsList.NIL);
     }
 
     private void skipWhitespace() throws IOException {
@@ -109,7 +118,7 @@ public final class Lexer {
         return new Operator(sb.toString());
     }
 
-    private String readString() throws IOException {
+    private Constant readString() throws IOException {
         StringBuilder sb = new StringBuilder();
         // TODO: escaping
         expect('"');
@@ -119,16 +128,16 @@ public final class Lexer {
 
         expect('"');
 
-        return sb.toString();
+        return new Constant(sb.toString());
     }
 
-    private Number readNumber() throws IOException {
+    private Constant readNumber() throws IOException {
         StringBuilder sb = new StringBuilder();
 
         while (isDigit(peek()))
             sb.append(read());
 
-        return parseInt(sb.toString());
+        return new Constant(parseInt(sb.toString()));
     }
     
     private char read() throws IOException {
