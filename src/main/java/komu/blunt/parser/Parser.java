@@ -63,11 +63,7 @@ public final class Parser {
         ASTExpression exp = parseExp2();
 
         while (true) {
-            Operator op = lexer.readAnyMatchingToken(EQUAL, LT, LE, GT, GE, PLUS, MINUS);
-            if (op != null) {
-                ASTExpression rhs = parseExp2();
-                exp = builtinBinary(op.toString(), exp, rhs);
-            } else if (lexer.peekToken() instanceof Operator && !((Operator) lexer.peekToken()).isBuiltin()) {
+            if (lexer.peekToken() instanceof Operator && !((Operator) lexer.peekToken()).isBuiltin()) {
                 Operator operator = (Operator) lexer.readToken();
                 ASTExpression rhs = parseExp2();
                 exp = binary(operator.toString(), exp, rhs);
@@ -84,12 +80,10 @@ public final class Parser {
         ASTExpression exp = parseExp3();
 
         while (true) {
-            if (lexer.readMatchingToken(Operator.MULTIPLY)) {
+            Operator op = lexer.readAnyMatchingToken(EQUAL, LT, LE, GT, GE);
+            if (op != null) {
                 ASTExpression rhs = parseExp3();
-                exp = builtinBinary("*", exp, rhs);
-            } else if (lexer.readMatchingToken(Operator.DIVIDE)) {
-                ASTExpression rhs = parseExp3();
-                exp = builtinBinary("/", exp, rhs);
+                exp = binary(op.toString(), exp, rhs);
             } else {
                 return exp;
             }
@@ -98,9 +92,39 @@ public final class Parser {
 
     private ASTExpression parseExp3() throws IOException {
         ASTExpression exp = parseExp4();
+
+        while (true) {
+            Operator op = lexer.readAnyMatchingToken(PLUS, MINUS);
+            if (op != null) {
+                ASTExpression rhs = parseExp4();
+                exp = binary(op.toString(), exp, rhs);
+            } else {
+                return exp;
+            }
+        }
+    }
+
+    private ASTExpression parseExp4() throws IOException {
+        ASTExpression exp = parseExp5();
+
+        while (true) {
+            if (lexer.readMatchingToken(Operator.MULTIPLY)) {
+                ASTExpression rhs = parseExp5();
+                exp = binary("*", exp, rhs);
+            } else if (lexer.readMatchingToken(Operator.DIVIDE)) {
+                ASTExpression rhs = parseExp5();
+                exp = binary("/", exp, rhs);
+            } else {
+                return exp;
+            }
+        }
+    }
+
+    private ASTExpression parseExp5() throws IOException {
+        ASTExpression exp = parseExp6();
         
         while (isExpressionStart(lexer.peekToken()))
-            exp = new ASTApplication(exp, parseExp4());
+            exp = new ASTApplication(exp, parseExp6());
 
         return exp;
     }
@@ -112,7 +136,7 @@ public final class Parser {
         return startTokens.contains(o) || o instanceof Constant || o instanceof Symbol;
     }
 
-    private ASTExpression parseExp4() throws IOException {
+    private ASTExpression parseExp6() throws IOException {
         Object token = lexer.peekToken();
 
         if (token == Token.EOF)
@@ -231,10 +255,6 @@ public final class Parser {
 
         if (!expected.equals(token))
             throw new SyntaxException("expected " + expected + " but got " + token);
-    }
-
-    private static ASTExpression builtinBinary(String op, ASTExpression lhs, ASTExpression rhs) {
-        return binary(op, lhs, rhs);
     }
 
     private static ASTExpression binary(String op, ASTExpression lhs, ASTExpression rhs) {

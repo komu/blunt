@@ -17,7 +17,7 @@ const x y = x;;
 foldr f e ls =
   if nil? ls
     then e
-    else (f (head ls) (foldr f e (tail ls)));;
+    else f (head ls) (foldr f e (tail ls));;
 
 sum = foldr (+) 0;;
 
@@ -44,23 +44,27 @@ range = range2 1;;
 
 not x = if x then false else true;;
 
+and = foldr (&&) true;;
+
+or = foldr (||) false;;
+
 zero? x = x = 0;;
 
 take n ls =
-  if (nil? ls) || (zero? n)
+  if nil? ls || zero? n
     then []
     else cons (head ls) (take (n - 1) (tail ls));;
 
 drop n ls =
-  if (not (nil? ls)) && (n > 0)
+  if not (nil? ls) && n > 0
     then drop (n - 1) (tail ls)
     else ls;;
 
 all p =
-  foldr (\x y -> (p x) && y) true;;
+  foldr (\x y -> p x && y) true;;
 
 any p =
-  foldr (\x y -> (p x) || y) false;;
+  foldr (\x y -> p x || y) false;;
 
 (++) xs ys =
   foldr cons ys xs;;
