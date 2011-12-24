@@ -91,6 +91,12 @@ public class ParserTest {
         assertThat(parsing("a (b c)"), producesExpressionMatching("(a (b c))"));
     }
 
+    @Test
+    public void tuples() {
+        assertThat(parsing("(a, b)"), producesExpressionMatching("(tuple a b)"));
+        assertThat(parsing("(a+b, c*d)"), producesExpressionMatching("(tuple (+ a b) (* c d))"));
+    }
+
     private static ASTExpression parsing(String s) {
         return Parser.parse(s);
     }

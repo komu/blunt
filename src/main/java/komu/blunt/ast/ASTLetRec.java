@@ -3,6 +3,7 @@ package komu.blunt.ast;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
+import komu.blunt.objects.Unit;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -30,7 +31,7 @@ public final class ASTLetRec extends ASTExpression {
 
         ASTSequence bodyExps = new ASTSequence();
         for (ASTBinding binding : bindings) {
-            newBindings.add(new ASTBinding(binding.name, new ASTApplication(new ASTVariable(symbol("unsafe-null")))));
+            newBindings.add(new ASTBinding(binding.name, new ASTApplication(new ASTVariable(symbol("unsafe-null")), new ASTConstant(Unit.INSTANCE))));
             bodyExps.add(new ASTSet(binding.name, binding.expr));
         }
 

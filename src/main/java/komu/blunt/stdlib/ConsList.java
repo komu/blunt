@@ -1,7 +1,5 @@
 package komu.blunt.stdlib;
 
-import komu.blunt.objects.Unit;
-
 @SuppressWarnings("unused")
 public abstract class ConsList<T> {
 
@@ -79,13 +77,13 @@ public abstract class ConsList<T> {
         return sb.toString();
     }
 
-    @LibraryFunction("makeNil")
+    @LibraryFunction("primitiveNil")
     @SuppressWarnings("unchecked")
-    public static <T> ConsList<T> nil(Unit unit) {
+    public static <T> ConsList<T> nil() {
         return (ConsList<T>) NIL;
     }
 
-    @LibraryFunction("cons")
+    @LibraryFunction("primitiveCons")
     public static <T> ConsList<T> cons(T head, ConsList<T> tail) {
         return new Cons<T>(head, tail);
     }

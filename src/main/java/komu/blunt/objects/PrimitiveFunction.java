@@ -21,10 +21,13 @@ public final class PrimitiveFunction implements Function {
     @Override
     public Object apply(Object[] args) {
         try {
+            if (args.length == 1 && args[0] instanceof Object[])
+                args = (Object[]) args[0];
+            
             if (isStatic) {
-                return method.invoke(null, args);
+                return method.invoke(null, normalize(args));
             } else {
-                return method.invoke(args[0], Arrays.copyOfRange(args, 1, args.length));
+                return method.invoke(args[0], normalize(Arrays.copyOfRange(args, 1, args.length)));
             }
 
         } catch (IllegalAccessException e) {
@@ -32,6 +35,13 @@ public final class PrimitiveFunction implements Function {
         } catch (InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private Object[] normalize(Object[] args) {
+        if (method.getParameterTypes().length == 0 && args.length == 1 && args[0] == Unit.INSTANCE)
+            return new Object[0];
+        else
+            return args;
     }
 
     @Override

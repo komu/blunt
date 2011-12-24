@@ -27,7 +27,12 @@ public final class NativeTypeConversions {
         List<Type> argumentTypes = resolveArgumentTypes(m);
         Type returnType = resolve(m.getGenericReturnType());
 
-        return Type.makeFunctionType(argumentTypes, returnType).quantifyAll();
+        if (argumentTypes.isEmpty())
+            return Type.makeFunctionType(Type.UNIT, returnType).quantifyAll();
+        else if (argumentTypes.size() == 1)
+            return Type.makeFunctionType(argumentTypes.get(0), returnType).quantifyAll();
+        else
+            return Type.makeFunctionType(Type.tupleType(argumentTypes), returnType).quantifyAll();
     }
 
     private List<Type> resolveArgumentTypes(Method m) {

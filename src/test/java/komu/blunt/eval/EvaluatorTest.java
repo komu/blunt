@@ -111,6 +111,12 @@ public class EvaluatorTest {
         assertThatEvaluating("let rec f = fn n -> if 0 = n then 1 else n * f (n - 1) in f 10)", produces(3628800));
     }
 
+    @Test
+    public void pairs() {
+        assertThatEvaluating("fst (1, \"foo\")", produces(1));
+        assertThatEvaluating("snd (1, \"foo\")", produces("foo"));
+    }
+
     private void assertStaticError(String expr) {
         try {
             analyze(expr);

@@ -5,6 +5,7 @@ import komu.blunt.ast.ASTExpression;
 import komu.blunt.eval.AnalyzationException;
 import komu.blunt.eval.Evaluator;
 import komu.blunt.eval.ResultWithType;
+import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.EvaluationException;
 
 import java.io.FileNotFoundException;
@@ -32,6 +33,8 @@ public class Main {
                     ResultWithType result = evaluator.evaluateWithType(exp);
                     System.out.println(result);
                 }
+            } catch (SyntaxException e) {
+                System.out.println(e);
             } catch (AnalyzationException e) {
                 System.out.println(e);
             } catch (EvaluationException e) {

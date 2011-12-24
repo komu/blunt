@@ -33,7 +33,10 @@ public final class CoreLambdaExpression extends CoreExpression {
             argumentTypes.add(var);
         }
 
-        return Type.makeFunctionType(argumentTypes, body.typeCheck(bodyEnv));
+        if (argumentTypes.size() == 1)
+            return Type.makeFunctionType(argumentTypes.get(0), body.typeCheck(bodyEnv));
+        else
+            return Type.makeFunctionTypeOld(argumentTypes, body.typeCheck(bodyEnv));
     }
 
     @Override

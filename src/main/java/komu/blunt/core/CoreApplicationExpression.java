@@ -28,7 +28,11 @@ public final class CoreApplicationExpression extends CoreExpression {
 
         Type returnType = env.newVar(Kind.STAR);
 
-        Type ty = Type.makeFunctionType(argTypes, returnType);
+        Type ty;
+        if (argTypes.size() == 1) 
+            ty = Type.makeFunctionType(argTypes.get(0), returnType);
+        else
+            ty = Type.makeFunctionTypeOld(argTypes, returnType);
         
         env.unify(func.typeCheck(env), ty);
 

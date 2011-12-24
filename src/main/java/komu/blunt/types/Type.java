@@ -1,12 +1,8 @@
 package komu.blunt.types;
 
-import static java.util.Arrays.asList;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import static java.util.Arrays.asList;
 
 public abstract class Type {
 
@@ -39,8 +35,12 @@ public abstract class Type {
         return new TypeScheme(basicType(name));
     }
 
-    public static Type makeFunctionType(List<Type> argumentTypes, Type returnType) {
+    public static Type makeFunctionTypeOld(List<Type> argumentTypes, Type returnType) {
         return genericType("->", tupleType(argumentTypes), returnType);
+    }
+
+    public static Type makeFunctionType(Type argumentType, Type returnType) {
+        return genericType("->", argumentType, returnType);
     }
     
     public static Type tupleType(List<Type> types) {

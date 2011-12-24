@@ -7,7 +7,6 @@ import komu.blunt.objects.Unit;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -59,6 +58,18 @@ public final class Parser {
             if (lexer.readMatchingToken(Operator.EQUAL)) {
                 ASTExpression rhs = parserExp2();
                 exp = binary("=", exp, rhs);
+            } else if (lexer.readMatchingToken(Operator.LT)) {
+                ASTExpression rhs = parserExp2();
+                exp = binary("<", exp, rhs);
+            } else if (lexer.readMatchingToken(Operator.LE)) {
+                ASTExpression rhs = parserExp2();
+                exp = binary("<=", exp, rhs);
+            } else if (lexer.readMatchingToken(Operator.GT)) {
+                ASTExpression rhs = parserExp2();
+                exp = binary(">", exp, rhs);
+            } else if (lexer.readMatchingToken(Operator.GE)) {
+                ASTExpression rhs = parserExp2();
+                exp = binary(">=", exp, rhs);
             } else if (lexer.readMatchingToken(Operator.PLUS)) {
                 ASTExpression rhs = parserExp2();
                 exp = binary("+", exp, rhs);
@@ -99,9 +110,10 @@ public final class Parser {
         return exp;
     }
 
-    private boolean isExpressionStart(Object o) {
-        List<?> startTokens = Arrays.asList(Token.IF, Token.LET, Token.FN, Token.LPAREN);
+    private static final List<?> startTokens =
+        asList(Token.IF, Token.LET, Token.FN, Token.LPAREN, Token.LBRACKET);
 
+    private boolean isExpressionStart(Object o) {
         return startTokens.contains(o) || o instanceof Constant || o instanceof Symbol;
     }
 
@@ -118,6 +130,8 @@ public final class Parser {
             return parseLambda();
         else if (token == Token.LPAREN)
             return parseParens();
+        else if (token == Token.LBRACKET)
+            return parseList();
         else if (token instanceof Constant)
             return new ASTConstant(((Constant) token).value);
         else if (token instanceof Symbol)
@@ -168,9 +182,25 @@ public final class Parser {
         if (lexer.readMatchingToken(Token.RPAREN))
             return new ASTConstant(Unit.INSTANCE);
         
-        ASTExpression exp = parseExpression();
+        List<ASTExpression> exps = new ArrayList<ASTExpression>();
+        
+        do {
+            exps.add(parseExpression());    
+        } while (lexer.readMatchingToken(Token.COMMA));
+
         expectToken(Token.RPAREN);
-        return exp;
+        
+        if (exps.size() == 1)
+            return exps.get(0);
+        else
+            return new ASTTuple(exps);
+    }
+    
+    // []
+    private ASTExpression parseList() throws IOException {
+        expectToken(Token.RBRACKET);
+        
+        return new ASTApplication(new ASTVariable(symbol("primitiveNil")), new ASTConstant(Unit.INSTANCE));
     }
 
     private Symbol parseIdentifier() throws IOException {

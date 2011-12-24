@@ -5,6 +5,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class Operator {
 
     public static final Operator EQUAL = new Operator("=");
+    public static final Operator LT = new Operator("<");
+    public static final Operator LE = new Operator("<=");
+    public static final Operator GT = new Operator(">");
+    public static final Operator GE = new Operator(">=");
     public static final Operator PLUS = new Operator("+");
     public static final Operator MINUS = new Operator("-");
     public static final Operator MULTIPLY = new Operator("*");

@@ -42,18 +42,16 @@ public final class TypeEnvironment {
     }
 
     private Substitution mostGeneralUnifier(Type lhs, Type rhs) {
-        if (lhs instanceof TypeVariable)
+        if (lhs instanceof TypeApplication && rhs instanceof TypeApplication)
+            return unifyApplication((TypeApplication) lhs, (TypeApplication) rhs);
+        else if (lhs instanceof TypeVariable)
             return varBind((TypeVariable) lhs, rhs);
         else if (rhs instanceof TypeVariable)
             return varBind((TypeVariable) rhs, lhs);
-        else if (lhs.equals(rhs))
-            return Substitution.empty();
-        else if (lhs instanceof TypeApplication && rhs instanceof TypeApplication)
-            return unifyApplication((TypeApplication) lhs, (TypeApplication) rhs);
         else if (lhs instanceof TypeConstructor && rhs instanceof TypeConstructor && lhs.equals(rhs))
             return Substitution.empty();
         else
-            throw new TypeCheckException("type unification failed: " + lhs + " - " + rhs);
+            throw new TypeCheckException("type unification failed [1]: " + lhs + " - " + rhs);
     }
 
     private Substitution unifyApplication(TypeApplication lhs, TypeApplication rhs) {
@@ -68,12 +66,12 @@ public final class TypeEnvironment {
             return Substitution.empty();
         
         if (t.getTypeVariables().contains(u))
-            throw new TypeCheckException("type unification failed: " + u + " - " + t);
+            throw new TypeCheckException("type unification failed [2]: " + u + " - " + t);
         
         if (u.getKind().equals(t.getKind()))
             return Substitution.singleton(u, t);
 
-        throw new TypeCheckException("type unification failed: " + u + " - " + t);
+        throw new TypeCheckException("type unification failed [3]: " + u + " - " + t);
     }
 
     private TypeEnvironment getRoot() {

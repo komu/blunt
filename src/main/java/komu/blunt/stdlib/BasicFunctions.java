@@ -49,4 +49,14 @@ public class BasicFunctions {
     public static <T> T unsafeNull() {
         return null;
     }
+
+    @LibraryFunction("fst")
+    public static <A, B> A fst(A a, B b) {
+        return a;
+    }
+
+    @LibraryFunction("snd")
+    public static <A, B> B snd(A a, B b) {
+        return b;
+    }
 }

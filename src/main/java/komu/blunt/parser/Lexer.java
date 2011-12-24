@@ -1,7 +1,5 @@
 package komu.blunt.parser;
 
-import komu.blunt.stdlib.ConsList;
-
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
@@ -54,6 +52,8 @@ public final class Lexer {
             return readNumber();
         else if (peek() == '"')
             return readString();
+        else if (readIf(','))
+            return COMMA;
         else if (readIf('('))
             return LPAREN;
         else if (readIf(')'))
@@ -61,18 +61,15 @@ public final class Lexer {
         else if (readIf(';'))
             return readIf(';') ? DOUBLE_SEMI : SEMICOLON;
         else if (readIf('['))
-            return readList();
+            return LBRACKET;
+        else if (readIf(']'))
+            return RBRACKET;
         else if (isOperatorCharacter(peek()))
             return readOperator();
         else if (isJavaIdentifierStart(peek()))
             return readIdentifierOrKeyword();
         else
             throw parseError("unexpected token: '" + read() + "'");
-    }
-
-    private Object readList() throws IOException {
-        expect(']');
-        return new Constant(ConsList.NIL);
     }
 
     private void skipWhitespace() throws IOException {
