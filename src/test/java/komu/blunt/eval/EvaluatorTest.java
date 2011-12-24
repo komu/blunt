@@ -130,6 +130,11 @@ public class EvaluatorTest {
         assertThatEvaluating("snd (1, \"foo\")", produces("foo"));
     }
 
+    @Test
+    public void lists() {
+        assertThatEvaluating("length [1,2,3]", produces(3));
+    }
+
     private void assertStaticError(String expr) {
         try {
             analyze(expr);

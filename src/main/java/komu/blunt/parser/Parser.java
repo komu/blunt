@@ -222,11 +222,21 @@ public final class Parser {
     }
     
     // []
+    // [<exp> (,<exp>)*]
     private ASTExpression parseList() throws IOException {
+        ASTList list = new ASTList();
+
         expectToken(Token.LBRACKET);
-        expectToken(Token.RBRACKET);
         
-        return new ASTApplication(new ASTVariable(symbol("primitiveNil")), new ASTConstant(Unit.INSTANCE));
+        if (lexer.peekToken() != Token.RBRACKET) {
+            do {
+                list.add(parseExpression());
+            } while (lexer.readMatchingToken(Token.COMMA));
+        }
+
+        expectToken(Token.RBRACKET);
+
+        return list;
     }
 
     private Symbol parseIdentifier() throws IOException {
