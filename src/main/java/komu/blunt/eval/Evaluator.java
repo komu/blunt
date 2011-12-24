@@ -1,5 +1,6 @@
 package komu.blunt.eval;
 
+import komu.blunt.Main;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
@@ -16,6 +17,7 @@ import komu.blunt.types.NativeTypeConversions;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeScheme;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
@@ -90,5 +92,19 @@ public final class Evaluator {
 
     public void dump() {
         instructions.dump();
+    }
+
+    public void loadResource(String path) throws IOException {
+        load(openResource(path));
+    }
+
+    private static InputStream openResource(String path) throws FileNotFoundException {
+        ClassLoader loader = Main.class.getClassLoader();
+
+        InputStream in = loader.getResourceAsStream(path);
+        if (in != null)
+            return in;
+        else
+            throw new FileNotFoundException("file not found: " + path);
     }
 }

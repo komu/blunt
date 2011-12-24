@@ -8,9 +8,6 @@ import komu.blunt.eval.ResultWithType;
 import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.EvaluationException;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
 import static komu.blunt.objects.Symbol.symbol;
 
 public class Main {
@@ -19,7 +16,7 @@ public class Main {
         Evaluator evaluator = new Evaluator();
         Prompt prompt = new Prompt();
         
-        evaluator.load(openResource("prelude.blunt"));
+        evaluator.loadResource("prelude.blunt");
         
         while (true) {
             try {
@@ -52,15 +49,5 @@ public class Main {
         } else {
             return false;
         }
-    }
-
-    private static InputStream openResource(String path) throws FileNotFoundException {
-        ClassLoader loader = Main.class.getClassLoader();
-
-        InputStream in = loader.getResourceAsStream("prelude.blunt");
-        if (in != null)
-            return in;
-        else
-            throw new FileNotFoundException("file not found: " + path);
     }
 }

@@ -67,19 +67,19 @@ public class ParserTest {
 
     @Test
     public void binaryOperators() {
-        assertThat(parsing("a = b"), producesExpressionMatching("(= a b)"));
-        assertThat(parsing("a + b"), producesExpressionMatching("(+ a b)"));
-        assertThat(parsing("a - b"), producesExpressionMatching("(- a b)"));
+        assertThat(parsing("a = b"), producesExpressionMatching("((= a) b)"));
+        assertThat(parsing("a + b"), producesExpressionMatching("((+ a) b)"));
+        assertThat(parsing("a - b"), producesExpressionMatching("((- a) b)"));
     }
 
     @Test
     public void binaryOperatorAssociativity() {
-        assertThat(parsing("a - b + c - d + e"), producesExpressionMatching("(+ (- (+ (- a b) c) d) e)"));
+        assertThat(parsing("a - b + c - d + e"), producesExpressionMatching("((+ ((- ((+ ((- a) b)) c)) d)) e)"));
     }
     
     @Test
     public void operatorPrecedence() {
-        assertThat(parsing("a + b * c - d"), producesExpressionMatching("(- (+ a (* b c)) d)"));
+        assertThat(parsing("a + b * c - d"), producesExpressionMatching("((- ((+ a) ((* b) c))) d)"));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class ParserTest {
     @Test
     public void tuples() {
         assertThat(parsing("(a, b)"), producesExpressionMatching("(tuple a b)"));
-        assertThat(parsing("(a+b, c*d)"), producesExpressionMatching("(tuple (+ a b) (* c d))"));
+        assertThat(parsing("(a+b, c*d)"), producesExpressionMatching("(tuple ((+ a) b) ((* c) d))"));
     }
 
     private static ASTExpression parsing(String s) {

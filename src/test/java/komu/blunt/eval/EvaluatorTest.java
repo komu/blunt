@@ -5,9 +5,11 @@ import komu.blunt.objects.CompoundProcedure;
 import komu.blunt.parser.Parser;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.math.BigInteger;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -15,6 +17,13 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 public class EvaluatorTest {
+
+    private static final Evaluator evaluator = new Evaluator();
+
+    @BeforeClass
+    public static void loadPrelude() throws IOException {
+        evaluator.loadResource("prelude.blunt");
+    }
 
     @Test
     public void selfEvaluatingObjects() {
@@ -138,7 +147,7 @@ public class EvaluatorTest {
     }
 
     private static Object evaluate(String expr) {
-        return new Evaluator().evaluate(Parser.parse(expr));
+        return evaluator.evaluate(Parser.parse(expr));
     }
 
     private static Matcher<Object> produces(final int value) {
