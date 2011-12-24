@@ -2,7 +2,6 @@ package komu.blunt.ast;
 
 import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreLetExpression;
-import komu.blunt.core.VariableBinding;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
@@ -24,18 +23,14 @@ public final class ASTLet extends ASTExpression {
 
     @Override
     public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
+        if (bindings.size() != 1)
+            throw new UnsupportedOperationException("multi-var let is not supported");
+        
         StaticEnvironment newEnv = env.extend(getVariables());
+        
+        ASTBinding binding = bindings.get(0);
 
-        return new CoreLetExpression(analyzeBindings(bindings, env, rootBindings), body.analyze(newEnv, rootBindings));
-    }
-
-    private static List<VariableBinding> analyzeBindings(List<ASTBinding> bindings, StaticEnvironment env, RootBindings rootBindings) {
-        List<VariableBinding> result = new ArrayList<VariableBinding>(bindings.size());
-
-        for (ASTBinding binding : bindings)
-            result.add(new VariableBinding(binding.name, binding.expr.analyze(env, rootBindings)));
-
-        return result;
+        return new CoreLetExpression(binding.name, binding.expr.analyze(env, rootBindings), body.analyze(newEnv, rootBindings));
     }
 
     private List<Symbol> getVariables() {

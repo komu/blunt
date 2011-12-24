@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+
 public final class StaticEnvironment {
 
     private final StaticEnvironment parent;
@@ -42,10 +44,14 @@ public final class StaticEnvironment {
         return new VariableReference(0, offset, name);
     }
 
-    public StaticEnvironment extend(List<Symbol> arguments) {
+    public StaticEnvironment extend(Symbol symbol) {
+        return extend(asList(symbol));
+    }
+
+    public StaticEnvironment extend(List<Symbol> symbols) {
         StaticEnvironment env = new StaticEnvironment(this);
 
-        for (Symbol symbol : arguments)
+        for (Symbol symbol : symbols)
             env.define(symbol);
 
         return env;

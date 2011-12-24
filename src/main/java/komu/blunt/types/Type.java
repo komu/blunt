@@ -36,10 +36,6 @@ public abstract class Type {
         return new TypeScheme(basicType(name));
     }
 
-    public static Type makeFunctionTypeOld(List<Type> argumentTypes, Type returnType) {
-        return genericType("->", tupleType(argumentTypes), returnType);
-    }
-
     public static Type makeFunctionType(Type argumentType, Type returnType) {
         return genericType("->", argumentType, returnType);
     }

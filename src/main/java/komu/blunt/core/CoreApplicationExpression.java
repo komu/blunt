@@ -7,47 +7,29 @@ import komu.blunt.types.Kind;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeEnvironment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreApplicationExpression extends CoreExpression {
     
     private final CoreExpression func;
-    private final List<CoreExpression> args;
+    private final CoreExpression arg;
 
-    public CoreApplicationExpression(CoreExpression func, List<CoreExpression> args) {
+    public CoreApplicationExpression(CoreExpression func, CoreExpression arg) {
         this.func = checkNotNull(func);
-        this.args = checkNotNull(args);
+        this.arg = checkNotNull(arg);
     }
 
     @Override
     public Type typeCheck(TypeEnvironment env) {
-        List<Type> argTypes = typeCheckArgs(env);
-
+        Type argType = arg.typeCheck(env);
         Type returnType = env.newVar(Kind.STAR);
+        Type ty = Type.makeFunctionType(argType, returnType);
 
-        Type ty;
-        if (argTypes.size() == 1) 
-            ty = Type.makeFunctionType(argTypes.get(0), returnType);
-        else
-            ty = Type.makeFunctionTypeOld(argTypes, returnType);
-        
         env.unify(func.typeCheck(env), ty);
 
         return returnType;
     }
     
-    private List<Type> typeCheckArgs(TypeEnvironment env) {
-        List<Type> types = new ArrayList<Type>(args.size());
-        
-        for (CoreExpression arg : args)
-            types.add(arg.typeCheck(env));
-        
-        return types;
-    }
-
     @Override
     public void assemble(Instructions instructions, Register target, Linkage linkage) {
         // TODO: preserve registers only if needed
@@ -55,15 +37,13 @@ public final class CoreApplicationExpression extends CoreExpression {
         func.assemble(instructions, Register.PROCEDURE, Linkage.NEXT);
         instructions.pushRegister(Register.PROCEDURE);
 
-        instructions.loadNewArray(Register.ARGV, args.size());
-        for (int i = 0; i < args.size(); i++) {
-            instructions.pushRegister(Register.ARGV);
-            instructions.pushRegister(Register.ENV);
-            args.get(i).assemble(instructions, Register.VAL, Linkage.NEXT);
-            instructions.popRegister(Register.ENV);
-            instructions.popRegister(Register.ARGV);
-            instructions.arrayStore(Register.ARGV, i, Register.VAL);
-        }
+        instructions.loadNewArray(Register.ARGV, 1);
+        instructions.pushRegister(Register.ARGV);
+        instructions.pushRegister(Register.ENV);
+        arg.assemble(instructions, Register.VAL, Linkage.NEXT);
+        instructions.popRegister(Register.ENV);
+        instructions.popRegister(Register.ARGV);
+        instructions.arrayStore(Register.ARGV, 0, Register.VAL);
 
         instructions.popRegister(Register.PROCEDURE);
 

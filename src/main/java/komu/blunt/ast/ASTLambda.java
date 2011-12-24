@@ -30,8 +30,9 @@ public final class ASTLambda extends ASTExpression {
     @Override
     public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
         if (arguments.size() == 1) {
-            StaticEnvironment newEnv = env.extend(arguments);
-            return new CoreLambdaExpression(arguments, body.analyze(newEnv, rootBindings));
+            Symbol arg = arguments.get(0);
+            StaticEnvironment newEnv = env.extend(arg);
+            return new CoreLambdaExpression(arg, body.analyze(newEnv, rootBindings));
         } else {
             return rewrite().analyze(env, rootBindings);
         }
