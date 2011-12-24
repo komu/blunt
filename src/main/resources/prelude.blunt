@@ -61,6 +61,22 @@ drop n ls =
     then drop (n - 1) (tail ls)
     else ls;;
 
+takeWhile p ls =
+  if nil? ls
+    then []
+    else let h = head ls in
+         if p h
+           then h : takeWhile p (tail ls)
+           else [];;
+
+dropWhile p ls =
+  if nil? ls
+    then []
+    else let h = head ls in
+         if p h
+           then dropWhile p (tail ls)
+           else ls;;
+
 all p =
   foldr (\x y -> p x && y) true;;
 
@@ -81,3 +97,12 @@ flip f x y = f y x;;
 curry f x y = f (x, y);;
 
 uncurry f p = f (fst p) (snd p);;
+
+zipWith f xs ys =
+  if nil? xs || nil? ys
+    then []
+    else f (head xs) (head ys) : zipWith f (tail xs) (tail ys);;
+
+zip = zipWith (\x y -> (x,y));;
+
+elem x = any ((=) x);;
