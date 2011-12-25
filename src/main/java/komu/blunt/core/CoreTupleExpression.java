@@ -9,6 +9,8 @@ import komu.blunt.types.TypeEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.collect.Lists.reverse;
+
 public final class CoreTupleExpression extends CoreExpression {
     private final List<CoreExpression> exps;
 
@@ -23,24 +25,11 @@ public final class CoreTupleExpression extends CoreExpression {
 
     @Override
     public void assemble(Instructions instructions, Register target, Linkage linkage) {
-        //instructions.pushRegister(Register.ARGV);
-        //instructions.pushRegister(Register.VAL);
-
-        instructions.loadNewArray(Register.ARGV, exps.size());
-        for (int i = 0; i < exps.size(); i++) {
-            instructions.pushRegister(Register.ARGV);
-            instructions.pushRegister(Register.ENV);
-            exps.get(i).assemble(instructions, Register.VAL, Linkage.NEXT);
-            instructions.popRegister(Register.ENV);
-            instructions.popRegister(Register.ARGV);
-            instructions.arrayStore(Register.ARGV, i, Register.VAL);
+        for (CoreExpression exp : reverse(exps)) {
+            exp.assemble(instructions, target, Linkage.NEXT);
+            instructions.pushRegister(target);
         }
-
-        //instructions.popRegister(Register.VAL);
-        //instructions.popRegister(Register.ARGV);
-
-        if (target != Register.ARGV)
-            instructions.copy(target, Register.ARGV);
+        instructions.loadTuple(target, exps.size());
 
         instructions.finishWithLinkage(linkage);
     }

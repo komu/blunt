@@ -19,15 +19,13 @@ public final class PrimitiveFunction implements Function {
     }
     
     @Override
-    public Object apply(Object[] args) {
+    public Object apply(Object arg) {
         try {
-            if (args.length == 1 && args[0] instanceof Object[])
-                args = (Object[]) args[0];
-            
+            Object[] args = extract(arg);
             if (isStatic) {
-                return method.invoke(null, normalize(args));
+                return method.invoke(null, args);
             } else {
-                return method.invoke(args[0], normalize(Arrays.copyOfRange(args, 1, args.length)));
+                return method.invoke(args[0], Arrays.copyOfRange(args, 1, args.length));
             }
 
         } catch (IllegalAccessException e) {
@@ -37,11 +35,13 @@ public final class PrimitiveFunction implements Function {
         }
     }
 
-    private Object[] normalize(Object[] args) {
-        if (method.getParameterTypes().length == 0 && args.length == 1 && args[0] == Unit.INSTANCE)
+    private Object[] extract(Object arg) {
+        if (arg == Unit.INSTANCE)
             return new Object[0];
+        else if (arg instanceof Tuple)
+            return ((Tuple) arg).items;
         else
-            return args;
+            return new Object[] { arg };
     }
 
     @Override

@@ -14,7 +14,11 @@ public abstract class Environment {
 
     protected abstract Object lookup(int frame, int offset);
 
-    public Environment extend(Object[] args) {
+    public Environment extendWithArguments(Object[] args) {
         return new NestedEnvironment(args, this);
+    }
+
+    public Environment extend(Object arg) {
+        return new NestedEnvironment(new Object[] { arg }, this);
     }
 }

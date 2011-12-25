@@ -32,24 +32,16 @@ public final class CoreApplicationExpression extends CoreExpression {
     
     @Override
     public void assemble(Instructions instructions, Register target, Linkage linkage) {
-        // TODO: preserve registers only if needed
-
         func.assemble(instructions, Register.PROCEDURE, Linkage.NEXT);
         instructions.pushRegister(Register.PROCEDURE);
 
-        instructions.loadNewArray(Register.ARGV, 1);
-        instructions.pushRegister(Register.ARGV);
-        instructions.pushRegister(Register.ENV);
-        arg.assemble(instructions, Register.VAL, Linkage.NEXT);
-        instructions.popRegister(Register.ENV);
-        instructions.popRegister(Register.ARGV);
-        instructions.arrayStore(Register.ARGV, 0, Register.VAL);
+        arg.assemble(instructions, Register.ARG, Linkage.NEXT);
 
         instructions.popRegister(Register.PROCEDURE);
 
         // TODO: tail calls
 
-        instructions.apply(Register.PROCEDURE, Register.ARGV);
+        instructions.apply(Register.PROCEDURE, Register.ARG);
         if (target != Register.VAL)
             instructions.copy(target, Register.VAL);
 

@@ -101,7 +101,11 @@ public final class Instructions {
     public void copy(Register target, Register source) {
         instructions.add(new OpCode.CopyRegister(target, source));
     }
-
+    
+    public void loadTuple(Register target, int size) {
+        instructions.add(new OpCode.LoadTuple(target, size));
+    }
+    
     public int count() {
         return instructions.size();
     }
