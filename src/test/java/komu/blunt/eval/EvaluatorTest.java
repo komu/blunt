@@ -69,7 +69,7 @@ public class EvaluatorTest {
 
     @Test
     public void equalityBetweenDifferentTypes() {
-        assertStaticError("2 = \"foo\"");
+        assertStaticError("2 == \"foo\"");
     }
 
     @Test

@@ -67,7 +67,7 @@ public class ParserTest {
 
     @Test
     public void binaryOperators() {
-        assertThat(parsing("a = b"), producesExpressionMatching("((= a) b)"));
+        assertThat(parsing("a == b"), producesExpressionMatching("((== a) b)"));
         assertThat(parsing("a + b"), producesExpressionMatching("((+ a) b)"));
         assertThat(parsing("a - b"), producesExpressionMatching("((- a) b)"));
     }
