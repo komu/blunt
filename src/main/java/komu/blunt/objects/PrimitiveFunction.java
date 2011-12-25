@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
 
 public final class PrimitiveFunction implements Function {
 
@@ -31,7 +32,7 @@ public final class PrimitiveFunction implements Function {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw propagate(e.getTargetException());
         }
     }
 
