@@ -13,7 +13,7 @@ id x = x;;
 
 const x y = x;;
 
-compose f g x = f (g x);;
+f . g = \x -> f (g x);;
 
 foldr f e ls =
   if nil? ls
@@ -90,7 +90,7 @@ concat =
   foldr (++) [];;
 
 concatMap f =
-  compose concat (map f);;
+  concat . map f;;
 
 flip f x y = f y x;;
 
