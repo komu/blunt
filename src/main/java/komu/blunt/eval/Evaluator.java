@@ -54,8 +54,8 @@ public final class Evaluator {
     }
 
     public CoreExpression analyze(ASTExpression expr) {
+        rootBindings.createTypeEnvironment().typeCheck(expr);
         CoreExpression exp = toCore(expr);
-        rootBindings.createTypeEnvironment().typeCheck(exp);
         return exp;
     }
     
@@ -64,11 +64,26 @@ public final class Evaluator {
             Parser parser = new Parser(in);
 
             for (ASTDefine define : parser.parseDefinitions())
-                evaluate(define);
+                define(define);
 
         } finally {
             in.close();
         }
+    }
+
+    public void define(ASTDefine define) {
+        define.typeCheck(rootBindings);
+        CoreExpression expression = define.analyze(rootBindings.staticEnvironment, rootBindings);
+
+        run(expression);
+    }
+
+    private Object run(CoreExpression expression) {
+        int pos = instructions.pos();
+        expression.assemble(instructions, Register.VAL, Linkage.NEXT);
+
+        vm.set(Register.PC, pos);
+        return vm.run();
     }
 
     public Object evaluate(ASTExpression exp) {
@@ -76,14 +91,10 @@ public final class Evaluator {
     }
 
     public ResultWithType evaluateWithType(ASTExpression exp) {
+        Type type = rootBindings.createTypeEnvironment().typeCheck(exp);
         CoreExpression expression = toCore(exp);
-        Type type = rootBindings.createTypeEnvironment().typeCheck(expression);
 
-        int pos = instructions.pos();
-        expression.assemble(instructions, Register.VAL, Linkage.NEXT);
-
-        vm.set(Register.PC, pos);
-        Object result = vm.run();
+        Object result = run(expression);
 
         return new ResultWithType(result, type);
     }

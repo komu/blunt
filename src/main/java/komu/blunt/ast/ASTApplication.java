@@ -4,6 +4,9 @@ import komu.blunt.core.CoreApplicationExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
+import komu.blunt.types.Kind;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeEnvironment;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,6 +23,17 @@ public final class ASTApplication extends ASTExpression {
     @Override
     public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
         return new CoreApplicationExpression(func.analyze(env, rootBindings), arg.analyze(env, rootBindings));
+    }
+
+    @Override
+    public Type typeCheck(TypeEnvironment env) {
+        Type argType = arg.typeCheck(env);
+        Type returnType = env.newVar(Kind.STAR);
+        Type ty = Type.makeFunctionType(argType, returnType);
+
+        env.unify(func.typeCheck(env), ty);
+
+        return returnType;
     }
 
     @Override

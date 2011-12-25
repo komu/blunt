@@ -4,8 +4,6 @@ import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
 import komu.blunt.eval.VariableReference;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -15,11 +13,6 @@ public final class CoreVariableExpression extends CoreExpression {
 
     public CoreVariableExpression(VariableReference var) {
         this.var = checkNotNull(var);
-    }
-
-    @Override
-    public Type typeCheck(TypeEnvironment env) {
-        return env.lookup(var.name).freshInstance(env);
     }
 
     @Override

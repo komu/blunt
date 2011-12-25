@@ -4,6 +4,8 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Unit;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeEnvironment;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,6 +26,11 @@ public final class ASTLetRec extends ASTExpression {
     @Override
     public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
         return rewriteToLet().analyze(env, rootBindings);
+    }
+
+    @Override
+    public Type typeCheck(TypeEnvironment env) {
+        return rewriteToLet().typeCheck(env);
     }
 
     private ASTLet rewriteToLet() {

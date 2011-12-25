@@ -5,6 +5,9 @@ import komu.blunt.core.CoreLetExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeEnvironment;
+import komu.blunt.types.TypeScheme;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -21,6 +24,21 @@ public final class ASTLet extends ASTExpression {
         this.body = checkNotNull(body);
     }
 
+    @Override
+    public Type typeCheck(TypeEnvironment env) {
+        if (bindings.size() != 1)
+            throw new UnsupportedOperationException("multi-var let is not supported");
+
+        ASTBinding binding = bindings.get(0);
+        
+        TypeEnvironment bodyEnv = new TypeEnvironment(env);
+        
+        Type type = binding.expr.typeCheck(env);
+        env.bind(binding.name, new TypeScheme(type));
+
+        return body.typeCheck(bodyEnv);
+    }
+    
     @Override
     public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
         if (bindings.size() != 1)

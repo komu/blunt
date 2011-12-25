@@ -1,7 +1,8 @@
 package komu.blunt.types;
 
-import komu.blunt.core.CoreExpression;
+import komu.blunt.ast.ASTExpression;
 import komu.blunt.eval.TypeCheckException;
+import komu.blunt.eval.UnboundVariableException;
 import komu.blunt.objects.Symbol;
 
 import java.util.HashMap;
@@ -24,10 +25,6 @@ public final class TypeEnvironment {
         this.parent = parent;
     }
 
-    public void assign(Type left, Type right) {
-        unify(left, right);
-    }    
-    
     public void unify(Type left, Type right) {
         Substitution subst = getSubstitution();
 
@@ -98,7 +95,7 @@ public final class TypeEnvironment {
         else if (parent != null)
             return parent.lookup(name);
         else
-            throw new IllegalArgumentException("unknown binding: " + name);
+            throw new UnboundVariableException(name);
     }
 
     public TypeVariable newVar(Kind kind) {
@@ -113,7 +110,7 @@ public final class TypeEnvironment {
         }
     }
 
-    public Type typeCheck(CoreExpression expression) {
+    public Type typeCheck(ASTExpression expression) {
         Type type = expression.typeCheck(this);
         return type.apply(getSubstitution());
     }

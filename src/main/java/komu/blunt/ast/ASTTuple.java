@@ -4,6 +4,8 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreTupleExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,11 @@ public final class ASTTuple extends ASTExpression {
     @Override
     public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
         return new CoreTupleExpression(analyzeAll(exps, env, rootBindings));
+    }
+
+    @Override
+    public Type typeCheck(TypeEnvironment env) {
+        return Type.tupleType(typeCheckAll(exps, env));
     }
 
     @Override

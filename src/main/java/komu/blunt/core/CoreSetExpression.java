@@ -5,8 +5,6 @@ import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
 import komu.blunt.eval.VariableReference;
 import komu.blunt.objects.Unit;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
 
 public final class CoreSetExpression extends CoreExpression {
 
@@ -16,15 +14,6 @@ public final class CoreSetExpression extends CoreExpression {
     public CoreSetExpression(VariableReference var, CoreExpression exp) {
         this.var = var;
         this.exp = exp;
-    }
-
-    @Override
-    public Type typeCheck(TypeEnvironment env) {
-        // TODO: is it correct to create fresh instantiation of the variable?
-        Type varType = env.lookup(var.name).freshInstance(env);
-
-        env.unify(varType, exp.typeCheck(env));
-        return Type.UNIT;
     }
 
     @Override

@@ -5,6 +5,7 @@ import komu.blunt.core.CoreLambdaExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
+import komu.blunt.types.*;
 
 import java.util.List;
 
@@ -37,7 +38,22 @@ public final class ASTLambda extends ASTExpression {
             return rewrite().analyze(env, rootBindings);
         }
     }
-    
+
+    @Override
+    public Type typeCheck(TypeEnvironment env) {
+        if (arguments.size() == 1) {
+            Symbol arg = arguments.get(0);
+            TypeEnvironment bodyEnv = new TypeEnvironment(env);
+
+            TypeVariable argumentType = env.newVar(Kind.STAR);
+            env.bind(arg, new TypeScheme(argumentType));
+
+            return Type.makeFunctionType(argumentType, body.typeCheck(bodyEnv));
+        } else {
+            return rewrite().typeCheck(env);
+        }
+    }
+
     private ASTLambda rewrite() {
         return new ASTLambda(arguments.get(0), new ASTLambda(arguments.subList(1, arguments.size()), body));
     }
