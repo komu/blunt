@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Throwables.propagate;
 
 public final class PrimitiveFunction implements Function {
 
@@ -19,8 +20,9 @@ public final class PrimitiveFunction implements Function {
     }
     
     @Override
-    public Object apply(Object[] args) {
+    public Object apply(Object arg) {
         try {
+            Object[] args = extract(arg);
             if (isStatic) {
                 return method.invoke(null, args);
             } else {
@@ -30,8 +32,17 @@ public final class PrimitiveFunction implements Function {
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
-            throw new RuntimeException(e);
+            throw propagate(e.getTargetException());
         }
+    }
+
+    private Object[] extract(Object arg) {
+        if (arg == Unit.INSTANCE)
+            return new Object[0];
+        else if (arg instanceof Tuple)
+            return ((Tuple) arg).items;
+        else
+            return new Object[] { arg };
     }
 
     @Override

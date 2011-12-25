@@ -7,3 +7,4 @@ target
 .idea/uiDesigner.xml
 .idea/dictionaries/*
 .DS_Store
+.idea/libraries/

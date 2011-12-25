@@ -1,0 +1,114 @@
+(=) x y = primitiveOpEq (x,y);;
+x <  y  = primitiveOpLt (x,y);;
+x <= y  = primitiveOpLe (x,y);;
+x >  y  = primitiveOpGt (x,y);;
+x >= y  = primitiveOpGe (x,y);;
+x * y   = primitiveOpMultiply (x,y);;
+x / y   = primitiveOpDivide (x,y);;
+x + y   = primitiveOpPlus (x,y);;
+x - y   = primitiveOpMinus (x,y);;
+x : y   = primitiveCons (x,y);;
+Nothing = primitiveNothing ();;
+
+maybe n j m =
+  if just? m
+    then j (fromJust m)
+    else n;;
+
+id x = x;;
+
+const x y = x;;
+
+f . g = \x -> f (g x);;
+
+foldr f e ls =
+  if nil? ls
+    then e
+    else f (head ls) (foldr f e (tail ls));;
+
+sum = foldr (+) 0;;
+
+product = foldr (*) 1;;
+
+map f = foldr (\x y -> f x : y) [];;
+
+filter p = foldr (\x xs -> if p x then x : xs else xs) [];;
+
+length = foldr (\x y -> y + 1) 0;;
+
+square x = x * x;;
+
+range2 step min max =
+  if min < max
+    then min : (range2 step (min + step) max)
+    else [];;
+
+range = range2 1;;
+
+(||) x y = if x then True else y;;
+
+(&&) x y = if x then y else False;;
+
+not x = if x then False else True;;
+
+and = foldr (&&) True;;
+
+or = foldr (||) False;;
+
+zero? x = x = 0;;
+
+take n ls =
+  if nil? ls || zero? n
+    then []
+    else head ls : take (n - 1) (tail ls);;
+
+drop n ls =
+  if not (nil? ls) && n > 0
+    then drop (n - 1) (tail ls)
+    else ls;;
+
+takeWhile p ls =
+  if nil? ls
+    then []
+    else let h = head ls in
+         if p h
+           then h : takeWhile p (tail ls)
+           else [];;
+
+dropWhile p ls =
+  if nil? ls
+    then []
+    else let h = head ls in
+         if p h
+           then dropWhile p (tail ls)
+           else ls;;
+
+all p =
+  foldr (\x y -> p x && y) True;;
+
+any p =
+  foldr (\x y -> p x || y) False;;
+
+xs ++ ys =
+  foldr (:) ys xs;;
+
+concat =
+  foldr (++) [];;
+
+concatMap f =
+  concat . map f;;
+
+flip f x y = f y x;;
+
+curry f x y = f (x, y);;
+
+uncurry f p = f (fst p) (snd p);;
+
+zipWith f xs ys =
+  if nil? xs || nil? ys
+    then []
+    else f (head xs) (head ys) : zipWith f (tail xs) (tail ys);;
+
+zip = zipWith (\x y -> (x,y));;
+
+elem x = any ((=) x);;

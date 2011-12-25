@@ -1,39 +1,37 @@
 package komu.blunt;
 
+import komu.blunt.ast.ASTConstant;
+import komu.blunt.ast.ASTExpression;
 import komu.blunt.eval.AnalyzationException;
 import komu.blunt.eval.Evaluator;
 import komu.blunt.eval.ResultWithType;
+import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.EvaluationException;
-import komu.blunt.objects.Symbol;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 
 import static komu.blunt.objects.Symbol.symbol;
 
 public class Main {
-    
-    private static final Symbol EXIT = symbol("exit");
-    private static final Symbol DUMP = symbol("dump");
 
     public static void main(String[] args) throws Exception {
         Evaluator evaluator = new Evaluator();
         Prompt prompt = new Prompt();
         
-        evaluator.load(openResource("prelude.lisp"));
+        evaluator.loadResource("prelude.blunt");
         
         while (true) {
             try {
-                Object form = prompt.readForm(">>> ");
+                ASTExpression exp = prompt.readExpression(">>> ");
 
-                if (EXIT.equals(form)) {
+                if (isConstant("exit", exp)) {
                     break;
-                } else if (DUMP.equals(form)) {
+                } else if (isConstant("dump", exp)) {
                     evaluator.dump();
                 } else {
-                    ResultWithType result = evaluator.evaluateWithType(form);
+                    ResultWithType result = evaluator.evaluateWithType(exp);
                     System.out.println(result);
                 }
+            } catch (SyntaxException e) {
+                System.out.println(e);
             } catch (AnalyzationException e) {
                 System.out.println(e);
             } catch (EvaluationException e) {
@@ -44,13 +42,12 @@ public class Main {
         }
     }
 
-    private static InputStream openResource(String path) throws FileNotFoundException {
-        ClassLoader loader = Main.class.getClassLoader();
-
-        InputStream in = loader.getResourceAsStream("prelude.lisp");
-        if (in != null)
-            return in;
-        else
-            throw new FileNotFoundException("file not found: " + path);
+    private static boolean isConstant(String symbol, ASTExpression exp) {
+        if (exp instanceof ASTConstant) {
+            ASTConstant constant = (ASTConstant) exp;
+            return symbol(symbol).equals(constant.value);
+        } else {
+            return false;
+        }
     }
 }

@@ -7,12 +7,17 @@ import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.objects.Symbol.symbol;
 
 public final class ASTVariable extends ASTExpression {
     public final Symbol var;
 
     public ASTVariable(Symbol var) {
         this.var = checkNotNull(var);
+    }
+    
+    public ASTVariable(String var) {
+        this.var = symbol(var);
     }
 
     @Override

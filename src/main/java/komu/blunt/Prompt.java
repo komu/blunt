@@ -1,16 +1,20 @@
 package komu.blunt;
 
-import komu.blunt.reader.LispReader;
+import komu.blunt.ast.ASTExpression;
+import komu.blunt.parser.Parser;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Prompt {
     
-    private final LispReader reader = new LispReader(System.in);
+    private final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
     
-    public Object readForm(String prompt) throws IOException {
+    public ASTExpression readExpression(String prompt) throws IOException {
         System.out.print(prompt);
         System.out.flush();
-        return reader.readForm();
+
+        return Parser.parse(reader.readLine());
     }
 }

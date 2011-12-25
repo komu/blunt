@@ -1,12 +1,11 @@
 package komu.blunt.types;
 
-import static java.util.Arrays.asList;
+import komu.blunt.stdlib.TypeName;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.math.BigInteger;
+import java.util.*;
+
+import static java.util.Arrays.asList;
 
 public abstract class Type {
 
@@ -22,10 +21,14 @@ public abstract class Type {
     private static String mapName(Class<?> type) {
         return (type == Void.class)                             ? "Unit"
              : (type == Boolean.class || type == boolean.class) ? "Boolean"
-             : (type == Integer.class || type == int.class)     ? "Integer"
-             : type.getSimpleName();
+             : (type == BigInteger.class)                       ? "Integer"
+             : defaultMapName(type);
     }
-   
+
+    private static String defaultMapName(Class<?> type) {
+        TypeName name = type.getAnnotation(TypeName.class);
+        return name != null ? name.value() : type.getSimpleName();
+    }
 
     private static Type basicType(String name) {
         return new TypeConstructor(name, Kind.STAR);
@@ -35,12 +38,8 @@ public abstract class Type {
         return new TypeApplication(new TypeConstructor("[]", Kind.ofParams(1)), type);
     }
     
-    public static TypeScheme forName(String name) {
-        return new TypeScheme(basicType(name));
-    }
-
-    public static Type makeFunctionType(List<Type> argumentTypes, Type returnType) {
-        return genericType("->", tupleType(argumentTypes), returnType);
+    public static Type makeFunctionType(Type argumentType, Type returnType) {
+        return genericType("->", argumentType, returnType);
     }
     
     public static Type tupleType(List<Type> types) {

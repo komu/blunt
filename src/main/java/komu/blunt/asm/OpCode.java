@@ -4,9 +4,11 @@ import komu.blunt.eval.Environment;
 import komu.blunt.eval.VariableReference;
 import komu.blunt.objects.CompoundProcedure;
 import komu.blunt.objects.Function;
+import komu.blunt.objects.Tuple;
 
 import java.lang.reflect.Array;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class OpCode {
@@ -141,6 +143,32 @@ public abstract class OpCode {
             return String.format("(load %s (lambda %s ENV))", target, label);
         }
     }
+    
+    public static class LoadTuple extends OpCode {
+
+        private final Register target;
+        private final int size;
+
+        public LoadTuple(Register target, int size) {
+            checkArgument(size >= 0);
+
+            this.target = checkNotNull(target);
+            this.size = size;
+        }
+
+        @Override
+        public void execute(VM vm) {
+            Object[] array = new Object[size];
+            for (int i = 0; i < size; i++)
+                array[i] = vm.pop();
+            vm.set(target, new Tuple(array));
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(load %s (tuple %d))", target, size);
+        }
+    }
         
     public static class LoadNewArray extends OpCode {
         private final Register target;
@@ -209,40 +237,40 @@ public abstract class OpCode {
     public static class Apply extends OpCode {
 
         private final Register procedureRegister;
-        private final Register argvRegister;
+        private final Register argRegister;
 
-        public Apply(Register procedureRegister, Register argvRegister) {
+        public Apply(Register procedureRegister, Register argRegister) {
             this.procedureRegister = procedureRegister;
-            this.argvRegister = argvRegister;
+            this.argRegister = argRegister;
         }
 
         @Override
         public void execute(VM vm) {
             Object procedure = vm.get(procedureRegister);
-            Object[] args = (Object[]) vm.get(argvRegister);
+            Object arg = vm.get(argRegister);
 
             if (procedure instanceof Function) {
-                executePrimitive(vm, (Function) procedure, args);
+                executePrimitive(vm, (Function) procedure, arg);
             } else {
-                executeCompound(vm, (CompoundProcedure) procedure, args);
+                executeCompound(vm, (CompoundProcedure) procedure, arg);
             }
         }
 
-        private void executePrimitive(VM vm, Function procedure, Object[] args) {
-            Object value = procedure.apply(args);
+        private void executePrimitive(VM vm, Function procedure, Object arg) {
+            Object value = procedure.apply(arg);
             vm.set(Register.VAL, value);
         }
 
-        private void executeCompound(VM vm, CompoundProcedure procedure, Object[] args) {
-            Environment env = procedure.env.extend(args);
-            vm.save(Register.ENV, Register.PC, Register.PROCEDURE, Register.ARGV);
+        private void executeCompound(VM vm, CompoundProcedure procedure, Object arg) {
+            Environment env = procedure.env.extend(arg);
+            vm.save(Register.ENV, Register.PC, Register.PROCEDURE, Register.ARG);
             vm.set(Register.ENV, env);
             vm.set(Register.PC, procedure.address);
         }
 
         @Override
         public String toString() {
-            return String.format("(apply %s %s)", procedureRegister, argvRegister);
+            return String.format("(apply %s %s)", procedureRegister, argRegister);
         }
     }
 
@@ -254,7 +282,7 @@ public abstract class OpCode {
 
         @Override
         public void execute(VM vm) {
-            vm.restore(Register.ENV, Register.PC, Register.PROCEDURE, Register.ARGV);
+            vm.restore(Register.ENV, Register.PC, Register.PROCEDURE, Register.ARG);
         }
     }
 

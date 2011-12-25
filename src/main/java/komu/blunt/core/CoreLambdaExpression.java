@@ -7,18 +7,15 @@ import komu.blunt.asm.Register;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreLambdaExpression extends CoreExpression {
 
-    private final List<Symbol> argumentNames;
+    private final Symbol argumentName;
     private final CoreExpression body;
 
-    public CoreLambdaExpression(List<Symbol> argumentNames, CoreExpression body) {
-        this.argumentNames = new ArrayList<Symbol>(argumentNames);
+    public CoreLambdaExpression(Symbol argumentName, CoreExpression body) {
+        this.argumentName = checkNotNull(argumentName);
         this.body = checkNotNull(body);
     }
 
@@ -26,14 +23,10 @@ public final class CoreLambdaExpression extends CoreExpression {
     public Type typeCheck(TypeEnvironment env) {
         TypeEnvironment bodyEnv = new TypeEnvironment(env);
 
-        List<Type> argumentTypes = new ArrayList<Type>(argumentNames.size());
-        for (Symbol symbol : argumentNames) {
-            TypeVariable var = env.newVar(Kind.STAR);
-            env.bind(symbol, new TypeScheme(var));
-            argumentTypes.add(var);
-        }
+        TypeVariable argumentType = env.newVar(Kind.STAR);
+        env.bind(argumentName, new TypeScheme(argumentType));
 
-        return Type.makeFunctionType(argumentTypes, body.typeCheck(bodyEnv));
+        return Type.makeFunctionType(argumentType, body.typeCheck(bodyEnv));
     }
 
     @Override

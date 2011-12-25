@@ -61,29 +61,52 @@ public final class TypeConstructor extends Type {
 
     String toString(List<Type> arguments, int precedence) {
         if (name.equals("->") && arguments.size() == 2) {
-            StringBuilder sb = new StringBuilder();
-            
-            if (precedence != 0) sb.append("(");
-            sb.append(arguments.get(0).toString(1)).append(" -> ").append(arguments.get(1).toString(0));
-            if (precedence != 0) sb.append(")");
-            
-            return sb.toString();
-        } else if (name.equals("ConsList") && arguments.size() == 1) {
+            return functionToString(arguments, precedence);
+
+        } else if (name.equals("[]") && arguments.size() == 1) {
             return "[" + arguments.get(0) + "]";
-        } else if (name.equals(",") && arguments.size() == 1) {
-            return arguments.get(0).toString(precedence);
+
         } else if (name.equals(",")) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("(");
-            for (Iterator<Type> iterator = arguments.iterator(); iterator.hasNext(); ) {
-                sb.append(iterator.next().toString(0));
-                if (iterator.hasNext())
-                    sb.append(", ");
-            }
-            sb.append(")");
-            return sb.toString();
+            return tupleToString(arguments);
+
         } else {
-            return "(" + name + " " + arguments + ")";
+            return defaultToString(arguments, precedence);
         }
+    }
+
+    private String defaultToString(List<Type> arguments, int precedence) {
+        StringBuilder sb = new StringBuilder();
+        
+        if (precedence != 0) sb.append("(");
+        sb.append(name);
+        
+        for (Type arg : arguments)
+            sb.append(' ').append(arg.toString(1));
+
+        if (precedence != 0) sb.append(")");
+        
+        return sb.toString();
+    }
+
+    private String tupleToString(List<Type> arguments) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+        for (Iterator<Type> iterator = arguments.iterator(); iterator.hasNext(); ) {
+            sb.append(iterator.next().toString(0));
+            if (iterator.hasNext())
+                sb.append(", ");
+        }
+        sb.append(")");
+        return sb.toString();
+    }
+
+    private String functionToString(List<Type> arguments, int precedence) {
+        StringBuilder sb = new StringBuilder();
+
+        if (precedence != 0) sb.append("(");
+        sb.append(arguments.get(0).toString(1)).append(" -> ").append(arguments.get(1).toString(0));
+        if (precedence != 0) sb.append(")");
+
+        return sb.toString();
     }
 }
