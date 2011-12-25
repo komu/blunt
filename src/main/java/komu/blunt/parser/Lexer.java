@@ -109,13 +109,18 @@ public final class Lexer {
         return isJavaIdentifierPart(ch) || "?!".indexOf(ch) != -1;
     }
 
-    private Operator readOperator() throws IOException {
+    private Object readOperator() throws IOException {
         StringBuilder sb = new StringBuilder();
 
         while (isOperatorCharacter(peek()))
             sb.append(read());
 
-        return new Operator(sb.toString());
+        String op = sb.toString();
+        
+        if (op.equals("="))
+            return ASSIGN;
+        else
+            return new Operator(sb.toString());
     }
 
     private Constant readString() throws IOException {
@@ -173,7 +178,7 @@ public final class Lexer {
     }
     
     private static boolean isOperatorCharacter(int ch) {
-        return "=-+*/<>%?!|&:.".indexOf(ch) != -1;
+        return "=-+*/<>%?!|&$:.".indexOf(ch) != -1;
     }
     
     private RuntimeException parseError(String message) {

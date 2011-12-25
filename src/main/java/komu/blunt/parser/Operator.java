@@ -9,7 +9,7 @@ public final class Operator {
 
     private static final Set<Operator> builtins = new HashSet<Operator>();
     
-    public static final Operator EQUAL = builtin("=");
+    public static final Operator EQ = builtin("==");
     public static final Operator LT = builtin("<");
     public static final Operator LE = builtin("<=");
     public static final Operator GT = builtin(">");

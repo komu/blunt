@@ -1,4 +1,4 @@
-(=) x y = primitiveOpEq (x,y);;
+x == y  = primitiveOpEq (x,y);;
 x <  y  = primitiveOpLt (x,y);;
 x <= y  = primitiveOpLe (x,y);;
 x >  y  = primitiveOpGt (x,y);;
@@ -9,6 +9,7 @@ x + y   = primitiveOpPlus (x,y);;
 x - y   = primitiveOpMinus (x,y);;
 x : y   = primitiveCons (x,y);;
 Nothing = primitiveNothing ();;
+mod x y = primitiveMod (x,y);;
 
 maybe n j m =
   if just? m
@@ -21,10 +22,17 @@ const x y = x;;
 
 f . g = \x -> f (g x);;
 
+f $ x = f x;;
+
 foldr f e ls =
   if nil? ls
     then e
     else f (head ls) (foldr f e (tail ls));;
+
+foldl f e ls =
+  if nil? ls
+    then e
+    else f (foldl f e (tail ls)) (head ls);;
 
 sum = foldr (+) 0;;
 
@@ -55,7 +63,7 @@ and = foldr (&&) True;;
 
 or = foldr (||) False;;
 
-zero? x = x = 0;;
+zero? x = x == 0;;
 
 take n ls =
   if nil? ls || zero? n
@@ -111,4 +119,16 @@ zipWith f xs ys =
 
 zip = zipWith (\x y -> (x,y));;
 
-elem x = any ((=) x);;
+elem x = any ((==) x);;
+
+notElem x = not . elem x;;
+
+span p ls = (takeWhile p ls, dropWhile p ls);;
+
+break p = span (not . p);;
+
+even x = (mod x 2) == 0;;
+
+odd = not . even;;
+
+x /= y = not (x == y);;

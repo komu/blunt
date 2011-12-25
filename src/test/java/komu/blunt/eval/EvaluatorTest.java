@@ -53,8 +53,8 @@ public class EvaluatorTest {
 
     @Test
     public void equality() {
-        assertThatEvaluating("1 = 1", produces(true));
-        assertThatEvaluating("1 = 2", produces(false));
+        assertThatEvaluating("1 == 1", produces(true));
+        assertThatEvaluating("1 == 2", produces(false));
     }
 
     @Test
@@ -64,7 +64,7 @@ public class EvaluatorTest {
 
     @Test
     public void polymorphicTypeWithDifferentInstantiations() {
-        assertThatEvaluating("True = (1 = 1)", produces(true));
+        assertThatEvaluating("True == (1 == 1)", produces(true));
     }
 
     @Test
@@ -80,7 +80,7 @@ public class EvaluatorTest {
 
     @Test
     public void accessingUnboundVariable() {
-        assertStaticError("\\ x -> y");
+        assertStaticError("\\x -> y");
     }
 
     @Test
@@ -121,7 +121,7 @@ public class EvaluatorTest {
 
     @Test
     public void letRec() {
-        assertThatEvaluating("let rec f = \\n -> if 0 = n then 1 else n * f (n - 1) in f 10)", produces(3628800));
+        assertThatEvaluating("let rec f = \\n -> if 0 == n then 1 else n * f (n - 1) in f 10)", produces(3628800));
     }
 
     @Test

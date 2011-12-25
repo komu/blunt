@@ -13,7 +13,7 @@ public final class OperatorSet {
     private final List<List<Operator>> levels = new ArrayList<List<Operator>>();
     
     public OperatorSet() {
-        add(2, EQUAL, LT, LE, GT, GT);
+        add(2, EQ, LT, LE, GT, GE);
         add(3, PLUS, MINUS);
         add(4, MULTIPLY, DIVIDE);
     }

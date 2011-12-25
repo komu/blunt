@@ -12,7 +12,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static komu.blunt.objects.Symbol.symbol;
 import static komu.blunt.parser.Associativity.LEFT;
-import static komu.blunt.parser.Operator.EQUAL;
+import static komu.blunt.parser.Token.ASSIGN;
 
 public final class Parser {
 
@@ -56,9 +56,9 @@ public final class Parser {
             args.add(parseIdentifier());
             name = symbol(op.toString());
 
-            expectToken(EQUAL);
+            expectToken(ASSIGN);
         } else {
-            while (!lexer.readMatchingToken(EQUAL))
+            while (!lexer.readMatchingToken(ASSIGN))
                 args.add(parseIdentifier());
         }
         
@@ -170,7 +170,7 @@ public final class Parser {
         boolean recursive = lexer.readMatchingToken(Token.REC);
         
         Symbol name = parseIdentifier();
-        expectToken(EQUAL);
+        expectToken(ASSIGN);
         ASTExpression value = parseExpression();
         expectToken(Token.IN);
         ASTExpression body = parseExpression();

@@ -28,6 +28,11 @@ public class BasicFunctions {
         return x.divide(y);
     }
 
+    @LibraryFunction("primitiveMod")
+    public static BigInteger modulo(BigInteger x, BigInteger y) {
+        return x.mod(y);
+    }
+
     @LibraryFunction("primitiveOpLt")
     public static boolean lt(BigInteger x, BigInteger y) {
         return x.compareTo(y) < 0;
