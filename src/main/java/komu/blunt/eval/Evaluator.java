@@ -13,6 +13,7 @@ import komu.blunt.parser.Parser;
 import komu.blunt.stdlib.BasicFunctions;
 import komu.blunt.stdlib.ConsList;
 import komu.blunt.stdlib.LibraryFunction;
+import komu.blunt.stdlib.Maybe;
 import komu.blunt.types.NativeTypeConversions;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeScheme;
@@ -36,6 +37,7 @@ public final class Evaluator {
 
         register(BasicFunctions.class, rootBindings);
         register(ConsList.class, rootBindings);
+        register(Maybe.class, rootBindings);
     }
     
     private static void register(Class<?> cl, RootBindings bindings) {

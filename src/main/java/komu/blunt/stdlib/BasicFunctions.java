@@ -1,6 +1,7 @@
 package komu.blunt.stdlib;
 
 import com.google.common.base.Objects;
+import komu.blunt.objects.EvaluationException;
 
 import java.math.BigInteger;
 
@@ -70,5 +71,10 @@ public class BasicFunctions {
     @LibraryFunction("show")
     public static <T> String show(T o) {
         return String.valueOf(o);
+    }
+
+    @LibraryFunction("error")
+    public static <T> T error(String message) {
+        throw new EvaluationException(message);
     }
 }
