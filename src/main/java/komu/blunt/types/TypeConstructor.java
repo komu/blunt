@@ -68,7 +68,7 @@ public final class TypeConstructor extends Type {
             if (precedence != 0) sb.append(")");
             
             return sb.toString();
-        } else if (name.equals("ConsList") && arguments.size() == 1) {
+        } else if (name.equals("[]") && arguments.size() == 1) {
             return "[" + arguments.get(0) + "]";
         } else if (name.equals(",") && arguments.size() == 1) {
             return arguments.get(0).toString(precedence);

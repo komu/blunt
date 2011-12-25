@@ -1,6 +1,6 @@
 package komu.blunt.stdlib;
 
-@SuppressWarnings("unused")
+@TypeName("[]")
 public abstract class ConsList<T> {
 
     public static final ConsList<?> NIL = new Nil<Object>();
@@ -48,12 +48,15 @@ public abstract class ConsList<T> {
     }
 
     @LibraryFunction("nil?")
+    @SuppressWarnings("unused")
     public abstract boolean isNil();
 
     @LibraryFunction("head")
+    @SuppressWarnings("unused")
     public abstract T getHead();
 
     @LibraryFunction("tail")
+    @SuppressWarnings("unused")
     public abstract ConsList<T> getTail();
 
     @Override
@@ -78,12 +81,13 @@ public abstract class ConsList<T> {
     }
 
     @LibraryFunction("primitiveNil")
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "unused"})
     public static <T> ConsList<T> nil() {
         return (ConsList<T>) NIL;
     }
 
     @LibraryFunction("primitiveCons")
+    @SuppressWarnings({"unchecked", "unused"})
     public static <T> ConsList<T> cons(T head, ConsList<T> tail) {
         return new Cons<T>(head, tail);
     }

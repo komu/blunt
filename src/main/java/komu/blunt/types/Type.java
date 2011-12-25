@@ -1,5 +1,7 @@
 package komu.blunt.types;
 
+import komu.blunt.stdlib.TypeName;
+
 import java.math.BigInteger;
 import java.util.*;
 
@@ -20,9 +22,13 @@ public abstract class Type {
         return (type == Void.class)                             ? "Unit"
              : (type == Boolean.class || type == boolean.class) ? "Boolean"
              : (type == BigInteger.class)                       ? "Integer"
-             : type.getSimpleName();
+             : defaultMapName(type);
     }
-   
+
+    private static String defaultMapName(Class<?> type) {
+        TypeName name = type.getAnnotation(TypeName.class);
+        return name != null ? name.value() : type.getSimpleName();
+    }
 
     private static Type basicType(String name) {
         return new TypeConstructor(name, Kind.STAR);
@@ -32,10 +38,6 @@ public abstract class Type {
         return new TypeApplication(new TypeConstructor("[]", Kind.ofParams(1)), type);
     }
     
-    public static TypeScheme forName(String name) {
-        return new TypeScheme(basicType(name));
-    }
-
     public static Type makeFunctionType(Type argumentType, Type returnType) {
         return genericType("->", argumentType, returnType);
     }
