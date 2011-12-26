@@ -1,5 +1,7 @@
 package komu.blunt.parser;
 
+import komu.blunt.objects.Symbol;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -34,6 +36,10 @@ public final class Operator {
 
     public Operator(String name) {
         this.name = checkNotNull(name);
+    }
+
+    public Symbol toSymbol() {
+        return Symbol.symbol(name);
     }
 
     @Override

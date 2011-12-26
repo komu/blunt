@@ -1,30 +1,22 @@
 package komu.blunt.parser;
 
-public enum Token {
-    EOF,
-    IF("if"), THEN("then"), ELSE("else"), LET("let"), REC("rec"), IN("in"), LAMBDA("\\"),
-    LPAREN("("), RPAREN(")"), SEMICOLON(";"), DOUBLE_SEMI(";;"), COMMA(","), LBRACKET("["), RBRACKET("]"),
-    ASSIGN("=");
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    private final String name;
+public final class Token {
     
-    private Token() {
-        this(null);
-    }
-    
-    private Token(String name) {
-        this.name = name;
+    public final TokenType type;
+    public final Object value;
+
+    public Token(TokenType type) {
+        this(type, null);
     }
 
-    public static Token keyword(String name) {
-        for (Token token : values())
-            if (name.equals(token.name))
-                return token;
-        return null;
+    public Token(TokenType type, Object value) {
+        this.type = checkNotNull(type);
+        this.value = value;
     }
 
-    @Override
-    public String toString() {
-        return name != null ? name : name();
+    public <T> T value(Class<T> cl) {
+        return cl.cast(value);
     }
 }
