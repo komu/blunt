@@ -1,83 +1,83 @@
-x == y  = primitiveOpEq (x,y);;
-x <  y  = primitiveOpLt (x,y);;
-x <= y  = primitiveOpLe (x,y);;
-x >  y  = primitiveOpGt (x,y);;
-x >= y  = primitiveOpGe (x,y);;
-x * y   = primitiveOpMultiply (x,y);;
-x / y   = primitiveOpDivide (x,y);;
-x + y   = primitiveOpPlus (x,y);;
-x - y   = primitiveOpMinus (x,y);;
-x : y   = primitiveCons (x,y);;
-Nothing = primitiveNothing ();;
-mod x y = primitiveMod (x,y);;
+x == y  = primitiveOpEq (x,y)
+x <  y  = primitiveOpLt (x,y)
+x <= y  = primitiveOpLe (x,y)
+x >  y  = primitiveOpGt (x,y)
+x >= y  = primitiveOpGe (x,y)
+x * y   = primitiveOpMultiply (x,y)
+x / y   = primitiveOpDivide (x,y)
+x + y   = primitiveOpPlus (x,y)
+x - y   = primitiveOpMinus (x,y)
+x : y   = primitiveCons (x,y)
+Nothing = primitiveNothing ()
+mod x y = primitiveMod (x,y)
 
 maybe n j m =
   if just? m
     then j (fromJust m)
-    else n;;
+    else n
 
-const x y = x;;
+const x y = x
 
-f . g = \x -> f (g x);;
+f . g = \x -> f (g x)
 
-f $ x = f x;;
+f $ x = f x
 
-flip f x y = f y x;;
+flip f x y = f y x
 
 foldr f e =
   let rec loop ls =
     if nil? ls
       then e
       else f (head ls) (loop (tail ls))
-  in loop;;
+  in loop
 
 foldl f e ls =
   if nil? ls
     then e
-    else foldl f (f e (head ls)) (tail ls);;
+    else foldl f (f e (head ls)) (tail ls)
 
-sum = foldl (+) 0;;
+sum = foldl (+) 0
 
-product = foldl (*) 1;;
+product = foldl (*) 1
 
-map f = foldr (\x y -> f x : y) [];;
+map f = foldr (\x y -> f x : y) []
 
-filter p = foldr (\x xs -> if p x then x : xs else xs) [];;
+filter p = foldr (\x xs -> if p x then x : xs else xs) []
 
-reverse = foldl (flip (:)) [];;
+reverse = foldl (flip (:)) []
 
-length = foldl (\x y -> x + 1) 0;;
+length = foldl (\x y -> x + 1) 0
 
-square x = x * x;;
+square x = x * x
 
 range2 step min max =
   if min < max
     then min : (range2 step (min + step) max)
-    else [];;
+    else []
 
-range = range2 1;;
+range = range2 1
 
-x || y = if x then True else y;;
+x || y = if x then True else y
 
-x && y = if x then y else False;;
+x && y = if x then y else False
 
-not x = if x then False else True;;
+not x = if x then False else True
 
-and = foldr (&&) True;;
+and = foldr (&&) True
 
-or = foldr (||) False;;
+or = foldr (||) False
 
-zero? x = x == 0;;
+zero? x = x == 0
 
 take n ls =
   if nil? ls || zero? n
     then []
-    else head ls : take (n - 1) (tail ls);;
+    else head ls : take (n - 1) (tail ls)
 
 drop n ls =
   if not (nil? ls) && n > 0
     then drop (n - 1) (tail ls)
-    else ls;;
+    else ls
 
 takeWhile p ls =
   if nil? ls
@@ -85,7 +85,7 @@ takeWhile p ls =
     else let h = head ls in
          if p h
            then h : takeWhile p (tail ls)
-           else [];;
+           else []
 
 dropWhile p ls =
   if nil? ls
@@ -93,39 +93,39 @@ dropWhile p ls =
     else let h = head ls in
          if p h
            then dropWhile p (tail ls)
-           else ls;;
+           else ls
 
-all p = foldl (\x y -> p x && y) True;;
+all p = foldl (\x y -> p x && y) True
 
-any p = foldl (\x y -> p x || y) False;;
+any p = foldl (\x y -> p x || y) False
 
-xs ++ ys = foldr (:) ys xs;;
+xs ++ ys = foldr (:) ys xs
 
-concat = foldr (++) [];;
+concat = foldr (++) []
 
-concatMap f = concat . map f;;
+concatMap f = concat . map f
 
-curry f x y = f (x, y);;
+curry f x y = f (x, y)
 
-uncurry f p = f (fst p) (snd p);;
+uncurry f p = f (fst p) (snd p)
 
 zipWith f xs ys =
   if nil? xs || nil? ys
     then []
-    else f (head xs) (head ys) : zipWith f (tail xs) (tail ys);;
+    else f (head xs) (head ys) : zipWith f (tail xs) (tail ys)
 
-zip = zipWith (\x y -> (x,y));;
+zip = zipWith (\x y -> (x,y))
 
-elem x = any ((==) x);;
+elem x = any ((==) x)
 
-notElem x = not . elem x;;
+notElem x = not . elem x
 
-span p ls = (takeWhile p ls, dropWhile p ls);;
+span p ls = (takeWhile p ls, dropWhile p ls)
 
-break p = span (not . p);;
+break p = span (not . p)
 
-even x = mod x 2 == 0;;
+even x = mod x 2 == 0
 
-odd = not . even;;
+odd = not . even
 
-x /= y = not (x == y);;
+x /= y = not (x == y)

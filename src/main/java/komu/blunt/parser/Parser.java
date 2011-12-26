@@ -66,9 +66,11 @@ public final class Parser {
             while (!lexer.readMatchingToken(ASSIGN))
                 args.add(parseIdentifier());
         }
+
+        lexer.pushIndentLevelAtNextToken();
         
         ASTExpression value = parseExpression();
-        expectToken(TokenType.DOUBLE_SEMI);
+        expectToken(TokenType.END);
 
         if (args.isEmpty())
             return new ASTDefine(name, value);

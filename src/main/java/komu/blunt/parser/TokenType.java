@@ -26,7 +26,7 @@ public class TokenType<T> {
     public static final Punctuation LPAREN = new Punctuation("(");
     public static final Punctuation RPAREN = new Punctuation(")");
     public static final Punctuation SEMICOLON = new Punctuation(";");
-    public static final Punctuation DOUBLE_SEMI = new Punctuation(";;");
+    public static final Punctuation END = new Punctuation(";;");
     public static final Punctuation COMMA = new Punctuation(",");
     public static final Punctuation LBRACKET = new Punctuation("[");
     public static final Punctuation RBRACKET = new Punctuation("]");
