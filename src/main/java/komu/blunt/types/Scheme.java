@@ -26,16 +26,6 @@ public final class Scheme implements Types<Scheme> {
         return new Scheme(kinds, type.apply(substitution));
     }
 
-    public Type freshInstance(TypeEnvironment env) {
-        List<TypeVariable> vars = new ArrayList<TypeVariable>(kinds.size());
-
-        for (Kind kind : kinds)
-            vars.add(env.newVar(kind));
-
-        //return type.instantiate(vars);
-        throw new UnsupportedOperationException();
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
