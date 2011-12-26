@@ -17,8 +17,13 @@ public final class TypeConstructor extends Type {
     }
 
     @Override
-    protected Type apply(Substitution substitution) {
+    public TypeConstructor apply(Substitution substitution) {
         return this;
+    }
+
+    @Override
+    public boolean hnf() {
+        return false;
     }
 
     @Override
@@ -27,7 +32,7 @@ public final class TypeConstructor extends Type {
     }
 
     @Override
-    protected void addTypeVariables(Set<TypeVariable> result) {
+    public void addTypeVariables(Set<TypeVariable> result) {
     }
 
     @Override

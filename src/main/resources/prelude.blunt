@@ -16,7 +16,7 @@ maybe n j m =
     then j (fromJust m)
     else n;;
 
-id x = x;;
+className x = x;;
 
 const x y = x;;
 

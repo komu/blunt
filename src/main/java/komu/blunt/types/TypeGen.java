@@ -12,7 +12,7 @@ public final class TypeGen extends Type {
     }
 
     @Override
-    protected Type apply(Substitution substitution) {
+    public TypeGen apply(Substitution substitution) {
         return this;
     }
 
@@ -22,13 +22,18 @@ public final class TypeGen extends Type {
     }
 
     @Override
-    protected void addTypeVariables(Set<TypeVariable> result) {
+    public void addTypeVariables(Set<TypeVariable> result) {
         // no variables here
     }
 
     @Override
     protected Kind getKind() {
         throw new RuntimeException("can't access kind of TypeGen");
+    }
+
+    @Override
+    public boolean hnf() {
+        throw new RuntimeException("should not call hnf for TypeGen");
     }
 
     @Override

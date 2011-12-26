@@ -14,9 +14,7 @@ import komu.blunt.stdlib.BasicFunctions;
 import komu.blunt.stdlib.ConsList;
 import komu.blunt.stdlib.LibraryFunction;
 import komu.blunt.stdlib.Maybe;
-import komu.blunt.types.NativeTypeConversions;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeScheme;
+import komu.blunt.types.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,7 +27,7 @@ public final class Evaluator {
 
     private final RootBindings rootBindings = new RootBindings();
     private final Instructions instructions = new Instructions();
-    private final VM vm = new VM(instructions, rootBindings.runtimeEnvironment);
+    private final ClassEnv classEnv = new ClassEnv();
 
     public Evaluator() {
         rootBindings.bind("True", Type.BOOLEAN, true);
@@ -45,7 +43,7 @@ public final class Evaluator {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null) {
                 String name = func.value();
-                TypeScheme type = NativeTypeConversions.createFunctionType(m);
+                Scheme type = NativeTypeConversions.createFunctionType(m);
 
                 boolean isStatic = isStatic(m.getModifiers());
                 bindings.bind(name, type, new PrimitiveFunction(name, m, isStatic));
@@ -54,8 +52,8 @@ public final class Evaluator {
     }
 
     public CoreExpression analyze(ASTExpression expr) {
+        typeCheck(expr);
         CoreExpression exp = toCore(expr);
-        rootBindings.createTypeEnvironment().typeCheck(exp);
         return exp;
     }
     
@@ -64,11 +62,30 @@ public final class Evaluator {
             Parser parser = new Parser(in);
 
             for (ASTDefine define : parser.parseDefinitions())
-                evaluate(define);
+                define(define);
 
         } finally {
             in.close();
         }
+    }
+
+    public void define(ASTDefine define) {
+        Type type = new TypeChecker().typeCheck(define, classEnv, rootBindings.createAssumptions());
+        
+        rootBindings.defineVariableType(define.name, type.quantifyAll());
+        //define.typeCheck(rootBindings);
+        CoreExpression expression = define.analyze(rootBindings.staticEnvironment, rootBindings);
+
+        run(expression);
+    }
+
+    private Object run(CoreExpression expression) {
+        int pos = instructions.pos();
+        expression.assemble(instructions, Register.VAL, Linkage.NEXT);
+
+        VM vm = new VM(instructions, rootBindings.runtimeEnvironment);
+        vm.set(Register.PC, pos);
+        return vm.run();
     }
 
     public Object evaluate(ASTExpression exp) {
@@ -76,16 +93,16 @@ public final class Evaluator {
     }
 
     public ResultWithType evaluateWithType(ASTExpression exp) {
+        Type type = typeCheck(exp);
         CoreExpression expression = toCore(exp);
-        Type type = rootBindings.createTypeEnvironment().typeCheck(expression);
 
-        int pos = instructions.pos();
-        expression.assemble(instructions, Register.VAL, Linkage.NEXT);
-
-        vm.set(Register.PC, pos);
-        Object result = vm.run();
+        Object result = run(expression);
 
         return new ResultWithType(result, type);
+    }
+
+    private Type typeCheck(ASTExpression exp) {
+        return new TypeChecker().typeCheck(exp, classEnv, rootBindings.createAssumptions());
     }
 
     private CoreExpression toCore(ASTExpression exp) {

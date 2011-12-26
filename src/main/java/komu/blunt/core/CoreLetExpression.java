@@ -4,9 +4,6 @@ import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
-import komu.blunt.types.TypeScheme;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,16 +17,6 @@ public final class CoreLetExpression extends CoreExpression {
         this.name = checkNotNull(name);
         this.value = checkNotNull(value);
         this.body = checkNotNull(body);
-    }
-
-    @Override
-    public Type typeCheck(TypeEnvironment env) {
-        TypeEnvironment bodyEnv = new TypeEnvironment(env);
-
-        Type type = value.typeCheck(env);
-        env.bind(name, new TypeScheme(type));
-
-        return body.typeCheck(bodyEnv);
     }
 
     @Override

@@ -4,27 +4,22 @@ The main flow:
 
        String
          |
-         |  reader.LispTokenizer
+         |  parser.Lexer
          |
          v
        tokens
          |
-         |  reader.LispReader
+         |  parser.Parser
          |
          v
-     object tree
+  ast.ASTExpression
          |
-         |  ast.ASTBuilder
+         |  ASTExpression.typeCheck
          |
          v
   ast.ASTExpression
          |
          |  ASTExpression.analyze
-         |
-         v
-  core.CoreExpression
-         |
-         |  type check (types.TypeEnvironment)
          |
          v
   core.CoreExpression
@@ -38,7 +33,6 @@ The main flow:
          o
 
 Things to do:
-  - parser
-  - type check ast, not core
   - data type definitions
   - type aliases
+  - type classes

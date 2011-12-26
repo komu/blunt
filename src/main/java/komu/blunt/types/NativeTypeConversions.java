@@ -16,11 +16,11 @@ public final class NativeTypeConversions {
 
     private NativeTypeConversions() { }
 
-    public static TypeScheme createFunctionType(Method m) {
+    public static Scheme createFunctionType(Method m) {
         return new NativeTypeConversions().resolveFunctionType(m);
     }
     
-    private TypeScheme resolveFunctionType(Method m) {
+    private Scheme resolveFunctionType(Method m) {
         if (m.isVarArgs())
             throw new IllegalArgumentException("varargs are not supported by type-system.");
 
@@ -28,11 +28,11 @@ public final class NativeTypeConversions {
         Type returnType = resolve(m.getGenericReturnType());
 
         if (argumentTypes.isEmpty())
-            return Type.makeFunctionType(Type.UNIT, returnType).quantifyAll();
+            return Type.functionType(Type.UNIT, returnType).quantifyAll();
         else if (argumentTypes.size() == 1)
-            return Type.makeFunctionType(argumentTypes.get(0), returnType).quantifyAll();
+            return Type.functionType(argumentTypes.get(0), returnType).quantifyAll();
         else
-            return Type.makeFunctionType(Type.tupleType(argumentTypes), returnType).quantifyAll();
+            return Type.functionType(Type.tupleType(argumentTypes), returnType).quantifyAll();
     }
 
     private List<Type> resolveArgumentTypes(Method m) {

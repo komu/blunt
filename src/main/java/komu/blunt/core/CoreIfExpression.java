@@ -4,8 +4,6 @@ import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Label;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -39,19 +37,5 @@ public final class CoreIfExpression extends CoreExpression {
         instructions.label(after);
 
         instructions.finishWithLinkage(linkage);
-    }
-
-    @Override
-    public Type typeCheck(TypeEnvironment env) {
-        Type conditionType = condition.typeCheck(env);
-        
-        env.assign(Type.BOOLEAN, conditionType);
-
-        Type consequentType = consequent.typeCheck(env);
-        Type alternativeType = alternative.typeCheck(env);
-
-        env.unify(consequentType, alternativeType);
-
-        return consequentType;
     }
 }

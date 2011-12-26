@@ -3,8 +3,6 @@ package komu.blunt.core;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +14,6 @@ public final class CoreTupleExpression extends CoreExpression {
 
     public CoreTupleExpression(List<CoreExpression> exps) {
         this.exps = new ArrayList<CoreExpression>(exps);
-    }
-
-    @Override
-    public Type typeCheck(TypeEnvironment env) {
-        return Type.tupleType(typeCheckAll(exps, env));
     }
 
     @Override

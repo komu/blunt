@@ -5,7 +5,6 @@ import komu.blunt.asm.Label;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -17,16 +16,6 @@ public final class CoreLambdaExpression extends CoreExpression {
     public CoreLambdaExpression(Symbol argumentName, CoreExpression body) {
         this.argumentName = checkNotNull(argumentName);
         this.body = checkNotNull(body);
-    }
-
-    @Override
-    public Type typeCheck(TypeEnvironment env) {
-        TypeEnvironment bodyEnv = new TypeEnvironment(env);
-
-        TypeVariable argumentType = env.newVar(Kind.STAR);
-        env.bind(argumentName, new TypeScheme(argumentType));
-
-        return Type.makeFunctionType(argumentType, body.typeCheck(bodyEnv));
     }
 
     @Override

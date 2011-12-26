@@ -1,13 +1,15 @@
 package komu.blunt.eval;
 
-import komu.blunt.types.Type;
+import komu.blunt.types.UnificationException;
 
 public class TypeCheckException extends AnalyzationException {
-    public TypeCheckException(Type left, Type right) {
-        super("type check failure: " + left + " != " + right);
-    }
 
     public TypeCheckException(String message) {
         super(message);
     }
+
+    public TypeCheckException(UnificationException e) {
+        super(e.getMessage());
+    }
+
 }

@@ -182,7 +182,7 @@ public final class Lexer {
     }
     
     private RuntimeException parseError(String message) {
-        return new RuntimeException("value error: " + message);
+        return new RuntimeException("type error: " + message);
     }
 
     public <T> T readAnyMatchingToken(List<T> tokens) throws IOException {

@@ -7,12 +7,13 @@ import java.util.*;
 
 import static java.util.Arrays.asList;
 
-public abstract class Type {
+public abstract class Type implements Types<Type> {
 
     Type() { }
     
     public static final Type UNIT = basicType("Unit");
     public static final Type BOOLEAN = basicType("Boolean");
+    public static final Type INTEGER = basicType("Integer");
 
     public static Type fromClass(Class<?> type) {
         return basicType(mapName(type));
@@ -38,10 +39,14 @@ public abstract class Type {
         return new TypeApplication(new TypeConstructor("[]", Kind.ofParams(1)), type);
     }
     
-    public static Type makeFunctionType(Type argumentType, Type returnType) {
+    public static Type functionType(Type argumentType, Type returnType) {
         return genericType("->", argumentType, returnType);
     }
-    
+
+    public static Type tupleType(Type... types) {
+        return tupleType(asList(types));
+    }
+
     public static Type tupleType(List<Type> types) {
         return genericType(",", types);
     }
@@ -63,10 +68,8 @@ public abstract class Type {
         return type;
     }
 
-    protected abstract Type apply(Substitution substitution);
     protected abstract Type instantiate(List<TypeVariable> vars);
-    protected abstract void addTypeVariables(Set<TypeVariable> result);
-    
+
     protected abstract Kind getKind();
 
     protected final Set<TypeVariable> getTypeVariables() {
@@ -75,23 +78,16 @@ public abstract class Type {
         return vars;
     }
 
-    public TypeScheme quantifyAll() {
+    public boolean containsVariable(TypeVariable v) {
+        return getTypeVariables().contains(v);
+    }
+
+    public Scheme quantifyAll() {
         return quantify(getTypeVariables());
     }
 
-    public TypeScheme quantify(Collection<TypeVariable> variables) {
-        List<TypeVariable> substitutedVariables = new ArrayList<TypeVariable>();
-        for (TypeVariable v : getTypeVariables())
-            if (variables.contains(v))
-                substitutedVariables.add(v);
-
-        List<Kind> kinds = new ArrayList<Kind>(substitutedVariables.size());
-        for (TypeVariable v : substitutedVariables)
-            kinds.add(v.getKind());
-
-        Substitution substitution = new Substitution(substitutedVariables);
-
-        return new TypeScheme(kinds, apply(substitution));
+    public Scheme quantify(Collection<TypeVariable> variables) {
+        return Qualified.quantify(variables, new Qualified<Type>(this));
     }
 
     @Override
@@ -99,5 +95,18 @@ public abstract class Type {
         return toString(0);
     }
     
+    public Scheme toScheme() {
+        return new Scheme(Collections.<Kind>emptyList(), new Qualified<Type>(this));
+    }
+    
+    public static List<Scheme> toSchemes(List<Type> ts) {
+        List<Scheme> schemes = new ArrayList<Scheme>(ts.size());
+        for (Type t : ts)
+            schemes.add(t.toScheme());
+        return schemes;
+    }    
+    
     protected abstract String toString(int precedence);
+
+    public abstract boolean hnf();
 }

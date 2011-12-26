@@ -5,6 +5,7 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Unit;
+import komu.blunt.types.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +22,12 @@ public final class ASTList extends ASTExpression {
     public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
         return rewrite().analyze(env, rootBindings);
     }
-    
+
+    @Override
+    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
+        return rewrite().typeCheck(ce, tc, as);
+    }
+
     private ASTExpression rewrite() {
         ASTExpression exp = nil();
         
