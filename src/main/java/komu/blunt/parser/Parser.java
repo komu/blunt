@@ -266,7 +266,7 @@ public final class Parser {
         Token<?> token = lexer.readToken();
 
         if (token.type == IDENTIFIER)
-            return token.asType(IDENTIFIER).value;
+            return symbol(token.asType(IDENTIFIER).value);
 
         if (token.type == TokenType.LPAREN) {
             Token<Operator> op = lexer.readToken(OPERATOR);

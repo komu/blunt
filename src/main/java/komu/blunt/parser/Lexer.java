@@ -1,24 +1,19 @@
 package komu.blunt.parser;
 
-import komu.blunt.objects.Symbol;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static com.google.common.base.Objects.equal;
 import static java.lang.Character.*;
-import static komu.blunt.objects.Symbol.symbol;
 import static komu.blunt.parser.TokenType.*;
 
 public final class Lexer {
     
     private final SourceReader reader;
     private Token<?> nextToken = null;
-    private final List<Integer> indents = new ArrayList<Integer>();
+    private final IndentStack indents = new IndentStack();
     
     public Lexer(Reader reader) {
         this.reader = new SourceReader(reader);
@@ -31,7 +26,7 @@ public final class Lexer {
     public void pushIndentLevelAtNextToken() throws IOException {
         skipWhitespace();
         
-        indents.add(reader.getColumn());
+        indents.push(reader.getColumn());
     }
 
     public boolean nextTokenIs(TokenType<?> type) throws IOException {
@@ -94,35 +89,29 @@ public final class Lexer {
 
     private Token readTokenInternal() throws IOException {
         skipWhitespace();
-        
-        if (!indents.isEmpty() && reader.getColumn() < indents.get(indents.size()-1)) {
-            indents.remove(indents.size()-1);
+
+        if (indents.popIf(reader.getColumn()))
             return Token.ofType(END);
+
+        int ch = peek();
+
+        switch (ch) {
+        case -1:    return Token.ofType(EOF);
+        case '"':   return readString();
+        case ',':   read(); return Token.ofType(COMMA);
+        case '(':   read(); return Token.ofType(LPAREN);
+        case ')':   read(); return Token.ofType(RPAREN);
+        case ';':   read(); return Token.ofType(SEMICOLON);
+        case '[':   read(); return Token.ofType(LBRACKET);
+        case ']':   read(); return Token.ofType(RBRACKET);
+        case '\\':  read(); return Token.ofType(LAMBDA);
         }
 
-        if (peek() == -1)
-            return Token.ofType(EOF);
-        if (isDigit(peek()))
+        if (isDigit(ch))
             return readNumber();
-        if (peek() == '"')
-            return readString();
-        if (readIf(','))
-            return Token.ofType(COMMA);
-        if (readIf('('))
-            return Token.ofType(LPAREN);
-        if (readIf(')'))
-            return Token.ofType(RPAREN);
-        if (readIf(';'))
-            return Token.ofType(SEMICOLON);
-        if (readIf('['))
-            return Token.ofType(LBRACKET);
-        if (readIf(']'))
-            return Token.ofType(RBRACKET);
-        if (readIf('\\'))
-            return Token.ofType(TokenType.LAMBDA);
         if (isOperatorCharacter(peek()))
             return readOperator();
-        if (isJavaIdentifierStart(peek()))
+        if (isIdentifierStart(peek()))
             return readIdentifierOrKeyword();
 
         throw parseError("unexpected token: '" + read() + "'");
@@ -156,7 +145,11 @@ public final class Lexer {
         String name = sb.toString();
         Keyword type = TokenType.keyword(name);
         
-        return type != null ? Token.ofType(type) : new Token<Symbol>(IDENTIFIER, symbol(sb.toString()));
+        return type != null ? Token.ofType(type) : new Token<String>(IDENTIFIER, sb.toString());
+    }
+
+    private static boolean isIdentifierStart(int ch) {
+        return isJavaIdentifierStart(ch);
     }
 
     private static boolean isIdentifierPart(int ch) {
@@ -207,16 +200,6 @@ public final class Lexer {
             throw parseError("unexpected EOF");
     }
 
-    private boolean readIf(char expected) throws IOException {
-        int ch = reader.peek();
-        if (ch == expected) {
-            reader.read();
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
     public int peek() throws IOException {
         return reader.peek();
     }
