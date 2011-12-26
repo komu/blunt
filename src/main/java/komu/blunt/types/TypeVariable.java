@@ -1,5 +1,7 @@
 package komu.blunt.types;
 
+import com.google.common.base.Objects;
+
 import java.util.List;
 import java.util.Set;
 
@@ -48,5 +50,24 @@ public final class TypeVariable extends Type {
     @Override
     public void addTypeVariables(Set<TypeVariable> result) {
         result.add(this);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+
+        if (obj instanceof TypeVariable) {
+            TypeVariable rhs = (TypeVariable) obj;
+
+            return name.equals(rhs.name)
+                && kind.equals(rhs.kind);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name, kind);
     }
 }
