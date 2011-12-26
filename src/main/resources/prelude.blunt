@@ -16,33 +16,37 @@ maybe n j m =
     then j (fromJust m)
     else n;;
 
-className x = x;;
-
 const x y = x;;
 
 f . g = \x -> f (g x);;
 
 f $ x = f x;;
 
-foldr f e ls =
-  if nil? ls
-    then e
-    else f (head ls) (foldr f e (tail ls));;
+flip f x y = f y x;;
+
+foldr f e =
+  let rec loop ls =
+    if nil? ls
+      then e
+      else f (head ls) (loop (tail ls))
+  in loop;;
 
 foldl f e ls =
   if nil? ls
     then e
-    else f (foldl f e (tail ls)) (head ls);;
+    else foldl f (f e (head ls)) (tail ls);;
 
-sum = foldr (+) 0;;
+sum = foldl (+) 0;;
 
-product = foldr (*) 1;;
+product = foldl (*) 1;;
 
 map f = foldr (\x y -> f x : y) [];;
 
 filter p = foldr (\x xs -> if p x then x : xs else xs) [];;
 
-length = foldr (\x y -> y + 1) 0;;
+reverse = foldl (flip (:)) [];;
+
+length = foldl (\x y -> y + 1) 0;;
 
 square x = x * x;;
 
@@ -53,9 +57,9 @@ range2 step min max =
 
 range = range2 1;;
 
-(||) x y = if x then True else y;;
+x || y = if x then True else y;;
 
-(&&) x y = if x then y else False;;
+x && y = if x then y else False;;
 
 not x = if x then False else True;;
 
@@ -91,22 +95,15 @@ dropWhile p ls =
            then dropWhile p (tail ls)
            else ls;;
 
-all p =
-  foldr (\x y -> p x && y) True;;
+all p = foldl (\x y -> p x && y) True;;
 
-any p =
-  foldr (\x y -> p x || y) False;;
+any p = foldl (\x y -> p x || y) False;;
 
-xs ++ ys =
-  foldr (:) ys xs;;
+xs ++ ys = foldr (:) ys xs;;
 
-concat =
-  foldr (++) [];;
+concat = foldr (++) [];;
 
-concatMap f =
-  concat . map f;;
-
-flip f x y = f y x;;
+concatMap f = concat . map f;;
 
 curry f x y = f (x, y);;
 
@@ -127,7 +124,7 @@ span p ls = (takeWhile p ls, dropWhile p ls);;
 
 break p = span (not . p);;
 
-even x = (mod x 2) == 0;;
+even x = mod x 2 == 0;;
 
 odd = not . even;;
 
