@@ -27,6 +27,11 @@ public final class Scheme implements Types<Scheme> {
     }
 
     @Override
+    public String toString() {
+        return kinds + " -> " + type;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
 
