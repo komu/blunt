@@ -46,7 +46,7 @@ filter p = foldr (\x xs -> if p x then x : xs else xs) [];;
 
 reverse = foldl (flip (:)) [];;
 
-length = foldl (\x y -> y + 1) 0;;
+length = foldl (\x y -> x + 1) 0;;
 
 square x = x * x;;
 
