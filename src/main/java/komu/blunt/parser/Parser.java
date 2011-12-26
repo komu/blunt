@@ -50,7 +50,7 @@ public final class Parser {
         Symbol name = parseIdentifier();
         List<Symbol> args = new ArrayList<Symbol>();
         
-        if (lexer.peekToken() instanceof Operator && !lexer.peekToken().toString().equals("=")) {
+        if (lexer.peekToken() instanceof Operator && !lexer.peekToken().equals(Token.ASSIGN)) {
             Operator op = (Operator) lexer.readToken();
             args.add(name);
             args.add(parseIdentifier());
@@ -164,16 +164,33 @@ public final class Parser {
         return new ASTIf(test, cons, alt);
     }
 
-    // let [rec] <ident> = <expr> in <expr>
+    // let [rec] <ident> <ident>* = <expr> in <expr>
     private ASTExpression parseLet() throws IOException {
         expectToken(Token.LET);
         boolean recursive = lexer.readMatchingToken(Token.REC);
         
         Symbol name = parseIdentifier();
-        expectToken(ASSIGN);
+
+        List<Symbol> args = new ArrayList<Symbol>();
+
+        if (lexer.peekToken() instanceof Operator && !lexer.peekToken().equals(Token.ASSIGN)) {
+            Operator op = (Operator) lexer.readToken();
+            args.add(name);
+            args.add(parseIdentifier());
+            name = symbol(op.toString());
+
+            expectToken(ASSIGN);
+        } else {
+            while (!lexer.readMatchingToken(ASSIGN))
+                args.add(parseIdentifier());
+        }
+
         ASTExpression value = parseExpression();
         expectToken(Token.IN);
         ASTExpression body = parseExpression();
+
+        if (!args.isEmpty())
+            value = new ASTLambda(args, value);
 
         List<ImplicitBinding> bindings = asList(new ImplicitBinding(name, value));
         if (recursive)

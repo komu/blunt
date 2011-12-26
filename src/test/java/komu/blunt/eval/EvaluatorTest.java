@@ -91,8 +91,8 @@ public class EvaluatorTest {
 
     @Test
     public void typeInference() {
-        assertThatEvaluating("\\ n -> n", is(anything()));
-        assertThatEvaluating("(\\ n -> n) 42", produces(42));
+        assertThatEvaluating("\\n -> n", is(anything()));
+        assertThatEvaluating("(\\n -> n) 42", produces(42));
     }
 
     @Test
@@ -122,6 +122,12 @@ public class EvaluatorTest {
     @Test
     public void letRec() {
         assertThatEvaluating("let rec f = \\n -> if 0 == n then 1 else n * f (n - 1) in f 10)", produces(3628800));
+        assertThatEvaluating("let rec f n = if 0 == n then 1 else n * f (n - 1) in f 10)", produces(3628800));
+    }
+
+    @Test
+    public void letFunctions() {
+        assertThatEvaluating("let f x = x * x in f 4", produces(16));
     }
 
     @Test
