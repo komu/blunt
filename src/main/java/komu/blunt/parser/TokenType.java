@@ -1,30 +1,65 @@
 package komu.blunt.parser;
 
-public enum TokenType {
-    EOF, LITERAL, IDENTIFIER, OPERATOR,
-    IF("if"), THEN("then"), ELSE("else"), LET("let"), REC("rec"), IN("in"), LAMBDA("\\"),
-    LPAREN("("), RPAREN(")"), SEMICOLON(";"), DOUBLE_SEMI(";;"), COMMA(","), LBRACKET("["), RBRACKET("]"),
-    ASSIGN("=");
+import komu.blunt.objects.Symbol;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class TokenType<T> {
+
+    private static final Map<String,Keyword> keywords = new HashMap<String, Keyword>();
+    
+    public static final TokenType<Void> EOF = new TokenType<Void>(Void.class, "<eof>");
+    public static final TokenType<Object> LITERAL = new TokenType<Object>(Object.class, "<literal>");
+    public static final TokenType<Symbol> IDENTIFIER = new TokenType<Symbol>(Symbol.class, "<identifier>");
+    public static final TokenType<Operator> OPERATOR = new TokenType<Operator>(Operator.class, "<operator>");
+    public static final Keyword IF   = new Keyword("if");
+    public static final Keyword THEN = new Keyword("then");
+    public static final Keyword ELSE = new Keyword("else");
+    public static final Keyword LET  = new Keyword("let");
+    public static final Keyword REC  = new Keyword("rec");
+    public static final Keyword IN   = new Keyword("in");
+    
+    public static final Punctuation LAMBDA = new Punctuation("\\");
+    public static final Punctuation LPAREN = new Punctuation("(");
+    public static final Punctuation RPAREN = new Punctuation(")");
+    public static final Punctuation SEMICOLON = new Punctuation(";");
+    public static final Punctuation DOUBLE_SEMI = new Punctuation(";;");
+    public static final Punctuation COMMA = new Punctuation(",");
+    public static final Punctuation LBRACKET = new Punctuation("[");
+    public static final Punctuation RBRACKET = new Punctuation("]");
+    public static final Punctuation ASSIGN = new Punctuation("=");
+
+    public static class Punctuation extends TokenType<Void> {
+        public Punctuation(String name) {
+            super(Void.class, name);
+        }
+    }
+    
+    public static class Keyword extends TokenType<Void> {
+        public Keyword(String name) {
+            super(Void.class, name);
+            
+            keywords.put(name, this);
+        }
+    }
 
     private final String name;
+    final Class<T> valueType;
     
-    private TokenType() {
-        this(null);
-    }
-    
-    private TokenType(String name) {
-        this.name = name;
+    private TokenType(Class<T> valueType, String name) {
+        this.valueType = checkNotNull(valueType);
+        this.name = checkNotNull(name);
     }
 
-    public static TokenType keyword(String name) {
-        for (TokenType token : values())
-            if (name.equals(token.name))
-                return token;
-        return null;
+    public static Keyword keyword(String name) {
+        return keywords.get(name);
     }
 
     @Override
     public String toString() {
-        return name != null ? name : name();
+        return name;
     }
 }

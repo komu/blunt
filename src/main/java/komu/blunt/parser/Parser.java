@@ -7,20 +7,22 @@ import komu.blunt.objects.Unit;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static komu.blunt.objects.Symbol.symbol;
 import static komu.blunt.parser.Associativity.LEFT;
-import static komu.blunt.parser.TokenType.ASSIGN;
-import static komu.blunt.parser.TokenType.OPERATOR;
+import static komu.blunt.parser.TokenType.*;
 
 public final class Parser {
 
     private final Lexer lexer;
     private final OperatorSet operators = new OperatorSet();
-    private static final List<TokenType> expressionStartTokens =
-        asList(TokenType.IF, TokenType.LET, TokenType.LAMBDA, TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER);
+
+    @SuppressWarnings("unchecked")
+    private static final List<TokenType<?>> expressionStartTokens =
+        Arrays.asList(TokenType.IF, TokenType.LET, TokenType.LAMBDA, TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, IDENTIFIER);
 
     public Parser(InputStream in) {
         this(new InputStreamReader(in));
@@ -41,7 +43,7 @@ public final class Parser {
     public List<ASTDefine> parseDefinitions() throws IOException {
         List<ASTDefine> result = new ArrayList<ASTDefine>();
         
-        while (lexer.peekToken().type != TokenType.EOF)
+        while (lexer.peekTokenType() != TokenType.EOF)
             result.add(parseDefinition());
         
         return result;
@@ -53,8 +55,8 @@ public final class Parser {
         Symbol name = parseIdentifier();
         List<Symbol> args = new ArrayList<Symbol>();
         
-        if (lexer.peekToken().type == OPERATOR) {
-            Operator op = lexer.readToken().value(Operator.class);
+        if (lexer.nextTokenIs(OPERATOR)) {
+            Operator op = lexer.readToken(OPERATOR).value;
             args.add(name);
             args.add(parseIdentifier());
             name = symbol(op.toString());
@@ -79,7 +81,7 @@ public final class Parser {
 
         while (true) {
             if (customOperator(lexer.peekToken())) {
-                Operator operator = lexer.readToken().value(Operator.class);
+                Operator operator = lexer.readToken(OPERATOR).value;
                 Associativity associativity = operators.getAssociativity(operator);
                 ASTExpression rhs = associativity == LEFT ? parseExp(0) : parseExpression();
                 exp = binary(operator.toString(), exp, rhs);
@@ -92,8 +94,8 @@ public final class Parser {
         }
     }
 
-    private static boolean customOperator(Token token) {
-        return token.type == OPERATOR && !token.value(Operator.class).isBuiltin();
+    private static boolean customOperator(Token<?> token) {
+        return token.type == OPERATOR && !token.asType(OPERATOR).value.isBuiltin();
     }
 
     private ASTExpression parseExp(int level) throws IOException {
@@ -121,23 +123,37 @@ public final class Parser {
     private ASTExpression parseApplicative() throws IOException {
         ASTExpression exp = parsePrimitive();
 
-        while (expressionStartTokens.contains(lexer.peekToken().type))
+        while (expressionStartTokens.contains(lexer.peekTokenType()))
             exp = new ASTApplication(exp, parsePrimitive());
 
         return exp;
     }
 
     private ASTExpression parsePrimitive() throws IOException {
-        switch (lexer.peekToken().type) {
-        case EOF:       throw new SyntaxException("unexpected eof");
-        case IF:        return parseIf();
-        case LET:       return parseLet();
-        case LAMBDA:    return parseLambda();
-        case LPAREN:    return parseParens();
-        case LBRACKET:  return parseList();
-        case LITERAL:   return new ASTConstant(lexer.readToken().value);
-        default:        return new ASTVariable(parseIdentifier());
-        }
+        TokenType type = lexer.peekTokenType();
+        
+        if (type == TokenType.EOF)
+            throw new SyntaxException("unexpected eof");
+        
+        if (type == TokenType.IF)
+            return parseIf();
+        
+        if (type == TokenType.LET)
+            return parseLet();
+            
+        if (type == TokenType.LAMBDA)
+            return parseLambda();
+        
+        if (type == TokenType.LPAREN)
+            return parseParens();
+        
+        if (type == TokenType.LBRACKET)
+            return parseList();
+
+        if (type == TokenType.LITERAL)
+            return new ASTConstant(lexer.readToken(TokenType.LITERAL).value);
+
+        return new ASTVariable(parseIdentifier());
     }
 
     // if <expr> then <expr> else <expr>
@@ -161,8 +177,8 @@ public final class Parser {
 
         List<Symbol> args = new ArrayList<Symbol>();
 
-        if (lexer.peekToken().type == OPERATOR) {
-            Operator op = lexer.readToken().value(Operator.class);
+        if (lexer.nextTokenIs(OPERATOR)) {
+            Operator op = lexer.readToken(OPERATOR).value;
             args.add(name);
             args.add(parseIdentifier());
             name = symbol(op.toString());
@@ -206,8 +222,8 @@ public final class Parser {
         if (lexer.readMatchingToken(TokenType.RPAREN))
             return new ASTConstant(Unit.INSTANCE);
         
-        if (lexer.peekTokenType() == TokenType.OPERATOR) {
-            Operator op = lexer.readToken().value(Operator.class);
+        if (lexer.nextTokenIs(OPERATOR)) {
+            Operator op = lexer.readToken(OPERATOR).value;
             expectToken(TokenType.RPAREN);
             return new ASTVariable(op.toString());
         }
@@ -245,26 +261,22 @@ public final class Parser {
     }
 
     private Symbol parseIdentifier() throws IOException {
-        Token token = lexer.readToken();
+        Token<?> token = lexer.readToken();
 
-        switch (token.type) {
-        case IDENTIFIER:
-            return token.value(Symbol.class);
-        case LPAREN:
-            Token op = lexer.readToken();
-            if (op.type == OPERATOR) {
-                expectToken(TokenType.RPAREN);
-                return op.value(Operator.class).toSymbol();
-            } else
-                throw new SyntaxException("expected operator name, got " + op);
+        if (token.type == IDENTIFIER)
+            return token.asType(IDENTIFIER).value;
 
-        default:
-            throw new SyntaxException("expected identifier, got " + token);
+        if (token.type == TokenType.LPAREN) {
+            Token<Operator> op = lexer.readToken(OPERATOR);
+            expectToken(TokenType.RPAREN);
+            return op.asType(OPERATOR).value.toSymbol();
         }
+
+        throw new SyntaxException("expected identifier, got " + token);
     }
 
-    private void expectToken(TokenType expected) throws IOException {
-        Token token = lexer.readToken();
+    private void expectToken(TokenType<?> expected) throws IOException {
+        Token<?> token = lexer.readToken();
 
         if (expected != token.type)
             throw new SyntaxException("expected " + expected + " but got " + token);

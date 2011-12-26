@@ -1,5 +1,7 @@
 package komu.blunt.parser;
 
+import komu.blunt.objects.Symbol;
+
 import java.io.IOException;
 import java.io.PushbackReader;
 import java.io.Reader;
@@ -14,24 +16,28 @@ import static komu.blunt.parser.TokenType.*;
 public final class Lexer {
     
     private final PushbackReader reader;
-    private Token nextToken = null;
+    private Token<?> nextToken = null;
     
     public Lexer(Reader reader) {
         this.reader = new PushbackReader(reader);
     }
     
-    public TokenType peekTokenType() throws IOException {
+    public TokenType<?> peekTokenType() throws IOException {
         return peekToken().type;
     }
 
-    public Token peekToken() throws IOException {
+    public boolean nextTokenIs(TokenType<?> type) throws IOException {
+        return peekTokenType() == type;
+    }
+
+    public Token<?> peekToken() throws IOException {
         if (nextToken == null)
             nextToken = readTokenInternal();
 
         return nextToken;
     }
 
-    public Token readToken() throws IOException {
+    public Token<?> readToken() throws IOException {
         if (nextToken != null) {
             Token token = nextToken;
             nextToken = null;
@@ -41,7 +47,11 @@ public final class Lexer {
         }
     }
 
-    public boolean readMatchingToken(TokenType type) throws IOException {
+    public <T> Token<T> readToken(TokenType<T> type) throws IOException {
+        return readToken().asType(type);
+    }
+    
+    public boolean readMatchingToken(TokenType<?> type) throws IOException {
         if (peekTokenType() == type) {
             readToken();
             return true;
@@ -50,8 +60,8 @@ public final class Lexer {
         }
     }
 
-    public boolean readMatchingToken(TokenType type, Object value) throws IOException {
-        Token token = peekToken();
+    public <T> boolean readMatchingToken(TokenType<T> type, T value) throws IOException {
+        Token<?> token = peekToken();
         if (token.type == type && equal(token.value, value)) {
             readToken();
             return true;
@@ -60,12 +70,11 @@ public final class Lexer {
         }
     }
     
-    public <T> T readMatching(TokenType type, Collection<T> operators) throws IOException {
-        Token token = peekToken();
-    
+    public <T> T readMatching(TokenType<T> type, Collection<T> operators) throws IOException {
+        Token<?> token = peekToken();
+
         if (token.type == type) {
-            @SuppressWarnings("unchecked")
-            T value = (T) token.value;
+            T value = token.asType(type).value;
             if (operators.contains(value)) {
                 readToken();
                 return value;
@@ -79,25 +88,25 @@ public final class Lexer {
         skipWhitespace();
 
         if (peek() == -1)
-            return new Token(EOF);
+            return Token.ofType(EOF);
         else if (isDigit(peek()))
             return readNumber();
         else if (peek() == '"')
             return readString();
         else if (readIf(','))
-            return new Token(COMMA);
+            return Token.ofType(COMMA);
         else if (readIf('('))
-            return new Token(LPAREN);
+            return Token.ofType(LPAREN);
         else if (readIf(')'))
-            return new Token(RPAREN);
+            return Token.ofType(RPAREN);
         else if (readIf(';'))
-            return new Token(readIf(';') ? DOUBLE_SEMI : SEMICOLON);
+            return Token.ofType(readIf(';') ? DOUBLE_SEMI : SEMICOLON);
         else if (readIf('['))
-            return new Token(LBRACKET);
+            return Token.ofType(LBRACKET);
         else if (readIf(']'))
-            return new Token(RBRACKET);
+            return Token.ofType(RBRACKET);
         else if (readIf('\\'))
-            return new Token(TokenType.LAMBDA);
+            return Token.ofType(TokenType.LAMBDA);
         else if (isOperatorCharacter(peek()))
             return readOperator();
         else if (isJavaIdentifierStart(peek()))
@@ -125,16 +134,16 @@ public final class Lexer {
         return ch == '#' || isWhitespace(ch);
     }
 
-    private Token readIdentifierOrKeyword() throws IOException {
+    private Token<?> readIdentifierOrKeyword() throws IOException {
         StringBuilder sb = new StringBuilder();
 
         while (isIdentifierPart(peek()))
             sb.append(read());
 
         String name = sb.toString();
-        TokenType type = TokenType.keyword(name);
+        Keyword type = TokenType.keyword(name);
         
-        return type != null ? new Token(type) : new Token(IDENTIFIER, symbol(sb.toString()));
+        return type != null ? Token.ofType(type) : new Token<Symbol>(IDENTIFIER, symbol(sb.toString()));
     }
 
     private static boolean isIdentifierPart(int ch) {
@@ -150,9 +159,9 @@ public final class Lexer {
         String op = sb.toString();
         
         if (op.equals("="))
-            return new Token(ASSIGN);
+            return Token.ofType(ASSIGN);
         else
-            return new Token(OPERATOR, new Operator(sb.toString()));
+            return new Token<Operator>(OPERATOR, new Operator(sb.toString()));
     }
 
     private Token readString() throws IOException {
@@ -165,7 +174,7 @@ public final class Lexer {
 
         expect('"');
 
-        return new Token(TokenType.LITERAL, sb.toString());
+        return new Token<Object>(TokenType.LITERAL, sb.toString());
     }
 
     private Token readNumber() throws IOException {
@@ -174,7 +183,7 @@ public final class Lexer {
         while (isDigit(peek()))
             sb.append(read());
 
-        return new Token(LITERAL, new BigInteger(sb.toString()));
+        return new Token<Object>(LITERAL, new BigInteger(sb.toString()));
     }
     
     private char read() throws IOException {
