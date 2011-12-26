@@ -4,11 +4,12 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreTupleExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
+import komu.blunt.types.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static komu.blunt.types.Type.tupleType;
 
 public final class ASTTuple extends ASTExpression {
     
@@ -26,8 +27,18 @@ public final class ASTTuple extends ASTExpression {
     }
 
     @Override
-    public Type typeCheck(TypeEnvironment env) {
-        return Type.tupleType(typeCheckAll(exps, env));
+    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
+        // TODO: generalize tuples to type constructors
+        List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Type> types = new ArrayList<Type>();
+        
+        for (ASTExpression exp : exps) {
+            TypeCheckResult<Type> result = exp.typeCheck(ce, tc, as);
+            predicates.addAll(result.predicates);
+            types.add(result.value);
+        }
+        
+        return new TypeCheckResult<Type>(predicates, tupleType(types));
     }
 
     @Override

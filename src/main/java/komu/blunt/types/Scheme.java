@@ -1,41 +1,47 @@
 package komu.blunt.types;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class TypeScheme {
+public final class Scheme implements Types<Scheme> {
 
-    private final List<Kind> kinds;
-    private final Type type;
+    final List<Kind> kinds;
+    final Qualified<Type> type;
     
-    public TypeScheme(List<Kind> kinds, Type type) {
+    public Scheme(List<Kind> kinds, Qualified<Type> type) {
         this.kinds = new ArrayList<Kind>(kinds);
         this.type = checkNotNull(type);
     }
 
-    // TODO
-    public TypeScheme(Type type) {
-        this(Collections.<Kind>emptyList(), type);
+    @Override
+    public void addTypeVariables(Set<TypeVariable> variables) {
+        type.addTypeVariables(variables);
     }
-    
+
+    @Override
+    public Scheme apply(Substitution substitution) {
+        return new Scheme(kinds, type.apply(substitution));
+    }
+
     public Type freshInstance(TypeEnvironment env) {
         List<TypeVariable> vars = new ArrayList<TypeVariable>(kinds.size());
 
         for (Kind kind : kinds)
             vars.add(env.newVar(kind));
 
-        return type.instantiate(vars);
+        //return type.instantiate(vars);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj == this) return true;
 
-        if (obj instanceof TypeScheme) {
-            TypeScheme rhs = (TypeScheme) obj;
+        if (obj instanceof Scheme) {
+            Scheme rhs = (Scheme) obj;
 
             return kinds.equals(rhs.kinds)
                 && type.equals(rhs.type);

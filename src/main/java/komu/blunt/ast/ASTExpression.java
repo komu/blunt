@@ -3,8 +3,7 @@ package komu.blunt.ast;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
+import komu.blunt.types.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
 public abstract class ASTExpression {
 
     public abstract CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings);
-    public abstract Type typeCheck(TypeEnvironment env);
+    public abstract TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as);
 
     @Override
     public abstract String toString();
@@ -24,14 +23,5 @@ public abstract class ASTExpression {
             result.add(exp.analyze(env, rootBindings));
 
         return result;
-    }
-
-    protected static List<Type> typeCheckAll(List<ASTExpression> exps, TypeEnvironment env) {
-        List<Type> types = new ArrayList<Type>(exps.size());
-
-        for (ASTExpression exp : exps)
-            types.add(exp.typeCheck(env));
-
-        return types;
     }
 }

@@ -19,7 +19,7 @@ public final class TypeApplication extends Type {
     }
 
     @Override
-    protected Type apply(Substitution substitution) {
+    public TypeApplication apply(Substitution substitution) {
         return new TypeApplication(left.apply(substitution), right.apply(substitution));
     }
 
@@ -29,7 +29,12 @@ public final class TypeApplication extends Type {
     }
 
     @Override
-    protected void addTypeVariables(Set<TypeVariable> result) {
+    public boolean hnf() {
+        return left.hnf();
+    }
+
+    @Override
+    public void addTypeVariables(Set<TypeVariable> result) {
         left.addTypeVariables(result);
         right.addTypeVariables(result);
     }

@@ -55,7 +55,7 @@ public abstract class Maybe<T> {
 
         @Override
         public T fromJust() {
-            return BasicFunctions.error("can't extract value from Nothing");
+            return BasicFunctions.error("can't extract type from Nothing");
         }
 
         @Override

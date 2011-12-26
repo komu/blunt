@@ -11,6 +11,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Arrays.asList;
+import static komu.blunt.types.Type.functionType;
 
 public final class ASTLambda extends ASTExpression {
     public final List<Symbol> arguments;
@@ -40,17 +41,19 @@ public final class ASTLambda extends ASTExpression {
     }
 
     @Override
-    public Type typeCheck(TypeEnvironment env) {
+    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
         if (arguments.size() == 1) {
             Symbol arg = arguments.get(0);
-            TypeEnvironment bodyEnv = new TypeEnvironment(env);
 
-            TypeVariable argumentType = env.newVar(Kind.STAR);
-            env.bind(arg, new TypeScheme(argumentType));
+            TypeVariable argumentType = tc.newTVar(Kind.STAR);
 
-            return Type.makeFunctionType(argumentType, body.typeCheck(bodyEnv));
+            Assumptions as2 = as.extend(arg, argumentType.toScheme());
+
+            TypeCheckResult<Type> result = body.typeCheck(ce, tc, as2);
+
+            return new TypeCheckResult<Type>(result.predicates, functionType(argumentType, result.value));
         } else {
-            return rewrite().typeCheck(env);
+            return rewrite().typeCheck(ce, tc, as);
         }
     }
 

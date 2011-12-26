@@ -5,8 +5,7 @@ import komu.blunt.core.CoreSetExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
+import komu.blunt.types.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -25,12 +24,9 @@ public final class ASTSet extends ASTExpression {
     }
 
     @Override
-    public Type typeCheck(TypeEnvironment env) {
-        // TODO: is it correct to create fresh instantiation of the variable?
-        Type varType = env.lookup(var).freshInstance(env);
-
-        env.unify(varType, exp.typeCheck(env));
-        return Type.UNIT;
+    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
+        // TODO: assume sets is always correct since it's auto-generated
+        return new TypeCheckResult<Type>(Type.UNIT);
     }
 
     @Override

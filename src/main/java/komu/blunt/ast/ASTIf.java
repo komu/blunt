@@ -4,8 +4,8 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreIfExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
+import komu.blunt.types.*;
+import komu.blunt.utils.ListUtils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -26,17 +26,16 @@ public final class ASTIf extends ASTExpression {
     }
 
     @Override
-    public Type typeCheck(TypeEnvironment env) {
-        Type conditionType = test.typeCheck(env);
+    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
+        TypeCheckResult<Type> tyTest = test.typeCheck(ce, tc, as); 
+        TypeCheckResult<Type> tyConsequent = consequent.typeCheck(ce, tc, as); 
+        TypeCheckResult<Type> tyAlternative = alternative.typeCheck(ce, tc, as);
+        
+        tc.unify(tyTest.value, Type.BOOLEAN);
+        tc.unify(tyConsequent.value, tyAlternative.value);
 
-        env.unify(Type.BOOLEAN, conditionType);
-
-        Type consequentType = consequent.typeCheck(env);
-        Type alternativeType = alternative.typeCheck(env);
-
-        env.unify(consequentType, alternativeType);
-
-        return consequentType;
+        return new TypeCheckResult<Type>(ListUtils.append(tyTest.predicates, tyConsequent.predicates, tyAlternative.predicates),
+                tyConsequent.value);
     }
 
     @Override

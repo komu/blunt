@@ -4,11 +4,12 @@ import komu.blunt.core.CoreApplicationExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.types.Kind;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
+import komu.blunt.types.*;
+import komu.blunt.utils.ListUtils;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.types.Kind.STAR;
+import static komu.blunt.types.Type.functionType;
 
 public final class ASTApplication extends ASTExpression {
 
@@ -26,14 +27,15 @@ public final class ASTApplication extends ASTExpression {
     }
 
     @Override
-    public Type typeCheck(TypeEnvironment env) {
-        Type argType = arg.typeCheck(env);
-        Type returnType = env.newVar(Kind.STAR);
-        Type ty = Type.makeFunctionType(argType, returnType);
+    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
+        TypeCheckResult<Type> te = func.typeCheck(ce, tc, as);
+        TypeCheckResult<Type> tf = arg.typeCheck(ce, tc, as);
 
-        env.unify(func.typeCheck(env), ty);
+        Type t = tc.newTVar(STAR);
 
-        return returnType;
+        tc.unify(functionType(tf.value, t), te.value);
+
+        return new TypeCheckResult<Type>(ListUtils.append(te.predicates, tf.predicates), t);
     }
 
     @Override

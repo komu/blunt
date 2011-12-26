@@ -14,6 +14,15 @@ public final class TypeVariable extends Type {
         this.name = checkNotNull(name);
         this.kind = checkNotNull(kind);
     }
+    
+    public static TypeVariable tyVar(String name, Kind kind) {
+        return new TypeVariable(name, kind);
+    }
+
+    @Override
+    public boolean hnf() {
+        return true;
+    }
 
     @Override
     protected String toString(final int precedence) {
@@ -26,7 +35,7 @@ public final class TypeVariable extends Type {
     }
 
     @Override
-    protected Type apply(Substitution substitution) {
+    public Type apply(Substitution substitution) {
         Type newType = substitution.lookup(this);
         return newType != null ? newType : this;
     }
@@ -37,7 +46,7 @@ public final class TypeVariable extends Type {
     }
 
     @Override
-    protected void addTypeVariables(Set<TypeVariable> result) {
+    public void addTypeVariables(Set<TypeVariable> result) {
         result.add(this);
     }
 }

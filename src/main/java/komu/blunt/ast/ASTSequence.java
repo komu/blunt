@@ -5,8 +5,7 @@ import komu.blunt.core.CoreSequenceExpression;
 import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.eval.SyntaxException;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeEnvironment;
+import komu.blunt.types.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +31,19 @@ public final class ASTSequence extends ASTExpression {
     }
     
     @Override
-    public Type typeCheck(TypeEnvironment env) {
+    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
+        List<Predicate> predicates = new ArrayList<Predicate>();
+        
         for (ASTExpression exp : allButLast())
-            exp.typeCheck(env);
+            predicates.addAll(exp.typeCheck(ce, tc, as).predicates);
 
-        return last().typeCheck(env);
+        TypeCheckResult<Type> result = last().typeCheck(ce, tc, as);
+        
+        predicates.addAll(result.predicates);
+
+        return new TypeCheckResult<Type>(predicates, result.value);
     }
 
-    
     private ASTExpression last() {
         return exps.get(exps.size()-1);
     }

@@ -175,7 +175,7 @@ public final class Parser {
         expectToken(Token.IN);
         ASTExpression body = parseExpression();
 
-        List<ASTBinding> bindings = asList(new ASTBinding(name, value));
+        List<ImplicitBinding> bindings = asList(new ImplicitBinding(name, value));
         if (recursive)
             return new ASTLetRec(bindings, body);
         else
