@@ -4,7 +4,6 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreVariableExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static komu.blunt.objects.Symbol.symbol;
@@ -28,13 +27,6 @@ public final class ASTVariable extends ASTExpression {
     @Override
     public CoreExpression analyze(StaticEnvironment env) {
         return new CoreVariableExpression(env.lookup(var));
-    }
-
-    @Override
-    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
-        Scheme scheme = ctx.find(var);
-        Qualified<Type> inst = ctx.freshInstance(scheme);
-        return new TypeCheckResult<Type>(inst.predicates, inst.value);
     }
 
     @Override

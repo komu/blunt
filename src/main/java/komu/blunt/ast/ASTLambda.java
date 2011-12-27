@@ -4,13 +4,11 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreLambdaExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.*;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Arrays.asList;
-import static komu.blunt.types.Type.functionType;
 
 public final class ASTLambda extends ASTExpression {
     public final List<Symbol> arguments;
@@ -44,24 +42,7 @@ public final class ASTLambda extends ASTExpression {
         }
     }
 
-    @Override
-    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
-        if (arguments.size() == 1) {
-            Symbol arg = arguments.get(0);
-
-            TypeVariable argumentType = ctx.newTVar(Kind.STAR);
-
-            Assumptions as2 = Assumptions.singleton(arg, argumentType.toScheme());
-
-            TypeCheckResult<Type> result = body.typeCheck(ctx.extend(as2));
-
-            return new TypeCheckResult<Type>(result.predicates, functionType(argumentType, result.value));
-        } else {
-            return rewrite().typeCheck(ctx);
-        }
-    }
-
-    private ASTLambda rewrite() {
+    public ASTLambda rewrite() {
         return new ASTLambda(arguments.get(0), new ASTLambda(arguments.subList(1, arguments.size()), body));
     }
 

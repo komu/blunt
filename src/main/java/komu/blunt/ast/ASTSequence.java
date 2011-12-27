@@ -4,10 +4,6 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreSequenceExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.eval.SyntaxException;
-import komu.blunt.types.Predicate;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeCheckingContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,25 +33,11 @@ public final class ASTSequence extends ASTExpression {
         exps.add(checkNotNull(exp));
     }
 
-    @Override
-    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
-        List<Predicate> predicates = new ArrayList<Predicate>();
-        
-        for (ASTExpression exp : allButLast())
-            predicates.addAll(exp.typeCheck(ctx).predicates);
-
-        TypeCheckResult<Type> result = last().typeCheck(ctx);
-        
-        predicates.addAll(result.predicates);
-
-        return new TypeCheckResult<Type>(predicates, result.value);
-    }
-
-    private ASTExpression last() {
+    public ASTExpression last() {
         return exps.get(exps.size()-1);
     }
 
-    private List<ASTExpression> allButLast() {
+    public List<ASTExpression> allButLast() {
         return exps.subList(0, exps.size()-1);
     }
     

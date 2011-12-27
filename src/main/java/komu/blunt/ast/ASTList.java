@@ -4,9 +4,6 @@ import com.google.common.base.Preconditions;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Unit;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeCheckingContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +18,7 @@ public final class ASTList extends ASTExpression {
 
     @Override
     public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
-        return rewrite().accept(visitor, ctx);
+        return visitor.visit(this, ctx);
     }
 
     @Override
@@ -29,12 +26,7 @@ public final class ASTList extends ASTExpression {
         return rewrite().analyze(env);
     }
 
-    @Override
-    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
-        return rewrite().typeCheck(ctx);
-    }
-
-    private ASTExpression rewrite() {
+    public ASTExpression rewrite() {
         ASTExpression exp = nil();
         
         for (int i = exps.size()-1; i >= 0; i--)

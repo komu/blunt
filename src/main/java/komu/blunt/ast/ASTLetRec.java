@@ -4,10 +4,6 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
 import komu.blunt.objects.Unit;
-import komu.blunt.types.Assumptions;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeCheckingContext;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -38,13 +34,6 @@ public final class ASTLetRec extends ASTExpression {
     @Override
     public CoreExpression analyze(StaticEnvironment env) {
         return rewriteToLet().analyze(env);
-    }
-
-    @Override
-    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
-        TypeCheckResult<Assumptions> rs = new BindGroup(new ArrayList<ExplicitBinding>(), bindings).typeCheckBindGroup(ctx);
-
-        return body.typeCheck(ctx.extend(rs.value));
     }
 
     private ASTLet rewriteToLet() {

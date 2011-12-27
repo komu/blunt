@@ -1,13 +1,13 @@
 package komu.blunt.types;
 
-import static komu.blunt.types.Unifier.mgu;
+import komu.blunt.ast.ASTDefine;
+import komu.blunt.ast.ASTExpression;
+import komu.blunt.eval.TypeCheckException;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import komu.blunt.ast.ASTDefine;
-import komu.blunt.ast.ASTExpression;
-import komu.blunt.eval.TypeCheckException;
+import static komu.blunt.types.Unifier.mgu;
 
 public final class TypeChecker {
 
@@ -15,7 +15,9 @@ public final class TypeChecker {
     private int typeSequence = 0;
     
     public Qualified<Type> typeCheck(ASTExpression exp, ClassEnv classEnv, Assumptions as) {
-        TypeCheckResult<Type> result = exp.typeCheck(new TypeCheckingContext(classEnv, this, as));
+        TypeCheckingVisitor checker = new TypeCheckingVisitor();
+        TypeCheckingContext ctx = new TypeCheckingContext(classEnv, this, as);
+        TypeCheckResult<Type> result = checker.typeCheck(exp, ctx);
         List<Predicate> ps = classEnv.reduce(TypeUtils.apply(substitution, result.predicates));
         Qualified<Type> q = new Qualified<Type>(ps, result.value);
         return q.apply(substitution);

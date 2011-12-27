@@ -1,7 +1,5 @@
 package komu.blunt.ast;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import komu.blunt.core.CoreDefineExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.StaticEnvironment;
@@ -10,6 +8,9 @@ import komu.blunt.objects.Symbol;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
 import komu.blunt.types.TypeCheckingContext;
+import komu.blunt.types.TypeCheckingVisitor;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTDefine {
 
@@ -27,7 +28,8 @@ public final class ASTDefine {
     }
 
     public TypeCheckResult<Type> typeCheck(TypeCheckingContext ctx) {
-        return new ASTLetRec(name, value, new ASTVariable(name)).typeCheck(ctx);
+        TypeCheckingVisitor checker = new TypeCheckingVisitor();
+        return checker.typeCheck(new ASTLetRec(name, value, new ASTVariable(name)), ctx);
     }
 
     @Override

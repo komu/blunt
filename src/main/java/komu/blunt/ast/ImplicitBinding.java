@@ -33,8 +33,9 @@ public final class ImplicitBinding {
         Assumptions as2 = Assumptions.from(names(bs), toSchemes(ts)).join(ctx.assumptions);
 
         List<Predicate> pss = new ArrayList<Predicate>();
+        TypeCheckingVisitor typeChecker = new TypeCheckingVisitor();
         for (int i = 0; i < ts.size(); i++) {
-            TypeCheckResult<Type> res = bs.get(i).expr.typeCheck(ctx.extend(as2));
+            TypeCheckResult<Type> res = typeChecker.typeCheck(bs.get(i).expr, ctx.extend(as2));
             ctx.unify(res.value, ts.get(i));
             pss.addAll(res.predicates);
         }
