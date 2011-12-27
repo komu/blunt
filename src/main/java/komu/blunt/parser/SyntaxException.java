@@ -1,4 +1,4 @@
-package komu.blunt.eval;
+package komu.blunt.parser;
 
 public class SyntaxException extends RuntimeException{
     public SyntaxException(String message) {

@@ -1,6 +1,6 @@
 package komu.blunt.asm;
 
-import komu.blunt.eval.VariableReference;
+import komu.blunt.analyzer.VariableReference;
 
 import java.util.*;
 

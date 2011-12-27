@@ -1,4 +1,4 @@
-package komu.blunt.eval;
+package komu.blunt.analyzer;
 
 public class AnalyzationException extends RuntimeException {
     

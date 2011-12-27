@@ -2,8 +2,6 @@ package komu.blunt.analyzer;
 
 import komu.blunt.ast.*;
 import komu.blunt.core.*;
-import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.Symbol;
 
 import java.util.ArrayList;
@@ -69,7 +67,7 @@ public final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, Cor
 
     @Override
     public CoreExpression visit(ASTSequence sequence, StaticEnvironment env) {
-        if (sequence.exps.isEmpty()) throw new SyntaxException("empty sequence");
+        if (sequence.exps.isEmpty()) throw new AnalyzationException("empty sequence");
 
         return new CoreSequenceExpression(analyzeAll(sequence.exps, env));
     }

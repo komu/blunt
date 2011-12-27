@@ -1,14 +1,14 @@
 package komu.blunt;
 
-import static komu.blunt.objects.Symbol.symbol;
-
+import komu.blunt.analyzer.AnalyzationException;
 import komu.blunt.ast.ASTExpression;
 import komu.blunt.ast.ASTVariable;
-import komu.blunt.eval.AnalyzationException;
 import komu.blunt.eval.Evaluator;
 import komu.blunt.eval.ResultWithType;
-import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.EvaluationException;
+import komu.blunt.parser.SyntaxException;
+
+import static komu.blunt.objects.Symbol.symbol;
 
 public class Main {
 

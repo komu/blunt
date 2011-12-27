@@ -1,5 +1,6 @@
 package komu.blunt.eval;
 
+import komu.blunt.analyzer.AnalyzationException;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.CompoundProcedure;
 import komu.blunt.parser.Parser;

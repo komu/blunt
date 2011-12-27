@@ -1,12 +1,12 @@
 package komu.blunt.core;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import komu.blunt.analyzer.VariableReference;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
-import komu.blunt.eval.VariableReference;
 import komu.blunt.objects.Unit;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreDefineExpression extends CoreExpression {
 

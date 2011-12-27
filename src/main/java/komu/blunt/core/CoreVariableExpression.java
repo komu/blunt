@@ -1,9 +1,9 @@
 package komu.blunt.core;
 
+import komu.blunt.analyzer.VariableReference;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
-import komu.blunt.eval.VariableReference;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

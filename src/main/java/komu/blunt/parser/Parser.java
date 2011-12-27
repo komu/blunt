@@ -1,7 +1,6 @@
 package komu.blunt.parser;
 
 import komu.blunt.ast.*;
-import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.Symbol;
 import komu.blunt.objects.Unit;
 

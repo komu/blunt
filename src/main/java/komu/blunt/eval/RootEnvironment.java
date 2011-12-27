@@ -1,5 +1,7 @@
 package komu.blunt.eval;
 
+import komu.blunt.analyzer.VariableReference;
+
 import java.util.Arrays;
 
 import static java.lang.Math.max;

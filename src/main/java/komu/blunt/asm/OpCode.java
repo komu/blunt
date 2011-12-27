@@ -1,7 +1,7 @@
 package komu.blunt.asm;
 
+import komu.blunt.analyzer.VariableReference;
 import komu.blunt.eval.Environment;
-import komu.blunt.eval.VariableReference;
 import komu.blunt.objects.CompoundProcedure;
 import komu.blunt.objects.Function;
 import komu.blunt.objects.Tuple;

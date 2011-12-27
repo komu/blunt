@@ -1,4 +1,4 @@
-package komu.blunt.eval;
+package komu.blunt.analyzer;
 
 import komu.blunt.objects.Symbol;
 

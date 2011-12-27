@@ -1,10 +1,10 @@
 package komu.blunt.ast;
 
 import komu.blunt.analyzer.AnalyzingVisitor;
+import komu.blunt.analyzer.StaticEnvironment;
+import komu.blunt.analyzer.VariableReference;
 import komu.blunt.core.CoreDefineExpression;
 import komu.blunt.core.CoreExpression;
-import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.eval.VariableReference;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.Type;
 import komu.blunt.types.checker.TypeCheckResult;

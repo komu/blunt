@@ -1,5 +1,7 @@
 package komu.blunt.eval;
 
+import komu.blunt.analyzer.StaticEnvironment;
+import komu.blunt.analyzer.VariableReference;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.*;
 import komu.blunt.types.checker.Assumptions;
