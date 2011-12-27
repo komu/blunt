@@ -124,8 +124,8 @@ span p ls = (takeWhile p ls, dropWhile p ls)
 
 break p = span (not . p)
 
-even x = mod x 2 == 0
+even? x = mod x 2 == 0
 
-odd = not . even
+odd? = not . even?
 
 x /= y = not (x == y)

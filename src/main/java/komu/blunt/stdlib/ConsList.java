@@ -1,5 +1,7 @@
 package komu.blunt.stdlib;
 
+import static com.google.common.base.Objects.equal;
+
 @TypeName("[]")
 public abstract class ConsList<T> {
 
@@ -28,6 +30,25 @@ public abstract class ConsList<T> {
         public boolean isNil() {
             return false;
         }
+
+        @Override
+        public int hashCode() {
+            return head.hashCode();
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            if (obj == this) return true;
+            
+            if (obj instanceof Cons) {
+                Cons<?> rhs = (Cons<?>) obj;
+
+                return equal(head, rhs.head)
+                    && equal(tail, rhs.tail);
+            }
+            
+            return false;
+        }
     }
     
     private static final class Nil<T> extends ConsList<T> {
@@ -44,6 +65,16 @@ public abstract class ConsList<T> {
         @Override
         public boolean isNil() {
             return true;
+        }
+
+        @Override
+        public boolean equals(final Object obj) {
+            return obj instanceof Nil;
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
         }
     }
 

@@ -37,6 +37,10 @@ public abstract class Type implements Types<Type> {
         return name != null ? name.value() : type.getSimpleName();
     }
 
+    public static Type listType(Type type) {
+        return arrayOf(type);
+    }
+
     private static Type basicType(String name) {
         return new TypeConstructor(name, Kind.STAR);
     }
