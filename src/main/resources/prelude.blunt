@@ -139,3 +139,21 @@ max x y = if x > y then x else y
 minimum = foldl1 min
 
 maximum = foldl1 max
+
+sort ls =
+  if nil? ls
+    then ls
+    else let pivot = head ls in
+         let less = filter (\x -> x < pivot) (tail ls) in
+         let more = filter (\x -> x >= pivot) (tail ls) in
+         sort less ++ [pivot] ++ sort more
+
+delete x xs =
+  if nil? xs
+    then xs
+    else
+      if x == head xs
+        then tail xs
+        else head xs : delete x (tail xs)
+
+(\\) = foldr delete

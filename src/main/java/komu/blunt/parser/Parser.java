@@ -48,7 +48,7 @@ public final class Parser {
         
         return result;
     }
-
+    
     // <ident> <op> <ident> = <exp> ;;
     // <ident> <ident>* = <exp> ;;
     private ASTDefine parseDefinition() throws IOException {
@@ -281,7 +281,11 @@ public final class Parser {
         Token<?> token = lexer.readToken();
 
         if (expected != token.type)
-            throw new SyntaxException("expected " + expected + " but got " + token);
+            throw parseError("expected " + expected + " but got " + token);
+    }
+
+    private SyntaxException parseError(final String s) {
+        return new SyntaxException("[" + lexer.getSourceLocation() + "] " + s);
     }
 
     private static ASTExpression binary(String op, ASTExpression lhs, ASTExpression rhs) {

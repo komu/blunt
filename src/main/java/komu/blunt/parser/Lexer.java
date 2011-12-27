@@ -29,6 +29,10 @@ public final class Lexer {
         indents.push(reader.getColumn());
     }
 
+    public String getSourceLocation() {
+        return reader.getLine() + ":" + reader.getColumn();
+    }
+
     public boolean nextTokenIs(TokenType<?> type) throws IOException {
         return peekTokenType() == type;
     }
@@ -104,7 +108,6 @@ public final class Lexer {
         case ';':   read(); return Token.ofType(SEMICOLON);
         case '[':   read(); return Token.ofType(LBRACKET);
         case ']':   read(); return Token.ofType(RBRACKET);
-        case '\\':  read(); return Token.ofType(LAMBDA);
         }
 
         if (isDigit(ch))
@@ -163,7 +166,9 @@ public final class Lexer {
             sb.append(read());
 
         String op = sb.toString();
-        
+
+        if (op.equals("\\"))
+            return Token.ofType(LAMBDA);
         if (op.equals("="))
             return Token.ofType(ASSIGN);
         else
@@ -211,7 +216,7 @@ public final class Lexer {
     }
     
     private static boolean isOperatorCharacter(int ch) {
-        return "=-+*/<>%?!|&$:.".indexOf(ch) != -1;
+        return "=-+*/<>%?!|&$:.\\".indexOf(ch) != -1;
     }
     
     private RuntimeException parseError(String message) {
