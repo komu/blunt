@@ -1,14 +1,14 @@
 package komu.blunt;
 
-import komu.blunt.ast.ASTConstant;
+import static komu.blunt.objects.Symbol.symbol;
+
 import komu.blunt.ast.ASTExpression;
+import komu.blunt.ast.ASTVariable;
 import komu.blunt.eval.AnalyzationException;
 import komu.blunt.eval.Evaluator;
 import komu.blunt.eval.ResultWithType;
 import komu.blunt.eval.SyntaxException;
 import komu.blunt.objects.EvaluationException;
-
-import static komu.blunt.objects.Symbol.symbol;
 
 public class Main {
 
@@ -22,9 +22,9 @@ public class Main {
             try {
                 ASTExpression exp = prompt.readExpression(">>> ");
 
-                if (isConstant("exit", exp)) {
+                if (isSymbol("exit", exp)) {
                     break;
-                } else if (isConstant("dump", exp)) {
+                } else if (isSymbol("dump", exp)) {
                     evaluator.dump();
                 } else {
                     ResultWithType result = evaluator.evaluateWithType(exp);
@@ -42,10 +42,10 @@ public class Main {
         }
     }
 
-    private static boolean isConstant(String symbol, ASTExpression exp) {
-        if (exp instanceof ASTConstant) {
-            ASTConstant constant = (ASTConstant) exp;
-            return symbol(symbol).equals(constant.value);
+    private static boolean isSymbol(String symbol, ASTExpression exp) {
+        if (exp instanceof ASTVariable) {
+            ASTVariable constant = (ASTVariable) exp;
+            return symbol(symbol).equals(constant.var);
         } else {
             return false;
         }
