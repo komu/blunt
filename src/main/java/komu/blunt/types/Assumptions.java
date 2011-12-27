@@ -1,15 +1,15 @@
 package komu.blunt.types;
 
-import komu.blunt.eval.TypeCheckException;
-import komu.blunt.objects.Symbol;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Collections.singletonMap;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Collections.singletonMap;
+import komu.blunt.eval.TypeCheckException;
+import komu.blunt.objects.Symbol;
 
 public final class Assumptions implements Types<Assumptions> {
 
@@ -28,6 +28,11 @@ public final class Assumptions implements Types<Assumptions> {
             return scheme;
         else
             throw new TypeCheckException("unbound identifier: " + name);
+    }
+
+    @Override
+    public String toString() {
+        return mappings.toString();
     }
 
     @Override
