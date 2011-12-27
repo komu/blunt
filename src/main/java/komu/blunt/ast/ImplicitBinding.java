@@ -1,15 +1,30 @@
 package komu.blunt.ast;
 
-import komu.blunt.objects.Symbol;
-import komu.blunt.types.*;
-
-import java.util.*;
-
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Collections.emptySet;
 import static komu.blunt.types.Qualified.quantify;
 import static komu.blunt.types.Type.toSchemes;
 import static komu.blunt.types.TypeUtils.getTypeVariables;
+import static komu.blunt.utils.CollectionUtils.intersection;
+
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import komu.blunt.objects.Symbol;
+import komu.blunt.types.Assumptions;
+import komu.blunt.types.ClassEnv;
+import komu.blunt.types.Kind;
+import komu.blunt.types.Predicate;
+import komu.blunt.types.Qualified;
+import komu.blunt.types.Scheme;
+import komu.blunt.types.Substitution;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeCheckResult;
+import komu.blunt.types.TypeChecker;
+import komu.blunt.types.TypeCheckingContext;
+import komu.blunt.types.TypeUtils;
+import komu.blunt.types.TypeVariable;
 
 public final class ImplicitBinding {
     public final Symbol name;
@@ -34,7 +49,7 @@ public final class ImplicitBinding {
 
         List<Predicate> pss = new ArrayList<Predicate>();
         for (int i = 0; i < ts.size(); i++) {
-            TypeCheckResult<Type> res = altss.get(i).typeCheck(ce, tc, as2);
+            TypeCheckResult<Type> res = altss.get(i).typeCheck(new TypeCheckingContext(ce, tc, as2));
             tc.unify(res.value, ts.get(i));
             pss.addAll(res.predicates);
         }
@@ -90,18 +105,6 @@ public final class ImplicitBinding {
 
         // TODO: defaulted
         return new Pair<List<Predicate>,List<Predicate>>(ds, rs);
-    }
-
-    private static Set<TypeVariable> intersection(List<Set<TypeVariable>> vss) {
-        Iterator<Set<TypeVariable>> it = vss.iterator();
-
-        if (!it.hasNext()) return emptySet();
-
-        Set<TypeVariable> result = new HashSet<TypeVariable>(it.next());
-        while (it.hasNext())
-            result.retainAll(it.next());
-
-        return result;
     }
 
     private static class Pair<A,B> {

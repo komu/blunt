@@ -15,14 +15,14 @@ public final class TypeChecker {
     private int typeSequence = 0;
     
     public Qualified<Type> typeCheck(ASTExpression exp, ClassEnv classEnv, Assumptions as) {
-        TypeCheckResult<Type> result = exp.typeCheck(classEnv, this, as);
+        TypeCheckResult<Type> result = exp.typeCheck(new TypeCheckingContext(classEnv, this, as));
         List<Predicate> ps = classEnv.reduce(TypeUtils.apply(substitution, result.predicates));
         Qualified<Type> q = new Qualified<Type>(ps, result.value);
         return q.apply(substitution);
     }
 
     public Scheme typeCheck(ASTDefine exp, ClassEnv classEnv, Assumptions as) {
-        TypeCheckResult<Type> result = exp.typeCheck(classEnv, this, as);
+        TypeCheckResult<Type> result = exp.typeCheck(new TypeCheckingContext(classEnv, this, as));
         List<Predicate> ps = classEnv.reduce(TypeUtils.apply(substitution, result.predicates));
         Qualified<Type> q = new Qualified<Type>(ps, result.value);
         return Qualified.quantifyAll(q.apply(substitution));

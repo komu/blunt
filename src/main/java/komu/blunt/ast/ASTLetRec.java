@@ -13,10 +13,9 @@ import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
 import komu.blunt.objects.Unit;
 import komu.blunt.types.Assumptions;
-import komu.blunt.types.ClassEnv;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeChecker;
+import komu.blunt.types.TypeCheckingContext;
 
 public final class ASTLetRec extends ASTExpression {
     public final List<ImplicitBinding> bindings;
@@ -37,10 +36,10 @@ public final class ASTLetRec extends ASTExpression {
     }
 
     @Override
-    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
-        TypeCheckResult<Assumptions> rs = new BindGroup(new ArrayList<ExplicitBinding>(), bindings).typeCheckBindGroup(ce, tc, as);
+    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
+        TypeCheckResult<Assumptions> rs = new BindGroup(new ArrayList<ExplicitBinding>(), bindings).typeCheckBindGroup(ctx);
 
-        return body.typeCheck(ce, tc, rs.value.join(as));
+        return body.typeCheck(new TypeCheckingContext(ctx.ce, ctx.tc, rs.value.join(ctx.as)));
     }
 
     private ASTLet rewriteToLet() {

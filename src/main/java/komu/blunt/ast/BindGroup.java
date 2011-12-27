@@ -1,14 +1,18 @@
 package komu.blunt.ast;
 
-import komu.blunt.objects.Symbol;
-import komu.blunt.types.*;
+import static komu.blunt.utils.CollectionUtils.append;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static komu.blunt.utils.ListUtils.append;
+import komu.blunt.objects.Symbol;
+import komu.blunt.types.Assumptions;
+import komu.blunt.types.Predicate;
+import komu.blunt.types.Scheme;
+import komu.blunt.types.TypeCheckResult;
+import komu.blunt.types.TypeCheckingContext;
 
 public final class BindGroup {
 
@@ -21,22 +25,22 @@ public final class BindGroup {
         this.implicitBindings.add(implicitBindings);
     }
 
-    public TypeCheckResult<Assumptions> typeCheckBindGroup(ClassEnv ce, TypeChecker tc, Assumptions as) {
+    public TypeCheckResult<Assumptions> typeCheckBindGroup(TypeCheckingContext ctx) {
         Assumptions as2 = assumptionFromExplicitBindings();
 
-        TypeCheckResult<Assumptions> res = typeCheckImplicits(ce, tc, as2.join(as));
+        TypeCheckResult<Assumptions> res = typeCheckImplicits(new TypeCheckingContext(ctx.ce, ctx.tc, as2.join(ctx.as)));
         Assumptions as3 = res.value;
-        List<Predicate> ps = typeCheckExplicits(ce, tc, as3.join(as2).join(as));
+        List<Predicate> ps = typeCheckExplicits(new TypeCheckingContext(ctx.ce, ctx.tc, as3.join(as2).join(ctx.as)));
         
         return new TypeCheckResult<Assumptions>(append(res.predicates, ps), as3.join(as2));
     }
 
-    private TypeCheckResult<Assumptions> typeCheckImplicits(ClassEnv ce, TypeChecker tc, Assumptions as) {
+    private TypeCheckResult<Assumptions> typeCheckImplicits(TypeCheckingContext ctx) {
         List<Predicate> predicates = new ArrayList<Predicate>();
-        Assumptions assumptions = as;
+        Assumptions assumptions = ctx.as;
 
         for (List<ImplicitBinding> bs : implicitBindings) {
-            TypeCheckResult<Assumptions> res = ImplicitBinding.typeCheck(bs, ce, tc, assumptions);
+            TypeCheckResult<Assumptions> res = ImplicitBinding.typeCheck(bs, ctx.ce, ctx.tc, assumptions);
             predicates.addAll(res.predicates);
             assumptions = res.value.join(assumptions);
         }
@@ -44,11 +48,11 @@ public final class BindGroup {
         return new TypeCheckResult<Assumptions>(predicates, assumptions);
     }
 
-    private List<Predicate> typeCheckExplicits(ClassEnv ce, TypeChecker tc, Assumptions as) {
+    private List<Predicate> typeCheckExplicits(TypeCheckingContext ctx) {
         List<Predicate> predicates = new ArrayList<Predicate>();
         
         for (ExplicitBinding b : explicitBindings)
-            predicates.addAll(b.typeCheck(ce, tc, as));
+            predicates.addAll(b.typeCheck(ctx));
 
         return predicates;
     }

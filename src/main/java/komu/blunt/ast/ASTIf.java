@@ -1,16 +1,17 @@
 package komu.blunt.ast;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.utils.CollectionUtils.append;
+
+import java.util.List;
 
 import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreIfExpression;
 import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.types.Assumptions;
-import komu.blunt.types.ClassEnv;
+import komu.blunt.types.Predicate;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeChecker;
-import komu.blunt.utils.ListUtils;
+import komu.blunt.types.TypeCheckingContext;
 
 public final class ASTIf extends ASTExpression {
     public final ASTExpression test;
@@ -29,16 +30,16 @@ public final class ASTIf extends ASTExpression {
     }
 
     @Override
-    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
-        TypeCheckResult<Type> tyTest = test.typeCheck(ce, tc, as); 
-        TypeCheckResult<Type> tyConsequent = consequent.typeCheck(ce, tc, as); 
-        TypeCheckResult<Type> tyAlternative = alternative.typeCheck(ce, tc, as);
+    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
+        TypeCheckResult<Type> tyTest = test.typeCheck(ctx);
+        TypeCheckResult<Type> tyConsequent = consequent.typeCheck(ctx);
+        TypeCheckResult<Type> tyAlternative = alternative.typeCheck(ctx);
         
-        tc.unify(tyTest.value, Type.BOOLEAN);
-        tc.unify(tyConsequent.value, tyAlternative.value);
+        ctx.tc.unify(tyTest.value, Type.BOOLEAN);
+        ctx.tc.unify(tyConsequent.value, tyAlternative.value);
 
-        return new TypeCheckResult<Type>(ListUtils.append(tyTest.predicates, tyConsequent.predicates, tyAlternative.predicates),
-                tyConsequent.value);
+        List<Predicate> predicates = append(tyTest.predicates, tyConsequent.predicates, tyAlternative.predicates);
+        return new TypeCheckResult<Type>(predicates, tyConsequent.value);
     }
 
     @Override

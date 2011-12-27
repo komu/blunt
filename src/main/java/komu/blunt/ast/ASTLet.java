@@ -11,11 +11,10 @@ import komu.blunt.core.CoreLetExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.Assumptions;
-import komu.blunt.types.ClassEnv;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeChecker;
-import komu.blunt.utils.ListUtils;
+import komu.blunt.types.TypeCheckingContext;
+import komu.blunt.utils.CollectionUtils;
 
 public final class ASTLet extends ASTExpression {
     public final List<ImplicitBinding> bindings;
@@ -39,21 +38,20 @@ public final class ASTLet extends ASTExpression {
     }
 
     @Override
-    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
+    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
         if (bindings.size() != 1)
             throw new UnsupportedOperationException("multi-var let is not supported");
         
         Symbol arg = bindings.get(0).name;
         ASTExpression exp = bindings.get(0).expr;
 
-        TypeCheckResult<Type> expResult = exp.typeCheck(ce, tc, as);
+        TypeCheckResult<Type> expResult = exp.typeCheck(ctx);
         
-        // TODO: is this toScheme correct?
-        Assumptions as2 = as.extend(arg, expResult.value.toScheme());
+        Assumptions as2 = ctx.as.extend(arg, expResult.value.toScheme());
 
-        TypeCheckResult<Type> result = body.typeCheck(ce, tc, as2);
+        TypeCheckResult<Type> result = body.typeCheck(new TypeCheckingContext(ctx.ce, ctx.tc, as2));
 
-        return new TypeCheckResult<Type>(ListUtils.append(expResult.predicates, result.predicates), result.value);
+        return new TypeCheckResult<Type>(CollectionUtils.append(expResult.predicates, result.predicates), result.value);
     }
 
     private List<Symbol> getVariables() {

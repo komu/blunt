@@ -6,11 +6,9 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreSetExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.Assumptions;
-import komu.blunt.types.ClassEnv;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeChecker;
+import komu.blunt.types.TypeCheckingContext;
 
 public final class ASTSet extends ASTExpression {
     public final Symbol var;
@@ -27,7 +25,7 @@ public final class ASTSet extends ASTExpression {
     }
 
     @Override
-    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
+    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
         // TODO: assume sets is always correct since it's auto-generated
         return new TypeCheckResult<Type>(Type.UNIT);
     }

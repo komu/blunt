@@ -5,16 +5,14 @@ import java.util.List;
 
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.types.Assumptions;
-import komu.blunt.types.ClassEnv;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeChecker;
+import komu.blunt.types.TypeCheckingContext;
 
 public abstract class ASTExpression {
 
     public abstract CoreExpression analyze(StaticEnvironment env);
-    public abstract TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as);
+    public abstract TypeCheckResult<Type> typeCheck(TypeCheckingContext ctx);
 
     @Override
     public abstract String toString();

@@ -8,11 +8,9 @@ import com.google.common.base.Preconditions;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Unit;
-import komu.blunt.types.Assumptions;
-import komu.blunt.types.ClassEnv;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeChecker;
+import komu.blunt.types.TypeCheckingContext;
 
 public final class ASTList extends ASTExpression {
 
@@ -28,8 +26,8 @@ public final class ASTList extends ASTExpression {
     }
 
     @Override
-    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
-        return rewrite().typeCheck(ce, tc, as);
+    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
+        return rewrite().typeCheck(ctx);
     }
 
     private ASTExpression rewrite() {

@@ -11,11 +11,10 @@ import komu.blunt.core.CoreLambdaExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.Assumptions;
-import komu.blunt.types.ClassEnv;
 import komu.blunt.types.Kind;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeChecker;
+import komu.blunt.types.TypeCheckingContext;
 import komu.blunt.types.TypeVariable;
 
 public final class ASTLambda extends ASTExpression {
@@ -46,19 +45,19 @@ public final class ASTLambda extends ASTExpression {
     }
 
     @Override
-    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
+    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
         if (arguments.size() == 1) {
             Symbol arg = arguments.get(0);
 
-            TypeVariable argumentType = tc.newTVar(Kind.STAR);
+            TypeVariable argumentType = ctx.tc.newTVar(Kind.STAR);
 
-            Assumptions as2 = as.extend(arg, argumentType.toScheme());
+            Assumptions as2 = ctx.as.extend(arg, argumentType.toScheme());
 
-            TypeCheckResult<Type> result = body.typeCheck(ce, tc, as2);
+            TypeCheckResult<Type> result = body.typeCheck(new TypeCheckingContext(ctx.ce, ctx.tc, as2));
 
             return new TypeCheckResult<Type>(result.predicates, functionType(argumentType, result.value));
         } else {
-            return rewrite().typeCheck(ce, tc, as);
+            return rewrite().typeCheck(ctx);
         }
     }
 

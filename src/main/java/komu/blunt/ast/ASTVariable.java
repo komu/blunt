@@ -7,13 +7,11 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreVariableExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.Assumptions;
-import komu.blunt.types.ClassEnv;
 import komu.blunt.types.Qualified;
 import komu.blunt.types.Scheme;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeChecker;
+import komu.blunt.types.TypeCheckingContext;
 
 public final class ASTVariable extends ASTExpression {
     public final Symbol var;
@@ -32,9 +30,9 @@ public final class ASTVariable extends ASTExpression {
     }
 
     @Override
-    public TypeCheckResult<Type> typeCheck(ClassEnv ce, TypeChecker tc, Assumptions as) {
-        Scheme scheme = as.find(var);
-        Qualified<Type> inst = tc.freshInstance(scheme);
+    public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
+        Scheme scheme = ctx.as.find(var);
+        Qualified<Type> inst = ctx.tc.freshInstance(scheme);
         return new TypeCheckResult<Type>(inst.predicates, inst.value);
     }
 
