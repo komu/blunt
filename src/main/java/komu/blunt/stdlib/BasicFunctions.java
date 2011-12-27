@@ -1,9 +1,10 @@
 package komu.blunt.stdlib;
 
-import com.google.common.base.Objects;
-import komu.blunt.objects.EvaluationException;
-
 import java.math.BigInteger;
+
+import com.google.common.base.Objects;
+
+import komu.blunt.objects.EvaluationException;
 
 @SuppressWarnings("unused")
 public class BasicFunctions {
@@ -34,22 +35,22 @@ public class BasicFunctions {
     }
 
     @LibraryFunction("primitiveOpLt")
-    public static boolean lt(BigInteger x, BigInteger y) {
+    public static <T extends Comparable<T>> boolean lt(T x, T y) {
         return x.compareTo(y) < 0;
     }
 
     @LibraryFunction("primitiveOpGt")
-    public static boolean gt(BigInteger x, BigInteger y) {
+    public static <T extends Comparable<T>> boolean gt(T x, T y) {
         return x.compareTo(y) > 0;
     }
 
     @LibraryFunction("primitiveOpLe")
-    public static boolean le(BigInteger x, BigInteger y) {
+    public static <T extends Comparable<T>> boolean le(T x, T y) {
         return x.compareTo(y) <= 0;
     }
 
     @LibraryFunction("primitiveOpGe")
-    public static boolean ge(BigInteger x, BigInteger y) {
+    public static <T extends Comparable<T>> boolean ge(T x, T y) {
         return x.compareTo(y) >= 0;
     }
 

@@ -72,6 +72,7 @@ public final class ClassEnv {
         addInstance(isIn("Ord", Type.UNIT));
         addInstance(isIn("Ord", Type.BOOLEAN));
         addInstance(isIn("Ord", Type.INTEGER));
+        addInstance(isIn("Ord", Type.STRING));
 
         addInstance(asList(isIn("Ord", tyVar("a", STAR)),
                            isIn("Ord", tyVar("b", STAR))),
