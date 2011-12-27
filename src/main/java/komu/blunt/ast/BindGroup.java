@@ -37,15 +37,15 @@ public final class BindGroup {
 
     private TypeCheckResult<Assumptions> typeCheckImplicits(TypeCheckingContext ctx) {
         List<Predicate> predicates = new ArrayList<Predicate>();
-        Assumptions assumptions = ctx.as;
+        Assumptions as = ctx.as;
 
         for (List<ImplicitBinding> bs : implicitBindings) {
-            TypeCheckResult<Assumptions> res = ImplicitBinding.typeCheck(bs, ctx.ce, ctx.tc, assumptions);
+            TypeCheckResult<Assumptions> res = ImplicitBinding.typeCheck(bs, new TypeCheckingContext(ctx.ce, ctx.tc, as));
             predicates.addAll(res.predicates);
-            assumptions = res.value.join(assumptions);
+            as = res.value.join(as);
         }
 
-        return new TypeCheckResult<Assumptions>(predicates, assumptions);
+        return new TypeCheckResult<Assumptions>(predicates, as);
     }
 
     private List<Predicate> typeCheckExplicits(TypeCheckingContext ctx) {
