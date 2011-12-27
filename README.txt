@@ -14,25 +14,28 @@ The main flow:
          v
   ast.ASTExpression
          |
-         |  ASTExpression.typeCheck
+         |  types.types.TypeCheckingVisitor
          |
          v
   ast.ASTExpression
          |
-         |  ASTExpression.analyze
+         |  analyzer.AnalyzingVisitor
          |
          v
   core.CoreExpression
          |
-         |  compile (CoreExpression.assemble)
+         |  CoreExpression.assemble
          |
          v
    asm.Instructions
          |
-         |  run (asm.VM)
+         |  asm.VM.run
          o
 
 Things to do:
   - data type definitions
   - type aliases
   - type classes
+  - newtype declarations
+  - type declarations for stdlib
+  - visitor for core expressions
