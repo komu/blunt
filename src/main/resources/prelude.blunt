@@ -95,9 +95,9 @@ dropWhile p ls =
            then dropWhile p (tail ls)
            else ls
 
-all p = foldl (\x y -> p x && y) True
+all p = foldl (\x y -> p y && x) True
 
-any p = foldl (\x y -> p x || y) False
+any p = foldl (\x y -> p y || x) False
 
 xs ++ ys = foldr (:) ys xs
 

@@ -18,6 +18,7 @@ public abstract class Type implements Types<Type> {
     public static final Type UNIT = basicType("Unit");
     public static final Type BOOLEAN = basicType("Boolean");
     public static final Type INTEGER = basicType("Integer");
+    public static final Type STRING = basicType("String");
 
     public static Type fromClass(Class<?> type) {
         return basicType(mapName(type));
@@ -27,6 +28,7 @@ public abstract class Type implements Types<Type> {
         return (type == Void.class)                             ? "Unit"
              : (type == Boolean.class || type == boolean.class) ? "Boolean"
              : (type == BigInteger.class)                       ? "Integer"
+             : (type == String.class)                           ? "String"
              : defaultMapName(type);
     }
 

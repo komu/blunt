@@ -64,7 +64,11 @@ public final class ClassEnv {
     
     private void addDefaultInstances() {
         addInstance(isIn("Num", Type.INTEGER));
-        
+        addInstance(isIn("Eq", Type.INTEGER));
+        addInstance(isIn("Eq", Type.BOOLEAN));
+        addInstance(isIn("Eq", Type.STRING));
+        addInstance(isIn("Eq", Type.UNIT));
+
         addInstance(isIn("Ord", Type.UNIT));
         addInstance(isIn("Ord", Type.BOOLEAN));
         addInstance(isIn("Ord", Type.INTEGER));
