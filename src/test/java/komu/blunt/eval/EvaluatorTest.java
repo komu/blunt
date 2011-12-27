@@ -6,7 +6,6 @@ import komu.blunt.parser.Parser;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -73,12 +72,6 @@ public class EvaluatorTest {
     }
 
     @Test
-    @Ignore
-    public void tryingToDefineSameVariableMultipleTimes() {
-        assertStaticError("(lambda (x x) 0)");
-    }
-
-    @Test
     public void accessingUnboundVariable() {
         assertStaticError("\\x -> y");
     }
@@ -98,7 +91,7 @@ public class EvaluatorTest {
     @Test
     public void let() {
         assertThatEvaluating("let x = 42 in x", produces(42));
-        // let x = 1; y = 2 in x + y
+        //assertThatEvaluating("let x = 42; y = 2 in x + y", produces(3));
         assertThatEvaluating("let x = 42 in let y = 3 in x+y", produces(45));
     }
 
@@ -107,18 +100,6 @@ public class EvaluatorTest {
         assertThatEvaluating("1; 2; 3", produces(3));
     }
     
-    @Test
-    @Ignore
-    public void setExpression() {
-        assertThatEvaluating("(let ((x 1)) (begin (set! x 2) x))", produces(2));
-    }
-
-    @Test
-    @Ignore
-    public void letSequencing() {
-        assertThatEvaluating("(let ((x 1)) (set! x 2) x)", produces(2));
-    }
-
     @Test
     public void letRec() {
         assertThatEvaluating("let rec f = \\n -> if 0 == n then 1 else n * f (n - 1) in f 10)", produces(3628800));

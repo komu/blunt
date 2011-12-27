@@ -2,7 +2,6 @@ package komu.blunt.parser;
 
 import komu.blunt.ast.ASTExpression;
 import org.hamcrest.Matcher;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -14,16 +13,6 @@ import static org.junit.Assert.assertThat;
 
 public class ParserTest {
     
-    @Test
-    @Ignore
-    public void emptyInput() {
-        assertThat(parsing(""),      producesEof());
-        assertThat(parsing("  "),    producesEof());
-        assertThat(parsing("\n "),   producesEof());
-        assertThat(parsing(" # \n"), producesEof());
-        assertThat(parsing(" # "),   producesEof());
-    }
-
     @Test
     public void numberLiterals() {
         assertThat(parsing("42"), producesConstant(BigInteger.valueOf(42)));
