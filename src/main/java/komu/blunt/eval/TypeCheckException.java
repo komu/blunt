@@ -1,6 +1,6 @@
 package komu.blunt.eval;
 
-import komu.blunt.types.UnificationException;
+import komu.blunt.types.checker.UnificationException;
 
 public class TypeCheckException extends AnalyzationException {
 

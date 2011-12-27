@@ -1,6 +1,7 @@
 package komu.blunt.types;
 
 import komu.blunt.eval.TypeCheckException;
+import komu.blunt.types.checker.Substitution;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,8 +11,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class TypeApplication extends Type {
     
-    final Type left;
-    final Type right;
+    public final Type left;
+    public final Type right;
 
     public TypeApplication(Type left, Type right) {
         this.left = checkNotNull(left);
@@ -40,7 +41,7 @@ public final class TypeApplication extends Type {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
         Kind kind = left.getKind();
         if (kind instanceof ArrowKind)
             return ((ArrowKind) kind).right;

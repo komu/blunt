@@ -6,9 +6,9 @@ import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.eval.VariableReference;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.Type;
-import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeCheckingContext;
-import komu.blunt.types.TypeCheckingVisitor;
+import komu.blunt.types.checker.TypeCheckResult;
+import komu.blunt.types.checker.TypeCheckingContext;
+import komu.blunt.types.checker.TypeCheckingVisitor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

@@ -1,5 +1,13 @@
 package komu.blunt.eval;
 
+import komu.blunt.objects.Symbol;
+import komu.blunt.types.*;
+import komu.blunt.types.checker.Assumptions;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static komu.blunt.objects.Symbol.symbol;
@@ -8,18 +16,6 @@ import static komu.blunt.types.Qualified.quantify;
 import static komu.blunt.types.Type.functionType;
 import static komu.blunt.types.Type.tupleType;
 import static komu.blunt.types.TypeVariable.tyVar;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-
-import komu.blunt.objects.Symbol;
-import komu.blunt.types.Assumptions;
-import komu.blunt.types.Kind;
-import komu.blunt.types.Qualified;
-import komu.blunt.types.Scheme;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeVariable;
 
 public final class RootBindings {
     public final StaticEnvironment staticEnvironment = new StaticEnvironment();

@@ -1,8 +1,10 @@
-package komu.blunt.types;
+package komu.blunt.types.checker;
 
-import static java.util.Collections.emptyList;
+import komu.blunt.types.Predicate;
 
 import java.util.List;
+
+import static java.util.Collections.emptyList;
 
 public final class TypeCheckResult<T> {
 

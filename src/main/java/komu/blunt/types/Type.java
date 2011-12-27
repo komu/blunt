@@ -76,7 +76,7 @@ public abstract class Type implements Types<Type> {
 
     protected abstract Type instantiate(List<TypeVariable> vars);
 
-    protected abstract Kind getKind();
+    public abstract Kind getKind();
 
     protected final Set<TypeVariable> getTypeVariables() {
         Set<TypeVariable> vars = new LinkedHashSet<TypeVariable>();

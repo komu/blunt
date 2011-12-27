@@ -1,12 +1,13 @@
-package komu.blunt.types;
+package komu.blunt.types.checker;
 
 import komu.blunt.objects.Symbol;
+import komu.blunt.types.*;
 
 import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static komu.blunt.types.TypeUtils.getTypeVariables;
+import static komu.blunt.types.checker.TypeUtils.getTypeVariables;
 
 public final class TypeCheckingContext {
     

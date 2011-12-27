@@ -1,15 +1,18 @@
-package komu.blunt.types;
+package komu.blunt.types.checker;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Collections.singletonMap;
+import komu.blunt.eval.TypeCheckException;
+import komu.blunt.objects.Symbol;
+import komu.blunt.types.Scheme;
+import komu.blunt.types.TypeVariable;
+import komu.blunt.types.Types;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import komu.blunt.eval.TypeCheckException;
-import komu.blunt.objects.Symbol;
+import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Collections.singletonMap;
 
 public final class Assumptions implements Types<Assumptions> {
 

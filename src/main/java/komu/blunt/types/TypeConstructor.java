@@ -1,5 +1,7 @@
 package komu.blunt.types;
 
+import komu.blunt.types.checker.Substitution;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -36,7 +38,7 @@ public final class TypeConstructor extends Type {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
         return kind;
     }
 

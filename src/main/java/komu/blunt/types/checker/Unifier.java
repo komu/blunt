@@ -1,6 +1,8 @@
-package komu.blunt.types;
+package komu.blunt.types.checker;
 
-final class Unifier {
+import komu.blunt.types.*;
+
+public final class Unifier {
 
     public static Substitution mgu(Type lhs, Type rhs) throws UnificationException {
         if (lhs instanceof TypeApplication && rhs instanceof TypeApplication)

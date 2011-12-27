@@ -1,18 +1,15 @@
 package komu.blunt.types;
 
+import com.google.common.base.Objects;
+import komu.blunt.types.checker.Substitution;
+import komu.blunt.types.checker.TypeUtils;
+
+import java.util.*;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.unmodifiableList;
-import static komu.blunt.types.TypeUtils.getTypeVariables;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
-import com.google.common.base.Objects;
+import static komu.blunt.types.checker.TypeUtils.getTypeVariables;
 
 public final class Qualified<T extends Types<T>> implements Types<Qualified<T>> {
     

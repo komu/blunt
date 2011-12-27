@@ -1,7 +1,8 @@
-package komu.blunt.types;
+package komu.blunt.types.checker;
 
 import komu.blunt.ast.*;
 import komu.blunt.objects.Symbol;
+import komu.blunt.types.*;
 import komu.blunt.utils.CollectionUtils;
 
 import java.util.ArrayList;

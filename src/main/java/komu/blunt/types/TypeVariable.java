@@ -1,6 +1,7 @@
 package komu.blunt.types;
 
 import com.google.common.base.Objects;
+import komu.blunt.types.checker.Substitution;
 
 import java.util.List;
 import java.util.Set;

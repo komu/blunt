@@ -1,5 +1,7 @@
 package komu.blunt.types;
 
+import komu.blunt.types.checker.Substitution;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -8,8 +10,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Scheme implements Types<Scheme> {
 
-    final List<Kind> kinds;
-    final Qualified<Type> type;
+    public final List<Kind> kinds;
+    public final Qualified<Type> type;
     
     public Scheme(List<Kind> kinds, Qualified<Type> type) {
         this.kinds = new ArrayList<Kind>(kinds);

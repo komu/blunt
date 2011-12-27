@@ -1,5 +1,7 @@
 package komu.blunt.types;
 
+import komu.blunt.types.checker.Substitution;
+
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +29,7 @@ public final class TypeGen extends Type {
     }
 
     @Override
-    protected Kind getKind() {
+    public Kind getKind() {
         throw new RuntimeException("can't access kind of TypeGen");
     }
 

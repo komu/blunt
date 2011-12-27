@@ -1,13 +1,14 @@
-package komu.blunt.types;
+package komu.blunt.types.checker;
 
 import komu.blunt.ast.ASTDefine;
 import komu.blunt.ast.ASTExpression;
 import komu.blunt.eval.TypeCheckException;
+import komu.blunt.types.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static komu.blunt.types.Unifier.mgu;
+import static komu.blunt.types.checker.Unifier.mgu;
 
 public final class TypeChecker {
 

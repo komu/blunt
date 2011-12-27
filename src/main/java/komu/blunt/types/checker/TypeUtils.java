@@ -1,4 +1,7 @@
-package komu.blunt.types;
+package komu.blunt.types.checker;
+
+import komu.blunt.types.TypeVariable;
+import komu.blunt.types.Types;
 
 import java.util.*;
 

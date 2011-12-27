@@ -1,5 +1,7 @@
 package komu.blunt.types;
 
+import komu.blunt.types.checker.Substitution;
+
 import java.util.List;
 import java.util.Set;
 

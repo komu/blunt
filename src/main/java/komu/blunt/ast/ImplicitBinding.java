@@ -2,6 +2,10 @@ package komu.blunt.ast;
 
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.*;
+import komu.blunt.types.checker.Assumptions;
+import komu.blunt.types.checker.TypeCheckResult;
+import komu.blunt.types.checker.TypeCheckingContext;
+import komu.blunt.types.checker.TypeCheckingVisitor;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,7 +15,7 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static komu.blunt.types.Qualified.quantify;
 import static komu.blunt.types.Type.toSchemes;
-import static komu.blunt.types.TypeUtils.getTypeVariables;
+import static komu.blunt.types.checker.TypeUtils.getTypeVariables;
 import static komu.blunt.utils.CollectionUtils.intersection;
 
 public final class ImplicitBinding {

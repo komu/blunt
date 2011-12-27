@@ -1,7 +1,11 @@
 package komu.blunt.ast;
 
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.*;
+import komu.blunt.types.Predicate;
+import komu.blunt.types.Scheme;
+import komu.blunt.types.checker.Assumptions;
+import komu.blunt.types.checker.TypeCheckResult;
+import komu.blunt.types.checker.TypeCheckingContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -1,17 +1,19 @@
 package komu.blunt.types;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static komu.blunt.types.Unifier.mguPredicate;
+import com.google.common.base.Objects;
+import komu.blunt.types.checker.Substitution;
+import komu.blunt.types.checker.UnificationException;
 
 import java.util.List;
 import java.util.Set;
 
-import com.google.common.base.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.types.checker.Unifier.mguPredicate;
 
 public final class Predicate implements Types<Predicate> {
 
-    final String className;
-    final Type type;
+    public final String className;
+    public final Type type;
 
     private Predicate(String className, Type type) {
         this.className = checkNotNull(className);

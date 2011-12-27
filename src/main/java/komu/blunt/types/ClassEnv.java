@@ -1,5 +1,14 @@
 package komu.blunt.types;
 
+import komu.blunt.eval.TypeCheckException;
+import komu.blunt.types.checker.Substitution;
+import komu.blunt.types.checker.TypeUtils;
+import komu.blunt.types.checker.UnificationException;
+import komu.blunt.types.checker.Unifier;
+
+import javax.annotation.Nullable;
+import java.util.*;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
@@ -7,20 +16,6 @@ import static komu.blunt.types.Kind.STAR;
 import static komu.blunt.types.Predicate.isIn;
 import static komu.blunt.types.Type.tupleType;
 import static komu.blunt.types.TypeVariable.tyVar;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Nullable;
-
-import komu.blunt.eval.TypeCheckException;
 
 public final class ClassEnv {
     

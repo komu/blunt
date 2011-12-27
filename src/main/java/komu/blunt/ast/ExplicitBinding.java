@@ -1,13 +1,13 @@
 package komu.blunt.ast;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.List;
-
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.Predicate;
 import komu.blunt.types.Scheme;
-import komu.blunt.types.TypeCheckingContext;
+import komu.blunt.types.checker.TypeCheckingContext;
+
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ExplicitBinding {
     
