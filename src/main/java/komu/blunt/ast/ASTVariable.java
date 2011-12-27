@@ -1,17 +1,13 @@
 package komu.blunt.ast;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static komu.blunt.objects.Symbol.symbol;
-
 import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreVariableExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.Qualified;
-import komu.blunt.types.Scheme;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeCheckingContext;
+import komu.blunt.types.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.objects.Symbol.symbol;
 
 public final class ASTVariable extends ASTExpression {
     public final Symbol var;
@@ -31,8 +27,8 @@ public final class ASTVariable extends ASTExpression {
 
     @Override
     public TypeCheckResult<Type> typeCheck(final TypeCheckingContext ctx) {
-        Scheme scheme = ctx.as.find(var);
-        Qualified<Type> inst = ctx.tc.freshInstance(scheme);
+        Scheme scheme = ctx.find(var);
+        Qualified<Type> inst = ctx.freshInstance(scheme);
         return new TypeCheckResult<Type>(inst.predicates, inst.value);
     }
 

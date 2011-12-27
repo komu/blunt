@@ -1,10 +1,5 @@
 package komu.blunt.ast;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static komu.blunt.utils.CollectionUtils.append;
-
-import java.util.List;
-
 import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreIfExpression;
 import komu.blunt.eval.StaticEnvironment;
@@ -12,6 +7,11 @@ import komu.blunt.types.Predicate;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
 import komu.blunt.types.TypeCheckingContext;
+
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.utils.CollectionUtils.append;
 
 public final class ASTIf extends ASTExpression {
     public final ASTExpression test;
@@ -35,8 +35,8 @@ public final class ASTIf extends ASTExpression {
         TypeCheckResult<Type> tyConsequent = consequent.typeCheck(ctx);
         TypeCheckResult<Type> tyAlternative = alternative.typeCheck(ctx);
         
-        ctx.tc.unify(tyTest.value, Type.BOOLEAN);
-        ctx.tc.unify(tyConsequent.value, tyAlternative.value);
+        ctx.unify(tyTest.value, Type.BOOLEAN);
+        ctx.unify(tyConsequent.value, tyAlternative.value);
 
         List<Predicate> predicates = append(tyTest.predicates, tyConsequent.predicates, tyAlternative.predicates);
         return new TypeCheckResult<Type>(predicates, tyConsequent.value);

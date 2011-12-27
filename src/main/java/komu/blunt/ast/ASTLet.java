@@ -1,11 +1,5 @@
 package komu.blunt.ast;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreLetExpression;
 import komu.blunt.eval.StaticEnvironment;
@@ -15,6 +9,12 @@ import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
 import komu.blunt.types.TypeCheckingContext;
 import komu.blunt.utils.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTLet extends ASTExpression {
     public final List<ImplicitBinding> bindings;
@@ -47,9 +47,9 @@ public final class ASTLet extends ASTExpression {
 
         TypeCheckResult<Type> expResult = exp.typeCheck(ctx);
         
-        Assumptions as2 = ctx.as.extend(arg, expResult.value.toScheme());
+        Assumptions as2 = Assumptions.singleton(arg, expResult.value.toScheme());
 
-        TypeCheckResult<Type> result = body.typeCheck(new TypeCheckingContext(ctx.ce, ctx.tc, as2));
+        TypeCheckResult<Type> result = body.typeCheck(ctx.extend(as2));
 
         return new TypeCheckResult<Type>(CollectionUtils.append(expResult.predicates, result.predicates), result.value);
     }

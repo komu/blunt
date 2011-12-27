@@ -1,21 +1,16 @@
 package komu.blunt.ast;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Arrays.asList;
-import static komu.blunt.types.Type.functionType;
-
-import java.util.List;
-
 import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreLambdaExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.Assumptions;
-import komu.blunt.types.Kind;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeCheckResult;
-import komu.blunt.types.TypeCheckingContext;
-import komu.blunt.types.TypeVariable;
+import komu.blunt.types.*;
+
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Arrays.asList;
+import static komu.blunt.types.Type.functionType;
 
 public final class ASTLambda extends ASTExpression {
     public final List<Symbol> arguments;
@@ -49,11 +44,11 @@ public final class ASTLambda extends ASTExpression {
         if (arguments.size() == 1) {
             Symbol arg = arguments.get(0);
 
-            TypeVariable argumentType = ctx.tc.newTVar(Kind.STAR);
+            TypeVariable argumentType = ctx.newTVar(Kind.STAR);
 
-            Assumptions as2 = ctx.as.extend(arg, argumentType.toScheme());
+            Assumptions as2 = Assumptions.singleton(arg, argumentType.toScheme());
 
-            TypeCheckResult<Type> result = body.typeCheck(new TypeCheckingContext(ctx.ce, ctx.tc, as2));
+            TypeCheckResult<Type> result = body.typeCheck(ctx.extend(as2));
 
             return new TypeCheckResult<Type>(result.predicates, functionType(argumentType, result.value));
         } else {

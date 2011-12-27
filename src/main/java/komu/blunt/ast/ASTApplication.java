@@ -1,9 +1,5 @@
 package komu.blunt.ast;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static komu.blunt.types.Kind.STAR;
-import static komu.blunt.types.Type.functionType;
-
 import komu.blunt.core.CoreApplicationExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.StaticEnvironment;
@@ -11,6 +7,10 @@ import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
 import komu.blunt.types.TypeCheckingContext;
 import komu.blunt.utils.CollectionUtils;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.types.Kind.STAR;
+import static komu.blunt.types.Type.functionType;
 
 public final class ASTApplication extends ASTExpression {
 
@@ -32,9 +32,9 @@ public final class ASTApplication extends ASTExpression {
         TypeCheckResult<Type> te = func.typeCheck(ctx);
         TypeCheckResult<Type> tf = arg.typeCheck(ctx);
 
-        Type t = ctx.tc.newTVar(STAR);
+        Type t = ctx.newTVar(STAR);
 
-        ctx.tc.unify(functionType(tf.value, t), te.value);
+        ctx.unify(functionType(tf.value, t), te.value);
 
         return new TypeCheckResult<Type>(CollectionUtils.append(te.predicates, tf.predicates), t);
     }

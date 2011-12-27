@@ -1,15 +1,11 @@
 package komu.blunt.types;
 
-import static java.util.Arrays.asList;
+import komu.blunt.stdlib.TypeName;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import komu.blunt.stdlib.TypeName;
+import static java.util.Arrays.asList;
 
 public abstract class Type implements Types<Type> {
 
@@ -101,7 +97,7 @@ public abstract class Type implements Types<Type> {
         return new Scheme(Collections.<Kind>emptyList(), new Qualified<Type>(this));
     }
     
-    public static List<Scheme> toSchemes(List<Type> ts) {
+    public static List<Scheme> toSchemes(List<? extends Type> ts) {
         List<Scheme> schemes = new ArrayList<Scheme>(ts.size());
         for (Type t : ts)
             schemes.add(t.toScheme());
