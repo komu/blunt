@@ -63,6 +63,8 @@ public final class ClassEnv {
     }
     
     public void addDefaultInstances() {
+        addInstance(isIn("Num", Type.INTEGER));
+        
         addInstance(isIn("Ord", Type.UNIT));
         addInstance(isIn("Ord", Type.BOOLEAN));
         addInstance(isIn("Ord", Type.INTEGER));
@@ -150,7 +152,7 @@ public final class ClassEnv {
                 if (qs != null) {
                     result.addAll(toHfns(qs));
                 } else {
-                    throw new TypeCheckException("context reduction");
+                    throw new TypeCheckException("context reduction by predicate: " + predicate);
                 }
             }
         }
