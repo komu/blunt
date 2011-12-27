@@ -1,8 +1,8 @@
 package komu.blunt.types;
 
-import java.util.List;
-
 import static java.util.Collections.emptyList;
+
+import java.util.List;
 
 public final class TypeCheckResult<T> {
 
@@ -17,5 +17,10 @@ public final class TypeCheckResult<T> {
     public TypeCheckResult(T value) {
         this.predicates = emptyList();
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return predicates + " => " + value;
     }
 }
