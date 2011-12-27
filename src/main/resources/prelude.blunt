@@ -36,6 +36,8 @@ foldl f e ls =
     then e
     else foldl f (f e (head ls)) (tail ls)
 
+foldl1 f ls = foldr f (head ls) (tail ls)
+
 sum = foldl (+) 0
 
 product = foldl (*) 1
@@ -129,3 +131,11 @@ even? x = mod x 2 == 0
 odd? = not . even?
 
 x /= y = not (x == y)
+
+min x y = if x < y then x else y
+
+max x y = if x > y then x else y
+
+minimum = foldl1 min
+
+maximum = foldl1 max

@@ -54,12 +54,12 @@ public abstract class ConsList<T> {
     private static final class Nil<T> extends ConsList<T> {
         @Override
         public T getHead() {
-            throw new UnsupportedOperationException("head of nil");
+            return BasicFunctions.error("can't get head of []");
         }
 
         @Override
         public ConsList<T> getTail() {
-            throw new UnsupportedOperationException("tail of nil");
+            return BasicFunctions.error("can't get tail of []");
         }
 
         @Override
