@@ -23,6 +23,11 @@ public final class ASTApplication extends ASTExpression {
     }
 
     @Override
+    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
+        return visitor.visit(this, ctx);
+    }
+
+    @Override
     public CoreExpression analyze(StaticEnvironment env) {
         return new CoreApplicationExpression(func.analyze(env), arg.analyze(env));
     }

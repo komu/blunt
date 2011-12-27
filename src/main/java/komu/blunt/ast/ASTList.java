@@ -1,10 +1,6 @@
 package komu.blunt.ast;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.base.Preconditions;
-
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Unit;
@@ -12,12 +8,20 @@ import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
 import komu.blunt.types.TypeCheckingContext;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public final class ASTList extends ASTExpression {
 
     private final List<ASTExpression> exps = new ArrayList<ASTExpression>();
 
     public void add(ASTExpression exp) {
         exps.add(Preconditions.checkNotNull(exp));
+    }
+
+    @Override
+    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
+        return rewrite().accept(visitor, ctx);
     }
 
     @Override

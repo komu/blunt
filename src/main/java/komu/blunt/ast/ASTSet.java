@@ -1,7 +1,5 @@
 package komu.blunt.ast;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreSetExpression;
 import komu.blunt.eval.StaticEnvironment;
@@ -10,6 +8,8 @@ import komu.blunt.types.Type;
 import komu.blunt.types.TypeCheckResult;
 import komu.blunt.types.TypeCheckingContext;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public final class ASTSet extends ASTExpression {
     public final Symbol var;
     public final ASTExpression exp;
@@ -17,6 +17,11 @@ public final class ASTSet extends ASTExpression {
     public ASTSet(Symbol var, ASTExpression exp) {
         this.var = checkNotNull(var);
         this.exp = checkNotNull(exp);
+    }
+
+    @Override
+    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
+        return visitor.visit(this, ctx);
     }
 
     @Override

@@ -21,6 +21,11 @@ public final class ASTVariable extends ASTExpression {
     }
 
     @Override
+    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
+        return visitor.visit(this, ctx);
+    }
+
+    @Override
     public CoreExpression analyze(StaticEnvironment env) {
         return new CoreVariableExpression(env.lookup(var));
     }

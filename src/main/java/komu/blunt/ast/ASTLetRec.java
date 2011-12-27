@@ -29,7 +29,12 @@ public final class ASTLetRec extends ASTExpression {
     public ASTLetRec(Symbol name, ASTExpression value, ASTExpression body) {
         this(asList(new ImplicitBinding(name, value)), body);
     }
-    
+
+    @Override
+    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
+        return visitor.visit(this, ctx);
+    }
+
     @Override
     public CoreExpression analyze(StaticEnvironment env) {
         return rewriteToLet().analyze(env);

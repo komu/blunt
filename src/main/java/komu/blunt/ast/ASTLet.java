@@ -26,6 +26,11 @@ public final class ASTLet extends ASTExpression {
     }
 
     @Override
+    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
+        return visitor.visit(this, ctx);
+    }
+
+    @Override
     public CoreExpression analyze(StaticEnvironment env) {
         if (bindings.size() != 1)
             throw new UnsupportedOperationException("multi-var let is not supported");

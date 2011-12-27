@@ -25,6 +25,11 @@ public final class ASTIf extends ASTExpression {
     }
 
     @Override
+    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
+        return visitor.visit(this, ctx);
+    }
+
+    @Override
     public CoreExpression analyze(StaticEnvironment env) {
         return new CoreIfExpression(test.analyze(env), consequent.analyze(env), alternative.analyze(env));
     }
