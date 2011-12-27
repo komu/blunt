@@ -1,12 +1,12 @@
 package komu.blunt.types;
 
-import com.google.common.base.Objects;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.types.Unifier.mguPredicate;
 
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static komu.blunt.types.Unifier.mguPredicate;
+import com.google.common.base.Objects;
 
 public final class Predicate implements Types<Predicate> {
 
@@ -72,7 +72,7 @@ public final class Predicate implements Types<Predicate> {
 
     @Override
     public String toString() {
-        return className + "/" + type;
+        return className + " " + type;
     }
 
     public Predicate instantiate(List<TypeVariable> ts) {

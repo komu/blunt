@@ -1,6 +1,5 @@
 package komu.blunt.types;
 
-import static komu.blunt.types.TypeUtils.getTypeVariables;
 import static komu.blunt.types.Unifier.mgu;
 
 import java.util.ArrayList;
@@ -17,14 +16,16 @@ public final class TypeChecker {
     
     public Qualified<Type> typeCheck(ASTExpression exp, ClassEnv classEnv, Assumptions as) {
         TypeCheckResult<Type> result = exp.typeCheck(classEnv, this, as);
-        Qualified<Type> qt = new Qualified<Type>(result.predicates, result.value);
-        return qt.apply(substitution);
+        List<Predicate> ps = classEnv.reduce(TypeUtils.apply(substitution, result.predicates));
+        Qualified<Type> q = new Qualified<Type>(ps, result.value);
+        return q.apply(substitution);
     }
 
     public Scheme typeCheck(ASTDefine exp, ClassEnv classEnv, Assumptions as) {
         TypeCheckResult<Type> result = exp.typeCheck(classEnv, this, as);
-        Qualified<Type> q = new Qualified<Type>(result.predicates, result.value);
-        return Qualified.quantify(getTypeVariables(q), q.apply(substitution));
+        List<Predicate> ps = classEnv.reduce(TypeUtils.apply(substitution, result.predicates));
+        Qualified<Type> q = new Qualified<Type>(ps, result.value);
+        return Qualified.quantifyAll(q.apply(substitution));
     }
 
     public void unify(Type t1, Type t2) {

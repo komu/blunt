@@ -8,6 +8,7 @@ import static komu.blunt.types.TypeUtils.getTypeVariables;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -66,7 +67,23 @@ public final class Qualified<T extends Types<T>> implements Types<Qualified<T>> 
 
     @Override
     public String toString() {
-        return predicates + " => " + value;
+        StringBuilder sb = new StringBuilder();
+        
+        if (!predicates.isEmpty()) {
+            sb.append("(");
+
+            for (Iterator<Predicate> it = predicates.iterator(); it.hasNext(); ) {
+                sb.append(it.next());
+                if (it.hasNext())
+                    sb.append(", ");
+            }
+
+            sb.append(") => ");
+        }
+
+        sb.append(value);
+
+        return sb.toString();
     }
 
     @Override

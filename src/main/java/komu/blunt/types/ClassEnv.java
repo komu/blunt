@@ -33,15 +33,15 @@ public final class ClassEnv {
         addDefaultInstances();
     }
 
-    public Collection<String> getSuperClasses(String name) {
+    private Collection<String> getSuperClasses(String name) {
         return getClass(name).superClasses;
     }
 
-    public Collection<ClassInstance> getInstances(String name) {
+    private Collection<ClassInstance> getInstances(String name) {
         return getClass(name).instances;
     }
 
-    public void addCoreClasses() {
+    private void addCoreClasses() {
         addClass("Eq");
         addClass("Ord", "Eq");
         addClass("Show");
@@ -52,7 +52,7 @@ public final class ClassEnv {
         addClass("Monad");
     }
 
-    public void addNumClasses() {
+    private void addNumClasses() {
         addClass("Num", "Eq", "Show");
         addClass("Real", "Num", "Ord");
         addClass("Fractional", "Num");
@@ -62,7 +62,7 @@ public final class ClassEnv {
         addClass("RealFloat", "RealFrac", "Floating");
     }
     
-    public void addDefaultInstances() {
+    private void addDefaultInstances() {
         addInstance(isIn("Num", Type.INTEGER));
         
         addInstance(isIn("Ord", Type.UNIT));
@@ -101,7 +101,7 @@ public final class ClassEnv {
         classes.put(checkNotNull(name), checkNotNull(cl));
     }
 
-    public List<Predicate> bySuper(Predicate predicate) {
+    private List<Predicate> bySuper(Predicate predicate) {
         List<Predicate> result = new ArrayList<Predicate>();
         result.add(predicate);
 
@@ -125,7 +125,7 @@ public final class ClassEnv {
         return null;
     }
 
-    public boolean entails(Collection<Predicate> ps, Predicate p) {
+    private boolean entails(Collection<Predicate> ps, Predicate p) {
         for (Predicate pp : ps)
             if (bySuper(pp).contains(p))
                 return true;
@@ -141,26 +141,24 @@ public final class ClassEnv {
         }
     }
 
-    public List<Predicate> toHfns(List<Predicate> predicates) {
+    private List<Predicate> toHfns(List<Predicate> predicates) {
         List<Predicate> result = new ArrayList<Predicate>();
 
-        for (Predicate predicate : predicates) {
-            if (predicate.inHnf())
+        for (Predicate predicate : predicates)
+            if (predicate.inHnf()) {
                 result.add(predicate);
-            else {
+            } else {
                 List<Predicate> qs = byInstance(predicate);
-                if (qs != null) {
+                if (qs != null)
                     result.addAll(toHfns(qs));
-                } else {
-                    throw new TypeCheckException("context reduction by predicate: " + predicate);
-                }
+                else
+                    throw new TypeCheckException("could not find instance of " + predicate.className + " for type " + predicate.type);
             }
-        }
 
         return result;
     }
     
-    public List<Predicate> simplify(List<Predicate> ps) {
+    private List<Predicate> simplify(List<Predicate> ps) {
         Set<Predicate> combinedPredicates = new HashSet<Predicate>();
         List<Predicate> rs = new ArrayList<Predicate>();
 
