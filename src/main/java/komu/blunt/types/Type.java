@@ -1,11 +1,15 @@
 package komu.blunt.types;
 
-import komu.blunt.stdlib.TypeName;
+import static java.util.Arrays.asList;
 
 import java.math.BigInteger;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
-import static java.util.Arrays.asList;
+import komu.blunt.stdlib.TypeName;
 
 public abstract class Type implements Types<Type> {
 
@@ -80,14 +84,6 @@ public abstract class Type implements Types<Type> {
 
     public boolean containsVariable(TypeVariable v) {
         return getTypeVariables().contains(v);
-    }
-
-    public Scheme quantifyAll() {
-        return quantify(getTypeVariables());
-    }
-
-    public Scheme quantify(Collection<TypeVariable> variables) {
-        return Qualified.quantify(variables, new Qualified<Type>(this));
     }
 
     @Override

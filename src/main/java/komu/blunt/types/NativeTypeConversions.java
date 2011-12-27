@@ -1,5 +1,8 @@
 package komu.blunt.types;
 
+import static java.lang.reflect.Modifier.isStatic;
+import static komu.blunt.types.Qualified.quantifyAll;
+
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -7,8 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.reflect.Modifier.isStatic;
 
 public final class NativeTypeConversions {
 
@@ -28,11 +29,11 @@ public final class NativeTypeConversions {
         Type returnType = resolve(m.getGenericReturnType());
 
         if (argumentTypes.isEmpty())
-            return Type.functionType(Type.UNIT, returnType).quantifyAll();
+            return quantifyAll(new Qualified<Type>(Type.functionType(Type.UNIT, returnType)));
         else if (argumentTypes.size() == 1)
-            return Type.functionType(argumentTypes.get(0), returnType).quantifyAll();
+            return quantifyAll(new Qualified<Type>(Type.functionType(argumentTypes.get(0), returnType)));
         else
-            return Type.functionType(Type.tupleType(argumentTypes), returnType).quantifyAll();
+            return quantifyAll(new Qualified<Type>(Type.functionType(Type.tupleType(argumentTypes), returnType)));
     }
 
     private List<Type> resolveArgumentTypes(Method m) {

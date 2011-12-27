@@ -1,25 +1,30 @@
 package komu.blunt.types;
 
-import komu.blunt.ast.ASTDefine;
-import komu.blunt.ast.ASTExpression;
-import komu.blunt.eval.TypeCheckException;
+import static komu.blunt.types.TypeUtils.getTypeVariables;
+import static komu.blunt.types.Unifier.mgu;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static komu.blunt.types.Unifier.mgu;
+import komu.blunt.ast.ASTDefine;
+import komu.blunt.ast.ASTExpression;
+import komu.blunt.eval.TypeCheckException;
 
 public final class TypeChecker {
 
     private Substitution substitution = Substitution.empty();
     private int typeSequence = 0;
     
-    public Type typeCheck(ASTExpression exp, ClassEnv classEnv, Assumptions as) {
-        return exp.typeCheck(classEnv, this, as).value.apply(substitution);
+    public Qualified<Type> typeCheck(ASTExpression exp, ClassEnv classEnv, Assumptions as) {
+        TypeCheckResult<Type> result = exp.typeCheck(classEnv, this, as);
+        Qualified<Type> qt = new Qualified<Type>(result.predicates, result.value);
+        return qt.apply(substitution);
     }
 
-    public Type typeCheck(ASTDefine exp, ClassEnv classEnv, Assumptions as) {
-        return exp.typeCheck(classEnv, this, as).value.apply(substitution);
+    public Scheme typeCheck(ASTDefine exp, ClassEnv classEnv, Assumptions as) {
+        TypeCheckResult<Type> result = exp.typeCheck(classEnv, this, as);
+        Qualified<Type> q = new Qualified<Type>(result.predicates, result.value);
+        return Qualified.quantify(getTypeVariables(q), q.apply(substitution));
     }
 
     public void unify(Type t1, Type t2) {

@@ -1,13 +1,17 @@
 package komu.blunt.types;
 
-import com.google.common.base.Objects;
-
-import java.util.*;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.unmodifiableList;
 import static komu.blunt.types.TypeUtils.getTypeVariables;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+
+import com.google.common.base.Objects;
 
 public final class Qualified<T extends Types<T>> implements Types<Qualified<T>> {
     
@@ -33,6 +37,10 @@ public final class Qualified<T extends Types<T>> implements Types<Qualified<T>> 
     @Override
     public Qualified<T> apply(Substitution substitution) {
         return new Qualified<T>(TypeUtils.apply(substitution, predicates), value.apply(substitution));
+    }
+
+    public static Scheme quantifyAll(Qualified<Type> qt) {
+        return quantify(TypeUtils.getTypeVariables(qt), qt);
     }
 
     public static Scheme quantify(Collection<TypeVariable> vs, Qualified<Type> qt) {

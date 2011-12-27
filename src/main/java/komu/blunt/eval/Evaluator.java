@@ -1,5 +1,12 @@
 package komu.blunt.eval;
 
+import static java.lang.reflect.Modifier.isStatic;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Method;
+
 import komu.blunt.Main;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
@@ -14,14 +21,12 @@ import komu.blunt.stdlib.BasicFunctions;
 import komu.blunt.stdlib.ConsList;
 import komu.blunt.stdlib.LibraryFunction;
 import komu.blunt.stdlib.Maybe;
-import komu.blunt.types.*;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-
-import static java.lang.reflect.Modifier.isStatic;
+import komu.blunt.types.ClassEnv;
+import komu.blunt.types.NativeTypeConversions;
+import komu.blunt.types.Qualified;
+import komu.blunt.types.Scheme;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeChecker;
 
 public final class Evaluator {
 
@@ -70,10 +75,9 @@ public final class Evaluator {
     }
 
     public void define(ASTDefine define) {
-        Type type = new TypeChecker().typeCheck(define, classEnv, rootBindings.createAssumptions());
+        Scheme type = new TypeChecker().typeCheck(define, classEnv, rootBindings.createAssumptions());
         
-        rootBindings.defineVariableType(define.name, type.quantifyAll());
-        //define.typeCheck(rootBindings);
+        rootBindings.defineVariableType(define.name, type);
         CoreExpression expression = define.analyze(rootBindings.staticEnvironment, rootBindings);
 
         run(expression);
@@ -93,7 +97,7 @@ public final class Evaluator {
     }
 
     public ResultWithType evaluateWithType(ASTExpression exp) {
-        Type type = typeCheck(exp);
+        Qualified<Type> type = typeCheck(exp);
         CoreExpression expression = toCore(exp);
 
         Object result = run(expression);
@@ -101,7 +105,7 @@ public final class Evaluator {
         return new ResultWithType(result, type);
     }
 
-    private Type typeCheck(ASTExpression exp) {
+    private Qualified<Type> typeCheck(ASTExpression exp) {
         return new TypeChecker().typeCheck(exp, classEnv, rootBindings.createAssumptions());
     }
 
