@@ -1,15 +1,19 @@
 package komu.blunt.ast;
 
-import komu.blunt.core.CoreExpression;
-import komu.blunt.core.CoreTupleExpression;
-import komu.blunt.eval.RootBindings;
-import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.types.*;
+import static komu.blunt.types.Type.tupleType;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static komu.blunt.types.Type.tupleType;
+import komu.blunt.core.CoreExpression;
+import komu.blunt.core.CoreTupleExpression;
+import komu.blunt.eval.StaticEnvironment;
+import komu.blunt.types.Assumptions;
+import komu.blunt.types.ClassEnv;
+import komu.blunt.types.Predicate;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeCheckResult;
+import komu.blunt.types.TypeChecker;
 
 public final class ASTTuple extends ASTExpression {
     
@@ -22,8 +26,8 @@ public final class ASTTuple extends ASTExpression {
     }
 
     @Override
-    public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
-        return new CoreTupleExpression(analyzeAll(exps, env, rootBindings));
+    public CoreExpression analyze(StaticEnvironment env) {
+        return new CoreTupleExpression(analyzeAll(exps, env));
     }
 
     @Override

@@ -1,13 +1,16 @@
 package komu.blunt.ast;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreIfExpression;
-import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.types.*;
+import komu.blunt.types.Assumptions;
+import komu.blunt.types.ClassEnv;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeCheckResult;
+import komu.blunt.types.TypeChecker;
 import komu.blunt.utils.ListUtils;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTIf extends ASTExpression {
     public final ASTExpression test;
@@ -21,8 +24,8 @@ public final class ASTIf extends ASTExpression {
     }
 
     @Override
-    public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
-        return new CoreIfExpression(test.analyze(env, rootBindings), consequent.analyze(env, rootBindings), alternative.analyze(env, rootBindings));
+    public CoreExpression analyze(StaticEnvironment env) {
+        return new CoreIfExpression(test.analyze(env), consequent.analyze(env), alternative.analyze(env));
     }
 
     @Override

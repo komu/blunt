@@ -1,17 +1,21 @@
 package komu.blunt.ast;
 
-import komu.blunt.core.CoreExpression;
-import komu.blunt.core.CoreSequenceExpression;
-import komu.blunt.eval.RootBindings;
-import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.eval.SyntaxException;
-import komu.blunt.types.*;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Arrays.asList;
+import komu.blunt.core.CoreExpression;
+import komu.blunt.core.CoreSequenceExpression;
+import komu.blunt.eval.StaticEnvironment;
+import komu.blunt.eval.SyntaxException;
+import komu.blunt.types.Assumptions;
+import komu.blunt.types.ClassEnv;
+import komu.blunt.types.Predicate;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeCheckResult;
+import komu.blunt.types.TypeChecker;
 
 public final class ASTSequence extends ASTExpression {
     public final List<ASTExpression> exps;
@@ -53,10 +57,10 @@ public final class ASTSequence extends ASTExpression {
     }
     
     @Override
-    public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
+    public CoreExpression analyze(StaticEnvironment env) {
         if (exps.isEmpty()) throw new SyntaxException("empty sequence");
         
-        return new CoreSequenceExpression(analyzeAll(exps, env, rootBindings));
+        return new CoreSequenceExpression(analyzeAll(exps, env));
     }
 
     @Override

@@ -1,13 +1,16 @@
 package komu.blunt.ast;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import komu.blunt.core.CoreExpression;
 import komu.blunt.core.CoreSetExpression;
-import komu.blunt.eval.RootBindings;
 import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.*;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import komu.blunt.types.Assumptions;
+import komu.blunt.types.ClassEnv;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeCheckResult;
+import komu.blunt.types.TypeChecker;
 
 public final class ASTSet extends ASTExpression {
     public final Symbol var;
@@ -19,8 +22,8 @@ public final class ASTSet extends ASTExpression {
     }
 
     @Override
-    public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
-        return new CoreSetExpression(env.lookup(var), exp.analyze(env, rootBindings));
+    public CoreExpression analyze(StaticEnvironment env) {
+        return new CoreSetExpression(env.lookup(var), exp.analyze(env));
     }
 
     @Override

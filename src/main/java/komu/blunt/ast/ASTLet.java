@@ -1,18 +1,21 @@
 package komu.blunt.ast;
 
-import komu.blunt.core.CoreExpression;
-import komu.blunt.core.CoreLetExpression;
-import komu.blunt.eval.RootBindings;
-import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.objects.Symbol;
-import komu.blunt.types.*;
-import komu.blunt.utils.ListUtils;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import komu.blunt.core.CoreExpression;
+import komu.blunt.core.CoreLetExpression;
+import komu.blunt.eval.StaticEnvironment;
+import komu.blunt.objects.Symbol;
+import komu.blunt.types.Assumptions;
+import komu.blunt.types.ClassEnv;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeCheckResult;
+import komu.blunt.types.TypeChecker;
+import komu.blunt.utils.ListUtils;
 
 public final class ASTLet extends ASTExpression {
     public final List<ImplicitBinding> bindings;
@@ -24,7 +27,7 @@ public final class ASTLet extends ASTExpression {
     }
 
     @Override
-    public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
+    public CoreExpression analyze(StaticEnvironment env) {
         if (bindings.size() != 1)
             throw new UnsupportedOperationException("multi-var let is not supported");
         
@@ -32,7 +35,7 @@ public final class ASTLet extends ASTExpression {
         
         ImplicitBinding binding = bindings.get(0);
 
-        return new CoreLetExpression(binding.name, binding.expr.analyze(env, rootBindings), body.analyze(newEnv, rootBindings));
+        return new CoreLetExpression(binding.name, binding.expr.analyze(env), body.analyze(newEnv));
     }
 
     @Override

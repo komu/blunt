@@ -1,15 +1,18 @@
 package komu.blunt.ast;
 
-import komu.blunt.core.CoreApplicationExpression;
-import komu.blunt.core.CoreExpression;
-import komu.blunt.eval.RootBindings;
-import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.types.*;
-import komu.blunt.utils.ListUtils;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static komu.blunt.types.Kind.STAR;
 import static komu.blunt.types.Type.functionType;
+
+import komu.blunt.core.CoreApplicationExpression;
+import komu.blunt.core.CoreExpression;
+import komu.blunt.eval.StaticEnvironment;
+import komu.blunt.types.Assumptions;
+import komu.blunt.types.ClassEnv;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeCheckResult;
+import komu.blunt.types.TypeChecker;
+import komu.blunt.utils.ListUtils;
 
 public final class ASTApplication extends ASTExpression {
 
@@ -22,8 +25,8 @@ public final class ASTApplication extends ASTExpression {
     }
 
     @Override
-    public CoreExpression analyze(StaticEnvironment env, RootBindings rootBindings) {
-        return new CoreApplicationExpression(func.analyze(env, rootBindings), arg.analyze(env, rootBindings));
+    public CoreExpression analyze(StaticEnvironment env) {
+        return new CoreApplicationExpression(func.analyze(env), arg.analyze(env));
     }
 
     @Override

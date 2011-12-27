@@ -78,7 +78,7 @@ public final class Evaluator {
         Scheme type = new TypeChecker().typeCheck(define, classEnv, rootBindings.createAssumptions());
         
         rootBindings.defineVariableType(define.name, type);
-        CoreExpression expression = define.analyze(rootBindings.staticEnvironment, rootBindings);
+        CoreExpression expression = define.analyze(rootBindings.staticEnvironment);
 
         run(expression);
     }
@@ -110,7 +110,7 @@ public final class Evaluator {
     }
 
     private CoreExpression toCore(ASTExpression exp) {
-        return exp.analyze(rootBindings.staticEnvironment, rootBindings);
+        return exp.analyze(rootBindings.staticEnvironment);
     }
 
     public void dump() {
