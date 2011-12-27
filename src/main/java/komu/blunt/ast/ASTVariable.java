@@ -1,8 +1,5 @@
 package komu.blunt.ast;
 
-import komu.blunt.core.CoreExpression;
-import komu.blunt.core.CoreVariableExpression;
-import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -22,11 +19,6 @@ public final class ASTVariable extends ASTExpression {
     @Override
     public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
         return visitor.visit(this, ctx);
-    }
-
-    @Override
-    public CoreExpression analyze(StaticEnvironment env) {
-        return new CoreVariableExpression(env.lookup(var));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package komu.blunt.eval;
 
 import komu.blunt.Main;
+import komu.blunt.analyzer.AnalyzingVisitor;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
@@ -106,7 +107,9 @@ public final class Evaluator {
     }
 
     private CoreExpression toCore(ASTExpression exp) {
-        return exp.analyze(rootBindings.staticEnvironment);
+        AnalyzingVisitor analyzer = new AnalyzingVisitor();
+
+        return analyzer.analyze(exp, rootBindings.staticEnvironment);
     }
 
     public void dump() {

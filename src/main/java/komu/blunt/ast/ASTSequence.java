@@ -1,10 +1,5 @@
 package komu.blunt.ast;
 
-import komu.blunt.core.CoreExpression;
-import komu.blunt.core.CoreSequenceExpression;
-import komu.blunt.eval.StaticEnvironment;
-import komu.blunt.eval.SyntaxException;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,13 +36,6 @@ public final class ASTSequence extends ASTExpression {
         return exps.subList(0, exps.size()-1);
     }
     
-    @Override
-    public CoreExpression analyze(StaticEnvironment env) {
-        if (exps.isEmpty()) throw new SyntaxException("empty sequence");
-        
-        return new CoreSequenceExpression(analyzeAll(exps, env));
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

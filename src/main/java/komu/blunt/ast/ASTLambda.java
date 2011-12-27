@@ -1,8 +1,5 @@
 package komu.blunt.ast;
 
-import komu.blunt.core.CoreExpression;
-import komu.blunt.core.CoreLambdaExpression;
-import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
 
 import java.util.List;
@@ -31,17 +28,6 @@ public final class ASTLambda extends ASTExpression {
         return visitor.visit(this, ctx);
     }
     
-    @Override
-    public CoreExpression analyze(StaticEnvironment env) {
-        if (arguments.size() == 1) {
-            Symbol arg = arguments.get(0);
-            StaticEnvironment newEnv = env.extend(arg);
-            return new CoreLambdaExpression(arg, body.analyze(newEnv));
-        } else {
-            return rewrite().analyze(env);
-        }
-    }
-
     public ASTLambda rewrite() {
         return new ASTLambda(arguments.get(0), new ASTLambda(arguments.subList(1, arguments.size()), body));
     }

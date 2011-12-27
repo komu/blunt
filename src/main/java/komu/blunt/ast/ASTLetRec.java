@@ -1,7 +1,5 @@
 package komu.blunt.ast;
 
-import komu.blunt.core.CoreExpression;
-import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Symbol;
 import komu.blunt.objects.Unit;
 
@@ -31,12 +29,7 @@ public final class ASTLetRec extends ASTExpression {
         return visitor.visit(this, ctx);
     }
 
-    @Override
-    public CoreExpression analyze(StaticEnvironment env) {
-        return rewriteToLet().analyze(env);
-    }
-
-    private ASTLet rewriteToLet() {
+    public ASTLet rewriteToLet() {
         List<ImplicitBinding> newBindings = new ArrayList<ImplicitBinding>(bindings.size());
 
         ASTSequence bodyExps = new ASTSequence();

@@ -1,5 +1,6 @@
 package komu.blunt.ast;
 
+import komu.blunt.analyzer.AnalyzingVisitor;
 import komu.blunt.core.CoreDefineExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.eval.StaticEnvironment;
@@ -23,8 +24,10 @@ public final class ASTDefine {
     }
 
     public CoreExpression analyze(StaticEnvironment rootEnv) {
+        AnalyzingVisitor analyzer = new AnalyzingVisitor();
         VariableReference var = rootEnv.define(name);
-        return new CoreDefineExpression(value.analyze(rootEnv), var);
+
+        return new CoreDefineExpression(analyzer.analyze(value, rootEnv), var);
     }
 
     public TypeCheckResult<Type> typeCheck(TypeCheckingContext ctx) {

@@ -1,8 +1,6 @@
 package komu.blunt.ast;
 
 import com.google.common.base.Preconditions;
-import komu.blunt.core.CoreExpression;
-import komu.blunt.eval.StaticEnvironment;
 import komu.blunt.objects.Unit;
 
 import java.util.ArrayList;
@@ -19,11 +17,6 @@ public final class ASTList extends ASTExpression {
     @Override
     public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
         return visitor.visit(this, ctx);
-    }
-
-    @Override
-    public CoreExpression analyze(StaticEnvironment env) {
-        return rewrite().analyze(env);
     }
 
     public ASTExpression rewrite() {
