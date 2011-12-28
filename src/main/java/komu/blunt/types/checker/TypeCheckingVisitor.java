@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static komu.blunt.types.Kind.STAR;
 import static komu.blunt.types.Type.functionType;
 import static komu.blunt.types.Type.tupleType;
+import static komu.blunt.types.checker.Unifier.mgu;
 import static komu.blunt.utils.CollectionUtils.append;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import komu.blunt.ast.ASTVisitor;
 import komu.blunt.ast.BindGroup;
 import komu.blunt.ast.ExplicitBinding;
 import komu.blunt.ast.ImplicitBinding;
+import komu.blunt.eval.TypeCheckException;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.ClassEnv;
 import komu.blunt.types.ConstructorDefinition;
@@ -41,11 +43,11 @@ import komu.blunt.utils.CollectionUtils;
 public final class TypeCheckingVisitor implements ASTVisitor<Assumptions, TypeCheckResult<Type>> {
     
     private final ClassEnv classEnv;
-    private final TypeChecker typeChecker;
-    
-    public TypeCheckingVisitor(ClassEnv classEnv, TypeChecker typeChecker) {
+    private Substitution substitution = Substitution.empty();
+    private int typeSequence = 0;
+
+    public TypeCheckingVisitor(ClassEnv classEnv) {
         this.classEnv = checkNotNull(classEnv);
-        this.typeChecker = checkNotNull(typeChecker);
     }
 
     @Override
@@ -53,9 +55,9 @@ public final class TypeCheckingVisitor implements ASTVisitor<Assumptions, TypeCh
         TypeCheckResult<Type> te = typeCheck(application.func, as);
         TypeCheckResult<Type> tf = typeCheck(application.arg, as);
 
-        Type t = typeChecker.newTVar(STAR);
+        Type t = newTVar(STAR);
 
-        typeChecker.unify(functionType(tf.value, t), te.value);
+        unify(functionType(tf.value, t), te.value);
 
         return new TypeCheckResult<Type>(CollectionUtils.append(te.predicates, tf.predicates), t);
     }
@@ -71,8 +73,8 @@ public final class TypeCheckingVisitor implements ASTVisitor<Assumptions, TypeCh
         TypeCheckResult<Type> tyConsequent = typeCheck(ifExp.consequent, as);
         TypeCheckResult<Type> tyAlternative = typeCheck(ifExp.alternative, as);
 
-        typeChecker.unify(tyTest.value, Type.BOOLEAN);
-        typeChecker.unify(tyConsequent.value, tyAlternative.value);
+        unify(tyTest.value, Type.BOOLEAN);
+        unify(tyConsequent.value, tyAlternative.value);
 
         List<Predicate> predicates = append(tyTest.predicates, tyConsequent.predicates, tyAlternative.predicates);
         return new TypeCheckResult<Type>(predicates, tyConsequent.value);
@@ -83,7 +85,7 @@ public final class TypeCheckingVisitor implements ASTVisitor<Assumptions, TypeCh
         if (lambda.arguments.size() == 1) {
             Symbol arg = lambda.arguments.get(0);
 
-            TypeVariable argumentType = typeChecker.newTVar(Kind.STAR);
+            TypeVariable argumentType = newTVar(Kind.STAR);
 
             Assumptions as2 = Assumptions.singleton(arg, argumentType.toScheme());
 
@@ -136,7 +138,7 @@ public final class TypeCheckingVisitor implements ASTVisitor<Assumptions, TypeCh
         Assumptions as = new Assumptions();
 
         for (List<ImplicitBinding> bs : bindings.implicitBindings) {
-            TypeCheckResult<Assumptions> res = ImplicitBinding.typeCheck(bs, classEnv, typeChecker, as.join(origAs));
+            TypeCheckResult<Assumptions> res = ImplicitBinding.typeCheck(bs, this, classEnv, as.join(origAs));
             predicates.addAll(res.predicates);
             as = res.value.join(as);
         }
@@ -148,7 +150,7 @@ public final class TypeCheckingVisitor implements ASTVisitor<Assumptions, TypeCh
         List<Predicate> predicates = new ArrayList<Predicate>();
 
         for (ExplicitBinding b : bindGroup.explicitBindings)
-            predicates.addAll(b.typeCheck(classEnv, typeChecker, as));
+            predicates.addAll(b.typeCheck(this, as));
 
         return predicates;
     }
@@ -191,7 +193,7 @@ public final class TypeCheckingVisitor implements ASTVisitor<Assumptions, TypeCh
     @Override
     public TypeCheckResult<Type> visit(ASTVariable variable, Assumptions as) {
         Scheme scheme = as.find(variable.var);
-        Qualified<Type> inst = typeChecker.freshInstance(scheme);
+        Qualified<Type> inst = freshInstance(scheme);
         return new TypeCheckResult<Type>(inst.predicates, inst.value);
     }
 
@@ -209,8 +211,48 @@ public final class TypeCheckingVisitor implements ASTVisitor<Assumptions, TypeCh
     public TypeCheckResult<Type> visit(ASTConstructor constructor, Assumptions as) {
         ConstructorDefinition ctor = DataTypeDefinitions.findConstructor(constructor.name);
 
-        Qualified<Type> inst = typeChecker.freshInstance(ctor.scheme);
+        Qualified<Type> inst = freshInstance(ctor.scheme);
         return new TypeCheckResult<Type>(inst.predicates, inst.value);
+    }
+
+    public List<Type> newTVars(final int size, final Kind kind) {
+        List<Type> types = new ArrayList<Type>(size);
+        for (int i = 0; i < size; i++)
+            types.add(newTVar(kind));
+        return types;
+    }
+
+    public Qualified<Type> freshInstance(Scheme scheme) {
+        List<TypeVariable> ts = new ArrayList<TypeVariable>(scheme.kinds.size());
+        for (Kind kind : scheme.kinds)
+            ts.add(newTVar(kind));
+
+        return Qualified.instantiate(ts, scheme.type);
+    }
+
+    public TypeVariable newTVar(Kind kind) {
+        return new TypeVariable(typeName(typeSequence++), kind);
+    }
+
+    private static String typeName(int index) {
+        if (index < 5) {
+            return String.valueOf((char) ('a' + index));
+        } else {
+            return "t" + (index-5);
+        }
+    }
+
+    public void unify(Type t1, Type t2) {
+        try {
+            Substitution u = mgu(t1.apply(substitution), t2.apply(substitution));
+            substitution = u.compose(substitution);
+        } catch (UnificationException e) {
+            throw new TypeCheckException(e);
+        }
+    }
+
+    public Substitution getSubstitution() {
+        return substitution;
     }
 }
 

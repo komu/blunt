@@ -21,7 +21,6 @@ import komu.blunt.types.Type;
 import komu.blunt.types.TypeVariable;
 import komu.blunt.types.checker.Assumptions;
 import komu.blunt.types.checker.TypeCheckResult;
-import komu.blunt.types.checker.TypeChecker;
 import komu.blunt.types.checker.TypeCheckingVisitor;
 import komu.blunt.types.checker.TypeUtils;
 
@@ -39,15 +38,14 @@ public final class ImplicitBinding {
         return "[" + name + " " + expr + "]";
     }
 
-    public static TypeCheckResult<Assumptions> typeCheck(List<ImplicitBinding> bs, ClassEnv classEnv, TypeChecker typeChecker, Assumptions as) {
+    public static TypeCheckResult<Assumptions> typeCheck(List<ImplicitBinding> bs, TypeCheckingVisitor typeChecker, ClassEnv classEnv, Assumptions as) {
         List<Type> ts = typeChecker.newTVars(bs.size(), Kind.STAR);
         Assumptions as2 = Assumptions.from(names(bs), toSchemes(ts)).join(as);
 
         List<Predicate> pss = new ArrayList<Predicate>();
 
-        TypeCheckingVisitor checker = new TypeCheckingVisitor(classEnv, typeChecker);
         for (int i = 0; i < ts.size(); i++) {
-            TypeCheckResult<Type> res = checker.typeCheck(bs.get(i).expr, as.join(as2));
+            TypeCheckResult<Type> res = typeChecker.typeCheck(bs.get(i).expr, as.join(as2));
             typeChecker.unify(res.value, ts.get(i));
             pss.addAll(res.predicates);
         }
