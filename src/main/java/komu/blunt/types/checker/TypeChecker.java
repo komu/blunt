@@ -12,7 +12,7 @@ import komu.blunt.types.Type;
 
 public final class TypeChecker {
 
-    public Qualified<Type> typeCheck(ASTExpression exp, ClassEnv classEnv, Assumptions as) {
+    public static Qualified<Type> typeCheck(ASTExpression exp, ClassEnv classEnv, Assumptions as) {
         TypeCheckingVisitor checker = new TypeCheckingVisitor(classEnv);
         TypeCheckResult<Type> result = checker.typeCheck(exp, as);
         List<Predicate> ps = classEnv.reduce(TypeUtils.apply(checker.getSubstitution(), result.predicates));
@@ -20,7 +20,7 @@ public final class TypeChecker {
         return q.apply(checker.getSubstitution());
     }
 
-    public Scheme typeCheck(ASTDefine exp, ClassEnv classEnv, Assumptions as) {
+    public static Scheme typeCheck(ASTDefine exp, ClassEnv classEnv, Assumptions as) {
         TypeCheckingVisitor checker = new TypeCheckingVisitor(classEnv);
         TypeCheckResult<Type> result = exp.typeCheck(checker, as);
         List<Predicate> ps = classEnv.reduce(TypeUtils.apply(checker.getSubstitution(), result.predicates));

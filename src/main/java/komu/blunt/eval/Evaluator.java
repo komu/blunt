@@ -1,6 +1,15 @@
 package komu.blunt.eval;
 
+import static java.lang.reflect.Modifier.isStatic;
+
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.charset.Charset;
+
 import com.google.common.io.Resources;
+
 import komu.blunt.analyzer.AnalyzingVisitor;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
@@ -11,17 +20,18 @@ import komu.blunt.ast.ASTExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.PrimitiveFunction;
 import komu.blunt.parser.Parser;
-import komu.blunt.stdlib.*;
-import komu.blunt.types.*;
+import komu.blunt.stdlib.BasicFunctions;
+import komu.blunt.stdlib.BasicValues;
+import komu.blunt.stdlib.ConsList;
+import komu.blunt.stdlib.LibraryFunction;
+import komu.blunt.stdlib.LibraryValue;
+import komu.blunt.stdlib.Maybe;
+import komu.blunt.types.ClassEnv;
+import komu.blunt.types.NativeTypeConversions;
+import komu.blunt.types.Qualified;
+import komu.blunt.types.Scheme;
+import komu.blunt.types.Type;
 import komu.blunt.types.checker.TypeChecker;
-
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.nio.charset.Charset;
-
-import static java.lang.reflect.Modifier.isStatic;
 
 public final class Evaluator {
 
@@ -76,7 +86,7 @@ public final class Evaluator {
     }
 
     public void define(ASTDefine define) {
-        Scheme type = new TypeChecker().typeCheck(define, classEnv, rootBindings.createAssumptions());
+        Scheme type = TypeChecker.typeCheck(define, classEnv, rootBindings.createAssumptions());
         
         rootBindings.defineVariableType(define.name, type);
         CoreExpression expression = define.analyze(rootBindings.staticEnvironment);
@@ -107,7 +117,7 @@ public final class Evaluator {
     }
 
     private Qualified<Type> typeCheck(ASTExpression exp) {
-        return new TypeChecker().typeCheck(exp, classEnv, rootBindings.createAssumptions());
+        return TypeChecker.typeCheck(exp, classEnv, rootBindings.createAssumptions());
     }
 
     private CoreExpression toCore(ASTExpression exp) {
