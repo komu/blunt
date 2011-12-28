@@ -12,19 +12,22 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static java.util.Collections.singletonMap;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.unmodifiableMap;
 
 public final class Assumptions implements Types<Assumptions> {
 
-    private final Map<Symbol, Scheme> mappings = new HashMap<Symbol,Scheme>();
+    private final Map<Symbol, Scheme> mappings;
+    
+    private Assumptions() {
+        this.mappings = emptyMap();
+    }
 
-    public Assumptions() {
+    private Assumptions(Builder builder) {
+        this.mappings = unmodifiableMap(builder.mappings);
     }
-    
-    public Assumptions(Map<Symbol, Scheme> mappings) {
-        this.mappings.putAll(mappings);    
-    }
-    
+
     public Scheme find(Symbol name) {
         Scheme scheme = mappings.get(name);
         if (scheme != null)
@@ -46,34 +49,66 @@ public final class Assumptions implements Types<Assumptions> {
 
     @Override
     public Assumptions apply(Substitution substitution) {
-        Assumptions as = new Assumptions();
+        Builder builder = builder();
      
         for (Map.Entry<Symbol, Scheme> entry : mappings.entrySet())
-            as.mappings.put(entry.getKey(), entry.getValue().apply(substitution));
+            builder.add(entry.getKey(), entry.getValue().apply(substitution));
 
-        return as;
+        return builder.build();
     }
 
     public static Assumptions singleton(Symbol arg, Scheme scheme) {
-        return new Assumptions(singletonMap(arg, scheme));
-    }
-    
-    public Assumptions extend(Symbol arg, Scheme scheme) {
-        return singleton(arg, scheme).join(this);
+        return builder().add(arg, scheme).build();
     }
 
     public Assumptions join(Assumptions as) {
-        Assumptions result = new Assumptions(as.mappings);
-        result.mappings.putAll(mappings);
-        return result;
+        return builder().addAll(as).addAll(this).build();
     }
 
     public static Assumptions from(List<Symbol> names, List<Scheme> schemes) {
         checkArgument(names.size() == schemes.size(), names.size() + " != " + schemes.size());
 
-        Assumptions as = new Assumptions();
+        Builder builder = new Builder();
         for (int i = 0; i < names.size(); i++)
-            as.mappings.put(names.get(i), schemes.get(i));
-        return as;
+            builder.add(names.get(i), schemes.get(i));
+        
+        return builder.build();
+    }
+    
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static Assumptions empty() {
+        return new Assumptions();
+    }
+
+    public static final class Builder {
+        private Map<Symbol, Scheme> mappings = new HashMap<Symbol, Scheme>();
+        private boolean built = false;
+
+        public Builder add(Symbol name, Scheme scheme) {
+            ensurePrivateCopy();
+            mappings.put(checkNotNull(name), checkNotNull(scheme));
+            return this;
+        }
+
+        public Builder addAll(Assumptions as) {
+            ensurePrivateCopy();
+            mappings.putAll(as.mappings);
+            return this;
+        }
+        
+        public Assumptions build() {
+            built = true;
+            return new Assumptions(this);
+        }
+        
+        private void ensurePrivateCopy() {
+            if (built) {
+                mappings = new HashMap<Symbol, Scheme>(mappings);
+                built = false;
+            }
+        }
     }
 }

@@ -1,44 +1,20 @@
 package komu.blunt.types.checker;
 
+import komu.blunt.ast.*;
+import komu.blunt.eval.TypeCheckException;
+import komu.blunt.objects.Symbol;
+import komu.blunt.types.*;
+import komu.blunt.utils.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static komu.blunt.types.Kind.STAR;
 import static komu.blunt.types.Type.functionType;
 import static komu.blunt.types.Type.tupleType;
 import static komu.blunt.types.checker.Unifier.mgu;
 import static komu.blunt.utils.CollectionUtils.append;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import komu.blunt.ast.ASTApplication;
-import komu.blunt.ast.ASTConstant;
-import komu.blunt.ast.ASTConstructor;
-import komu.blunt.ast.ASTExpression;
-import komu.blunt.ast.ASTIf;
-import komu.blunt.ast.ASTLambda;
-import komu.blunt.ast.ASTLet;
-import komu.blunt.ast.ASTLetRec;
-import komu.blunt.ast.ASTList;
-import komu.blunt.ast.ASTSequence;
-import komu.blunt.ast.ASTSet;
-import komu.blunt.ast.ASTTuple;
-import komu.blunt.ast.ASTVariable;
-import komu.blunt.ast.ASTVisitor;
-import komu.blunt.ast.BindGroup;
-import komu.blunt.ast.ExplicitBinding;
-import komu.blunt.ast.ImplicitBinding;
-import komu.blunt.eval.TypeCheckException;
-import komu.blunt.objects.Symbol;
-import komu.blunt.types.ClassEnv;
-import komu.blunt.types.ConstructorDefinition;
-import komu.blunt.types.DataTypeDefinitions;
-import komu.blunt.types.Kind;
-import komu.blunt.types.Predicate;
-import komu.blunt.types.Qualified;
-import komu.blunt.types.Scheme;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeVariable;
-import komu.blunt.utils.CollectionUtils;
 
 public final class TypeCheckingVisitor implements ASTVisitor<Assumptions, TypeCheckResult<Type>> {
     
@@ -135,7 +111,7 @@ public final class TypeCheckingVisitor implements ASTVisitor<Assumptions, TypeCh
 
     private TypeCheckResult<Assumptions> typeCheckImplicits(BindGroup bindings, Assumptions origAs) {
         List<Predicate> predicates = new ArrayList<Predicate>();
-        Assumptions as = new Assumptions();
+        Assumptions as = Assumptions.empty();
 
         for (List<ImplicitBinding> bs : bindings.implicitBindings) {
             TypeCheckResult<Assumptions> res = ImplicitBinding.typeCheck(bs, this, classEnv, as.join(origAs));

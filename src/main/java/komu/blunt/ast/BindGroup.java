@@ -1,13 +1,9 @@
 package komu.blunt.ast;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import komu.blunt.objects.Symbol;
-import komu.blunt.types.Scheme;
 import komu.blunt.types.checker.Assumptions;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class BindGroup {
 
@@ -21,12 +17,12 @@ public final class BindGroup {
     }
 
     public Assumptions assumptionFromExplicitBindings() {
-        Map<Symbol,Scheme> types = new HashMap<Symbol, Scheme>();
+        Assumptions.Builder builder = Assumptions.builder();
         
         for (ExplicitBinding b : explicitBindings)
-            types.put(b.name, b.scheme);
+            builder.add(b.name, b.scheme);
 
-        return new Assumptions(types);
+        return builder.build();
     }
 
 }

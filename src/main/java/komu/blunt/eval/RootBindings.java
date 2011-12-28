@@ -7,8 +7,6 @@ import komu.blunt.types.*;
 import komu.blunt.types.checker.Assumptions;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static komu.blunt.objects.Symbol.symbol;
@@ -21,11 +19,7 @@ import static komu.blunt.types.TypeVariable.tyVar;
 public final class RootBindings {
     public final StaticEnvironment staticEnvironment = new StaticEnvironment();
     final RootEnvironment runtimeEnvironment = new RootEnvironment();
-    private final Map<Symbol, Scheme> types = new HashMap<Symbol, Scheme>();
-
-    public void bind(String name, Type type, Object value) {
-        bind(name, type.toScheme(), value);
-    }
+    private final Assumptions.Builder assumptions = Assumptions.builder();
 
     public void bind(String name, Scheme type, Object value) {
         if (Arrays.asList("primitiveOpPlus", "primitiveOpMultiply", "primitiveOpMinus", "primitiveOpDivide", "primitiveMod").contains(name)) {
@@ -48,17 +42,17 @@ public final class RootBindings {
         }
     }
 
-    public void bind(Symbol name, Scheme type, Object value) {
+    public void bind(Symbol name, Scheme scheme, Object value) {
         VariableReference ref = staticEnvironment.define(name);
-        defineVariableType(name, type);
+        defineVariableType(name, scheme);
         runtimeEnvironment.define(ref, value);
     }
 
-    public void defineVariableType(Symbol name, Scheme type) {
-        types.put(name, type);
+    public void defineVariableType(Symbol name, Scheme scheme) {
+        assumptions.add(name, scheme);
     }
 
     public Assumptions createAssumptions() {
-        return new Assumptions(types);
+        return assumptions.build();
     }
 }
