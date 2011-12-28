@@ -11,16 +11,14 @@ import komu.blunt.ast.ASTExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.PrimitiveFunction;
 import komu.blunt.parser.Parser;
-import komu.blunt.stdlib.BasicFunctions;
-import komu.blunt.stdlib.ConsList;
-import komu.blunt.stdlib.LibraryFunction;
-import komu.blunt.stdlib.Maybe;
+import komu.blunt.stdlib.*;
 import komu.blunt.types.*;
 import komu.blunt.types.checker.TypeChecker;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import static java.lang.reflect.Modifier.isStatic;
@@ -32,6 +30,7 @@ public final class Evaluator {
     private final ClassEnv classEnv = new ClassEnv();
 
     public Evaluator() {
+        register(BasicValues.class, rootBindings);
         register(BasicFunctions.class, rootBindings);
         register(ConsList.class, rootBindings);
         register(Maybe.class, rootBindings);
@@ -46,6 +45,19 @@ public final class Evaluator {
 
                 boolean isStatic = isStatic(m.getModifiers());
                 bindings.bind(name, type, new PrimitiveFunction(name, m, isStatic));
+            }
+        }
+        
+        for (Field f : cl.getDeclaredFields()) {
+            LibraryValue value = f.getAnnotation(LibraryValue.class);
+            if (value != null) {
+                Scheme scheme = Type.fromClass(f.getType()).toScheme();
+
+                try {
+                    bindings.bind(value.value(), scheme, f.get(null));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

@@ -5,7 +5,8 @@ import com.google.common.base.Objects;
 @TypeName("Maybe")
 public abstract class Maybe<T> {
 
-    private static final Maybe<?> NOTHING = new Nothing<Object>();
+    @LibraryValue("primitiveNothing")
+    public static final Maybe<?> NOTHING = new Nothing<Object>();
 
     private static final class Just<T> extends Maybe<T> {
         private final T value;
@@ -77,12 +78,6 @@ public abstract class Maybe<T> {
     @LibraryFunction("fromJust")
     @SuppressWarnings("unused")
     public abstract T fromJust();
-
-    @LibraryFunction("primitiveNothing")
-    @SuppressWarnings({"unchecked", "unused"})
-    public static <T> Maybe<T> nothing() {
-        return (Maybe<T>) NOTHING;
-    }
 
     @LibraryFunction("primitiveJust")
     @SuppressWarnings({"unchecked", "unused"})
