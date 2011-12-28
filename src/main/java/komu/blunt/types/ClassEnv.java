@@ -81,6 +81,9 @@ public final class ClassEnv {
 
         addInstance(asList(isIn("Eq", tyVar("a", STAR))),
                     isIn("Eq", Type.listType(tyVar("a", STAR))));
+
+        addInstance(asList(isIn("Eq", tyVar("a", STAR))),
+                    isIn("Eq", Type.genericType("Maybe", tyVar("a", STAR))));
     }
 
     public void addInstance(Predicate predicate) {

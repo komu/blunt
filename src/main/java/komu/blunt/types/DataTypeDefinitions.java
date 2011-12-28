@@ -18,8 +18,8 @@ public class DataTypeDefinitions {
     private final Map<String,ConstructorDefinition> constructors = new HashMap<String, ConstructorDefinition>(); 
     
     public DataTypeDefinitions() {
-        register(new ConstructorDefinition(NIL, nilType(), "primitiveNil"));
-        register(new ConstructorDefinition(CONS, consType(), "mkCons"));
+        register(new ConstructorDefinition(NIL, nilType(), "primitiveNil", 0));
+        register(new ConstructorDefinition(CONS, consType(), "mkCons", 1));
     }
 
     public void register(ASTDataDefinition definition) {

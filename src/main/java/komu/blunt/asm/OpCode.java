@@ -29,9 +29,14 @@ public abstract class OpCode {
         @Override
         public void execute(VM vm) {
             Object value = vm.get(register);
-            if (Boolean.FALSE.equals(value)) {
+            if (isFalse(value)) {
                 vm.jump(label);
             }
+        }
+
+        private boolean isFalse(Object value) {
+            return Boolean.FALSE.equals(value)
+                || (value instanceof TypeConstructorValue && ((TypeConstructorValue) value).name.equals("False"));
         }
 
         @Override

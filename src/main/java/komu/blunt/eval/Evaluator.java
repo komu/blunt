@@ -23,6 +23,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 
 import static java.lang.reflect.Modifier.isStatic;
+import static komu.blunt.eval.ConstructorArgumentCollector.createConstructor;
 
 public final class Evaluator {
 
@@ -92,8 +93,11 @@ public final class Evaluator {
 
         @Override
         public Void visit(ASTDataDefinition definition, Void ctx) {
-            System.out.println(definition);
             rootBindings.dataTypes.register(definition);
+
+            for (ConstructorDefinition ctor : definition.constructors)
+                rootBindings.bind(ctor.name, ctor.scheme, createConstructor(ctor));
+
             return null;
         }
     }

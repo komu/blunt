@@ -1,5 +1,7 @@
 package komu.blunt.objects;
 
+import komu.blunt.stdlib.BasicValues;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -22,17 +24,42 @@ public final class PrimitiveFunction implements Function {
     @Override
     public Object apply(Object arg) {
         try {
-            Object[] args = extract(arg);
+            Object[] args = convertAllToJava(extract(arg));
             if (isStatic) {
-                return method.invoke(null, args);
+                return convertResult(method.invoke(null, args));
             } else {
-                return method.invoke(args[0], Arrays.copyOfRange(args, 1, args.length));
+                return convertResult(method.invoke(args[0], Arrays.copyOfRange(args, 1, args.length)));
             }
 
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
             throw propagate(e.getTargetException());
+        }
+    }
+
+    private static Object[] convertAllToJava(Object[] values) {
+        Object[] result = new Object[values.length];
+     
+        for (int i = 0; i < values.length; i++)
+            result[i] = convertToJava(values[i]);
+        
+        return result;
+    }
+
+    private static Object convertToJava(Object value) {
+        if (value instanceof TypeConstructorValue) {
+            return BasicValues.convertToJava((TypeConstructorValue) value);
+        } else {
+            return value;
+        }
+    }
+
+    private static Object convertResult(Object result) {
+        if (result instanceof Boolean) {
+            return BasicValues.booleanToConstructor((Boolean) result);
+        } else {
+            return result;
         }
     }
 

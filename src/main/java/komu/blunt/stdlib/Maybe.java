@@ -5,10 +5,6 @@ import com.google.common.base.Objects;
 @TypeName("Maybe")
 public abstract class Maybe<T> {
 
-    @LibraryValue("Nothing")
-    @SuppressWarnings("unused")
-    public static final Maybe<?> NOTHING = new Nothing<Object>();
-
     private static final class Just<T> extends Maybe<T> {
         private final T value;
 
@@ -66,23 +62,17 @@ public abstract class Maybe<T> {
         }
     }
 
-    @LibraryFunction("just?")
+    @LibraryFunction(value="just?", type="Maybe a -> Boolean")
     @SuppressWarnings("unused")
     public abstract boolean isJust();
 
-    @LibraryFunction("nothing?")
+    @LibraryFunction(value="nothing?", type="Maybe a -> Boolean")
     @SuppressWarnings("unused")
     public final boolean isNothing() {
         return !isJust();
     }
 
-    @LibraryFunction("fromJust")
+    @LibraryFunction(value="fromJust", type="Maybe a -> a")
     @SuppressWarnings("unused")
     public abstract T fromJust();
-
-    @LibraryFunction("Just")
-    @SuppressWarnings({"unchecked", "unused"})
-    public static <T> Maybe<T> just(T value) {
-        return new Just<T>(value);
-    }
 }

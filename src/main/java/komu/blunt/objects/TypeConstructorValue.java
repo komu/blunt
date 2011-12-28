@@ -6,8 +6,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class TypeConstructorValue implements Comparable<TypeConstructorValue> {
     
-    private final String name;
+    public final String name;
     public final Object[] items;
+    private static final Object[] EMPTY_ARRAY = new Object[0];
+
+    public TypeConstructorValue(String name) {
+        this(name, EMPTY_ARRAY);
+    }
 
     public TypeConstructorValue(String name, Object[] items) {
         this.name = checkNotNull(name);
@@ -16,8 +21,12 @@ public final class TypeConstructorValue implements Comparable<TypeConstructorVal
 
     @Override
     public String toString() {
+        if (items.length == 0) {
+            return name;
+        }
+
         StringBuilder sb = new StringBuilder();
-        
+
         if (name.equals("()")) {
             // TODO: unit is not really handled here for now
             return "()";

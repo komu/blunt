@@ -4,9 +4,11 @@ import komu.blunt.analyzer.AnalyzationException;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.CompoundProcedure;
 import komu.blunt.parser.Parser;
+import komu.blunt.stdlib.BasicValues;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -123,6 +125,14 @@ public class EvaluatorTest {
         assertThatEvaluating("length [1,2,3]", produces(3));
     }
 
+    @Test
+    @Ignore
+    public void maybe() {
+        assertThatEvaluating("just? Nothing", produces(false));
+        assertThatEvaluating("just? (Just 4)", produces(true));
+        assertThatEvaluating("fromJust (Just 4)", produces(4));
+    }
+
     private void assertStaticError(String expr) {
         try {
             analyze(expr);
@@ -152,6 +162,6 @@ public class EvaluatorTest {
     }
     
     private static Matcher<Object> produces(final boolean value) {
-        return CoreMatchers.<Object>is(value);
+        return CoreMatchers.<Object>is(BasicValues.booleanToConstructor(value));
     }
 }
