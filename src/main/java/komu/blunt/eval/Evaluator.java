@@ -13,7 +13,6 @@ import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.PrimitiveFunction;
 import komu.blunt.parser.Parser;
 import komu.blunt.stdlib.BasicFunctions;
-import komu.blunt.stdlib.ConsList;
 import komu.blunt.stdlib.LibraryFunction;
 import komu.blunt.stdlib.LibraryValue;
 import komu.blunt.types.*;
@@ -26,10 +25,10 @@ import java.net.URL;
 import java.nio.charset.Charset;
 
 import static java.lang.reflect.Modifier.isStatic;
+import static java.util.Arrays.asList;
 import static komu.blunt.eval.ConstructorArgumentCollector.createConstructor;
 import static komu.blunt.types.Qualified.quantify;
-import static komu.blunt.types.Type.functionType;
-import static komu.blunt.types.Type.genericType;
+import static komu.blunt.types.Type.*;
 import static komu.blunt.types.TypeVariable.tyVar;
 
 public final class Evaluator {
@@ -40,9 +39,21 @@ public final class Evaluator {
 
     public Evaluator() {
         register(BasicFunctions.class, rootBindings);
-        register(ConsList.class, rootBindings);
+
+        register(listDefinition());
     }
-    
+
+    private ASTDataDefinition listDefinition() {
+        TypeVariable var = tyVar("a", Kind.STAR);
+
+        Scheme nilType = quantify(var, new Qualified<Type>(listType(var)));
+        Scheme consType = quantify(var, new Qualified<Type>(functionType(asList(var, listType(var)), listType(var))));
+
+        return new ASTDataDefinition("[]",
+                new ConstructorDefinition("[]", nilType, 0),
+                new ConstructorDefinition(":", consType, 2));
+    }
+
     private static void register(Class<?> cl, RootBindings bindings) {
         for (Method m : cl.getDeclaredMethods()) {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
@@ -88,6 +99,22 @@ public final class Evaluator {
             TypeVariable var = tyVar("a", Kind.STAR);
             return quantify(var, new Qualified<Type>(functionType(genericType("Maybe", var), var)));
 
+        } else if (type.equals("a -> [a] -> [a]")) {
+            TypeVariable var = tyVar("a", Kind.STAR);
+            return quantify(var, new Qualified<Type>(functionType(asList(var, listType(var)), listType(var))));
+
+        } else if (type.equals("[a] -> Boolean")) {
+            TypeVariable var = tyVar("a", Kind.STAR);
+            return quantify(var, new Qualified<Type>(functionType(listType(var), Type.BOOLEAN)));
+
+        } else if (type.equals("[a] -> a")) {
+            TypeVariable var = tyVar("a", Kind.STAR);
+            return quantify(var, new Qualified<Type>(functionType(listType(var), var)));
+
+        } else if (type.equals("[a] -> [a]")) {
+            TypeVariable var = tyVar("a", Kind.STAR);
+            return quantify(var, new Qualified<Type>(functionType(listType(var), listType(var))));
+
         } else {
             throw new IllegalArgumentException("unsupported type: " + type);
         }
@@ -122,13 +149,17 @@ public final class Evaluator {
 
         @Override
         public Void visit(ASTDataDefinition definition, Void ctx) {
-            rootBindings.dataTypes.register(definition);
-
-            for (ConstructorDefinition ctor : definition.constructors)
-                rootBindings.bind(ctor.name, ctor.scheme, createConstructor(ctor));
+            register(definition);
 
             return null;
         }
+    }
+
+    private void register(ASTDataDefinition definition) {
+        rootBindings.dataTypes.register(definition);
+
+        for (ConstructorDefinition ctor : definition.constructors)
+            rootBindings.bind(ctor.name, ctor.scheme, createConstructor(ctor));
     }
 
     private Object run(CoreExpression expression) {

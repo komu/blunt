@@ -14,6 +14,10 @@ public final class ASTDataDefinition extends ASTDefinition {
         this.name = checkNotNull(name);
         this.constructors = checkNotNull(constructors);
     }
+    
+    public ASTDataDefinition(String name, ConstructorDefinition... constructors) {
+        this(name, ImmutableList.copyOf(constructors));
+    }
 
     @Override
     public <C, R> R accept(ASTDefinitionVisitor<C, R> visitor, C ctx) {

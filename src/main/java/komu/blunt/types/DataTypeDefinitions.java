@@ -7,9 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.base.Strings.repeat;
-import static komu.blunt.types.Type.functionType;
-import static komu.blunt.types.Type.listType;
-import static komu.blunt.types.TypeVariable.tyVar;
 
 public class DataTypeDefinitions {
     public static final String CONS = ":";
@@ -17,11 +14,6 @@ public class DataTypeDefinitions {
 
     private final Map<String,ConstructorDefinition> constructors = new HashMap<String, ConstructorDefinition>(); 
     
-    public DataTypeDefinitions() {
-        register(new ConstructorDefinition(NIL, nilType(), "primitiveNil", 0));
-        register(new ConstructorDefinition(CONS, consType(), "mkCons", 1));
-    }
-
     public void register(ASTDataDefinition definition) {
         for (ConstructorDefinition constructor : definition.constructors)
             register(constructor);
@@ -44,15 +36,5 @@ public class DataTypeDefinitions {
     
     public static String tupleName(int arity) {
         return "(" + repeat(",", arity) + ")";
-    }
-
-    private static Scheme nilType() {
-        TypeVariable var = tyVar("a", Kind.STAR);
-        return Qualified.quantify(var, new Qualified<Type>(listType(var)));
-    }
-    
-    private static Scheme consType() {
-        TypeVariable var = tyVar("a", Kind.STAR);
-        return Qualified.quantify(var, new Qualified<Type>(functionType(var, functionType(listType(var), listType(var)))));
     }
 }

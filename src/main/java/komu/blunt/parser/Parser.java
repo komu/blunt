@@ -83,7 +83,7 @@ public final class Parser {
             args.add(parseType());
 
         Qualified<Type> type = new Qualified<Type>(functionType(args, resultType));
-        return new ConstructorDefinition(name, quantify(vars, type), name, args.size());
+        return new ConstructorDefinition(name, quantify(vars, type), args.size());
     }
 
     private Type parseType() {

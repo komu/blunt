@@ -23,30 +23,57 @@ public final class TypeConstructorValue implements Comparable<TypeConstructorVal
     public String toString() {
         if (items.length == 0) {
             return name;
-        }
 
+        } else if (isTuple()) {
+            return toStringAsTuple();
+
+        } else if (name.equals(":")) {
+            return toStringAsList();
+
+        } else {
+            return toStringDefault();
+        }
+    }
+
+    private String toStringAsList() {
         StringBuilder sb = new StringBuilder();
 
-        if (name.equals("()")) {
-            // TODO: unit is not really handled here for now
-            return "()";
-        } else if (isTuple()) {
-            sb.append('(');
-            for (int i = 0; i < items.length; i++) {
-                if (i != 0) sb.append(", ");
-    
-                sb.append(items[i]);
-            }
-            sb.append(')');
-        } else {
-            sb.append('(').append(name);
-            
-            for (Object param : items)
-                sb.append(' ').append(param);
+        sb.append('[');
 
-            sb.append(')');
-        }
+        sb.append(items[0]);
         
+        TypeConstructorValue value = (TypeConstructorValue) items[1];
+        while (value.name.equals(":")) {
+            sb.append(", ").append(value.items[0]);
+            value = (TypeConstructorValue) value.items[1];
+        }
+
+        sb.append(']');
+        return sb.toString();
+    }
+
+    private String toStringDefault() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append('(').append(name);
+
+        for (Object param : items)
+            sb.append(' ').append(param);
+
+        sb.append(')');
+        return sb.toString();
+    }
+
+    private String toStringAsTuple() {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append('(');
+        for (int i = 0; i < items.length; i++) {
+            if (i != 0) sb.append(", ");
+
+            sb.append(items[i]);
+        }
+        sb.append(')');
         return sb.toString();
     }
 

@@ -97,4 +97,24 @@ public class BasicFunctions {
         else
             return BasicFunctions.error("not just " + value);
     }
+
+    @LibraryFunction(value = "nil?", type="[a] -> Boolean")
+    public static boolean isNil(TypeConstructorValue value) {
+        return value.name.equals("[]");
+    }
+
+    @LibraryFunction(value = "head", type="[a] -> a")
+    public static Object getHead(TypeConstructorValue value) {
+        return value.items[0];
+    }
+
+    @LibraryFunction(value = "tail", type="[a] -> [a]")
+    public static Object getTail(TypeConstructorValue value) {
+        return value.items[1];
+    }
+
+    @LibraryFunction(value="primitiveCons", type="a -> [a] -> [a]")
+    public static Object cons(Object head, Object tail) {
+        return new TypeConstructorValue(":", new Object[] { head, tail });
+    }
 }

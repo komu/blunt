@@ -107,6 +107,6 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     public CoreExpression visit(ASTConstructor constructor, StaticEnvironment ctx) {
         ConstructorDefinition ctor = dataTypes.findConstructor(constructor.name);
 
-        return new ASTVariable(ctor.primitive).accept(this, ctx);
+        return new ASTVariable(ctor.name).accept(this, ctx);
     }
 }
