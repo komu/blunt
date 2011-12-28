@@ -9,8 +9,16 @@ import komu.blunt.types.DataTypeDefinitions;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpression> {
-    
+
+    private final DataTypeDefinitions dataTypes;
+
+    public AnalyzingVisitor(DataTypeDefinitions dataTypes) {
+        this.dataTypes = checkNotNull(dataTypes);
+    }
+
     public CoreExpression analyze(ASTExpression exp, StaticEnvironment env) {
         return exp.accept(this, env);
     }
@@ -97,7 +105,7 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
 
     @Override
     public CoreExpression visit(ASTConstructor constructor, StaticEnvironment ctx) {
-        ConstructorDefinition ctor = DataTypeDefinitions.findConstructor(constructor.name);
+        ConstructorDefinition ctor = dataTypes.findConstructor(constructor.name);
 
         return new ASTVariable(ctor.primitive).accept(this, ctx);
     }

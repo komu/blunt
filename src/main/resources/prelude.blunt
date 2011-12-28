@@ -10,6 +10,10 @@ x - y   = primitiveOpMinus (x,y)
 mod x y = primitiveMod (x,y)
 mkCons x y = primitiveCons (x,y)
 
+data Boolean = True | False
+
+data Maybe a = Just a | Nothing
+
 maybe n j m =
   if just? m
     then j (fromJust m)

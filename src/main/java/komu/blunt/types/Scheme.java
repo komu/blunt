@@ -30,7 +30,7 @@ public final class Scheme implements Types<Scheme> {
 
     @Override
     public String toString() {
-        return kinds + " -> " + type;
+        return type.toString();
     }
 
     @Override

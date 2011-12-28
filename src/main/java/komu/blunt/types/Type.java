@@ -48,6 +48,13 @@ public abstract class Type implements Types<Type> {
     public static Type functionType(Type argumentType, Type returnType) {
         return genericType("->", argumentType, returnType);
     }
+    
+    public static Type functionType(List<Type> args, Type resultType) {
+        if (args.isEmpty())
+            return resultType;
+        else
+            return functionType(args.get(0), functionType(args.subList(1, args.size()), resultType));
+    }
 
     public static Type tupleType(Type... types) {
         return tupleType(asList(types));
@@ -57,7 +64,7 @@ public abstract class Type implements Types<Type> {
         return genericType(",", types);
     }
     
-    public static Type genericType(Class<?> cl, List<Type> params) {
+    public static Type genericType(Class<?> cl, List<? extends Type> params) {
         return genericType(mapName(cl), params);
     }
 
@@ -65,7 +72,7 @@ public abstract class Type implements Types<Type> {
         return genericType(name, asList(params));
     }
     
-    public static Type genericType(String name, List<Type> params) {
+    public static Type genericType(String name, List<? extends Type> params) {
         Type type = new TypeConstructor(name, Kind.ofParams(params.size()));
 
         for (Type param : params)

@@ -2,12 +2,13 @@ package komu.blunt.eval;
 
 import com.google.common.io.Resources;
 import komu.blunt.analyzer.Analyzer;
+import komu.blunt.analyzer.VariableReference;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
-import komu.blunt.ast.ASTDefine;
-import komu.blunt.ast.ASTExpression;
+import komu.blunt.ast.*;
+import komu.blunt.core.CoreDefineExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.PrimitiveFunction;
 import komu.blunt.parser.Parser;
@@ -71,17 +72,30 @@ public final class Evaluator {
     public void load(String source) throws IOException {
         Parser parser = new Parser(source);
 
-        for (ASTDefine define : parser.parseDefinitions())
-            define(define);
+        MyDefinitionVisitor visitor = new MyDefinitionVisitor();
+        for (ASTDefinition define : parser.parseDefinitions())
+            define.accept(visitor, null);
     }
 
-    public void define(ASTDefine define) {
-        Scheme type = TypeChecker.typeCheck(define, classEnv, rootBindings.createAssumptions());
-        
-        rootBindings.defineVariableType(define.name, type);
-        CoreExpression expression = define.analyze(rootBindings.staticEnvironment);
+    private final class MyDefinitionVisitor implements ASTDefinitionVisitor<Void,Void> {
+        @Override
+        public Void visit(ASTValueDefinition definition, Void ctx) {
+            Scheme type = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions());
+            
+            rootBindings.defineVariableType(definition.name, type);
+            VariableReference var = rootBindings.staticEnvironment.define(definition.name);
+            CoreExpression exp = Analyzer.analyze(definition.value, rootBindings.dataTypes, rootBindings.staticEnvironment);
 
-        run(expression);
+            run(new CoreDefineExpression(exp, var));
+            return null;
+        }
+
+        @Override
+        public Void visit(ASTDataDefinition definition, Void ctx) {
+            System.out.println(definition);
+            rootBindings.dataTypes.register(definition);
+            return null;
+        }
     }
 
     private Object run(CoreExpression expression) {
@@ -107,11 +121,11 @@ public final class Evaluator {
     }
 
     private Qualified<Type> typeCheck(ASTExpression exp) {
-        return TypeChecker.typeCheck(exp, classEnv, rootBindings.createAssumptions());
+        return TypeChecker.typeCheck(exp, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions());
     }
 
     private CoreExpression toCore(ASTExpression exp) {
-        return Analyzer.analyze(exp, rootBindings.staticEnvironment);
+        return Analyzer.analyze(exp, rootBindings.dataTypes, rootBindings.staticEnvironment);
     }
 
     public void dump() {

@@ -3,7 +3,7 @@ package komu.blunt.types;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ConstructorDefinition {
-    private final String name;
+    public final String name;
     public final Scheme scheme;
     public final String primitive;
 

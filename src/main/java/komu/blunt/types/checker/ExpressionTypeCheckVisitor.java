@@ -142,7 +142,7 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
 
     @Override
     public TypeCheckResult<Type> visit(ASTConstructor constructor, Assumptions as) {
-        ConstructorDefinition ctor = DataTypeDefinitions.findConstructor(constructor.name);
+        ConstructorDefinition ctor = tc.findConstructor(constructor.name);
 
         Qualified<Type> inst = tc.freshInstance(ctor.scheme);
         return TypeCheckResult.of(inst.value, inst.predicates);

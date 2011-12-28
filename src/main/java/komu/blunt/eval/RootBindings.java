@@ -20,6 +20,7 @@ public final class RootBindings {
     public final StaticEnvironment staticEnvironment = new StaticEnvironment();
     final RootEnvironment runtimeEnvironment = new RootEnvironment();
     private final Assumptions.Builder assumptions = Assumptions.builder();
+    public final DataTypeDefinitions dataTypes = new DataTypeDefinitions();
 
     public void bind(String name, Scheme type, Object value) {
         if (Arrays.asList("primitiveOpPlus", "primitiveOpMultiply", "primitiveOpMinus", "primitiveOpDivide", "primitiveMod").contains(name)) {

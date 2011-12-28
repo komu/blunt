@@ -15,23 +15,25 @@ import static komu.blunt.types.checker.Unifier.mgu;
 public final class TypeChecker {
 
     public final ClassEnv classEnv;
+    private final DataTypeDefinitions dataTypes;
     private int typeSequence = 0;
     private final ExpressionTypeCheckVisitor expressionVisitor = new ExpressionTypeCheckVisitor(this);
     private final BindingTypeChecker bindingTypeChecker = new BindingTypeChecker(this);
     private Substitution substitution = Substitution.empty();
 
-    private TypeChecker(ClassEnv classEnv) {
+    private TypeChecker(ClassEnv classEnv, DataTypeDefinitions dataTypes) {
         this.classEnv = checkNotNull(classEnv);
+        this.dataTypes = checkNotNull(dataTypes);
     }
 
-    public static Qualified<Type> typeCheck(ASTExpression exp, ClassEnv classEnv, Assumptions as) {
-        TypeChecker checker = new TypeChecker(classEnv);
+    public static Qualified<Type> typeCheck(ASTExpression exp, ClassEnv classEnv, DataTypeDefinitions dataTypes, Assumptions as) {
+        TypeChecker checker = new TypeChecker(classEnv, dataTypes);
 
         return checker.normalize(checker.typeCheck(exp, as));
     }
 
-    public static Scheme typeCheck(ASTDefine exp, ClassEnv classEnv, Assumptions as) {
-        TypeChecker checker = new TypeChecker(classEnv);
+    public static Scheme typeCheck(ASTValueDefinition exp, ClassEnv classEnv, DataTypeDefinitions dataTypes, Assumptions as) {
+        TypeChecker checker = new TypeChecker(classEnv, dataTypes);
 
         return quantifyAll(checker.normalize(checker.typeCheck(exp, as)));
     }
@@ -49,7 +51,7 @@ public final class TypeChecker {
         return bindingTypeChecker.typeCheckBindGroup(bindGroup, as);
     }
 
-    TypeCheckResult<Type> typeCheck(ASTDefine define, Assumptions as) {
+    TypeCheckResult<Type> typeCheck(ASTValueDefinition define, Assumptions as) {
         ASTLetRec let = new ASTLetRec(define.name, define.value, new ASTVariable(define.name));
         return typeCheck(let, as);
     }
@@ -97,5 +99,9 @@ public final class TypeChecker {
 
     <T extends Types<T>> List<T> applySubstitution(Collection<T> ts) {
         return TypeUtils.applySubstitution(substitution, ts);
+    }
+
+    public ConstructorDefinition findConstructor(String name) {
+        return dataTypes.findConstructor(name);
     }
 }

@@ -148,7 +148,7 @@ public final class Lexer {
         Keyword keyword = TokenType.keyword(name);
 
         return (keyword != null) ? Token.ofType(keyword)
-             : isUpperCase(name.charAt(0)) ? new Token<String>(CONSTRUCTOR_NAME, name)
+             : isUpperCase(name.charAt(0)) ? new Token<String>(TYPE_OR_CTOR_NAME, name)
              : new Token<String>(IDENTIFIER, name);
     }
 
@@ -172,6 +172,8 @@ public final class Lexer {
             return Token.ofType(LAMBDA);
         if (op.equals("="))
             return Token.ofType(ASSIGN);
+        if (op.equals("|"))
+            return Token.ofType(OR);
         else
             return new Token<Operator>(OPERATOR, new Operator(sb.toString()));
     }
