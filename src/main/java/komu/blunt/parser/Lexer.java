@@ -55,7 +55,11 @@ public final class Lexer {
     }
 
     public <T> Token<T> readToken(TokenType<T> type) throws IOException {
-        return readToken().asType(type);
+        Token<?> token = readToken();
+        if (token.type == type)
+            return token.asType(type);
+        else
+            throw parseError("expected token of type " + type + ", but got " + token);
     }
     
     public boolean readMatchingToken(TokenType<?> type) throws IOException {
@@ -146,9 +150,12 @@ public final class Lexer {
             sb.append(read());
 
         String name = sb.toString();
-        Keyword type = TokenType.keyword(name);
         
-        return type != null ? Token.ofType(type) : new Token<String>(IDENTIFIER, sb.toString());
+        Keyword keyword = TokenType.keyword(name);
+
+        return (keyword != null) ? Token.ofType(keyword)
+             : isUpperCase(name.charAt(0)) ? new Token<String>(CONSTRUCTOR_NAME, name)
+             : new Token<String>(IDENTIFIER, name);
     }
 
     private static boolean isIdentifierStart(int ch) {
@@ -219,7 +226,7 @@ public final class Lexer {
         return "=-+*/<>%?!|&$:.\\".indexOf(ch) != -1;
     }
     
-    private RuntimeException parseError(String message) {
-        return new RuntimeException("type error: " + message);
+    SyntaxException parseError(String message) {
+        return new SyntaxException("[" + getSourceLocation() + "] " + message);
     }
 }

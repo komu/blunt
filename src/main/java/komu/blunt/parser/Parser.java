@@ -21,7 +21,7 @@ public final class Parser {
 
     @SuppressWarnings("unchecked")
     private static final List<TokenType<?>> expressionStartTokens =
-        Arrays.asList(TokenType.IF, TokenType.LET, TokenType.LAMBDA, TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, IDENTIFIER);
+        Arrays.asList(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, IDENTIFIER, CONSTRUCTOR_NAME);
 
     public Parser(InputStream in) {
         this(new InputStreamReader(in));
@@ -154,6 +154,9 @@ public final class Parser {
         if (type == TokenType.LITERAL)
             return new ASTConstant(lexer.readToken(TokenType.LITERAL).value);
 
+        if (type == TokenType.CONSTRUCTOR_NAME)
+            return new ASTConstructor(lexer.readToken(TokenType.CONSTRUCTOR_NAME).value);
+
         return new ASTVariable(parseIdentifier());
     }
 
@@ -284,10 +287,10 @@ public final class Parser {
     }
 
     private SyntaxException parseError(final String s) {
-        return new SyntaxException("[" + lexer.getSourceLocation() + "] " + s);
+        return lexer.parseError(s);
     }
 
     private static ASTExpression binary(String op, ASTExpression lhs, ASTExpression rhs) {
-        return new ASTApplication(new ASTApplication(new ASTVariable(symbol(op)), lhs), rhs);
+        return new ASTApplication(new ASTApplication(new ASTVariable(op), lhs), rhs);
     }
 }

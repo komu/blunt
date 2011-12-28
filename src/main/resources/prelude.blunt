@@ -8,7 +8,6 @@ x / y   = primitiveOpDivide (x,y)
 x + y   = primitiveOpPlus (x,y)
 x - y   = primitiveOpMinus (x,y)
 x : y   = primitiveCons (x,y)
-Nothing = primitiveNothing ()
 mod x y = primitiveMod (x,y)
 
 maybe n j m =

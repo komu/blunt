@@ -12,6 +12,7 @@ public class TokenType<T> {
     public static final TokenType<Void> EOF = new TokenType<Void>(Void.class, "<eof>");
     public static final TokenType<Object> LITERAL = new TokenType<Object>(Object.class, "<literal>");
     public static final TokenType<String> IDENTIFIER = new TokenType<String>(String.class, "<identifier>");
+    public static final TokenType<String> CONSTRUCTOR_NAME = new TokenType<String>(String.class, "<constructor-name>");
     public static final TokenType<Operator> OPERATOR = new TokenType<Operator>(Operator.class, "<operator>");
     public static final Keyword IF   = new Keyword("if");
     public static final Keyword THEN = new Keyword("then");
