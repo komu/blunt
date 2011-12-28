@@ -73,6 +73,10 @@ public final class ClassEnv {
                            isIn("Ord", tyVar("b", STAR))),
                     isIn("Ord", tupleType(tyVar("a", STAR), tyVar("b", STAR))));
 
+        addInstance(asList(isIn("Eq", tyVar("a", STAR)),
+                           isIn("Eq", tyVar("b", STAR))),
+                    isIn("Eq", tupleType(tyVar("a", STAR), tyVar("b", STAR))));
+
         addInstance(asList(isIn("Eq", tyVar("a", STAR))),
                     isIn("Eq", Type.listType(tyVar("a", STAR))));
     }
