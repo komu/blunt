@@ -14,7 +14,7 @@ final class SourceReader {
     }
 
     public int read() {
-        if (position >= source.length()) return -1;
+        if (!hasMore()) return -1;
 
         char ch = source.charAt(position++);
         if (ch == '\n') {
@@ -26,6 +26,14 @@ final class SourceReader {
         
         return ch;
     }
+    
+    public boolean matches(String s) {
+        assert !s.isEmpty();
+        
+        if (!hasMore()) return false;
+        
+        return source.regionMatches(position, s, 0, s.length());
+    }
 
     public int getLine() {
         return line;
@@ -36,9 +44,13 @@ final class SourceReader {
     }
 
     public int peek() {
-        if (position < source.length())
+        if (hasMore())
             return source.charAt(position);
         else
             return -1;
+    }
+
+    private boolean hasMore() {
+        return position < source.length();
     }
 }

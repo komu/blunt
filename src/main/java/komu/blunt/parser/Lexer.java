@@ -123,11 +123,11 @@ public final class Lexer {
     }
 
     private void skipWhitespace() {
-        while (isWhiteSpaceOrComment(reader.peek())) {
-            char ch = read();
-            if (ch == '#') {
+        while (isWhitespace(reader.peek()) || reader.matches("--")) {
+            if (reader.matches("--"))
                 skipToEndOfLine();
-            }
+            else
+                read();
         }
     }
 
@@ -135,10 +135,6 @@ public final class Lexer {
         while (reader.peek() != -1)
             if (read() == '\n')
                 break;
-    }
-
-    private static boolean isWhiteSpaceOrComment(int ch) {
-        return ch == '#' || isWhitespace(ch);
     }
 
     private Token<?> readIdentifierOrKeyword() {
