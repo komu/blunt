@@ -1,74 +1,84 @@
 package komu.blunt.types.checker;
 
+import com.google.common.collect.ImmutableMap;
+import komu.blunt.eval.TypeCheckException;
 import komu.blunt.types.Type;
 import komu.blunt.types.TypeGen;
 import komu.blunt.types.TypeVariable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-import static com.google.common.collect.Sets.intersection;
-import static java.util.Collections.singletonMap;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Substitution {
     
-    private final Map<TypeVariable,Type> mapping = new HashMap<TypeVariable, Type>();
+    private final ImmutableMap<TypeVariable,Type> mapping;
 
-    private Substitution() {
+    private Substitution(ImmutableMap<TypeVariable,Type> mapping) {
+        this.mapping = checkNotNull(mapping);
     }
     
-    private Substitution(Map<TypeVariable, Type> mapping) {
-        this.mapping.putAll(mapping);
+    public static Substitution empty() {
+        return new Substitution(ImmutableMap.<TypeVariable,Type>of());
     }
-    
-    public Substitution(List<TypeVariable> variables) {
+
+    public static Substitution singleton(TypeVariable var, Type type) {
+        assert var.getKind().equals(type.getKind());
+
+        return new Substitution(ImmutableMap.of(var, type));
+    }
+
+    public static Substitution fromTypeVariables(List<TypeVariable> variables) {
+        ImmutableMap.Builder<TypeVariable,Type> builder = ImmutableMap.builder();
+
         int index = 0;
         for (TypeVariable var : variables)
-            mapping.put(var, new TypeGen(index++));
-    }
-
-    private Substitution(Map<TypeVariable, Type> m1, Map<TypeVariable, Type> m2) {
-        mapping.putAll(m1);
-        mapping.putAll(m2);
+            builder.put(var, new TypeGen(index++));
+        
+        return new Substitution(builder.build());
     }
 
     // @@
     public Substitution compose(Substitution s2) {
-        Substitution result = new Substitution();
-        
+        ImmutableMap.Builder<TypeVariable,Type> builder = ImmutableMap.builder();
+
         for (Map.Entry<TypeVariable,Type> entry : s2.mapping.entrySet())
-            result.mapping.put(entry.getKey(), entry.getValue().apply(this));
+            builder.put(entry.getKey(), entry.getValue().apply(this));
 
-        result.mapping.putAll(mapping);
+        builder.putAll(mapping);
 
-        return result;
+        return new Substitution(builder.build());
     }
     
     public Substitution merge(Substitution s2) {
-        if (agree(s2))
-            return new Substitution(mapping, s2.mapping);
-        else
-            throw new RuntimeException("merge fails");
+        if (agree(s2)) {
+            ImmutableMap.Builder<TypeVariable,Type> builder = ImmutableMap.builder();
+            builder.putAll(mapping);
+            builder.putAll(s2.mapping);
+            
+            return new Substitution(builder.build());
+        } else
+            throw new TypeCheckException("merge failed");
     }
 
     private boolean agree(Substitution s2) {
-        for (TypeVariable var : intersection(variables(), s2.variables()))
-            if (!var.apply(this).equals(var.apply(s2)))
-                return false;
+        for (TypeVariable var : mapping.keySet())
+            if (s2.mapping.containsKey(var))
+                if (!var.apply(this).equals(var.apply(s2)))
+                    return false;
 
         return true;
     }
-    
-    private Set<TypeVariable> variables() {
-        return mapping.keySet();
-    }
 
     public Substitution apply(Substitution subst) {
-        Substitution result = new Substitution();
+        ImmutableMap.Builder<TypeVariable,Type> builder = ImmutableMap.builder();
 
         for (Map.Entry<TypeVariable,Type> entry : mapping.entrySet())
-            result.mapping.put(entry.getKey(), entry.getValue().apply(subst));
+            builder.put(entry.getKey(), entry.getValue().apply(subst));
 
-        return result;
+        return new Substitution(builder.build());
     }
 
     public Type lookup(TypeVariable variable) {
@@ -82,19 +92,5 @@ public final class Substitution {
             result.add(type.apply(this));
         
         return result;
-    }
-
-    public Substitution union(Substitution subst) {
-        return new Substitution(mapping, subst.mapping);
-    }
-
-    public static Substitution empty() {
-        return new Substitution();
-    }
-
-    public static Substitution singleton(TypeVariable var, Type type) {
-        assert var.getKind().equals(type.getKind());
-
-        return new Substitution(singletonMap(var, type));
     }
 }

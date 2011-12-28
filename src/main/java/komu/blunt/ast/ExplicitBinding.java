@@ -1,14 +1,9 @@
 package komu.blunt.ast;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.List;
-
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.Predicate;
 import komu.blunt.types.Scheme;
-import komu.blunt.types.checker.Assumptions;
-import komu.blunt.types.checker.TypeCheckingVisitor;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ExplicitBinding {
     
@@ -20,9 +15,5 @@ public final class ExplicitBinding {
         this.name = checkNotNull(name);
         this.scheme = checkNotNull(scheme);
         this.value = checkNotNull(value);
-    }
-
-    public List<Predicate> typeCheck(TypeCheckingVisitor checker, Assumptions as) {
-        throw new UnsupportedOperationException("explicit bindings are not implemented");
     }
 }

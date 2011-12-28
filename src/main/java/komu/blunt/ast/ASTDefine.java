@@ -1,17 +1,13 @@
 package komu.blunt.ast;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import komu.blunt.analyzer.AnalyzingVisitor;
+import komu.blunt.analyzer.Analyzer;
 import komu.blunt.analyzer.StaticEnvironment;
 import komu.blunt.analyzer.VariableReference;
 import komu.blunt.core.CoreDefineExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.Symbol;
-import komu.blunt.types.Type;
-import komu.blunt.types.checker.Assumptions;
-import komu.blunt.types.checker.TypeCheckResult;
-import komu.blunt.types.checker.TypeCheckingVisitor;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTDefine {
 
@@ -24,14 +20,9 @@ public final class ASTDefine {
     }
 
     public CoreExpression analyze(StaticEnvironment rootEnv) {
-        AnalyzingVisitor analyzer = new AnalyzingVisitor();
         VariableReference var = rootEnv.define(name);
 
-        return new CoreDefineExpression(analyzer.analyze(value, rootEnv), var);
-    }
-
-    public TypeCheckResult<Type> typeCheck(TypeCheckingVisitor checker, Assumptions as) {
-        return checker.typeCheck(new ASTLetRec(name, value, new ASTVariable(name)), as);
+        return new CoreDefineExpression(Analyzer.analyze(value, rootEnv), var);
     }
 
     @Override

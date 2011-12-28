@@ -14,12 +14,12 @@ The main flow:
          v
   ast.ASTExpression
          |
-         |  types.types.TypeCheckingVisitor
+         |  types.checker.TypeChecker
          |
          v
   ast.ASTExpression
          |
-         |  analyzer.AnalyzingVisitor
+         |  analyzer.Analyzer
          |
          v
   core.CoreExpression

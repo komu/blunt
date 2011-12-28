@@ -18,14 +18,7 @@ public final class TypeUtils {
         return types;
     }
 
-    public static Set<TypeVariable> getTypeVariables(List<? extends Types<?>> ts) {
-        LinkedHashSet<TypeVariable> types = new LinkedHashSet<TypeVariable>();
-        for (Types<?> t : ts)
-            t.addTypeVariables(types);
-        return types;
-    }
-    
-    public static <T extends Types<T>> List<T> apply(Substitution substitution, Collection<? extends T> ts) {
+    public static <T extends Types<T>> List<T> applySubstitution(Substitution substitution, Collection<? extends T> ts) {
         List<T> result = new ArrayList<T>(ts.size());
         
         for (T t : ts)

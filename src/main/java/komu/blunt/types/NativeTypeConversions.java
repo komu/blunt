@@ -1,8 +1,5 @@
 package komu.blunt.types;
 
-import static java.lang.reflect.Modifier.isStatic;
-import static komu.blunt.types.Qualified.quantifyAll;
-
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -10,6 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.lang.reflect.Modifier.isStatic;
+import static komu.blunt.types.Qualified.quantifyAll;
 
 public final class NativeTypeConversions {
 

@@ -35,7 +35,7 @@ public final class Qualified<T extends Types<T>> implements Types<Qualified<T>> 
 
     @Override
     public Qualified<T> apply(Substitution substitution) {
-        return new Qualified<T>(TypeUtils.apply(substitution, predicates), value.apply(substitution));
+        return new Qualified<T>(TypeUtils.applySubstitution(substitution, predicates), value.apply(substitution));
     }
 
     public static Scheme quantifyAll(Qualified<Type> qt) {
@@ -56,7 +56,7 @@ public final class Qualified<T extends Types<T>> implements Types<Qualified<T>> 
                 kinds.add(v.getKind());
             }
 
-        return new Scheme(kinds, qt.apply(new Substitution(vars)));
+        return new Scheme(kinds, qt.apply(Substitution.fromTypeVariables(vars)));
     }
 
     public static Qualified<Type> instantiate(List<TypeVariable> ts, Qualified<Type> t) {

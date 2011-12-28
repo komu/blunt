@@ -5,6 +5,7 @@ import komu.blunt.types.checker.Substitution;
 import komu.blunt.types.checker.TypeUtils;
 import komu.blunt.types.checker.UnificationException;
 import komu.blunt.types.checker.Unifier;
+import komu.blunt.utils.Pair;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -16,6 +17,7 @@ import static komu.blunt.types.Kind.STAR;
 import static komu.blunt.types.Predicate.isIn;
 import static komu.blunt.types.Type.tupleType;
 import static komu.blunt.types.TypeVariable.tyVar;
+import static komu.blunt.types.checker.TypeUtils.getTypeVariables;
 
 public final class ClassEnv {
     
@@ -123,7 +125,7 @@ public final class ClassEnv {
         for (ClassInstance it : getInstances(predicate.className)) {
             try {
                 Substitution s = Unifier.matchPredicate(it.getPredicate(), predicate);
-                return TypeUtils.apply(s, it.getPredicates());
+                return TypeUtils.applySubstitution(s, it.getPredicates());
             } catch (UnificationException e) {
                 // skip
             }
@@ -181,6 +183,22 @@ public final class ClassEnv {
     
     public List<Predicate> reduce(List<Predicate> ps) {
         return simplify(toHfns(ps));
+    }
+
+    public Pair<List<Predicate>, List<Predicate>> split(Set<TypeVariable> fixedVariables,
+                                                        Set<TypeVariable> quantifyVariables,
+                                                        List<Predicate> originalPredicates) {
+        List<Predicate> deferredPredicates = new ArrayList<Predicate>();
+        List<Predicate> retainedPredicates = new ArrayList<Predicate>();
+
+        for (Predicate predicate : reduce(originalPredicates))
+            if (fixedVariables.containsAll(getTypeVariables(predicate)))
+                deferredPredicates.add(predicate);
+            else
+                retainedPredicates.add(predicate);
+
+        // TODO: defaulted
+        return new Pair<List<Predicate>,List<Predicate>>(deferredPredicates, retainedPredicates);
     }
 
     private Set<String> allClassNames() {

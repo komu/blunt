@@ -1,12 +1,10 @@
 package komu.blunt.types;
 
-import static com.google.common.base.Strings.repeat;
-import static komu.blunt.types.Type.functionType;
-import static komu.blunt.types.Type.genericType;
-import static komu.blunt.types.Type.listType;
-import static komu.blunt.types.TypeVariable.tyVar;
-
 import komu.blunt.analyzer.AnalyzationException;
+
+import static com.google.common.base.Strings.repeat;
+import static komu.blunt.types.Type.*;
+import static komu.blunt.types.TypeVariable.tyVar;
 
 public class DataTypeDefinitions {
     public static final String CONS = ":";
