@@ -1,5 +1,6 @@
 package komu.blunt.types;
 
+import static com.google.common.base.Strings.repeat;
 import static komu.blunt.types.Type.functionType;
 import static komu.blunt.types.Type.genericType;
 import static komu.blunt.types.Type.listType;
@@ -27,6 +28,10 @@ public class DataTypeDefinitions {
             return new ConstructorDefinition(name, consType(), "mkCons");
 
         throw new AnalyzationException("unknown type constructor: " + name);
+    }
+    
+    public static String tupleName(int arity) {
+        return "(" + repeat(",", arity) + ")";
     }
 
     private static Scheme nothingType() {

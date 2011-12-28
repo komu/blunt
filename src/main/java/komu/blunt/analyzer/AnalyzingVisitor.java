@@ -1,13 +1,36 @@
 package komu.blunt.analyzer;
 
-import komu.blunt.ast.*;
-import komu.blunt.core.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import komu.blunt.ast.ASTApplication;
+import komu.blunt.ast.ASTConstant;
+import komu.blunt.ast.ASTConstructor;
+import komu.blunt.ast.ASTExpression;
+import komu.blunt.ast.ASTIf;
+import komu.blunt.ast.ASTLambda;
+import komu.blunt.ast.ASTLet;
+import komu.blunt.ast.ASTLetRec;
+import komu.blunt.ast.ASTList;
+import komu.blunt.ast.ASTSequence;
+import komu.blunt.ast.ASTSet;
+import komu.blunt.ast.ASTTuple;
+import komu.blunt.ast.ASTVariable;
+import komu.blunt.ast.ASTVisitor;
+import komu.blunt.ast.ImplicitBinding;
+import komu.blunt.core.CoreApplicationExpression;
+import komu.blunt.core.CoreConstantExpression;
+import komu.blunt.core.CoreConstructorExpression;
+import komu.blunt.core.CoreExpression;
+import komu.blunt.core.CoreIfExpression;
+import komu.blunt.core.CoreLambdaExpression;
+import komu.blunt.core.CoreLetExpression;
+import komu.blunt.core.CoreSequenceExpression;
+import komu.blunt.core.CoreSetExpression;
+import komu.blunt.core.CoreVariableExpression;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.ConstructorDefinition;
 import komu.blunt.types.DataTypeDefinitions;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpression> {
     
@@ -81,7 +104,8 @@ public final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, Cor
 
     @Override
     public CoreExpression visit(ASTTuple tuple, StaticEnvironment env) {
-        return new CoreTupleExpression(analyzeAll(tuple.exps, env));
+        String name = DataTypeDefinitions.tupleName(tuple.exps.size());
+        return new CoreConstructorExpression(name, analyzeAll(tuple.exps, env));
     }
 
     @Override

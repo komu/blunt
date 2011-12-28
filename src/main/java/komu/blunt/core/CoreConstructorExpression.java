@@ -1,19 +1,23 @@
 package komu.blunt.core;
 
-import com.google.common.base.Strings;
-import komu.blunt.asm.Instructions;
-import komu.blunt.asm.Linkage;
-import komu.blunt.asm.Register;
+import static com.google.common.collect.Lists.reverse;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.collect.Lists.reverse;
+import com.google.common.base.Preconditions;
 
-public final class CoreTupleExpression extends CoreExpression {
+import komu.blunt.asm.Instructions;
+import komu.blunt.asm.Linkage;
+import komu.blunt.asm.Register;
+
+public final class CoreConstructorExpression extends CoreExpression {
+
+    private final String name;
     private final List<CoreExpression> exps;
 
-    public CoreTupleExpression(List<CoreExpression> exps) {
+    public CoreConstructorExpression(String name, List<CoreExpression> exps) {
+        this.name = Preconditions.checkNotNull(name);
         this.exps = new ArrayList<CoreExpression>(exps);
     }
 
@@ -24,7 +28,6 @@ public final class CoreTupleExpression extends CoreExpression {
             instructions.pushRegister(target);
         }
         
-        String name = "(" + Strings.repeat(",", exps.size()) + ")";
         instructions.loadConstructed(target, name, exps.size());
 
         instructions.finishWithLinkage(linkage);
