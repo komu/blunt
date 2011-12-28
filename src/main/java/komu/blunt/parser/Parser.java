@@ -4,7 +4,10 @@ import komu.blunt.ast.*;
 import komu.blunt.objects.Symbol;
 import komu.blunt.objects.Unit;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,14 +35,10 @@ public final class Parser {
     }
 
     public static ASTExpression parse(String input) {
-        try {
-            return new Parser(new StringReader(input)).parseExpression();
-        } catch (IOException e) {
-            throw new RuntimeException("unexpected IOException: " + e, e);
-        }
+        return new Parser(new StringReader(input)).parseExpression();
     }
     
-    public List<ASTDefine> parseDefinitions() throws IOException {
+    public List<ASTDefine> parseDefinitions() {
         List<ASTDefine> result = new ArrayList<ASTDefine>();
         
         while (lexer.peekTokenType() != TokenType.EOF)
@@ -50,7 +49,7 @@ public final class Parser {
     
     // <ident> <op> <ident> = <exp> ;;
     // <ident> <ident>* = <exp> ;;
-    private ASTDefine parseDefinition() throws IOException {
+    private ASTDefine parseDefinition() {
         Symbol name = parseIdentifier();
         List<Symbol> args = new ArrayList<Symbol>();
         
@@ -77,7 +76,7 @@ public final class Parser {
             return new ASTDefine(name, new ASTLambda(args, value));
     }
 
-    public ASTExpression parseExpression() throws IOException {
+    public ASTExpression parseExpression() {
         ASTExpression exp = parseExp(0);
 
         while (true) {
@@ -99,14 +98,14 @@ public final class Parser {
         return token.type == OPERATOR && !token.asType(OPERATOR).value.isBuiltin();
     }
 
-    private ASTExpression parseExp(int level) throws IOException {
+    private ASTExpression parseExp(int level) {
         if (level <= operators.getMaxLevel())
             return parseExpN(level);
         else
             return parseApplicative();
     }
 
-    private ASTExpression parseExpN(int level) throws IOException {
+    private ASTExpression parseExpN(int level) {
         ASTExpression exp = parseExp(level+1);
 
         while (true) {
@@ -121,7 +120,7 @@ public final class Parser {
         }
     }
 
-    private ASTExpression parseApplicative() throws IOException {
+    private ASTExpression parseApplicative() {
         ASTExpression exp = parsePrimitive();
 
         while (expressionStartTokens.contains(lexer.peekTokenType()))
@@ -130,7 +129,7 @@ public final class Parser {
         return exp;
     }
 
-    private ASTExpression parsePrimitive() throws IOException {
+    private ASTExpression parsePrimitive() {
         TokenType type = lexer.peekTokenType();
         
         if (type == TokenType.EOF)
@@ -161,7 +160,7 @@ public final class Parser {
     }
 
     // if <expr> then <expr> else <expr>
-    private ASTExpression parseIf() throws IOException {
+    private ASTExpression parseIf() {
         expectToken(TokenType.IF);
         ASTExpression test = parseExpression();
         expectToken(TokenType.THEN);
@@ -173,7 +172,7 @@ public final class Parser {
     }
 
     // let [rec] <ident> <ident>* = <expr> in <expr>
-    private ASTExpression parseLet() throws IOException {
+    private ASTExpression parseLet() {
         expectToken(TokenType.LET);
         boolean recursive = lexer.readMatchingToken(TokenType.REC);
         
@@ -208,7 +207,7 @@ public final class Parser {
     }
 
     // \ <ident> -> expr
-    private ASTExpression parseLambda() throws IOException {
+    private ASTExpression parseLambda() {
         expectToken(TokenType.LAMBDA);
         
         List<Symbol> args = new ArrayList<Symbol>();
@@ -221,7 +220,7 @@ public final class Parser {
     }
 
     // () | (<op>) | ( <expr> )
-    private ASTExpression parseParens() throws IOException {
+    private ASTExpression parseParens() {
         expectToken(TokenType.LPAREN);
         if (lexer.readMatchingToken(TokenType.RPAREN))
             return new ASTConstant(Unit.INSTANCE);
@@ -248,7 +247,7 @@ public final class Parser {
     
     // []
     // [<exp> (,<exp>)*]
-    private ASTExpression parseList() throws IOException {
+    private ASTExpression parseList() {
         ASTList list = new ASTList();
 
         expectToken(TokenType.LBRACKET);
@@ -264,7 +263,7 @@ public final class Parser {
         return list;
     }
 
-    private Symbol parseIdentifier() throws IOException {
+    private Symbol parseIdentifier() {
         Token<?> token = lexer.readToken();
 
         if (token.type == IDENTIFIER)
@@ -279,7 +278,7 @@ public final class Parser {
         throw new SyntaxException("expected identifier, got " + token);
     }
 
-    private void expectToken(TokenType<?> expected) throws IOException {
+    private void expectToken(TokenType<?> expected) {
         Token<?> token = lexer.readToken();
 
         if (expected != token.type)

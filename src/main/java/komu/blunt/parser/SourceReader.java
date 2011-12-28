@@ -16,7 +16,7 @@ final class SourceReader {
         this.reader = checkNotNull(reader);
     }
 
-    public int read() throws IOException {
+    public int read() {
         int ch = readInternal();
         if (ch == '\n') {
             line++;
@@ -36,19 +36,27 @@ final class SourceReader {
         return column;
     }
 
-    private int readInternal() throws IOException {
+    private int readInternal() {
         if (peeked != -1) {
             int value = peeked;
             peeked = -1;
             return value;
         }
-        return reader.read();
+        return readCharFromBuffer();
     }
 
-    public int peek() throws IOException {
+    public int peek() {
         if (peeked == -1) {
-            peeked = reader.read();
+            peeked = readCharFromBuffer();
         }
         return peeked;
+    }
+    
+    private int readCharFromBuffer() {
+        try {
+            return reader.read();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
