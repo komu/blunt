@@ -1,11 +1,11 @@
 package komu.blunt.parser;
 
-import komu.blunt.objects.Symbol;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import komu.blunt.objects.Symbol;
 
 public final class Operator {
 
@@ -63,5 +63,9 @@ public final class Operator {
     @Override
     public int hashCode() {
         return name.hashCode();
+    }
+
+    public boolean isConstructor() {
+        return name.startsWith(":");
     }
 }

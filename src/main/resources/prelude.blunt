@@ -7,8 +7,8 @@ x * y   = primitiveOpMultiply (x,y)
 x / y   = primitiveOpDivide (x,y)
 x + y   = primitiveOpPlus (x,y)
 x - y   = primitiveOpMinus (x,y)
-x : y   = primitiveCons (x,y)
 mod x y = primitiveMod (x,y)
+mkCons x y = primitiveCons (x,y)
 
 maybe n j m =
   if just? m

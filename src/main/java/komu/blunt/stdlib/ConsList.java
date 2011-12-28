@@ -5,6 +5,8 @@ import static com.google.common.base.Objects.equal;
 @TypeName("[]")
 public abstract class ConsList<T> {
 
+    @SuppressWarnings("unused")
+    @LibraryValue("primitiveNil")
     public static final ConsList<?> NIL = new Nil<Object>();
 
     private static final class Cons<T> extends ConsList<T> {
@@ -109,12 +111,6 @@ public abstract class ConsList<T> {
 
         sb.append("]");
         return sb.toString();
-    }
-
-    @LibraryFunction("primitiveNil")
-    @SuppressWarnings({"unchecked", "unused"})
-    public static <T> ConsList<T> nil() {
-        return (ConsList<T>) NIL;
     }
 
     @LibraryFunction("primitiveCons")

@@ -1,17 +1,39 @@
 package komu.blunt.parser;
 
-import komu.blunt.ast.*;
-import komu.blunt.objects.Symbol;
-import komu.blunt.objects.Unit;
+import static java.util.Arrays.asList;
+import static komu.blunt.objects.Symbol.symbol;
+import static komu.blunt.parser.Associativity.LEFT;
+import static komu.blunt.parser.TokenType.ASSIGN;
+import static komu.blunt.parser.TokenType.CONSTRUCTOR_NAME;
+import static komu.blunt.parser.TokenType.IDENTIFIER;
+import static komu.blunt.parser.TokenType.IF;
+import static komu.blunt.parser.TokenType.LAMBDA;
+import static komu.blunt.parser.TokenType.LBRACKET;
+import static komu.blunt.parser.TokenType.LET;
+import static komu.blunt.parser.TokenType.LITERAL;
+import static komu.blunt.parser.TokenType.LPAREN;
+import static komu.blunt.parser.TokenType.OPERATOR;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static komu.blunt.objects.Symbol.symbol;
-import static komu.blunt.parser.Associativity.LEFT;
-import static komu.blunt.parser.TokenType.*;
+import komu.blunt.ast.ASTApplication;
+import komu.blunt.ast.ASTConstant;
+import komu.blunt.ast.ASTConstructor;
+import komu.blunt.ast.ASTDefine;
+import komu.blunt.ast.ASTExpression;
+import komu.blunt.ast.ASTIf;
+import komu.blunt.ast.ASTLambda;
+import komu.blunt.ast.ASTLet;
+import komu.blunt.ast.ASTLetRec;
+import komu.blunt.ast.ASTList;
+import komu.blunt.ast.ASTSequence;
+import komu.blunt.ast.ASTTuple;
+import komu.blunt.ast.ASTVariable;
+import komu.blunt.ast.ImplicitBinding;
+import komu.blunt.objects.Symbol;
+import komu.blunt.objects.Unit;
 
 public final class Parser {
 
@@ -76,7 +98,7 @@ public final class Parser {
                 Operator operator = lexer.readToken(OPERATOR).value;
                 Associativity associativity = operators.getAssociativity(operator);
                 ASTExpression rhs = associativity == LEFT ? parseExp(0) : parseExpression();
-                exp = binary(operator.toString(), exp, rhs);
+                exp = binary(operator, exp, rhs);
             } else if (lexer.readMatchingToken(TokenType.SEMICOLON)) {
                 ASTExpression rhs = parseExp(0);
                 exp = new ASTSequence(exp, rhs);
@@ -105,7 +127,7 @@ public final class Parser {
             if (op != null) {
                 Associativity associativity = operators.getAssociativity(op);
                 ASTExpression rhs = parseExp(associativity == LEFT ? level+1 : level);
-                exp = binary(op.toString(), exp, rhs);
+                exp = binary(op, exp, rhs);
             } else {
                 return exp;
             }
@@ -125,7 +147,7 @@ public final class Parser {
         TokenType type = lexer.peekTokenType();
         
         if (type == TokenType.EOF)
-            throw new SyntaxException("unexpected eof");
+            throw parseError("unexpected eof");
         
         if (type == TokenType.IF)
             return parseIf();
@@ -145,10 +167,7 @@ public final class Parser {
         if (type == TokenType.LITERAL)
             return new ASTConstant(lexer.readToken(TokenType.LITERAL).value);
 
-        if (type == TokenType.CONSTRUCTOR_NAME)
-            return new ASTConstructor(lexer.readToken(TokenType.CONSTRUCTOR_NAME).value);
-
-        return new ASTVariable(parseIdentifier());
+        return parseVariableOrConstructor();
     }
 
     // if <expr> then <expr> else <expr>
@@ -220,7 +239,8 @@ public final class Parser {
         if (lexer.nextTokenIs(OPERATOR)) {
             Operator op = lexer.readToken(OPERATOR).value;
             expectToken(TokenType.RPAREN);
-            return new ASTVariable(op.toString());
+            
+            return op.isConstructor() ? new ASTConstructor(op.toString()) : new ASTVariable(op.toString());
         }
         
         List<ASTExpression> exps = new ArrayList<ASTExpression>();
@@ -255,6 +275,28 @@ public final class Parser {
         return list;
     }
 
+    private ASTExpression parseVariableOrConstructor() {
+        Token<?> token = lexer.readToken();
+
+        if (token.type == IDENTIFIER)
+            return new ASTVariable(token.asType(IDENTIFIER).value);
+
+        if (token.type == CONSTRUCTOR_NAME)
+            return new ASTConstructor(token.asType(CONSTRUCTOR_NAME).value);
+
+        if (token.type == TokenType.LPAREN) {
+            Operator op = lexer.readToken(OPERATOR).value;
+            expectToken(TokenType.RPAREN);
+            
+            if (op.isConstructor())
+                return new ASTConstructor(op.toString());
+            else
+                return new ASTVariable(op.toSymbol());
+        }
+
+        throw parseError("expected identifier or type constructor, got " + token);
+    }
+
     private Symbol parseIdentifier() {
         Token<?> token = lexer.readToken();
 
@@ -267,7 +309,7 @@ public final class Parser {
             return op.asType(OPERATOR).value.toSymbol();
         }
 
-        throw new SyntaxException("expected identifier, got " + token);
+        throw parseError("expected identifier, got " + token);
     }
 
     private void expectToken(TokenType<?> expected) {
@@ -281,7 +323,8 @@ public final class Parser {
         return lexer.parseError(s);
     }
 
-    private static ASTExpression binary(String op, ASTExpression lhs, ASTExpression rhs) {
-        return new ASTApplication(new ASTApplication(new ASTVariable(op), lhs), rhs);
+    private static ASTExpression binary(Operator op, ASTExpression lhs, ASTExpression rhs) {
+        ASTExpression exp = op.isConstructor() ? new ASTConstructor(op.toString()) : new ASTVariable(op.toString());
+        return new ASTApplication(new ASTApplication(exp, lhs), rhs);
     }
 }
