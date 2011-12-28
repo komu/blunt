@@ -7,7 +7,7 @@ The main flow:
          |  parser.Lexer
          |
          v
-       tokens
+ parser.Token sequence
          |
          |  parser.Parser
          |
@@ -33,7 +33,10 @@ The main flow:
          o
 
 Things to do:
-  - data type definitions
+  - non-generic type parameters for constructors
+  - pattern matching against data types
+    - rewrite if to pattern match
+  - explicit type definitions
   - type aliases
   - type classes
   - newtype declarations
