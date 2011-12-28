@@ -8,7 +8,6 @@ x / y   = primitiveOpDivide (x,y)
 x + y   = primitiveOpPlus (x,y)
 x - y   = primitiveOpMinus (x,y)
 mod x y = primitiveMod (x,y)
-mkCons x y = primitiveCons (x,y)
 
 data Boolean = True | False
 

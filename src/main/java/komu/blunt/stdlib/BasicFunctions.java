@@ -112,9 +112,4 @@ public class BasicFunctions {
     public static Object getTail(TypeConstructorValue value) {
         return value.items[1];
     }
-
-    @LibraryFunction(value="primitiveCons", type="a -> [a] -> [a]")
-    public static Object cons(Object head, Object tail) {
-        return new TypeConstructorValue(":", new Object[] { head, tail });
-    }
 }
