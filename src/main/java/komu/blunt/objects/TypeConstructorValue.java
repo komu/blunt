@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class TypeConstructorValue {
+public final class TypeConstructorValue implements Comparable<TypeConstructorValue> {
     
     private final String name;
     public final Object[] items;
@@ -62,5 +62,21 @@ public final class TypeConstructorValue {
     @Override
     public int hashCode() {
         return Arrays.hashCode(items);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public int compareTo(TypeConstructorValue o) {
+        assert name.equals(o.name);
+        assert items.length == o.items.length;
+        
+        for (int i = 0; i < items.length; i++) {
+            Comparable lhs = (Comparable) items[i];
+            Comparable rhs = (Comparable) o.items[i];
+            int c = lhs.compareTo(rhs);
+            if (c != 0)
+                return c;
+        }
+        return 0;
     }
 }
