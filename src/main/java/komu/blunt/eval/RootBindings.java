@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static komu.blunt.objects.Symbol.symbol;
 import static komu.blunt.types.Predicate.isIn;
@@ -31,18 +30,17 @@ public final class RootBindings {
     public void bind(String name, Scheme type, Object value) {
         if (Arrays.asList("primitiveOpPlus", "primitiveOpMultiply", "primitiveOpMinus", "primitiveOpDivide", "primitiveMod").contains(name)) {
             TypeVariable var = tyVar("a", Kind.STAR);
-            Qualified<Type> t = new Qualified<Type>(singletonList(isIn("Num", var)), functionType(tupleType(var, var), var));
-            Scheme scheme = quantify(singleton(var), t);
+            Scheme scheme = quantify(var, new Qualified<Type>(singletonList(isIn("Num", var)), functionType(tupleType(var, var), var)));
             bind(symbol(name), scheme, value);
         } else if (name.equals("primitiveOpEq")) {
             TypeVariable var = tyVar("a", Kind.STAR);
             Qualified<Type> t = new Qualified<Type>(singletonList(isIn("Eq", var)), functionType(tupleType(var, var), Type.BOOLEAN));
-            Scheme scheme = quantify(singleton(var), t);
+            Scheme scheme = quantify(var, t);
             bind(symbol(name), scheme, value);
         } else if (Arrays.asList("primitiveOpLt", "primitiveOpLe", "primitiveOpGt", "primitiveOpGe").contains(name)) {
             TypeVariable var = tyVar("a", Kind.STAR);
             Qualified<Type> t = new Qualified<Type>(singletonList(isIn("Ord", var)), functionType(tupleType(var, var), Type.BOOLEAN));
-            Scheme scheme = quantify(singleton(var), t);
+            Scheme scheme = quantify(var, t);
             bind(symbol(name), scheme, value);
 
         } else {

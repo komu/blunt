@@ -8,6 +8,7 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableList;
 import static komu.blunt.types.checker.TypeUtils.getTypeVariables;
 
@@ -41,6 +42,10 @@ public final class Qualified<T extends Types<T>> implements Types<Qualified<T>> 
         return quantify(TypeUtils.getTypeVariables(qt), qt);
     }
 
+    public static Scheme quantify(TypeVariable vs, Qualified<Type> qt) {
+        return quantify(singleton(vs), qt);
+    }
+    
     public static Scheme quantify(Collection<TypeVariable> vs, Qualified<Type> qt) {
         List<Kind> kinds = new ArrayList<Kind>();
         List<TypeVariable> vars = new ArrayList<TypeVariable>();

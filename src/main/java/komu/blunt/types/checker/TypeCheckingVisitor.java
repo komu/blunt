@@ -137,5 +137,13 @@ public final class TypeCheckingVisitor implements ASTVisitor<TypeCheckingContext
     public TypeCheckResult<Type> typeCheck(ASTExpression exp, TypeCheckingContext ctx) {
         return exp.accept(this, ctx);
     }
+
+    @Override
+    public TypeCheckResult<Type> visit(ASTConstructor constructor, TypeCheckingContext ctx) {
+        ConstructorDefinition ctor = DataTypeDefinitions.findConstructor(constructor.name);
+
+        Qualified<Type> inst = ctx.freshInstance(ctor.scheme);
+        return new TypeCheckResult<Type>(inst.predicates, inst.value);
+    }
 }
 

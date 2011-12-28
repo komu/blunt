@@ -12,4 +12,5 @@ public interface ASTVisitor<C,R> {
     R visit(ASTTuple tuple, C ctx);
     R visit(ASTVariable variable, C ctx);
     R visit(ASTList list, C ctx);
+    R visit(ASTConstructor constructor, C ctx);
 }

@@ -3,6 +3,8 @@ package komu.blunt.analyzer;
 import komu.blunt.ast.*;
 import komu.blunt.core.*;
 import komu.blunt.objects.Symbol;
+import komu.blunt.types.ConstructorDefinition;
+import komu.blunt.types.DataTypeDefinitions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,5 +92,12 @@ public final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, Cor
     @Override
     public CoreExpression visit(ASTList list, StaticEnvironment env) {
         return analyze(list.rewrite(), env);
+    }
+
+    @Override
+    public CoreExpression visit(ASTConstructor constructor, StaticEnvironment ctx) {
+        ConstructorDefinition ctor = DataTypeDefinitions.findConstructor(constructor.name);
+
+        return new ASTVariable(ctor.primitive).accept(this, ctx);
     }
 }
