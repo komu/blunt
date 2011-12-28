@@ -1,26 +1,26 @@
 package komu.blunt.parser;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 final class SourceReader {
 
-    private final Reader reader;
-    private int peeked = -1;
+    private final String source;
     private int line = 0;
     private int column = 0;
+    private int position = 0;
 
     public SourceReader(String source) {
-        this.reader = new StringReader(source);
+        this.source = checkNotNull(source);
     }
 
     public int read() {
-        int ch = readInternal();
+        if (position >= source.length()) return -1;
+
+        char ch = source.charAt(position++);
         if (ch == '\n') {
             line++;
             column = 0;
-        } else if (ch != -1) {
+        } else {
             column++;
         }
         
@@ -35,27 +35,10 @@ final class SourceReader {
         return column;
     }
 
-    private int readInternal() {
-        if (peeked != -1) {
-            int value = peeked;
-            peeked = -1;
-            return value;
-        }
-        return readCharFromBuffer();
-    }
-
     public int peek() {
-        if (peeked == -1) {
-            peeked = readCharFromBuffer();
-        }
-        return peeked;
-    }
-    
-    private int readCharFromBuffer() {
-        try {
-            return reader.read();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        if (position < source.length())
+            return source.charAt(position);
+        else
+            return -1;
     }
 }
