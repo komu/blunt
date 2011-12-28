@@ -12,7 +12,10 @@ import komu.blunt.core.CoreDefineExpression;
 import komu.blunt.core.CoreExpression;
 import komu.blunt.objects.PrimitiveFunction;
 import komu.blunt.parser.Parser;
-import komu.blunt.stdlib.*;
+import komu.blunt.stdlib.BasicFunctions;
+import komu.blunt.stdlib.ConsList;
+import komu.blunt.stdlib.LibraryFunction;
+import komu.blunt.stdlib.LibraryValue;
 import komu.blunt.types.*;
 import komu.blunt.types.checker.TypeChecker;
 
@@ -24,6 +27,10 @@ import java.nio.charset.Charset;
 
 import static java.lang.reflect.Modifier.isStatic;
 import static komu.blunt.eval.ConstructorArgumentCollector.createConstructor;
+import static komu.blunt.types.Qualified.quantify;
+import static komu.blunt.types.Type.functionType;
+import static komu.blunt.types.Type.genericType;
+import static komu.blunt.types.TypeVariable.tyVar;
 
 public final class Evaluator {
 
@@ -32,10 +39,8 @@ public final class Evaluator {
     private final ClassEnv classEnv = new ClassEnv();
 
     public Evaluator() {
-        register(BasicValues.class, rootBindings);
         register(BasicFunctions.class, rootBindings);
         register(ConsList.class, rootBindings);
-        register(Maybe.class, rootBindings);
     }
     
     private static void register(Class<?> cl, RootBindings bindings) {
@@ -43,7 +48,7 @@ public final class Evaluator {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null) {
                 String name = func.value();
-                Scheme type = NativeTypeConversions.createFunctionType(m);
+                Scheme type = resolveTYpe(m);
 
                 boolean isStatic = isStatic(m.getModifiers());
                 bindings.bind(name, type, new PrimitiveFunction(name, m, isStatic));
@@ -61,6 +66,30 @@ public final class Evaluator {
                     throw new RuntimeException(e);
                 }
             }
+        }
+    }
+
+    private static Scheme resolveTYpe(Method m) {
+        LibraryFunction func = m.getAnnotation(LibraryFunction.class);
+        if (func != null && !func.type().isEmpty()) {
+            return parseType(func.type());   
+        } else {
+            return NativeTypeConversions.createFunctionType(m);
+        }
+    }
+
+    // TODO: don't hardcode the used types here but actually parse them :)
+    private static Scheme parseType(String type) {
+        if (type.equals("Maybe a -> Boolean")) {
+            TypeVariable var = tyVar("a", Kind.STAR);
+            return quantify(var, new Qualified<Type>(functionType(genericType("Maybe", var), Type.BOOLEAN)));
+
+        } else if (type.equals("Maybe a -> a")) {
+            TypeVariable var = tyVar("a", Kind.STAR);
+            return quantify(var, new Qualified<Type>(functionType(genericType("Maybe", var), var)));
+
+        } else {
+            throw new IllegalArgumentException("unsupported type: " + type);
         }
     }
 

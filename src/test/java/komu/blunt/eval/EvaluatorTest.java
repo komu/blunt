@@ -8,7 +8,6 @@ import komu.blunt.stdlib.BasicValues;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -126,7 +125,6 @@ public class EvaluatorTest {
     }
 
     @Test
-    @Ignore
     public void maybe() {
         assertThatEvaluating("just? Nothing", produces(false));
         assertThatEvaluating("just? (Just 4)", produces(true));

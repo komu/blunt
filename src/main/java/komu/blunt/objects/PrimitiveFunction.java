@@ -66,7 +66,7 @@ public final class PrimitiveFunction implements Function {
     private Object[] extract(Object arg) {
         if (arg == Unit.INSTANCE)
             return new Object[0];
-        else if (arg instanceof TypeConstructorValue)
+        else if (arg instanceof TypeConstructorValue && ((TypeConstructorValue) arg).isTuple())
             return ((TypeConstructorValue) arg).items;
         else
             return new Object[] { arg };

@@ -14,11 +14,6 @@ data Boolean = True | False
 
 data Maybe a = Just a | Nothing
 
-maybe n j m =
-  if just? m
-    then j (fromJust m)
-    else n
-
 const x y = x
 
 f . g = \x -> f (g x)
@@ -160,3 +155,11 @@ delete x xs =
         else head xs : delete x (tail xs)
 
 (\\) = foldr delete
+
+nothing? = not . just?
+
+maybe n j m =
+  if just? m
+    then j (fromJust m)
+    else n
+
