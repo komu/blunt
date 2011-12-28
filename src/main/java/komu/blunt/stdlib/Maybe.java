@@ -84,7 +84,7 @@ public abstract class Maybe<T> {
         return (Maybe<T>) NOTHING;
     }
 
-    @LibraryFunction("Just")
+    @LibraryFunction("primitiveJust")
     @SuppressWarnings({"unchecked", "unused"})
     public static <T> Maybe<T> just(T value) {
         return new Just<T>(value);

@@ -32,9 +32,6 @@ public final class Evaluator {
     private final ClassEnv classEnv = new ClassEnv();
 
     public Evaluator() {
-        rootBindings.bind("True", Type.BOOLEAN, true);
-        rootBindings.bind("False", Type.BOOLEAN, false);
-
         register(BasicFunctions.class, rootBindings);
         register(ConsList.class, rootBindings);
         register(Maybe.class, rootBindings);
