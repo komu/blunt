@@ -1,14 +1,20 @@
 package komu.blunt.types.checker;
 
-import komu.blunt.ast.ASTDefine;
-import komu.blunt.ast.ASTExpression;
-import komu.blunt.eval.TypeCheckException;
-import komu.blunt.types.*;
+import static komu.blunt.types.checker.Unifier.mgu;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static komu.blunt.types.checker.Unifier.mgu;
+import komu.blunt.ast.ASTDefine;
+import komu.blunt.ast.ASTExpression;
+import komu.blunt.eval.TypeCheckException;
+import komu.blunt.types.ClassEnv;
+import komu.blunt.types.Kind;
+import komu.blunt.types.Predicate;
+import komu.blunt.types.Qualified;
+import komu.blunt.types.Scheme;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeVariable;
 
 public final class TypeChecker {
 
@@ -16,16 +22,16 @@ public final class TypeChecker {
     private int typeSequence = 0;
     
     public Qualified<Type> typeCheck(ASTExpression exp, ClassEnv classEnv, Assumptions as) {
-        TypeCheckingVisitor checker = new TypeCheckingVisitor();
-        TypeCheckingContext ctx = new TypeCheckingContext(classEnv, this, as);
-        TypeCheckResult<Type> result = checker.typeCheck(exp, ctx);
+        TypeCheckingVisitor checker = new TypeCheckingVisitor(classEnv, this);
+        TypeCheckResult<Type> result = checker.typeCheck(exp, as);
         List<Predicate> ps = classEnv.reduce(TypeUtils.apply(substitution, result.predicates));
         Qualified<Type> q = new Qualified<Type>(ps, result.value);
         return q.apply(substitution);
     }
 
     public Scheme typeCheck(ASTDefine exp, ClassEnv classEnv, Assumptions as) {
-        TypeCheckResult<Type> result = exp.typeCheck(new TypeCheckingContext(classEnv, this, as));
+        TypeCheckingVisitor checker = new TypeCheckingVisitor(classEnv, this);
+        TypeCheckResult<Type> result = exp.typeCheck(checker, as);
         List<Predicate> ps = classEnv.reduce(TypeUtils.apply(substitution, result.predicates));
         Qualified<Type> q = new Qualified<Type>(ps, result.value);
         return Qualified.quantifyAll(q.apply(substitution));
