@@ -2,8 +2,7 @@ package komu.blunt.parser;
 
 import java.io.IOException;
 import java.io.Reader;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.io.StringReader;
 
 final class SourceReader {
 
@@ -12,8 +11,8 @@ final class SourceReader {
     private int line = 0;
     private int column = 0;
 
-    public SourceReader(Reader reader) {
-        this.reader = checkNotNull(reader);
+    public SourceReader(String source) {
+        this.reader = new StringReader(source);
     }
 
     public int read() {

@@ -15,6 +15,6 @@ public class Prompt {
         System.out.print(prompt);
         System.out.flush();
 
-        return Parser.parse(reader.readLine());
+        return Parser.parseExpression(reader.readLine());
     }
 }

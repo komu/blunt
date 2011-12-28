@@ -4,10 +4,6 @@ import komu.blunt.ast.*;
 import komu.blunt.objects.Symbol;
 import komu.blunt.objects.Unit;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -26,16 +22,12 @@ public final class Parser {
     private static final List<TokenType<?>> expressionStartTokens =
         Arrays.asList(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, IDENTIFIER, CONSTRUCTOR_NAME);
 
-    public Parser(InputStream in) {
-        this(new InputStreamReader(in));
+    public Parser(String source) {
+        this.lexer = new Lexer(source);
     }
 
-    public Parser(Reader reader) {
-        this.lexer = new Lexer(reader);
-    }
-
-    public static ASTExpression parse(String input) {
-        return new Parser(new StringReader(input)).parseExpression();
+    public static ASTExpression parseExpression(String source) {
+        return new Parser(source).parseExpression();
     }
     
     public List<ASTDefine> parseDefinitions() {

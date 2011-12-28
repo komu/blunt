@@ -1,6 +1,6 @@
 package komu.blunt.eval;
 
-import komu.blunt.Main;
+import com.google.common.io.Resources;
 import komu.blunt.analyzer.AnalyzingVisitor;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
@@ -15,11 +15,11 @@ import komu.blunt.stdlib.*;
 import komu.blunt.types.*;
 import komu.blunt.types.checker.TypeChecker;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.nio.charset.Charset;
 
 import static java.lang.reflect.Modifier.isStatic;
 
@@ -68,16 +68,11 @@ public final class Evaluator {
         return exp;
     }
     
-    public void load(InputStream in) throws IOException {
-        try {
-            Parser parser = new Parser(in);
+    public void load(String source) throws IOException {
+        Parser parser = new Parser(source);
 
-            for (ASTDefine define : parser.parseDefinitions())
-                define(define);
-
-        } finally {
-            in.close();
-        }
+        for (ASTDefine define : parser.parseDefinitions())
+            define(define);
     }
 
     public void define(ASTDefine define) {
@@ -126,16 +121,11 @@ public final class Evaluator {
     }
 
     public void loadResource(String path) throws IOException {
-        load(openResource(path));
+        load(readResource(path));
     }
 
-    private static InputStream openResource(String path) throws FileNotFoundException {
-        ClassLoader loader = Main.class.getClassLoader();
-
-        InputStream in = loader.getResourceAsStream(path);
-        if (in != null)
-            return in;
-        else
-            throw new FileNotFoundException("file not found: " + path);
+    private String readResource(String path) throws IOException {
+        URL resource = getClass().getClassLoader().getResource(path);
+        return Resources.toString(resource, Charset.forName("UTF-8"));
     }
 }

@@ -136,11 +136,11 @@ public class EvaluatorTest {
     }
 
     private static CoreExpression analyze(String expr) {
-        return new Evaluator().analyze(Parser.parse(expr));
+        return new Evaluator().analyze(Parser.parseExpression(expr));
     }
 
     private static Object evaluate(String expr) {
-        return evaluator.evaluate(Parser.parse(expr));
+        return evaluator.evaluate(Parser.parseExpression(expr));
     }
 
     private static Matcher<Object> produces(final int value) {

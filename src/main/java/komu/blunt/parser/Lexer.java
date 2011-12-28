@@ -1,6 +1,5 @@
 package komu.blunt.parser;
 
-import java.io.Reader;
 import java.math.BigInteger;
 import java.util.Collection;
 
@@ -14,8 +13,8 @@ public final class Lexer {
     private Token<?> nextToken = null;
     private final IndentStack indents = new IndentStack();
     
-    public Lexer(Reader reader) {
-        this.reader = new SourceReader(reader);
+    public Lexer(String source) {
+        this.reader = new SourceReader(source);
     }
     
     public TokenType<?> peekTokenType() {

@@ -91,7 +91,7 @@ public class ParserTest {
     }
 
     private static ASTExpression parsing(String s) {
-        return Parser.parse(s);
+        return Parser.parseExpression(s);
     }
 
     private static Matcher<Object> producesEof() {
