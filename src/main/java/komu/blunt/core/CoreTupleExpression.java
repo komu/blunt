@@ -1,5 +1,6 @@
 package komu.blunt.core;
 
+import com.google.common.base.Strings;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
@@ -22,7 +23,9 @@ public final class CoreTupleExpression extends CoreExpression {
             exp.assemble(instructions, target, Linkage.NEXT);
             instructions.pushRegister(target);
         }
-        instructions.loadTuple(target, exps.size());
+        
+        String name = "(" + Strings.repeat(",", exps.size()) + ")";
+        instructions.loadConstructed(target, name, exps.size());
 
         instructions.finishWithLinkage(linkage);
     }

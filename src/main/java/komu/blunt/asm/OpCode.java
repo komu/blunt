@@ -4,7 +4,7 @@ import komu.blunt.analyzer.VariableReference;
 import komu.blunt.eval.Environment;
 import komu.blunt.objects.CompoundProcedure;
 import komu.blunt.objects.Function;
-import komu.blunt.objects.Tuple;
+import komu.blunt.objects.TypeConstructorValue;
 
 import java.lang.reflect.Array;
 
@@ -144,15 +144,17 @@ public abstract class OpCode {
         }
     }
     
-    public static class LoadTuple extends OpCode {
+    public static class LoadConstructed extends OpCode {
 
         private final Register target;
+        private final String name;
         private final int size;
 
-        public LoadTuple(Register target, int size) {
+        public LoadConstructed(Register target, String name, int size) {
             checkArgument(size >= 0);
 
             this.target = checkNotNull(target);
+            this.name = checkNotNull(name);
             this.size = size;
         }
 
@@ -161,12 +163,12 @@ public abstract class OpCode {
             Object[] array = new Object[size];
             for (int i = 0; i < size; i++)
                 array[i] = vm.pop();
-            vm.set(target, new Tuple(array));
+            vm.set(target, new TypeConstructorValue(name, array));
         }
 
         @Override
         public String toString() {
-            return String.format("(load %s (tuple %d))", target, size);
+            return String.format("(load %s (%s %d))", target, name, size);
         }
     }
         
