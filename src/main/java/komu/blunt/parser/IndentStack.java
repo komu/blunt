@@ -12,7 +12,7 @@ final class IndentStack {
 
     public boolean popIf(int column) {
         int last = indents.size()-1;
-        if (!indents.isEmpty() && column < indents.get(last)) {
+        if (!indents.isEmpty() && column <= indents.get(last)) {
             indents.remove(last);
             return true;
         }

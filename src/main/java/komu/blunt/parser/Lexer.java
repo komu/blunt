@@ -20,14 +20,17 @@ public final class Lexer {
         return peekToken().type;
     }
 
-    public void pushIndentLevelAtNextToken() {
-        skipWhitespace();
-        
-        indents.push(reader.getColumn());
+    public void expectIndentStartToken(TokenType<?> type) {
+        Token token = readToken(type);
+        indents.push(token.getLocation().column);
     }
+    
+    public void pushBlockStartAtNextToken() {
+        indents.push(peekToken().getLocation().column);
+    }    
 
-    public String getSourceLocation() {
-        return reader.getLine() + ":" + reader.getColumn();
+    public SourceLocation getSourceLocation() {
+        return reader.getLocation();
     }
 
     public boolean nextTokenIs(TokenType<?> type) {
@@ -58,7 +61,11 @@ public final class Lexer {
         else
             throw parseError("expected token of type " + type + ", but got " + token);
     }
-    
+
+    public void expectToken(TokenType<?> expected) {
+        readToken(expected);
+    }
+
     public boolean readMatchingToken(TokenType<?> type) {
         if (peekTokenType() == type) {
             readToken();
@@ -85,20 +92,22 @@ public final class Lexer {
     private Token readTokenInternal() {
         skipWhitespace();
 
-        if (indents.popIf(reader.getColumn()))
-            return Token.ofType(END);
+        SourceLocation location = reader.getLocation();
+        if (indents.popIf(reader.getColumn())) {
+            return Token.ofType(END, location);
+        }
 
         int ch = peek();
 
         switch (ch) {
-        case -1:    return Token.ofType(EOF);
+        case -1:    return Token.ofType(EOF, location);
         case '"':   return readString();
-        case ',':   read(); return Token.ofType(COMMA);
-        case '(':   read(); return Token.ofType(LPAREN);
-        case ')':   read(); return Token.ofType(RPAREN);
-        case ';':   read(); return Token.ofType(SEMICOLON);
-        case '[':   read(); return Token.ofType(LBRACKET);
-        case ']':   read(); return Token.ofType(RBRACKET);
+        case ',':   read(); return Token.ofType(COMMA, location);
+        case '(':   read(); return Token.ofType(LPAREN, location);
+        case ')':   read(); return Token.ofType(RPAREN, location);
+        case ';':   read(); return Token.ofType(SEMICOLON, location);
+        case '[':   read(); return Token.ofType(LBRACKET, location);
+        case ']':   read(); return Token.ofType(RBRACKET, location);
         }
 
         if (isDigit(ch))
@@ -127,6 +136,8 @@ public final class Lexer {
     }
 
     private Token<?> readIdentifierOrKeyword() {
+        SourceLocation location = reader.getLocation();
+        
         StringBuilder sb = new StringBuilder();
 
         while (isIdentifierPart(reader.peek()))
@@ -136,9 +147,9 @@ public final class Lexer {
         
         Keyword keyword = TokenType.keyword(name);
 
-        return (keyword != null) ? Token.ofType(keyword)
-             : isUpperCase(name.charAt(0)) ? new Token<String>(TYPE_OR_CTOR_NAME, name)
-             : new Token<String>(IDENTIFIER, name);
+        return (keyword != null) ? Token.ofType(keyword, location)
+             : isUpperCase(name.charAt(0)) ? new Token<String>(TYPE_OR_CTOR_NAME, name, location)
+             : new Token<String>(IDENTIFIER, name, location);
     }
 
     private static boolean isIdentifierStart(int ch) {
@@ -150,6 +161,8 @@ public final class Lexer {
     }
 
     private Token readOperator() {
+        SourceLocation location = reader.getLocation();
+
         StringBuilder sb = new StringBuilder();
 
         while (isOperatorCharacter(reader.peek()))
@@ -158,18 +171,20 @@ public final class Lexer {
         String op = sb.toString();
 
         if (op.equals("\\"))
-            return Token.ofType(LAMBDA);
+            return Token.ofType(LAMBDA, location);
         if (op.equals("="))
-            return Token.ofType(ASSIGN);
+            return Token.ofType(ASSIGN, location);
         if (op.equals("|"))
-            return Token.ofType(OR);
+            return Token.ofType(OR, location);
         if (op.equals("->"))
-            return Token.ofType(RIGHT_ARROW);
+            return Token.ofType(RIGHT_ARROW, location);
         else
-            return new Token<Operator>(OPERATOR, new Operator(sb.toString()));
+            return new Token<Operator>(OPERATOR, new Operator(sb.toString()), location);
     }
 
     private Token readString() {
+        SourceLocation location = getSourceLocation();
+
         StringBuilder sb = new StringBuilder();
         // TODO: escaping
         expect('"');
@@ -179,16 +194,18 @@ public final class Lexer {
 
         expect('"');
 
-        return new Token<Object>(TokenType.LITERAL, sb.toString());
+        return new Token<Object>(TokenType.LITERAL, sb.toString(), location);
     }
 
     private Token readNumber() {
+        SourceLocation location = getSourceLocation();
+
         StringBuilder sb = new StringBuilder();
 
         while (isDigit(reader.peek()))
             sb.append(read());
 
-        return new Token<Object>(LITERAL, new BigInteger(sb.toString()));
+        return new Token<Object>(LITERAL, new BigInteger(sb.toString()), location);
     }
     
     private char read() {

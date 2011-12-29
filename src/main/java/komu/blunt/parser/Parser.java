@@ -56,15 +56,15 @@ public final class Parser {
     }
 
     private ASTDataDefinition parseDataDefinition() {
-        expectToken(DATA);
-        
+        lexer.expectIndentStartToken(DATA);
+
         String name = lexer.readToken(TYPE_OR_CTOR_NAME).value;
         
         List<TypeVariable> vars = new ArrayList<TypeVariable>();
-        while (!lexer.readMatchingToken(ASSIGN))
+        while (!lexer.nextTokenIs(ASSIGN))
             vars.add(parseTypeVariable());
 
-        lexer.pushIndentLevelAtNextToken();
+        lexer.expectToken(ASSIGN);
 
         ImmutableList.Builder<ConstructorDefinition> constructors = ImmutableList.builder();
         
@@ -74,7 +74,7 @@ public final class Parser {
             constructors.add(parseConstructorDefinition(vars, resultType));
         } while (lexer.readMatchingToken(OR));
 
-        expectToken(END);
+        lexer.expectToken(END);
 
         return new ASTDataDefinition(name, constructors.build());
     }
@@ -102,6 +102,8 @@ public final class Parser {
     // <ident> <op> <ident> = <exp> ;;
     // <ident> <ident>* = <exp> ;;
     private ASTValueDefinition parseValueDefinition() {
+        lexer.pushBlockStartAtNextToken();
+
         Symbol name = parseIdentifier();
         List<Symbol> args = new ArrayList<Symbol>();
         
@@ -111,16 +113,15 @@ public final class Parser {
             args.add(parseIdentifier());
             name = symbol(op.toString());
 
-            expectToken(ASSIGN);
         } else {
-            while (!lexer.readMatchingToken(ASSIGN))
+            while (!lexer.nextTokenIs(ASSIGN))
                 args.add(parseIdentifier());
         }
 
-        lexer.pushIndentLevelAtNextToken();
-        
+        lexer.expectToken(ASSIGN);
+
         ASTExpression value = parseExpression();
-        expectToken(END);
+        lexer.expectToken(END);
 
         if (args.isEmpty())
             return new ASTValueDefinition(name, value);
@@ -213,11 +214,11 @@ public final class Parser {
 
     // if <expr> then <expr> else <expr>
     private ASTExpression parseIf() {
-        expectToken(IF);
+        lexer.expectToken(IF);
         ASTExpression test = parseExpression();
-        expectToken(THEN);
+        lexer.expectToken(THEN);
         ASTExpression cons = parseExpression();
-        expectToken(ELSE);
+        lexer.expectToken(ELSE);
         ASTExpression alt = parseExpression();
 
         return new ASTIf(test, cons, alt);
@@ -225,14 +226,14 @@ public final class Parser {
 
     // case <exp> of <alternative> (| <alternative>)*
     private ASTExpression parseCase() {
-        expectToken(CASE);
+        lexer.expectToken(CASE);
         ASTExpression exp = parseExpression();
-        expectToken(OF);
+        lexer.expectToken(OF);
 
         ImmutableList.Builder<ASTAlternative> alts = ImmutableList.builder();
         do {
-            expectToken(OR);
-            alts.add(parseAlternative());    
+            lexer.expectToken(OR);
+            alts.add(parseAlternative());
         } while (lexer.nextTokenIs(OR));
 
         return new ASTCase(exp, alts.build());
@@ -241,7 +242,7 @@ public final class Parser {
     // <pattern> -> <exp>
     private ASTAlternative parseAlternative() {
         Pattern pattern = parsePatternFollowedBy(RIGHT_ARROW);
-        expectToken(RIGHT_ARROW);
+        lexer.expectToken(RIGHT_ARROW);
         ASTExpression exp = parseExpression();
         
         return new ASTAlternative(pattern, exp);
@@ -257,7 +258,7 @@ public final class Parser {
 
         } else if (lexer.readMatchingToken(LPAREN)) {
             Pattern pattern = parsePatternFollowedBy(RPAREN);
-            expectToken(RPAREN);
+            lexer.expectToken(RPAREN);
             return pattern;
 
         } else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME)) {
@@ -274,7 +275,7 @@ public final class Parser {
 
     // let [rec] <ident> <ident>* = <expr> in <expr>
     private ASTExpression parseLet() {
-        expectToken(LET);
+        lexer.expectToken(LET);
         boolean recursive = lexer.readMatchingToken(REC);
         
         Symbol name = parseIdentifier();
@@ -287,14 +288,14 @@ public final class Parser {
             args.add(parseIdentifier());
             name = symbol(op.toString());
 
-            expectToken(ASSIGN);
+            lexer.expectToken(ASSIGN);
         } else {
             while (!lexer.readMatchingToken(ASSIGN))
                 args.add(parseIdentifier());
         }
 
         ASTExpression value = parseExpression();
-        expectToken(IN);
+        lexer.expectToken(IN);
         ASTExpression body = parseExpression();
 
         if (!args.isEmpty())
@@ -309,8 +310,8 @@ public final class Parser {
 
     // \ <ident> -> expr
     private ASTExpression parseLambda() {
-        expectToken(LAMBDA);
-        
+        lexer.expectToken(LAMBDA);
+
         List<Symbol> args = new ArrayList<Symbol>();
         
         do {
@@ -322,14 +323,14 @@ public final class Parser {
 
     // () | (<op>) | ( <expr> )
     private ASTExpression parseParens() {
-        expectToken(LPAREN);
+        lexer.expectToken(LPAREN);
         if (lexer.readMatchingToken(RPAREN))
             return new ASTConstant(Unit.INSTANCE);
         
         if (lexer.nextTokenIs(OPERATOR)) {
             Operator op = lexer.readToken(OPERATOR).value;
-            expectToken(RPAREN);
-            
+            lexer.expectToken(RPAREN);
+
             return op.isConstructor() ? new ASTConstructor(op.toString()) : new ASTVariable(op.toString());
         }
         
@@ -339,8 +340,8 @@ public final class Parser {
             exps.add(parseExpression());    
         } while (lexer.readMatchingToken(COMMA));
 
-        expectToken(RPAREN);
-        
+        lexer.expectToken(RPAREN);
+
         if (exps.size() == 1)
             return exps.get(0);
         else
@@ -352,15 +353,15 @@ public final class Parser {
     private ASTExpression parseList() {
         ASTList list = new ASTList();
 
-        expectToken(LBRACKET);
-        
+        lexer.expectToken(LBRACKET);
+
         if (lexer.peekTokenType() != RBRACKET) {
             do {
                 list.add(parseExpression());
             } while (lexer.readMatchingToken(COMMA));
         }
 
-        expectToken(RBRACKET);
+        lexer.expectToken(RBRACKET);
 
         return list;
     }
@@ -376,8 +377,8 @@ public final class Parser {
 
         if (token.type == LPAREN) {
             Operator op = lexer.readToken(OPERATOR).value;
-            expectToken(RPAREN);
-            
+            lexer.expectToken(RPAREN);
+
             if (op.isConstructor())
                 return new ASTConstructor(op.toString());
             else
@@ -395,18 +396,11 @@ public final class Parser {
 
         if (token.type == LPAREN) {
             Token<Operator> op = lexer.readToken(OPERATOR);
-            expectToken(RPAREN);
+            lexer.expectToken(RPAREN);
             return op.asType(OPERATOR).value.toSymbol();
         }
 
         throw parseError("expected identifier, got " + token);
-    }
-
-    private void expectToken(TokenType<?> expected) {
-        Token<?> token = lexer.readToken();
-
-        if (expected != token.type)
-            throw parseError("expected " + expected + " but got " + token);
     }
 
     private SyntaxException parseError(final String s) {

@@ -5,8 +5,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 final class SourceReader {
 
     private final String source;
-    private int line = 0;
-    private int column = 0;
+    private int line = 1;
+    private int column = 1;
     private int position = 0;
 
     public SourceReader(String source) {
@@ -19,7 +19,7 @@ final class SourceReader {
         char ch = source.charAt(position++);
         if (ch == '\n') {
             line++;
-            column = 0;
+            column = 1;
         } else {
             column++;
         }
@@ -52,5 +52,9 @@ final class SourceReader {
 
     private boolean hasMore() {
         return position < source.length();
+    }
+
+    public SourceLocation getLocation() {
+        return new SourceLocation(line, column);
     }
 }

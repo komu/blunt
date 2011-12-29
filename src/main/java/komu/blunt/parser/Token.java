@@ -6,18 +6,20 @@ public final class Token<T> {
     
     public final TokenType<T> type;
     public final T value;
+    private final SourceLocation location;
 
-    public static <T> Token<T> ofType(TokenType<T> type) {
-        return new Token<T>(type);
+    public static <T> Token<T> ofType(TokenType<T> type, SourceLocation location) {
+        return new Token<T>(type, location);
     }
 
-    private Token(TokenType<T> type) {
-        this(type, null);
+    private Token(TokenType<T> type, SourceLocation location) {
+        this(type, null, location);
     }
 
-    public Token(TokenType<T> type, T value) {
+    public Token(TokenType<T> type, T value, SourceLocation location) {
         this.type = checkNotNull(type);
         this.value = value;
+        this.location = checkNotNull(location);
     }
 
     @SuppressWarnings("unchecked")
@@ -31,5 +33,9 @@ public final class Token<T> {
     @Override
     public String toString() {
         return type.toString();
+    }
+
+    public SourceLocation getLocation() {
+        return location;
     }
 }

@@ -11,7 +11,8 @@ mod x y = primitiveMod (x,y)
 
 data Boolean = True | False
 
-data Maybe a = Just a | Nothing
+data Maybe a = Just a
+             | Nothing
 
 id x = x
 
