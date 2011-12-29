@@ -3,7 +3,6 @@ package komu.blunt.parser;
 import java.math.BigInteger;
 import java.util.Collection;
 
-import static com.google.common.base.Objects.equal;
 import static java.lang.Character.*;
 import static komu.blunt.parser.TokenType.*;
 
@@ -62,16 +61,6 @@ public final class Lexer {
     
     public boolean readMatchingToken(TokenType<?> type) {
         if (peekTokenType() == type) {
-            readToken();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public <T> boolean readMatchingToken(TokenType<T> type, T value) {
-        Token<?> token = peekToken();
-        if (token.type == type && equal(token.value, value)) {
             readToken();
             return true;
         } else {
