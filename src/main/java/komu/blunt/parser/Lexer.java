@@ -157,7 +157,7 @@ public final class Lexer {
     }
 
     private static boolean isIdentifierPart(int ch) {
-        return isJavaIdentifierPart(ch) || "?!".indexOf(ch) != -1;
+        return isJavaIdentifierPart(ch) || "?!'".indexOf(ch) != -1;
     }
 
     private Token readOperator() {
