@@ -174,6 +174,8 @@ public final class Lexer {
             return Token.ofType(ASSIGN);
         if (op.equals("|"))
             return Token.ofType(OR);
+        if (op.equals("->"))
+            return Token.ofType(RIGHT_ARROW);
         else
             return new Token<Operator>(OPERATOR, new Operator(sb.toString()));
     }

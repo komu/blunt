@@ -147,5 +147,11 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
         Qualified<Type> inst = tc.freshInstance(ctor.scheme);
         return TypeCheckResult.of(inst.value, inst.predicates);
     }
+
+    @Override
+    public TypeCheckResult<Type> visit(ASTCase astCase, Assumptions ctx) {
+        // TODO: implement type checking for cases
+        throw new UnsupportedOperationException("type checking case expressions is not implemented");
+    }
 }
 

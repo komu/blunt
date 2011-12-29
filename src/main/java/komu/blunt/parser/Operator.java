@@ -1,11 +1,11 @@
 package komu.blunt.parser;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import komu.blunt.objects.Symbol;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import komu.blunt.objects.Symbol;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Operator {
 
@@ -20,7 +20,6 @@ public final class Operator {
     public static final Operator MINUS = builtin("-");
     public static final Operator MULTIPLY = builtin("*");
     public static final Operator DIVIDE = builtin("/");
-    public static final Operator RIGHT_ARROW = builtin("->");
 
     private static Operator builtin(String s) {
         Operator op = new Operator(s);

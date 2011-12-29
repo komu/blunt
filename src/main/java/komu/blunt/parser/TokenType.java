@@ -21,6 +21,8 @@ public class TokenType<T> {
     public static final Keyword REC  = new Keyword("rec");
     public static final Keyword IN   = new Keyword("in");
     public static final Keyword DATA = new Keyword("data");
+    public static final Keyword CASE = new Keyword("case");
+    public static final Keyword OF   = new Keyword("of");
 
     public static final Punctuation LAMBDA = new Punctuation("\\");
     public static final Punctuation LPAREN = new Punctuation("(");
@@ -32,6 +34,7 @@ public class TokenType<T> {
     public static final Punctuation RBRACKET = new Punctuation("]");
     public static final Punctuation ASSIGN = new Punctuation("=");
     public static final Punctuation OR = new Punctuation("|");
+    public static final Punctuation RIGHT_ARROW = new Punctuation("->");
 
     public static class Punctuation extends TokenType<Void> {
         public Punctuation(String name) {
