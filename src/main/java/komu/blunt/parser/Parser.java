@@ -266,6 +266,7 @@ public final class Parser {
             ImmutableList.Builder<Pattern> args = ImmutableList.builder();
             while (!lexer.nextTokenIs(endToken))
                 args.add(parsePatternFollowedBy(endToken));
+            
             return new ConstructorPattern(name, args.build());
             
         } else {

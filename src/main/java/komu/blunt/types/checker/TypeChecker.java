@@ -3,6 +3,7 @@ package komu.blunt.types.checker;
 import komu.blunt.ast.*;
 import komu.blunt.eval.TypeCheckException;
 import komu.blunt.types.*;
+import komu.blunt.types.patterns.Pattern;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +20,7 @@ public final class TypeChecker {
     private int typeSequence = 0;
     private final ExpressionTypeCheckVisitor expressionVisitor = new ExpressionTypeCheckVisitor(this);
     private final BindingTypeChecker bindingTypeChecker = new BindingTypeChecker(this);
+    private final PatternTypeChecker patternTypeChecker = new PatternTypeChecker(this);
     private Substitution substitution = Substitution.empty();
 
     private TypeChecker(ClassEnv classEnv, DataTypeDefinitions dataTypes) {
@@ -56,6 +58,10 @@ public final class TypeChecker {
         return typeCheck(let, as);
     }
 
+    PatternTypeCheckResult<Type> typeCheck(Pattern pattern) {
+        return pattern.accept(patternTypeChecker, null);
+    }
+
     Qualified<Type> freshInstance(Scheme scheme) {
         List<TypeVariable> ts = new ArrayList<TypeVariable>(scheme.kinds.size());
         for (Kind kind : scheme.kinds)
@@ -67,7 +73,6 @@ public final class TypeChecker {
     TypeVariable newTVar(Kind kind) {
         return new TypeVariable(typeName(typeSequence++), kind);
     }
-
 
     List<Type> newTVars(final int size, final Kind kind) {
         List<Type> types = new ArrayList<Type>(size);

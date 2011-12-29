@@ -5,11 +5,11 @@ import com.google.common.collect.ImmutableList;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ConstructorPattern extends Pattern {
-    public final String constructor;
+    public final String name;
     public final ImmutableList<Pattern> args;
 
-    public ConstructorPattern(String constructor, ImmutableList<Pattern> args) {
-        this.constructor = checkNotNull(constructor);
+    public ConstructorPattern(String name, ImmutableList<Pattern> args) {
+        this.name = checkNotNull(name);
         this.args = checkNotNull(args);
     }
 
@@ -21,11 +21,11 @@ public final class ConstructorPattern extends Pattern {
     @Override
     public String toString() {
         if (args.isEmpty())
-            return constructor;
+            return name;
         
         StringBuilder sb = new StringBuilder();
         sb.append('(');
-        sb.append(constructor);
+        sb.append(name);
         
         for (Pattern arg : args)
             sb.append(' ').append(arg);
