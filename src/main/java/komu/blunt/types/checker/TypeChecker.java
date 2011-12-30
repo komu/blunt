@@ -1,6 +1,9 @@
 package komu.blunt.types.checker;
 
-import komu.blunt.ast.*;
+import komu.blunt.ast.AST;
+import komu.blunt.ast.ASTExpression;
+import komu.blunt.ast.ASTValueDefinition;
+import komu.blunt.ast.BindGroup;
 import komu.blunt.eval.TypeCheckException;
 import komu.blunt.types.*;
 import komu.blunt.types.patterns.Pattern;
@@ -54,7 +57,7 @@ public final class TypeChecker {
     }
 
     TypeCheckResult<Type> typeCheck(ASTValueDefinition define, Assumptions as) {
-        ASTLetRec let = new ASTLetRec(define.name, define.value, new ASTVariable(define.name));
+        ASTExpression let = AST.letRec(define.name, define.value, AST.variable(define.name));
         return typeCheck(let, as);
     }
 

@@ -9,7 +9,7 @@ public final class ASTAlternative {
     public final Pattern pattern;
     public final ASTExpression value;
 
-    public ASTAlternative(Pattern pattern, ASTExpression value) {
+    ASTAlternative(Pattern pattern, ASTExpression value) {
         this.pattern = checkNotNull(pattern);
         this.value = checkNotNull(value);
     }

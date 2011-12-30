@@ -6,7 +6,7 @@ public final class ASTConstructor extends ASTExpression {
     
     public final String name;
 
-    public ASTConstructor(String name) {
+    ASTConstructor(String name) {
         this.name = checkNotNull(name);
     }
     

@@ -4,16 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Arrays.asList;
 
 public final class ASTSequence extends ASTExpression {
     public final List<ASTExpression> exps;
 
-    public ASTSequence(ASTExpression... exps) {
-        this(asList(exps));
-    }
-    
-    public ASTSequence(List<ASTExpression> exps) {
+    ASTSequence(List<ASTExpression> exps) {
         this.exps = new ArrayList<ASTExpression>(exps);
         for (ASTExpression exp : exps)
             checkNotNull(exp);

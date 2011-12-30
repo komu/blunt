@@ -8,7 +8,7 @@ public final class ASTSet extends ASTExpression {
     public final Symbol var;
     public final ASTExpression exp;
 
-    public ASTSet(Symbol var, ASTExpression exp) {
+    ASTSet(Symbol var, ASTExpression exp) {
         this.var = checkNotNull(var);
         this.exp = checkNotNull(exp);
     }

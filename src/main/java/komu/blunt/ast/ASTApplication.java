@@ -7,7 +7,7 @@ public final class ASTApplication extends ASTExpression {
     public final ASTExpression func;
     public final ASTExpression arg;
 
-    public ASTApplication(ASTExpression func, ASTExpression arg) {
+    ASTApplication(ASTExpression func, ASTExpression arg) {
         this.func = checkNotNull(func);
         this.arg = checkNotNull(arg);
     }

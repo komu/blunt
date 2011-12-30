@@ -1,11 +1,10 @@
 package komu.blunt.ast;
 
+import com.google.common.base.Preconditions;
+import komu.blunt.types.DataTypeDefinitions;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.google.common.base.Preconditions;
-
-import komu.blunt.types.DataTypeDefinitions;
 
 public final class ASTList extends ASTExpression {
 
@@ -21,7 +20,7 @@ public final class ASTList extends ASTExpression {
     }
 
     public ASTExpression rewrite() {
-        ASTExpression exp = new ASTConstructor(DataTypeDefinitions.NIL);
+        ASTExpression exp = AST.constructor(DataTypeDefinitions.NIL);
         
         for (int i = exps.size()-1; i >= 0; i--)
             exp = cons(exps.get(i), exp);
@@ -30,7 +29,7 @@ public final class ASTList extends ASTExpression {
     }
 
     private ASTExpression cons(ASTExpression head, ASTExpression tail) {
-        return new ASTApplication(new ASTApplication(new ASTConstructor(DataTypeDefinitions.CONS), head), tail);
+        return AST.constructor(DataTypeDefinitions.CONS, head, tail);
     }
 
     @Override

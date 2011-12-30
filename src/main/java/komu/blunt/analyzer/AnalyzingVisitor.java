@@ -109,7 +109,7 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     public CoreExpression visit(ASTConstructor constructor, StaticEnvironment ctx) {
         ConstructorDefinition ctor = dataTypes.findConstructor(constructor.name);
 
-        return new ASTVariable(ctor.name).accept(this, ctx);
+        return AST.variable(ctor.name).accept(this, ctx);
     }
 
     @Override
@@ -125,7 +125,7 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     
     private CoreExpression createAlts(VariableReference matchedObject, List<ASTAlternative> alts, StaticEnvironment env) {
         if (alts.isEmpty())
-            return analyze(new ASTApplication(new ASTVariable("error"), new ASTConstant("match failure")), env);
+            return analyze(AST.apply(AST.variable("error"), AST.constant("match failure")), env);
             
         ASTAlternative head = alts.get(0);
         List<ASTAlternative> tail = alts.subList(1, alts.size());

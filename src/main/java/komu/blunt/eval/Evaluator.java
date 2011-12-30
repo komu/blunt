@@ -50,7 +50,7 @@ public final class Evaluator {
         Scheme nilType = quantify(var, new Qualified<Type>(listType(var)));
         Scheme consType = quantify(var, new Qualified<Type>(functionType(asList(var, listType(var)), listType(var))));
 
-        return new ASTDataDefinition("[]",
+        return AST.data("[]",
                 new ConstructorDefinition("[]", nilType, 0),
                 new ConstructorDefinition(":", consType, 2));
     }

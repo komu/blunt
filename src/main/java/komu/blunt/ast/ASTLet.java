@@ -12,7 +12,7 @@ public final class ASTLet extends ASTExpression {
     public final List<ImplicitBinding> bindings;
     public final ASTExpression body;
 
-    public ASTLet(List<ImplicitBinding> bindings, ASTExpression body) {
+    ASTLet(List<ImplicitBinding> bindings, ASTExpression body) {
         this.bindings = checkNotNull(bindings);
         this.body = checkNotNull(body);
     }

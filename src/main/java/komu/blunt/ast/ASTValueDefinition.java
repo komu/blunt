@@ -9,7 +9,7 @@ public final class ASTValueDefinition extends ASTDefinition {
     public final Symbol name;
     public final ASTExpression value;
 
-    public ASTValueDefinition(Symbol name, ASTExpression value) {
+    ASTValueDefinition(Symbol name, ASTExpression value) {
         this.name = checkNotNull(name);
         this.value = checkNotNull(value);
     }

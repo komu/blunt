@@ -9,7 +9,7 @@ public final class ASTCase extends ASTExpression {
     public final ASTExpression exp;
     public final ImmutableList<ASTAlternative> alternatives;
 
-    public ASTCase(ASTExpression exp, ImmutableList<ASTAlternative> alternatives) {
+    ASTCase(ASTExpression exp, ImmutableList<ASTAlternative> alternatives) {
         this.exp = checkNotNull(exp);
         this.alternatives = checkNotNull(alternatives);
     }

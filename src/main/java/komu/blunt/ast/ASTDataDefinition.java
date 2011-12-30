@@ -10,13 +10,9 @@ public final class ASTDataDefinition extends ASTDefinition {
     private final String name;
     public final ImmutableList<ConstructorDefinition> constructors;
 
-    public ASTDataDefinition(String name, ImmutableList<ConstructorDefinition> constructors) {
+    ASTDataDefinition(String name, ImmutableList<ConstructorDefinition> constructors) {
         this.name = checkNotNull(name);
         this.constructors = checkNotNull(constructors);
-    }
-    
-    public ASTDataDefinition(String name, ConstructorDefinition... constructors) {
-        this(name, ImmutableList.copyOf(constructors));
     }
 
     @Override

@@ -7,7 +7,7 @@ public final class ASTIf extends ASTExpression {
     public final ASTExpression consequent;
     public final ASTExpression alternative;
 
-    public ASTIf(ASTExpression test, ASTExpression consequent, ASTExpression alternative) {
+    ASTIf(ASTExpression test, ASTExpression consequent, ASTExpression alternative) {
         this.test = checkNotNull(test);
         this.consequent = checkNotNull(consequent);
         this.alternative = checkNotNull(alternative);

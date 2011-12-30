@@ -7,7 +7,7 @@ public final class ASTTuple extends ASTExpression {
     
     public final List<ASTExpression> exps;
 
-    public ASTTuple(List<ASTExpression> exps) {
+    ASTTuple(List<ASTExpression> exps) {
         if (exps.size() < 2) throw new IllegalArgumentException("invalid sub expressions for tuple: " + exps);
 
         this.exps = new ArrayList<ASTExpression>(exps);
