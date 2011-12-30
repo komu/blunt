@@ -126,21 +126,21 @@ public class EvaluatorTest {
 
     @Test
     public void simpleCase() {
-        assertThatEvaluating("case 4 of | n -> n", produces(4));
+        assertThatEvaluating("case 4 of\n  n -> n\n", produces(4));
     }
 
     @Test
     public void constructorMatchingCase() {
-        assertThatEvaluating("case Nothing of | Just x -> 1 | Nothing -> 2", produces(2));
-        assertThatEvaluating("case Just 3 of | Just x -> 1 | Nothing -> 2", produces(1));
-        assertThatEvaluating("case Just 3 of | Just x -> x | Nothing -> 2", produces(3));
+        assertThatEvaluating("case Nothing of\n  Just x -> 1\n  Nothing -> 2\n", produces(2));
+        assertThatEvaluating("case Just 3 of\n  Just x -> 1\n  Nothing -> 2\n", produces(1));
+        assertThatEvaluating("case Just 3 of\n  Just x -> x\n  Nothing -> 2\n", produces(3));
     }
     
     @Test
     public void listMatching() {
-        assertThatEvaluating("case [] of | [] -> 42", produces(42));
-        assertThatEvaluating("case [1] of | x:xs -> x", produces(1));
-        assertThatEvaluating("case [1,2,3,4,5,6,7] of | x:_:y:_ -> x+y", produces(4));
+        assertThatEvaluating("case [] of\n  [] -> 42\n", produces(42));
+        assertThatEvaluating("case [1] of\n  x:xs -> x\n", produces(1));
+        assertThatEvaluating("case [1,2,3,4,5,6,7] of\n  x:_:y:_ -> x+y\n", produces(4));
     }
 
     private void assertStaticError(String expr) {

@@ -224,26 +224,26 @@ public final class Parser {
         return new ASTIf(test, cons, alt);
     }
 
-    // case <exp> of <alternative> (| <alternative>)*
+    // case <exp> of <alternative>+
     private ASTExpression parseCase() {
-        lexer.expectToken(CASE);
+        lexer.expectIndentStartToken(CASE);
         ASTExpression exp = parseExpression();
         lexer.expectToken(OF);
 
         ImmutableList.Builder<ASTAlternative> alts = ImmutableList.builder();
         do {
-            lexer.expectToken(OR);
             alts.add(parseAlternative());
-        } while (lexer.nextTokenIs(OR));
+        } while (!lexer.nextTokenIs(END));
+        lexer.expectToken(END);
 
         return new ASTCase(exp, alts.build());
     }
 
     private ASTAlternative parseAlternative() {
         Pattern pattern = parsePatternFollowedBy(RIGHT_ARROW);
-        lexer.expectToken(RIGHT_ARROW);
+        lexer.expectIndentStartToken(RIGHT_ARROW);
         ASTExpression exp = parseExpression();
-        
+        lexer.expectToken(END);
         return new ASTAlternative(pattern, exp);
     }
 

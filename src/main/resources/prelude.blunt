@@ -16,18 +16,18 @@ data Maybe a = Just a
 
 nil? xs =
   case xs of
-  | [] -> True
-  | _  -> False
+   [] -> True
+   _  -> False
 
 head xs =
   case xs of
-  | x:_ -> x
-  | []  -> error "can't get head of empty list"
+   x:_ -> x
+   []  -> error "can't get head of empty list"
 
 tail xs =
   case xs of
-  | _:xs -> xs
-  | []   -> error "can't get tail of empty list"
+   _:xs -> xs
+   []   -> error "can't get tail of empty list"
 
 id x = x
 
@@ -41,13 +41,13 @@ flip f x y = f y x
 
 foldr f e xs =
   case xs of
-    | []   -> e
-    | x:xs -> f x (foldr f e xs)
+     []   -> e
+     x:xs -> f x (foldr f e xs)
 
 foldl f e xs =
   case xs of
-    | []   -> e
-    | x:xs -> foldl f (f e x) xs
+     []   -> e
+     x:xs -> foldl f (f e x) xs
 
 foldl1 f ls = foldr f (head ls) (tail ls)
 
@@ -96,13 +96,13 @@ drop n ls =
 
 takeWhile p ls =
   case ls of
-  | []   -> []
-  | x:xs -> if p x then x : takeWhile p xs else []
+    []   -> []
+    x:xs -> if p x then x : takeWhile p xs else []
 
 dropWhile p ls =
   case ls of
-  | []   -> []
-  | x:xs -> if p x then dropWhile p xs else ls
+    []   -> []
+    x:xs -> if p x then dropWhile p xs else ls
 
 all p = foldl (\x y -> p y && x) True
 
@@ -120,10 +120,10 @@ uncurry f p = f (fst p) (snd p)
 
 zipWith f as bs =
   case as of
-  | []   -> []
-  | x:xs -> case bs of
-            | []   -> []
-            | y:ys -> f x y : zipWith f xs ys
+    []   -> []
+    x:xs -> case bs of
+              []   -> []
+              y:ys -> f x y : zipWith f xs ys
 
 zip = zipWith (\x y -> (x,y))
 
@@ -151,17 +151,17 @@ maximum = foldl1 max
 
 sort ls =
   case ls of
-  | []   -> []
-  | x:xs -> sort (filter (\y -> y < x) xs) ++ [x] ++ sort (filter (\y -> y >= x) xs)
+    []   -> []
+    x:xs -> sort (filter (\y -> y < x) xs) ++ [x] ++ sort (filter (\y -> y >= x) xs)
 
 delete x xs =
   case xs of
-  | []   -> []
-  | y:ys -> if x == y then ys else y : delete x ys
+    []   -> []
+    y:ys -> if x == y then ys else y : delete x ys
 
 (\\) = foldr delete
 
 maybe e f m =
   case m of
-  | Just x  -> f x
-  | Nothing -> e
+    Just x  -> f x
+    Nothing -> e
