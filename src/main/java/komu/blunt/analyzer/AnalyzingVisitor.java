@@ -118,10 +118,9 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
 
         StaticEnvironment newEnv = new StaticEnvironment(env);
 
-        VariableReference matchedObject = newEnv.define(symbol("$match")); // TODO: fresh name
-        
-        return new CoreSequenceExpression(new CoreSetExpression(matchedObject, exp),
-                                          createAlts(matchedObject, astCase.alternatives, newEnv));
+        Symbol var = symbol("$match"); // TODO: fresh name
+        VariableReference matchedObject = newEnv.define(var);
+        return new CoreLetExpression(var, exp, createAlts(matchedObject, astCase.alternatives, newEnv));
     }
     
     private CoreExpression createAlts(VariableReference matchedObject, List<ASTAlternative> alts, StaticEnvironment env) {
