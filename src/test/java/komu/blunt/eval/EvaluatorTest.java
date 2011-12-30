@@ -125,13 +125,6 @@ public class EvaluatorTest {
     }
 
     @Test
-    public void maybe() {
-        assertThatEvaluating("just? Nothing", produces(false));
-        assertThatEvaluating("just? (Just 4)", produces(true));
-        assertThatEvaluating("fromJust (Just 4)", produces(4));
-    }
-
-    @Test
     public void simpleCase() {
         assertThatEvaluating("case 4 of | n -> n", produces(4));
     }

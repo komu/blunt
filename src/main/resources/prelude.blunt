@@ -95,20 +95,14 @@ drop n ls =
     else ls
 
 takeWhile p ls =
-  if nil? ls
-    then []
-    else let h = head ls in
-         if p h
-           then h : takeWhile p (tail ls)
-           else []
+  case ls of
+  | []   -> []
+  | x:xs -> if p x then x : takeWhile p xs else []
 
 dropWhile p ls =
-  if nil? ls
-    then []
-    else let h = head ls in
-         if p h
-           then dropWhile p (tail ls)
-           else ls
+  case ls of
+  | []   -> []
+  | x:xs -> if p x then dropWhile p xs else ls
 
 all p = foldl (\x y -> p y && x) True
 
@@ -124,10 +118,12 @@ curry f x y = f (x, y)
 
 uncurry f p = f (fst p) (snd p)
 
-zipWith f xs ys =
-  if nil? xs || nil? ys
-    then []
-    else f (head xs) (head ys) : zipWith f (tail xs) (tail ys)
+zipWith f as bs =
+  case as of
+  | []   -> []
+  | x:xs -> case bs of
+            | []   -> []
+            | y:ys -> f x y : zipWith f xs ys
 
 zip = zipWith (\x y -> (x,y))
 
@@ -154,33 +150,18 @@ minimum = foldl1 min
 maximum = foldl1 max
 
 sort ls =
-  if nil? ls
-    then ls
-    else let pivot = head ls in
-         let less = filter (\x -> x < pivot) (tail ls) in
-         let more = filter (\x -> x >= pivot) (tail ls) in
-         sort less ++ [pivot] ++ sort more
+  case ls of
+  | []   -> []
+  | x:xs -> sort (filter (\y -> y < x) xs) ++ [x] ++ sort (filter (\y -> y >= x) xs)
 
 delete x xs =
-  if nil? xs
-    then xs
-    else
-      if x == head xs
-        then tail xs
-        else head xs : delete x (tail xs)
+  case xs of
+  | []   -> []
+  | y:ys -> if x == y then ys else y : delete x ys
 
 (\\) = foldr delete
 
-just? x = case x of
-           | Just _  -> True
-           | Nothing -> False
-
-fromJust x = case x of
-              | Just x -> x
-              | Nothing -> error "can't get value of Nothing"
-
-nothing? = not . just?
-
-maybe e f m = case m of
-               | Just x  -> f x
-               | Nothing -> e
+maybe e f m =
+  case m of
+  | Just x  -> f x
+  | Nothing -> e
