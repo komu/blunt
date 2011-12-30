@@ -1,5 +1,6 @@
 package komu.blunt.asm;
 
+import komu.blunt.asm.opcodes.OpCode;
 import komu.blunt.eval.Environment;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public final class VM {
             int pc = (Integer) get(Register.PC);
             if (pc >= instructions.count()) break;
             OpCode op = instructions.get(pc);
-            set(Register.PC, pc+1);
+            set(Register.PC, pc + 1);
             op.execute(this);
         }
         

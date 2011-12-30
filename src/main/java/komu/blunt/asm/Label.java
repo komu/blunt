@@ -11,7 +11,7 @@ public final class Label {
         this.name = checkNotNull(name);
     }
 
-    void setAddress(int address) {
+    public void setAddress(int address) {
         if (address < 0) throw new IllegalArgumentException("negative address");
         
         if (this.address != -1)
@@ -20,7 +20,7 @@ public final class Label {
         this.address = address;
     }
     
-    int getAddress() {
+    public int getAddress() {
         if (address == -1) throw new IllegalStateException("address not initialized");
 
         return address;

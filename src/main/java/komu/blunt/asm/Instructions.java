@@ -1,6 +1,7 @@
 package komu.blunt.asm;
 
 import komu.blunt.analyzer.VariableReference;
+import komu.blunt.asm.opcodes.*;
 import komu.blunt.core.PatternPath;
 
 import java.util.*;
@@ -14,7 +15,7 @@ public final class Instructions {
     private int labelCounter = 0;
 
     public void jumpIfFalse(Register register, Label label) {
-        instructions.add(new OpCode.JumpIfFalse(register, label));
+        instructions.add(new OpJumpIfFalse(register, label));
     }
     
     public void label(Label label) {
@@ -49,74 +50,66 @@ public final class Instructions {
         if (linkage == Linkage.NEXT) {
             // nada
         } else if (linkage == Linkage.RETURN) {
-            instructions.add(new OpCode.Return());
+            instructions.add(new OpReturn());
         } else {
             jump(linkage.label);
         }
     }
 
     public void loadConstant(Register target, Object value) {
-        instructions.add(new OpCode.LoadConstant(target, value));
+        instructions.add(new OpLoadConstant(target, value));
     }
 
     public void loadVariable(Register target, VariableReference variable) {
-        instructions.add(new OpCode.LoadVariable(target, variable));
+        instructions.add(new OpLoadVariable(target, variable));
     }
     
     public void storeVariable(VariableReference var, Register val) {
-        instructions.add(new OpCode.StoreVariable(var, val));
+        instructions.add(new OpStoreVariable(var, val));
     }
     
     public void loadLambda(Register target, Label label) {
-        instructions.add(new OpCode.LoadLambda(target, label));
+        instructions.add(new OpLoadLambda(target, label));
     }
 
     public void loadNewArray(Register target, int size) {
-        instructions.add(new OpCode.LoadNewArray(target, size));
+        instructions.add(new OpLoadNewArray(target, size));
     }
     
     public void loadExtracted(Register target, Register source, PatternPath path) {
-        instructions.add(new OpCode.LoadExtracted(target, source, path));
+        instructions.add(new OpLoadExtracted(target, source, path));
     }
 
     public void loadTag(Register target, Register source, PatternPath path) {
-        instructions.add(new OpCode.LoadTag(target, source, path));
-    }
-    
-    public void arrayStore(Register array, int offset, Register val) {
-        instructions.add(new OpCode.ArrayStore(array, offset, val));
-    }
-    
-    public void jump(Label label) {
-        instructions.add(new OpCode.Jump(label));
+        instructions.add(new OpLoadTag(target, source, path));
     }
 
-    public void pushLabel(Label label) {
-        instructions.add(new OpCode.PushLabel(label));
+    public void jump(Label label) {
+        instructions.add(new OpJump(label));
     }
 
     public void pushRegister(Register register) {
-        instructions.add(new OpCode.PushRegister(register));
+        instructions.add(new OpPushRegister(register));
     }
 
     public void popRegister(Register register) {
-        instructions.add(new OpCode.PopRegister(register));
+        instructions.add(new OpPopRegister(register));
     }
 
     public void apply(Register procedure, Register argv) {
-        instructions.add(new OpCode.Apply(procedure, argv));
+        instructions.add(new OpApply(procedure, argv));
     }
     
     public void copy(Register target, Register source) {
-        instructions.add(new OpCode.CopyRegister(target, source));
+        instructions.add(new OpCopyRegister(target, source));
     }
     
     public void equalConstant(Register target, Register source, Object value) {
-        instructions.add(new OpCode.EqualConstant(target, source, value));
+        instructions.add(new OpEqualConstant(target, source, value));
     }
     
     public void loadConstructed(Register target, String name, int size) {
-        instructions.add(new OpCode.LoadConstructed(target, name, size));
+        instructions.add(new OpLoadConstructed(target, name, size));
     }
     
     public int count() {
