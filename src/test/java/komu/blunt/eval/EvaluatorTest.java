@@ -130,6 +130,11 @@ public class EvaluatorTest {
     }
 
     @Test
+    public void matchingUnit() {
+        assertThatEvaluating("case () of\n  () -> 2\n", produces(2));
+    }
+
+    @Test
     public void constructorMatchingCase() {
         assertThatEvaluating("case Nothing of\n  Just x -> 1\n  Nothing -> 2\n", produces(2));
         assertThatEvaluating("case Just 3 of\n  Just x -> 1\n  Nothing -> 2\n", produces(1));
@@ -141,6 +146,12 @@ public class EvaluatorTest {
         assertThatEvaluating("case [] of\n  [] -> 42\n", produces(42));
         assertThatEvaluating("case [1] of\n  x:xs -> x\n", produces(1));
         assertThatEvaluating("case [1,2,3,4,5,6,7] of\n  x:_:y:_ -> x+y\n", produces(4));
+    }
+
+    @Test
+    public void matchingTuples() {
+        assertThatEvaluating("case (1,2) of\n  (x,y) -> x+y\n", produces(3));
+        assertThatEvaluating("case (1,2,\"foo\") of\n  (x,y,z) -> z\n", produces("foo"));
     }
 
     private void assertStaticError(String expr) {

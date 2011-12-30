@@ -119,11 +119,9 @@ curry f x y = f (x, y)
 uncurry f p = f (fst p) (snd p)
 
 zipWith f as bs =
-  case as of
-    []   -> []
-    x:xs -> case bs of
-              []   -> []
-              y:ys -> f x y : zipWith f xs ys
+  case (as, bs) of
+    (x:xs,y:ys) -> f x y : zipWith f xs ys
+    _           -> []
 
 zip = zipWith (\x y -> (x,y))
 

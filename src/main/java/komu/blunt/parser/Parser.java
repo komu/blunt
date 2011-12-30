@@ -31,6 +31,10 @@ public final class Parser {
     private static final List<TokenType<?>> expressionStartTokens =
         Arrays.asList(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, CASE);
 
+    @SuppressWarnings("unchecked")
+    private static final List<TokenType<?>> patternStartTokens =
+        Arrays.asList(LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME);
+
     public Parser(String source) {
         this.lexer = new Lexer(source);
     }
@@ -240,7 +244,7 @@ public final class Parser {
     }
 
     private ASTAlternative parseAlternative() {
-        Pattern pattern = parsePatternFollowedBy(RIGHT_ARROW);
+        Pattern pattern = parsePattern();
         lexer.expectIndentStartToken(RIGHT_ARROW);
         ASTExpression exp = parseExpression();
         lexer.expectToken(END);
@@ -248,19 +252,19 @@ public final class Parser {
     }
 
     // <literal> | <variable> | ( <pattern> ) | <constructor> <pattern>* |
-    private Pattern parsePatternFollowedBy(TokenType endToken) {
-        Pattern pattern = parsePatternPrimitiveFollowedBy(endToken);
+    private Pattern parsePattern() {
+        Pattern pattern = parsePatternPrimitive();
 
         if (lexer.nextTokenIs(OPERATOR) && lexer.peekToken(OPERATOR).value.isConstructor()) {
             Operator op = lexer.readToken(OPERATOR).value;
 
-            pattern = new ConstructorPattern(op.toString(), pattern, parsePatternFollowedBy(endToken));
+            pattern = new ConstructorPattern(op.toString(), pattern, parsePattern());
         }
 
         return pattern;
     }
 
-    private Pattern parsePatternPrimitiveFollowedBy(TokenType endToken) {
+    private Pattern parsePatternPrimitive() {
         if (lexer.nextTokenIs(LITERAL)) {
             return new LiteralPattern(lexer.readToken(LITERAL).value);
 
@@ -268,15 +272,14 @@ public final class Parser {
             return new VariablePattern(symbol(lexer.readToken(IDENTIFIER).value));
 
         } else if (lexer.readMatchingToken(LPAREN)) {
-            Pattern pattern = parsePatternFollowedBy(RPAREN);
-            lexer.expectToken(RPAREN);
-            return pattern;
+            return parsePatternParens();
 
         } else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME)) {
             String name = lexer.readToken(TYPE_OR_CTOR_NAME).value;
             ImmutableList.Builder<Pattern> args = ImmutableList.builder();
-            while (!lexer.nextTokenIs(endToken))
-                args.add(parsePatternFollowedBy(endToken));
+
+            while (patternStartTokens.contains(lexer.peekTokenType()))
+                args.add(parsePattern());
             
             return new ConstructorPattern(name, args.build());
 
@@ -288,6 +291,25 @@ public final class Parser {
         } else {
             throw parseError("expected pattern, got " + lexer.readToken());
         }
+    }
+
+    private Pattern parsePatternParens() {
+        if (lexer.readMatchingToken(RPAREN))
+            return new LiteralPattern(Unit.INSTANCE);
+
+        ImmutableList.Builder<Pattern> patterns = ImmutableList.builder();
+        
+        do {
+            patterns.add(parsePattern());    
+        } while (lexer.readMatchingToken(COMMA));
+
+        lexer.expectToken(RPAREN);
+
+        ImmutableList<Pattern> pts = patterns.build();
+        if (pts.size() == 1)
+            return pts.get(0);
+        else
+            return new ConstructorPattern(DataTypeDefinitions.tupleName(pts.size()), pts);
     }
 
     // let [rec] <ident> <ident>* = <expr> in <expr>
