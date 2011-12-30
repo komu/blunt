@@ -70,6 +70,10 @@ public final class TypeChecker {
         return Qualified.instantiate(ts, scheme.type);
     }
 
+    TypeVariable newTVar() {
+        return newTVar(Kind.STAR);
+    }
+
     TypeVariable newTVar(Kind kind) {
         return new TypeVariable(typeName(typeSequence++), kind);
     }

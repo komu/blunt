@@ -46,7 +46,7 @@ final class PatternTypeChecker implements PatternVisitor<Void,PatternTypeCheckRe
         if (pattern.args.size() != constructor.arity)
             throw new TypeCheckException("invalid amount of arguments for constructor");
 
-        PatternTypeCheckResult<List<Type>> result = typeCheckPatterns(pattern.args);
+        PatternTypeCheckResult<List<Type>> result = assumptionsFrom(pattern.args);
         Type type = tc.newTVar(Kind.STAR);
 
         Qualified<Type> q = tc.freshInstance(constructor.scheme);
@@ -60,7 +60,7 @@ final class PatternTypeChecker implements PatternVisitor<Void,PatternTypeCheckRe
         return new PatternTypeCheckResult<Type>(predicates, result.as, type);
     }
 
-    private PatternTypeCheckResult<List<Type>> typeCheckPatterns(List<Pattern> patterns) {
+    PatternTypeCheckResult<List<Type>> assumptionsFrom(List<Pattern> patterns) {
         List<Predicate> predicates = new ArrayList<Predicate>();
         Assumptions as = Assumptions.empty();
         List<Type> types = new ArrayList<Type>(patterns.size());

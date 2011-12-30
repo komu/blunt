@@ -149,9 +149,23 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
     }
 
     @Override
-    public TypeCheckResult<Type> visit(ASTCase astCase, Assumptions ctx) {
-        // TODO: implement type checking for cases
-        throw new UnsupportedOperationException("type checking case expressions is not implemented");
+    public TypeCheckResult<Type> visit(ASTCase astCase, Assumptions as) {
+        TypeCheckResult<Type> expResult = tc.typeCheck(astCase.exp, as);
+
+        Type type = tc.newTVar();
+        List<Predicate> predicates = new ArrayList<Predicate>();
+
+        for (ASTAlternative alt : astCase.alternatives) {
+            PatternTypeCheckResult<Type> patternResult = tc.typeCheck(alt.pattern);
+
+            tc.unify(expResult.value, patternResult.value);
+            predicates.addAll(patternResult.predicates);
+            
+            TypeCheckResult<Type> valueResult = tc.typeCheck(alt.value, patternResult.as.join(as));
+            tc.unify(type, valueResult.value);
+            predicates.addAll(valueResult.predicates);
+        }
+
+        return TypeCheckResult.of(type, predicates);
     }
 }
-
