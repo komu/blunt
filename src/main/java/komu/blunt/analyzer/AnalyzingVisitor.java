@@ -113,6 +113,8 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     @Override
     public CoreExpression visit(ASTCase astCase, StaticEnvironment ctx) {
         // TODO: implement analyzing cases
-        throw new UnsupportedOperationException("analyzing case expressions is not implemented");
+
+        return new CoreApplicationExpression(new CoreVariableExpression(ctx.lookup(Symbol.symbol("error"))),
+                new CoreConstantExpression("case expressions are not implemented"));
     }
 }
