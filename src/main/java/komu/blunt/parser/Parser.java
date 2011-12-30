@@ -26,6 +26,7 @@ public final class Parser {
 
     private final Lexer lexer;
     private final OperatorSet operators = new OperatorSet();
+    private final TypeParser typeParser;
 
     @SuppressWarnings("unchecked")
     private static final List<TokenType<?>> expressionStartTokens =
@@ -37,6 +38,7 @@ public final class Parser {
 
     public Parser(String source) {
         this.lexer = new Lexer(source);
+        this.typeParser = new TypeParser(lexer);
     }
 
     public static ASTExpression parseExpression(String source) {
@@ -66,7 +68,7 @@ public final class Parser {
         
         List<TypeVariable> vars = new ArrayList<TypeVariable>();
         while (!lexer.nextTokenIs(ASSIGN))
-            vars.add(parseTypeVariable());
+            vars.add(typeParser.parseTypeVariable());
 
         lexer.expectToken(ASSIGN);
 
@@ -88,19 +90,10 @@ public final class Parser {
         
         List<Type> args = new ArrayList<Type>();
         while (!lexer.nextTokenIs(OR) && !lexer.nextTokenIs(END))
-            args.add(parseType());
+            args.add(typeParser.parseType());
 
         Qualified<Type> type = new Qualified<Type>(functionType(args, resultType));
         return new ConstructorDefinition(name, quantify(vars, type), args.size());
-    }
-
-    private Type parseType() {
-        return parseTypeVariable(); // TODO: support concrete types
-    }
-
-    private TypeVariable parseTypeVariable() {
-        Symbol name = parseIdentifier(); // TODO: not really correct, but will do for now
-        return new TypeVariable(name.toString(), Kind.STAR);
     }
 
     // <ident> <op> <ident> = <exp> ;;

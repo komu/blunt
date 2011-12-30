@@ -32,6 +32,14 @@ public abstract class Type implements Types<Type> {
         TypeName name = type.getAnnotation(TypeName.class);
         return name != null ? name.value() : type.getSimpleName();
     }
+    
+    public static TypeVariable typeVariable(String name) {
+        return typeVariable(name, Kind.STAR);
+    }
+
+    public static TypeVariable typeVariable(String name, Kind kind) {
+        return new TypeVariable(name, kind);
+    }
 
     public static Type listType(Type type) {
         return arrayOf(type);

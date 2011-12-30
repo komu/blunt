@@ -67,4 +67,23 @@ public final class TypeApplication extends Type {
             return "(" + left + " " + arguments + ")";
         }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+
+        if (obj instanceof TypeApplication) {
+            TypeApplication rhs = (TypeApplication) obj;
+
+            return left.equals(rhs.left)
+                && right.equals(rhs.right);
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return left.hashCode() * 79 + right.hashCode();
+    }
 }

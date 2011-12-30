@@ -17,9 +17,10 @@ public final class TypeVariable extends Type {
         this.name = checkNotNull(name);
         this.kind = checkNotNull(kind);
     }
-    
+
+    @Deprecated
     public static TypeVariable tyVar(String name, Kind kind) {
-        return new TypeVariable(name, kind);
+        return Type.typeVariable(name, kind);
     }
 
     @Override
