@@ -44,6 +44,10 @@ public final class Lexer {
         return nextToken;
     }
 
+    public <T> Token<T> peekToken(TokenType<T> type) {
+        return peekToken().asType(type);
+    }
+    
     public Token<?> readToken() {
         if (nextToken != null) {
             Token token = nextToken;

@@ -13,6 +13,11 @@ public final class ConstructorPattern extends Pattern {
         this.args = checkNotNull(args);
     }
 
+    public ConstructorPattern(String name, Pattern... args) {
+        this.name = checkNotNull(name);
+        this.args = ImmutableList.copyOf(args);
+    }
+
     @Override
     public <R, C> R accept(PatternVisitor<C, R> visitor, C ctx) {
         return visitor.visit(this, ctx);

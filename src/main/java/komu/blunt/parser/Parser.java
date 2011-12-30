@@ -239,7 +239,6 @@ public final class Parser {
         return new ASTCase(exp, alts.build());
     }
 
-    // <pattern> -> <exp>
     private ASTAlternative parseAlternative() {
         Pattern pattern = parsePatternFollowedBy(RIGHT_ARROW);
         lexer.expectToken(RIGHT_ARROW);
@@ -250,6 +249,18 @@ public final class Parser {
 
     // <literal> | <variable> | ( <pattern> ) | <constructor> <pattern>* |
     private Pattern parsePatternFollowedBy(TokenType endToken) {
+        Pattern pattern = parsePatternPrimitiveFollowedBy(endToken);
+
+        if (lexer.nextTokenIs(OPERATOR) && lexer.peekToken(OPERATOR).value.isConstructor()) {
+            Operator op = lexer.readToken(OPERATOR).value;
+
+            pattern = new ConstructorPattern(op.toString(), pattern, parsePatternFollowedBy(endToken));
+        }
+
+        return pattern;
+    }
+
+    private Pattern parsePatternPrimitiveFollowedBy(TokenType endToken) {
         if (lexer.nextTokenIs(LITERAL)) {
             return new LiteralPattern(lexer.readToken(LITERAL).value);
 
@@ -268,9 +279,14 @@ public final class Parser {
                 args.add(parsePatternFollowedBy(endToken));
             
             return new ConstructorPattern(name, args.build());
-            
+
+        } else if (lexer.readMatchingToken(LBRACKET)) {
+            // TODO: support non-empty lists
+            lexer.expectToken(RBRACKET);
+            return new ConstructorPattern("[]");
+
         } else {
-            throw parseError("expected pattern");
+            throw parseError("expected pattern, got " + lexer.readToken());
         }
     }
 

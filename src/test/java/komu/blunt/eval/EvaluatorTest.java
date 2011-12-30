@@ -142,6 +142,13 @@ public class EvaluatorTest {
         assertThatEvaluating("case Just 3 of | Just x -> 1 | Nothing -> 2", produces(1));
         assertThatEvaluating("case Just 3 of | Just x -> x | Nothing -> 2", produces(3));
     }
+    
+    @Test
+    public void listMatching() {
+        assertThatEvaluating("case [] of | [] -> 42", produces(42));
+        assertThatEvaluating("case [1] of | x:xs -> x", produces(1));
+        assertThatEvaluating("case [1,2,3,4,5,6,7] of | x:_:y:_ -> x+y", produces(4));
+    }
 
     private void assertStaticError(String expr) {
         try {

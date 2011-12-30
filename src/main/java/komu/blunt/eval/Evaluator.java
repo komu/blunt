@@ -28,7 +28,8 @@ import static java.lang.reflect.Modifier.isStatic;
 import static java.util.Arrays.asList;
 import static komu.blunt.eval.ConstructorArgumentCollector.createConstructor;
 import static komu.blunt.types.Qualified.quantify;
-import static komu.blunt.types.Type.*;
+import static komu.blunt.types.Type.functionType;
+import static komu.blunt.types.Type.listType;
 import static komu.blunt.types.TypeVariable.tyVar;
 
 public final class Evaluator {
@@ -59,7 +60,7 @@ public final class Evaluator {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null) {
                 String name = func.value();
-                Scheme type = resolveTYpe(m);
+                Scheme type = NativeTypeConversions.createFunctionType(m);
 
                 boolean isStatic = isStatic(m.getModifiers());
                 bindings.bind(name, type, new PrimitiveFunction(name, m, isStatic));
@@ -77,46 +78,6 @@ public final class Evaluator {
                     throw new RuntimeException(e);
                 }
             }
-        }
-    }
-
-    private static Scheme resolveTYpe(Method m) {
-        LibraryFunction func = m.getAnnotation(LibraryFunction.class);
-        if (func != null && !func.type().isEmpty()) {
-            return parseType(func.type());   
-        } else {
-            return NativeTypeConversions.createFunctionType(m);
-        }
-    }
-
-    // TODO: don't hardcode the used types here but actually parse them :)
-    private static Scheme parseType(String type) {
-        if (type.equals("Maybe a -> Boolean")) {
-            TypeVariable var = tyVar("a", Kind.STAR);
-            return quantify(var, new Qualified<Type>(functionType(genericType("Maybe", var), Type.BOOLEAN)));
-
-        } else if (type.equals("Maybe a -> a")) {
-            TypeVariable var = tyVar("a", Kind.STAR);
-            return quantify(var, new Qualified<Type>(functionType(genericType("Maybe", var), var)));
-
-        } else if (type.equals("a -> [a] -> [a]")) {
-            TypeVariable var = tyVar("a", Kind.STAR);
-            return quantify(var, new Qualified<Type>(functionType(asList(var, listType(var)), listType(var))));
-
-        } else if (type.equals("[a] -> Boolean")) {
-            TypeVariable var = tyVar("a", Kind.STAR);
-            return quantify(var, new Qualified<Type>(functionType(listType(var), Type.BOOLEAN)));
-
-        } else if (type.equals("[a] -> a")) {
-            TypeVariable var = tyVar("a", Kind.STAR);
-            return quantify(var, new Qualified<Type>(functionType(listType(var), var)));
-
-        } else if (type.equals("[a] -> [a]")) {
-            TypeVariable var = tyVar("a", Kind.STAR);
-            return quantify(var, new Qualified<Type>(functionType(listType(var), listType(var))));
-
-        } else {
-            throw new IllegalArgumentException("unsupported type: " + type);
         }
     }
 

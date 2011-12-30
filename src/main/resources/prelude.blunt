@@ -14,8 +14,20 @@ data Boolean = True | False
 data Maybe a = Just a
              | Nothing
 
-foo x = case x of
-        | x -> x
+nil? xs =
+  case xs of
+  | [] -> True
+  | _  -> False
+
+head xs =
+  case xs of
+  | x:_ -> x
+  | []  -> error "can't get head of empty list"
+
+tail xs =
+  case xs of
+  | _:xs -> xs
+  | []   -> error "can't get tail of empty list"
 
 id x = x
 
@@ -27,17 +39,15 @@ f $ x = f x
 
 flip f x y = f y x
 
-foldr f e =
-  let rec loop ls =
-    if nil? ls
-      then e
-      else f (head ls) (loop (tail ls))
-  in loop
+foldr f e xs =
+  case xs of
+    | []   -> e
+    | x:xs -> f x (foldr f e xs)
 
-foldl f e ls =
-  if nil? ls
-    then e
-    else foldl f (f e (head ls)) (tail ls)
+foldl f e xs =
+  case xs of
+    | []   -> e
+    | x:xs -> foldl f (f e x) xs
 
 foldl1 f ls = foldr f (head ls) (tail ls)
 
@@ -161,10 +171,16 @@ delete x xs =
 
 (\\) = foldr delete
 
+just? x = case x of
+           | Just _  -> True
+           | Nothing -> False
+
+fromJust x = case x of
+              | Just x -> x
+              | Nothing -> error "can't get value of Nothing"
+
 nothing? = not . just?
 
-maybe n j m =
-  if just? m
-    then j (fromJust m)
-    else n
-
+maybe e f m = case m of
+               | Just x  -> f x
+               | Nothing -> e

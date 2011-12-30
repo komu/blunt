@@ -2,7 +2,6 @@ package komu.blunt.stdlib;
 
 import com.google.common.base.Objects;
 import komu.blunt.objects.EvaluationException;
-import komu.blunt.objects.TypeConstructorValue;
 
 import java.math.BigInteger;
 
@@ -82,34 +81,5 @@ public class BasicFunctions {
     @LibraryFunction("error")
     public static <T> T error(String message) {
         throw new EvaluationException(message);
-    }
-
-
-    @LibraryFunction(value="just?", type="Maybe a -> Boolean")
-    public static boolean isJust(TypeConstructorValue value) {
-        return value.name.equals("Just");
-    }
-
-    @LibraryFunction(value="fromJust", type="Maybe a -> a")
-    public static Object fromJust(TypeConstructorValue value) {
-        if (isJust(value))
-            return value.items[0];
-        else
-            return BasicFunctions.error("not just " + value);
-    }
-
-    @LibraryFunction(value = "nil?", type="[a] -> Boolean")
-    public static boolean isNil(TypeConstructorValue value) {
-        return value.name.equals("[]");
-    }
-
-    @LibraryFunction(value = "head", type="[a] -> a")
-    public static Object getHead(TypeConstructorValue value) {
-        return value.items[0];
-    }
-
-    @LibraryFunction(value = "tail", type="[a] -> [a]")
-    public static Object getTail(TypeConstructorValue value) {
-        return value.items[1];
     }
 }
