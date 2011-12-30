@@ -1,6 +1,7 @@
 package komu.blunt.asm;
 
 import komu.blunt.analyzer.VariableReference;
+import komu.blunt.core.PatternPath;
 
 import java.util.*;
 
@@ -73,7 +74,15 @@ public final class Instructions {
     public void loadNewArray(Register target, int size) {
         instructions.add(new OpCode.LoadNewArray(target, size));
     }
+    
+    public void loadExtracted(Register target, Register source, PatternPath path) {
+        instructions.add(new OpCode.LoadExtracted(target, source, path));
+    }
 
+    public void loadTag(Register target, Register source, PatternPath path) {
+        instructions.add(new OpCode.LoadTag(target, source, path));
+    }
+    
     public void arrayStore(Register array, int offset, Register val) {
         instructions.add(new OpCode.ArrayStore(array, offset, val));
     }
@@ -100,6 +109,10 @@ public final class Instructions {
     
     public void copy(Register target, Register source) {
         instructions.add(new OpCode.CopyRegister(target, source));
+    }
+    
+    public void equalConstant(Register target, Register source, Object value) {
+        instructions.add(new OpCode.EqualConstant(target, source, value));
     }
     
     public void loadConstructed(Register target, String name, int size) {

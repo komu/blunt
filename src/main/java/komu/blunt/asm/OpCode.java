@@ -1,6 +1,8 @@
 package komu.blunt.asm;
 
+import com.google.common.base.Objects;
 import komu.blunt.analyzer.VariableReference;
+import komu.blunt.core.PatternPath;
 import komu.blunt.eval.Environment;
 import komu.blunt.objects.CompoundProcedure;
 import komu.blunt.objects.Function;
@@ -10,6 +12,7 @@ import java.lang.reflect.Array;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.stdlib.BasicValues.booleanToConstructor;
 
 public abstract class OpCode {
     OpCode() { }
@@ -176,7 +179,61 @@ public abstract class OpCode {
             return String.format("(load %s (%s %d))", target, name, size);
         }
     }
-        
+
+    public static class LoadTag extends OpCode {
+
+        private final Register target;
+        private final Register source;
+        private final PatternPath path;
+
+        public LoadTag(Register target, Register source, PatternPath path) {
+            this.target = checkNotNull(target);
+            this.source = checkNotNull(source);
+            this.path = checkNotNull(path);
+        }
+
+        @Override
+        public void execute(VM vm) {
+            Object object = vm.get(source);
+            for (int index : path.indices()) {
+                object = ((TypeConstructorValue) object).items[index];
+            }
+            vm.set(target, ((TypeConstructorValue) object).name);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(load %s (tag %s %s))", target, source, path);
+        }
+    }
+
+    public static class LoadExtracted extends OpCode {
+
+        private Register target;
+        private Register source;
+        private PatternPath path;
+
+        public LoadExtracted(Register target, Register source, PatternPath path) {
+            this.target = checkNotNull(target);
+            this.source = checkNotNull(source);
+            this.path = checkNotNull(path);            
+        }
+
+        @Override
+        public void execute(VM vm) {
+            Object object = vm.get(source);
+            for (int index : path.indices()) {
+                object = ((TypeConstructorValue) object).items[index];
+            }
+            vm.set(target, object);
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(load %s (extract %s %s))", target, source, path);
+        }        
+    }
+
     public static class LoadNewArray extends OpCode {
         private final Register target;
         private final int size;
@@ -331,6 +388,32 @@ public abstract class OpCode {
         }
     }
 
+    public static class EqualConstant extends OpCode {
+
+        private final Register target;
+        private final Register source;
+        private final Object value;
+
+        public EqualConstant(Register target, Register source, Object value) {
+            this.target = checkNotNull(target);
+            this.source = checkNotNull(source);
+            this.value = checkNotNull(value);
+        }
+
+        @Override
+        public void execute(VM vm) {
+            Object val = vm.get(source);
+
+            boolean result = Objects.equal(val, value);
+            vm.set(target, booleanToConstructor(result));
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(load %s (= %s %s))", target, source, value);
+        }
+    }
+    
     public static class CopyRegister extends OpCode {
         private final Register target;
         private final Register source;

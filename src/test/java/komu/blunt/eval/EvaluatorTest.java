@@ -131,6 +131,18 @@ public class EvaluatorTest {
         assertThatEvaluating("fromJust (Just 4)", produces(4));
     }
 
+    @Test
+    public void simpleCase() {
+        assertThatEvaluating("case 4 of | n -> n", produces(4));
+    }
+
+    @Test
+    public void constructorMatchingCase() {
+        assertThatEvaluating("case Nothing of | Just x -> 1 | Nothing -> 2", produces(2));
+        assertThatEvaluating("case Just 3 of | Just x -> 1 | Nothing -> 2", produces(1));
+        assertThatEvaluating("case Just 3 of | Just x -> x | Nothing -> 2", produces(3));
+    }
+
     private void assertStaticError(String expr) {
         try {
             analyze(expr);

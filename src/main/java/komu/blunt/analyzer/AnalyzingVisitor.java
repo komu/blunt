@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.objects.Symbol.symbol;
 
 final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpression> {
 
     private final DataTypeDefinitions dataTypes;
+    private final PatternAnalyzer patternAnalyzer = new PatternAnalyzer();
 
     public AnalyzingVisitor(DataTypeDefinitions dataTypes) {
         this.dataTypes = checkNotNull(dataTypes);
@@ -111,10 +113,31 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     }
 
     @Override
-    public CoreExpression visit(ASTCase astCase, StaticEnvironment ctx) {
-        // TODO: implement analyzing cases
+    public CoreExpression visit(ASTCase astCase, StaticEnvironment env) {
+        CoreExpression exp = analyze(astCase.exp, env);
 
-        return new CoreApplicationExpression(new CoreVariableExpression(ctx.lookup(Symbol.symbol("error"))),
-                new CoreConstantExpression("case expressions are not implemented"));
+        StaticEnvironment newEnv = new StaticEnvironment(env);
+
+        VariableReference matchedObject = newEnv.define(symbol("$match")); // TODO: fresh name
+        
+        return new CoreSequenceExpression(new CoreSetExpression(matchedObject, exp),
+                                          createAlts(matchedObject, astCase.alternatives, newEnv));
+    }
+    
+    private CoreExpression createAlts(VariableReference matchedObject, List<ASTAlternative> alts, StaticEnvironment env) {
+        if (alts.isEmpty())
+            return analyze(new ASTApplication(new ASTVariable("error"), new ASTConstant("match failure")), env);
+            
+        ASTAlternative head = alts.get(0);
+        List<ASTAlternative> tail = alts.subList(1, alts.size());
+
+        CoreAlternative alt = analyze(head, matchedObject, env);
+        return new CoreIfExpression(alt.extractor, alt.body, createAlts(matchedObject, tail, env));
+    }
+
+    private CoreAlternative analyze(ASTAlternative alt, VariableReference matchedObject, StaticEnvironment env) {
+        CoreExpression extractor = patternAnalyzer.createExtractor(alt.pattern, matchedObject, env);
+        CoreExpression body = analyze(alt.value, env);
+        return new CoreAlternative(extractor, body);
     }
 }

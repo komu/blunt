@@ -38,4 +38,9 @@ public final class CoreIfExpression extends CoreExpression {
 
         instructions.finishWithLinkage(linkage);
     }
+
+    @Override
+    public String toString() {
+        return "(if " + condition + " " + consequent + " " + alternative + ")";
+    }
 }

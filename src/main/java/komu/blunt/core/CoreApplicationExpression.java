@@ -33,4 +33,9 @@ public final class CoreApplicationExpression extends CoreExpression {
 
         instructions.finishWithLinkage(linkage);
     }
+
+    @Override
+    public String toString() {
+        return "(" + func + " " + arg + ")";
+    }
 }

@@ -28,4 +28,9 @@ public final class CoreSetExpression extends CoreExpression {
         instructions.loadConstant(target, Unit.INSTANCE);
         instructions.finishWithLinkage(linkage);
     }
+
+    @Override
+    public String toString() {
+        return "(set! " + var.name + " " + exp + ")";
+    }
 }

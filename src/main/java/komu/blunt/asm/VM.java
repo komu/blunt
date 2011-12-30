@@ -25,7 +25,6 @@ public final class VM {
             if (pc >= instructions.count()) break;
             OpCode op = instructions.get(pc);
             set(Register.PC, pc+1);
-            
             op.execute(this);
         }
         

@@ -19,4 +19,9 @@ public final class CoreConstantExpression extends CoreExpression {
         instructions.loadConstant(target, value);
         instructions.finishWithLinkage(linkage);
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(value);
+    }
 }

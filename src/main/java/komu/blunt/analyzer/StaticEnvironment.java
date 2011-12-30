@@ -43,6 +43,16 @@ public final class StaticEnvironment {
         variables.put(name, new VariableInfo(name, offset));
         return new VariableReference(0, offset, name);
     }
+    
+    public VariableReference lookupInCurrentScopeOrDefine(Symbol symbol) {
+        VariableInfo var = variables.get(symbol);
+        
+        if (var != null) {
+            return new VariableReference(0, var.offset, var.name);
+        } else {
+            return define(symbol);
+        }
+    }
 
     public StaticEnvironment extend(Symbol symbol) {
         return extend(asList(symbol));

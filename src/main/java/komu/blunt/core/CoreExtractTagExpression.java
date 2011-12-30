@@ -7,22 +7,25 @@ import komu.blunt.asm.Register;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class CoreVariableExpression extends CoreExpression {
-    
+public class CoreExtractTagExpression extends CoreExpression {
+
+    private final PatternPath path;
     private final VariableReference var;
 
-    public CoreVariableExpression(VariableReference var) {
+    public CoreExtractTagExpression(VariableReference var, PatternPath path) {
         this.var = checkNotNull(var);
+        this.path = checkNotNull(path);
     }
 
     @Override
     public void assemble(Instructions instructions, Register target, Linkage linkage) {
         instructions.loadVariable(target, var);
+        instructions.loadTag(target, target, path);
         instructions.finishWithLinkage(linkage);
     }
 
     @Override
     public String toString() {
-        return var.name.toString();
+        return "(extract-tag " + var.name + " " + path + ")";
     }
 }
