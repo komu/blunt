@@ -28,26 +28,30 @@ final class BindingTypeChecker {
     }
 
     public TypeCheckResult<Assumptions> typeCheckBindGroup(BindGroup bindings, Assumptions as) {
-        Assumptions as2 = bindings.assumptionFromExplicitBindings();
+        TypeCheckResult.Builder<Assumptions> result = TypeCheckResult.builder();
+        
+        Assumptions explicitAssumptions = bindings.assumptionFromExplicitBindings();
 
-        TypeCheckResult<Assumptions> res = typeCheckImplicits(bindings, as.join(as2));
-        Assumptions as3 = res.value;
-        List<Predicate> ps = typeCheckExplicits(bindings, as.join(as3.join(as2)));
+        TypeCheckResult<Assumptions> res = typeCheckImplicits(bindings, as.join(explicitAssumptions));
+        Assumptions newAssumptions = res.value.join(explicitAssumptions);
+        result.addPredicates(res.predicates);
 
-        return TypeCheckResult.of(as3.join(as2), res.predicates, ps);
+        result.addPredicates(typeCheckExplicits(bindings, as.join(newAssumptions)));
+
+        return result.build(newAssumptions);
     }
 
-    private TypeCheckResult<Assumptions> typeCheckImplicits(BindGroup bindings, Assumptions origAs) {
-        List<Predicate> predicates = new ArrayList<Predicate>();
-        Assumptions as = Assumptions.empty();
+    private TypeCheckResult<Assumptions> typeCheckImplicits(BindGroup bindings, Assumptions as) {
+        TypeCheckResult.Builder<Assumptions> result = TypeCheckResult.builder();
+        Assumptions.Builder assumptions = Assumptions.builder();
 
         for (List<ImplicitBinding> bs : bindings.implicitBindings) {
-            TypeCheckResult<Assumptions> res = typeCheckImplicitGroup(bs, as.join(origAs));
-            predicates.addAll(res.predicates);
-            as = res.value.join(as);
+            TypeCheckResult<Assumptions> res = typeCheckImplicitGroup(bs, assumptions.build(as));
+            result.addPredicates(res.predicates);
+            assumptions.addAll(res.value);
         }
 
-        return TypeCheckResult.of(as, predicates);
+        return result.build(assumptions.build());
     }
 
     private List<Predicate> typeCheckExplicits(BindGroup bindGroup, Assumptions as) {

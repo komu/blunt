@@ -22,14 +22,19 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
 
     @Override
     public TypeCheckResult<Type> visit(ASTApplication application, Assumptions as) {
+
         TypeCheckResult<Type> te = typeCheck(application.func, as);
+
         TypeCheckResult<Type> tf = typeCheck(application.arg, as);
 
         Type t = tc.newTVar(STAR);
 
         tc.unify(functionType(tf.value, t), te.value);
 
-        return TypeCheckResult.of(t, te.predicates, tf.predicates);
+        TypeCheckResult.Builder<Type> result = TypeCheckResult.builder();
+        result.addPredicates(te.predicates);
+        result.addPredicates(tf.predicates);
+        return result.build(t);
     }
 
     @Override
@@ -46,7 +51,11 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
         tc.unify(tyTest.value, Type.BOOLEAN);
         tc.unify(tyConsequent.value, tyAlternative.value);
 
-        return TypeCheckResult.of(tyConsequent.value, tyTest.predicates, tyConsequent.predicates, tyAlternative.predicates);
+        TypeCheckResult.Builder<Type> result = TypeCheckResult.builder();
+        result.addPredicates(tyTest.predicates);
+        result.addPredicates(tyConsequent.predicates);
+        result.addPredicates(tyAlternative.predicates);
+        return result.build(tyConsequent.value);
     }
 
     @Override
@@ -71,16 +80,20 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
         if (let.bindings.size() != 1)
             throw new UnsupportedOperationException("multi-var let is not supported");
 
+        TypeCheckResult.Builder<Type> result = TypeCheckResult.builder();
+
         Symbol arg = let.bindings.get(0).name;
         ASTExpression exp = let.bindings.get(0).expr;
 
         TypeCheckResult<Type> expResult = typeCheck(exp, as);
+        result.addPredicates(expResult.predicates);
 
         Assumptions as2 = Assumptions.singleton(arg, expResult.value.toScheme());
 
-        TypeCheckResult<Type> result = typeCheck(let.body, as.join(as2));
+        TypeCheckResult<Type> bodyResult = typeCheck(let.body, as.join(as2));
+        result.addPredicates(bodyResult.predicates);
 
-        return TypeCheckResult.of(result.value, expResult.predicates, result.predicates);
+        return result.build(bodyResult.value);
     }
 
     @Override
@@ -111,16 +124,16 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
     @Override
     public TypeCheckResult<Type> visit(ASTTuple tuple, Assumptions as) {
         // TODO: generalize tuples to type constructors
-        List<Predicate> predicates = new ArrayList<Predicate>();
+        TypeCheckResult.Builder<Type> result = TypeCheckResult.builder(); 
         List<Type> types = new ArrayList<Type>();
         
         for (ASTExpression exp : tuple.exps) {
-            TypeCheckResult<Type> result = typeCheck(exp, as);
-            predicates.addAll(result.predicates);
-            types.add(result.value);
+            TypeCheckResult<Type> r = typeCheck(exp, as);
+            result.addPredicates(r.predicates);
+            types.add(r.value);
         }
         
-        return TypeCheckResult.of(tupleType(types), predicates);
+        return result.build(tupleType(types));
     }
 
     @Override
@@ -153,19 +166,20 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
         TypeCheckResult<Type> expResult = tc.typeCheck(astCase.exp, as);
 
         Type type = tc.newTVar();
-        List<Predicate> predicates = new ArrayList<Predicate>();
+
+        TypeCheckResult.Builder<Type> result = TypeCheckResult.builder();
 
         for (ASTAlternative alt : astCase.alternatives) {
             PatternTypeCheckResult<Type> patternResult = tc.typeCheck(alt.pattern);
 
             tc.unify(expResult.value, patternResult.value);
-            predicates.addAll(patternResult.predicates);
+            result.addPredicates(patternResult.predicates);
             
             TypeCheckResult<Type> valueResult = tc.typeCheck(alt.value, patternResult.as.join(as));
             tc.unify(type, valueResult.value);
-            predicates.addAll(valueResult.predicates);
+            result.addPredicates(valueResult.predicates);
         }
 
-        return TypeCheckResult.of(type, predicates);
+        return result.build(type);
     }
 }

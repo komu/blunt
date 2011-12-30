@@ -103,6 +103,10 @@ public final class Assumptions implements Types<Assumptions> {
             built = true;
             return new Assumptions(this);
         }
+
+        public Assumptions build(Assumptions as) {
+            return build().join(as);
+        }
         
         private void ensurePrivateCopy() {
             if (built) {
