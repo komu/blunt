@@ -19,6 +19,10 @@ public class DataTypeDefinitions {
 
     private final Map<String,ConstructorDefinition> constructors = new HashMap<String, ConstructorDefinition>(); 
     
+    public DataTypeDefinitions() {
+        register(new ConstructorDefinition(UNIT, Type.UNIT.toScheme(), 0));
+    }
+
     public void register(ASTDataDefinition definition) {
         for (ConstructorDefinition constructor : definition.constructors)
             register(constructor);

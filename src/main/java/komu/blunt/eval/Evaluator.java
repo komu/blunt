@@ -120,7 +120,8 @@ public final class Evaluator {
         rootBindings.dataTypes.register(definition);
 
         for (ConstructorDefinition ctor : definition.constructors)
-            rootBindings.bind(ctor.name, ctor.scheme, createConstructor(ctor));
+            if (ctor.arity != 0)
+                rootBindings.bind(ctor.name, ctor.scheme, createConstructor(ctor));
     }
 
     private Object run(CoreExpression expression) {

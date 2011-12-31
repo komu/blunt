@@ -1,6 +1,6 @@
 package komu.blunt.ast;
 
-import komu.blunt.objects.Unit;
+import komu.blunt.types.DataTypeDefinitions;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,7 +27,7 @@ public final class ASTLetRec extends ASTExpression {
 
         ASTSequence bodyExps = AST.sequence();
         for (ImplicitBinding binding : bindings) {
-            newBindings.add(new ImplicitBinding(binding.name, AST.apply(AST.variable("unsafe-null"), AST.constant(Unit.INSTANCE))));
+            newBindings.add(new ImplicitBinding(binding.name, AST.apply(AST.variable("unsafe-null"), AST.constructor(DataTypeDefinitions.UNIT))));
             bodyExps.add(AST.set(binding.name, binding.expr));
         }
 

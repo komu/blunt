@@ -1,6 +1,7 @@
 package komu.blunt.objects;
 
 import komu.blunt.stdlib.BasicValues;
+import komu.blunt.types.DataTypeDefinitions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,8 +24,8 @@ public final class PrimitiveFunction implements Function {
     
     @Override
     public Object apply(Object arg) {
+        Object[] args = convertAllToJava(extract(arg));
         try {
-            Object[] args = convertAllToJava(extract(arg));
             if (isStatic) {
                 return convertResult(method.invoke(null, args));
             } else {
@@ -64,12 +65,14 @@ public final class PrimitiveFunction implements Function {
     }
 
     private Object[] extract(Object arg) {
-        if (arg == Unit.INSTANCE)
-            return new Object[0];
-        else if (arg instanceof TypeConstructorValue && ((TypeConstructorValue) arg).isTuple())
-            return ((TypeConstructorValue) arg).items;
-        else
-            return new Object[] { arg };
+        if (arg instanceof TypeConstructorValue) {
+            TypeConstructorValue ctor = (TypeConstructorValue) arg;
+            if (ctor.name.equals(DataTypeDefinitions.UNIT))
+                return new Object[0];
+            else if (ctor.isTuple())
+                return ctor.items;
+        }
+        return new Object[] { arg };
     }
 
     @Override

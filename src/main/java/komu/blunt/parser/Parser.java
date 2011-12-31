@@ -3,11 +3,7 @@ package komu.blunt.parser;
 import com.google.common.collect.ImmutableList;
 import komu.blunt.ast.*;
 import komu.blunt.objects.Symbol;
-import komu.blunt.objects.Unit;
-import komu.blunt.types.ConstructorDefinition;
-import komu.blunt.types.Qualified;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeVariable;
+import komu.blunt.types.*;
 import komu.blunt.types.patterns.Pattern;
 
 import java.util.ArrayList;
@@ -294,7 +290,7 @@ public final class Parser {
     private ASTExpression parseParens() {
         lexer.expectToken(LPAREN);
         if (lexer.readMatchingToken(RPAREN))
-            return AST.constant(Unit.INSTANCE);
+            return AST.constructor(DataTypeDefinitions.UNIT);
         
         if (lexer.nextTokenIs(OPERATOR)) {
             Operator op = lexer.readToken(OPERATOR).value;

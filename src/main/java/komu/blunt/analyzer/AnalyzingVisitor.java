@@ -3,6 +3,7 @@ package komu.blunt.analyzer;
 import komu.blunt.ast.*;
 import komu.blunt.core.*;
 import komu.blunt.objects.Symbol;
+import komu.blunt.objects.TypeConstructorValue;
 import komu.blunt.types.ConstructorDefinition;
 import komu.blunt.types.DataTypeDefinitions;
 
@@ -109,7 +110,10 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     public CoreExpression visit(ASTConstructor constructor, StaticEnvironment ctx) {
         ConstructorDefinition ctor = dataTypes.findConstructor(constructor.name);
 
-        return AST.variable(ctor.name).accept(this, ctx);
+        if (ctor.arity == 0)
+            return AST.constant(new TypeConstructorValue(ctor.name)).accept(this, ctx);
+        else
+            return AST.variable(ctor.name).accept(this, ctx);
     }
 
     @Override

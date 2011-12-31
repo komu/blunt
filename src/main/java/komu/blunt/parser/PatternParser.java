@@ -1,7 +1,6 @@
 package komu.blunt.parser;
 
 import com.google.common.collect.ImmutableList;
-import komu.blunt.objects.Unit;
 import komu.blunt.types.DataTypeDefinitions;
 import komu.blunt.types.patterns.Pattern;
 
@@ -10,6 +9,9 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static komu.blunt.parser.TokenType.*;
+import static komu.blunt.types.DataTypeDefinitions.UNIT;
+import static komu.blunt.types.DataTypeDefinitions.tupleName;
+import static komu.blunt.types.patterns.Pattern.*;
 
 final class PatternParser {
 
@@ -32,7 +34,7 @@ final class PatternParser {
             while (PATTERN_START_TOKENS.contains(lexer.peekTokenType()))
                 args.add(parseSimplePattern());
 
-            return Pattern.constructor(name, args.build());
+            return constructor(name, args.build());
         } else {
             return parseSimplePattern();
         }
@@ -44,7 +46,7 @@ final class PatternParser {
         if (lexer.nextTokenIs(OPERATOR) && lexer.peekToken(OPERATOR).value.isConstructor()) {
             Operator op = lexer.readToken(OPERATOR).value;
 
-            pattern = Pattern.constructor(op.toString(), pattern, parsePattern());
+            pattern = constructor(op.toString(), pattern, parsePattern());
         }
 
         return pattern;
@@ -52,20 +54,20 @@ final class PatternParser {
 
     private Pattern parsePrimitivePattern() {
         if (lexer.nextTokenIs(LITERAL)) {
-            return Pattern.literal(lexer.readToken(LITERAL).value);
+            return literal(lexer.readToken(LITERAL).value);
 
         } else if (lexer.nextTokenIs(IDENTIFIER)) {
             String name = lexer.readToken(IDENTIFIER).value;
             if (name.equals("_"))
-                return Pattern.wildcard();
+                return wildcard();
             else
-                return Pattern.variable(name);
+                return variable(name);
 
         } else if (lexer.readMatchingToken(LPAREN)) {
             return parseParens();
 
         } else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME)) {
-            return Pattern.constructor(lexer.readToken(TYPE_OR_CTOR_NAME).value);
+            return constructor(lexer.readToken(TYPE_OR_CTOR_NAME).value);
 
         } else if (lexer.readMatchingToken(LBRACKET)) {
             return parseBrackets();
@@ -79,12 +81,12 @@ final class PatternParser {
     private Pattern parseBrackets() {
         // TODO: support non-empty lists
         lexer.expectToken(RBRACKET);
-        return Pattern.constructor(DataTypeDefinitions.NIL);
+        return constructor(DataTypeDefinitions.NIL);
     }
 
     private Pattern parseParens() {
         if (lexer.readMatchingToken(RPAREN))
-            return Pattern.literal(Unit.INSTANCE);
+            return constructor(UNIT);
 
         ImmutableList.Builder<Pattern> patterns = ImmutableList.builder();
 
@@ -98,6 +100,6 @@ final class PatternParser {
         if (pts.size() == 1)
             return pts.get(0);
         else
-            return Pattern.constructor(DataTypeDefinitions.tupleName(pts.size()), pts);
+            return constructor(tupleName(pts.size()), pts);
     }
 }

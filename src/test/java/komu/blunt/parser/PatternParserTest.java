@@ -1,14 +1,12 @@
 package komu.blunt.parser;
 
-import komu.blunt.objects.Unit;
 import komu.blunt.types.patterns.Pattern;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static komu.blunt.types.DataTypeDefinitions.CONS;
-import static komu.blunt.types.DataTypeDefinitions.NIL;
+import static komu.blunt.types.DataTypeDefinitions.*;
 import static komu.blunt.types.patterns.Pattern.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -38,7 +36,7 @@ public class PatternParserTest {
 
     @Test
     public void unitPattern() {
-        assertParse("()", literal(Unit.INSTANCE));
+        assertParse("()", constructor(UNIT));
     }
 
     @Test
