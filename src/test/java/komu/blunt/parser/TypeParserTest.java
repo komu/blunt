@@ -1,9 +1,15 @@
 package komu.blunt.parser;
 
+import komu.blunt.types.Predicate;
+import komu.blunt.types.Qualified;
 import komu.blunt.types.Type;
+import komu.blunt.types.TypeVariable;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.Arrays;
+
+import static komu.blunt.types.Predicate.isIn;
 import static komu.blunt.types.Type.*;
 import static org.hamcrest.CoreMatchers.is;
 
@@ -51,11 +57,28 @@ public class TypeParserTest {
         verifyParsing("[a]", listType(typeVariable("a")));
     }
 
-    private static void verifyParsing(String s, Type type) {
-        Assert.assertThat(parse(s), is(type));
+    @Test
+    public void parseQualified() {
+        TypeVariable a = typeVariable("a");
+        TypeVariable b = typeVariable("b");
+
+        verifyParsing("Num a => a -> a", new Qualified<Type>(Arrays.<Predicate>asList(isIn("Num", a)), functionType(a, a)));
+        verifyParsing("(Num a) => a -> a", new Qualified<Type>(Arrays.<Predicate>asList(isIn("Num", a)), functionType(a, a)));
+        verifyParsing("(Num a, Ord a, Num b) => a -> b",
+                new Qualified<Type>(Arrays.<Predicate>asList(isIn("Num", a), isIn("Ord", a), isIn("Num", b)),
+                        functionType(a, b)));
+    }
+    
+    @Test
+    public void parseQualifiedWithoutQualifications() {
+        verifyParsing("a -> a", new Qualified<Type>(functionType(typeVariable("a"), typeVariable("a"))));
     }
 
-    private static Type parse(String s) {
-        return TypeParser.parseType(s);
+    private static void verifyParsing(String s, Qualified<Type> type) {
+        Assert.assertThat(TypeParser.parseQualified(s), is(type));
+    }
+
+    private static void verifyParsing(String s, Type type) {
+        Assert.assertThat(TypeParser.parseType(s), is(type));
     }
 }

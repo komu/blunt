@@ -1,8 +1,10 @@
 package komu.blunt.eval;
 
 import komu.blunt.objects.PrimitiveFunction;
+import komu.blunt.parser.TypeParser;
 import komu.blunt.stdlib.LibraryFunction;
 import komu.blunt.stdlib.LibraryValue;
+import komu.blunt.stdlib.TypeScheme;
 import komu.blunt.types.NativeTypeConversions;
 import komu.blunt.types.Scheme;
 import komu.blunt.types.Type;
@@ -25,7 +27,7 @@ final class NativeFunctionRegisterer {
             LibraryFunction func = m.getAnnotation(LibraryFunction.class);
             if (func != null) {
                 String name = func.value();
-                Scheme type = NativeTypeConversions.createFunctionType(m);
+                Scheme type = resolveType(m);
 
                 boolean isStatic = isStatic(m.getModifiers());
                 bindings.bind(name, type, new PrimitiveFunction(name, m, isStatic));
@@ -44,5 +46,14 @@ final class NativeFunctionRegisterer {
                 }
             }
         }
+    }
+
+    private Scheme resolveType(Method m) {
+        TypeScheme scheme = m.getAnnotation(TypeScheme.class);
+        if (scheme != null)
+            return TypeParser.parseScheme(scheme.value());
+        else
+            return NativeTypeConversions.createFunctionType(m);
+
     }
 }

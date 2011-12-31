@@ -4,6 +4,7 @@ import komu.blunt.types.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -23,10 +24,47 @@ public final class TypeParser {
     }
 
     public static Scheme parseScheme(String s) {
-        Type type = parseType(s);
-        return Qualified.quantifyAll(new Qualified<Type>(type));
+        Qualified<Type> type = parseQualified(s);
+        return Qualified.quantifyAll(type);
     }
     
+    public static Qualified<Type> parseQualified(String s) {
+        TypeParser parser = new TypeParser(new Lexer(s));
+        return parser.parseQualified();
+    }
+
+    private Qualified<Type> parseQualified() {
+        List<Predicate> predicates = parseOptionalPredicates();
+        Type type = parseType();
+        return new Qualified<Type>(predicates, type);
+    }
+
+    private List<Predicate> parseOptionalPredicates() {
+        int lexerState = lexer.save();
+        try {
+            List<Predicate> predicates = new ArrayList<Predicate>();
+            if (lexer.readMatchingToken(LPAREN)) {
+                do {
+                    predicates.add(parsePredicate());
+                } while (lexer.readMatchingToken(COMMA));
+                lexer.expectToken(RPAREN);
+            } else {
+                predicates.add(parsePredicate());
+            }
+            lexer.expectToken(TokenType.BIG_RIGHT_ARROW);
+            return predicates;
+        } catch (SyntaxException e) {
+            lexer.restore(lexerState);
+            return Collections.emptyList();
+        }
+    }
+
+    private Predicate parsePredicate() {
+        String className = lexer.readToken(TYPE_OR_CTOR_NAME).value;
+        Type type = parseType();
+        return Predicate.isIn(className, type);
+    }
+
     TypeParser(Lexer lexer) {
         this.lexer = checkNotNull(lexer);
     }

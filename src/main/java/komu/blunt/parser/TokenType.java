@@ -35,6 +35,7 @@ public class TokenType<T> {
     public static final Punctuation ASSIGN = new Punctuation("=");
     public static final Punctuation OR = new Punctuation("|");
     public static final Punctuation RIGHT_ARROW = new Punctuation("->");
+    public static final Punctuation BIG_RIGHT_ARROW = new Punctuation("=>");
 
     public static class Punctuation extends TokenType<Void> {
         public Punctuation(String name) {

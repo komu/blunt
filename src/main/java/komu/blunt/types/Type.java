@@ -1,7 +1,5 @@
 package komu.blunt.types;
 
-import komu.blunt.stdlib.TypeName;
-
 import java.math.BigInteger;
 import java.util.*;
 
@@ -25,14 +23,9 @@ public abstract class Type implements Types<Type> {
              : (type == Boolean.class || type == boolean.class) ? "Boolean"
              : (type == BigInteger.class)                       ? "Integer"
              : (type == String.class)                           ? "String"
-             : defaultMapName(type);
+             : type.getSimpleName();
     }
 
-    private static String defaultMapName(Class<?> type) {
-        TypeName name = type.getAnnotation(TypeName.class);
-        return name != null ? name.value() : type.getSimpleName();
-    }
-    
     public static TypeVariable typeVariable(String name) {
         return typeVariable(name, Kind.STAR);
     }

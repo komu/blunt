@@ -1,5 +1,6 @@
 package komu.blunt.parser;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 final class SourceReader {
@@ -56,5 +57,15 @@ final class SourceReader {
 
     public SourceLocation getLocation() {
         return new SourceLocation(line, column);
+    }
+
+    public int getPosition() {
+        return position;
+    }
+    
+    public void setPosition(int position) {
+        checkArgument(position >= 0 && position < source.length());
+
+        this.position = position;
     }
 }

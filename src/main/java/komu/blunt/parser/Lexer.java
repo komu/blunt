@@ -182,6 +182,8 @@ public final class Lexer {
             return Token.ofType(OR, location);
         if (op.equals("->"))
             return Token.ofType(RIGHT_ARROW, location);
+        if (op.equals("=>"))
+            return Token.ofType(BIG_RIGHT_ARROW, location);
         else
             return new Token<Operator>(OPERATOR, new Operator(sb.toString()), location);
     }
@@ -236,5 +238,13 @@ public final class Lexer {
     
     SyntaxException parseError(String message) {
         return new SyntaxException("[" + getSourceLocation() + "] " + message);
+    }
+
+    public int save() {
+        return reader.getPosition();
+    }
+
+    public void restore(int state) {
+        reader.setPosition(state);
     }
 }
