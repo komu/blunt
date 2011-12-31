@@ -56,6 +56,6 @@ public class TypeParserTest {
     }
 
     private static Type parse(String s) {
-        return new TypeParser(new Lexer(s)).parseType();
+        return TypeParser.parseType(s);
     }
 }

@@ -3,12 +3,11 @@ package komu.blunt.types;
 import komu.blunt.analyzer.AnalyzationException;
 import komu.blunt.ast.ASTDataDefinition;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.google.common.base.Strings.repeat;
+import static java.util.Collections.unmodifiableCollection;
+import static komu.blunt.parser.TypeParser.parseScheme;
 import static komu.blunt.types.Type.functionType;
 import static komu.blunt.types.Type.tupleType;
 
@@ -20,7 +19,13 @@ public class DataTypeDefinitions {
     private final Map<String,ConstructorDefinition> constructors = new HashMap<String, ConstructorDefinition>(); 
     
     public DataTypeDefinitions() {
-        register(new ConstructorDefinition(UNIT, Type.UNIT.toScheme(), 0));
+        register(UNIT, "()", 0);
+        register(NIL, "[a]", 0);
+        register(CONS, "a -> [a] -> [a]", 2);
+    }
+    
+    private void register(String name, String scheme, int arity) {
+        register(new ConstructorDefinition(name, parseScheme(scheme), arity));
     }
 
     public void register(ASTDataDefinition definition) {
@@ -50,7 +55,7 @@ public class DataTypeDefinitions {
     private static Scheme tupleConstructorScheme(int arity) {
         List<Type> types = new ArrayList<Type>(arity);
         for (int i = 0; i < arity; i++)
-            types.add(TypeVariable.tyVar("t" + i, Kind.STAR));
+            types.add(Type.typeVariable("t" + i, Kind.STAR));
 
         return Qualified.quantifyAll(new Qualified<Type>(functionType(types, tupleType(types))));
     }
@@ -68,5 +73,9 @@ public class DataTypeDefinitions {
 
     private static boolean isTupleConstructor(String name) {
         return name.matches("\\(,+\\)");
+    }
+
+    public Collection<ConstructorDefinition> getDeclaredConstructors() {
+        return unmodifiableCollection(constructors.values());
     }
 }

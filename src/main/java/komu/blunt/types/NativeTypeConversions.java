@@ -10,6 +10,8 @@ import java.util.Map;
 
 import static java.lang.reflect.Modifier.isStatic;
 import static komu.blunt.types.Qualified.quantifyAll;
+import static komu.blunt.types.Type.functionType;
+import static komu.blunt.types.Type.tupleType;
 
 public final class NativeTypeConversions {
 
@@ -29,11 +31,11 @@ public final class NativeTypeConversions {
         Type returnType = resolve(m.getGenericReturnType());
 
         if (argumentTypes.isEmpty())
-            return quantifyAll(new Qualified<Type>(Type.functionType(Type.UNIT, returnType)));
+            return quantifyAll(new Qualified<Type>(functionType(Type.UNIT, returnType)));
         else if (argumentTypes.size() == 1)
-            return quantifyAll(new Qualified<Type>(Type.functionType(argumentTypes.get(0), returnType)));
+            return quantifyAll(new Qualified<Type>(functionType(argumentTypes.get(0), returnType)));
         else
-            return quantifyAll(new Qualified<Type>(Type.functionType(Type.tupleType(argumentTypes), returnType)));
+            return quantifyAll(new Qualified<Type>(functionType(returnType, tupleType(argumentTypes))));
     }
 
     private List<Type> resolveArgumentTypes(Method m) {

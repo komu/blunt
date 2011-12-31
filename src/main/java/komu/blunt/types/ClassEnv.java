@@ -16,7 +16,6 @@ import static java.util.Arrays.asList;
 import static komu.blunt.types.Kind.STAR;
 import static komu.blunt.types.Predicate.isIn;
 import static komu.blunt.types.Type.tupleType;
-import static komu.blunt.types.TypeVariable.tyVar;
 import static komu.blunt.types.checker.TypeUtils.getTypeVariables;
 
 public final class ClassEnv {
@@ -71,19 +70,19 @@ public final class ClassEnv {
         addInstance(isIn("Ord", Type.INTEGER));
         addInstance(isIn("Ord", Type.STRING));
 
-        addInstance(asList(isIn("Ord", tyVar("a", STAR)),
-                           isIn("Ord", tyVar("b", STAR))),
-                    isIn("Ord", tupleType(tyVar("a", STAR), tyVar("b", STAR))));
+        addInstance(asList(isIn("Ord", Type.typeVariable("a", STAR)),
+                           isIn("Ord", Type.typeVariable("b", STAR))),
+                    isIn("Ord", tupleType(Type.typeVariable("a", STAR), Type.typeVariable("b", STAR))));
 
-        addInstance(asList(isIn("Eq", tyVar("a", STAR)),
-                           isIn("Eq", tyVar("b", STAR))),
-                    isIn("Eq", tupleType(tyVar("a", STAR), tyVar("b", STAR))));
+        addInstance(asList(isIn("Eq", Type.typeVariable("a", STAR)),
+                           isIn("Eq", Type.typeVariable("b", STAR))),
+                    isIn("Eq", tupleType(Type.typeVariable("a", STAR), Type.typeVariable("b", STAR))));
 
-        addInstance(asList(isIn("Eq", tyVar("a", STAR))),
-                    isIn("Eq", Type.listType(tyVar("a", STAR))));
+        addInstance(asList(isIn("Eq", Type.typeVariable("a", STAR))),
+                    isIn("Eq", Type.listType(Type.typeVariable("a", STAR))));
 
-        addInstance(asList(isIn("Eq", tyVar("a", STAR))),
-                    isIn("Eq", Type.genericType("Maybe", tyVar("a", STAR))));
+        addInstance(asList(isIn("Eq", Type.typeVariable("a", STAR))),
+                    isIn("Eq", Type.genericType("Maybe", Type.typeVariable("a", STAR))));
     }
 
     public void addInstance(Predicate predicate) {

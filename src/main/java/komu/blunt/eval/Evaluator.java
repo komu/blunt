@@ -10,27 +10,16 @@ import komu.blunt.asm.VM;
 import komu.blunt.ast.*;
 import komu.blunt.core.CoreDefineExpression;
 import komu.blunt.core.CoreExpression;
-import komu.blunt.objects.PrimitiveFunction;
 import komu.blunt.parser.Parser;
 import komu.blunt.stdlib.BasicFunctions;
-import komu.blunt.stdlib.LibraryFunction;
-import komu.blunt.stdlib.LibraryValue;
 import komu.blunt.types.*;
 import komu.blunt.types.checker.TypeChecker;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import static java.lang.reflect.Modifier.isStatic;
-import static java.util.Arrays.asList;
 import static komu.blunt.eval.ConstructorArgumentCollector.createConstructor;
-import static komu.blunt.types.Qualified.quantify;
-import static komu.blunt.types.Type.functionType;
-import static komu.blunt.types.Type.listType;
-import static komu.blunt.types.TypeVariable.tyVar;
 
 public final class Evaluator {
 
@@ -39,46 +28,10 @@ public final class Evaluator {
     private final ClassEnv classEnv = new ClassEnv();
 
     public Evaluator() {
-        register(BasicFunctions.class, rootBindings);
+        new NativeFunctionRegisterer(rootBindings).register(BasicFunctions.class);
 
-        register(listDefinition());
-    }
-
-    private ASTDataDefinition listDefinition() {
-        TypeVariable var = tyVar("a", Kind.STAR);
-
-        Scheme nilType = quantify(var, new Qualified<Type>(listType(var)));
-        Scheme consType = quantify(var, new Qualified<Type>(functionType(asList(var, listType(var)), listType(var))));
-
-        return AST.data("[]",
-                new ConstructorDefinition("[]", nilType, 0),
-                new ConstructorDefinition(":", consType, 2));
-    }
-
-    private static void register(Class<?> cl, RootBindings bindings) {
-        for (Method m : cl.getDeclaredMethods()) {
-            LibraryFunction func = m.getAnnotation(LibraryFunction.class);
-            if (func != null) {
-                String name = func.value();
-                Scheme type = NativeTypeConversions.createFunctionType(m);
-
-                boolean isStatic = isStatic(m.getModifiers());
-                bindings.bind(name, type, new PrimitiveFunction(name, m, isStatic));
-            }
-        }
-        
-        for (Field f : cl.getDeclaredFields()) {
-            LibraryValue value = f.getAnnotation(LibraryValue.class);
-            if (value != null) {
-                Scheme scheme = Type.fromClass(f.getType()).toScheme();
-
-                try {
-                    bindings.bind(value.value(), scheme, f.get(null));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
+        for (ConstructorDefinition constructor : rootBindings.dataTypes.getDeclaredConstructors())
+            createConstructorFunction(constructor);
     }
 
     public CoreExpression analyze(ASTExpression expr) {
@@ -120,8 +73,12 @@ public final class Evaluator {
         rootBindings.dataTypes.register(definition);
 
         for (ConstructorDefinition ctor : definition.constructors)
-            if (ctor.arity != 0)
-                rootBindings.bind(ctor.name, ctor.scheme, createConstructor(ctor));
+            createConstructorFunction(ctor);
+    }
+
+    private void createConstructorFunction(ConstructorDefinition ctor) {
+        if (ctor.arity != 0)
+            rootBindings.bind(ctor.name, ctor.scheme, createConstructor(ctor));
     }
 
     private Object run(CoreExpression expression) {

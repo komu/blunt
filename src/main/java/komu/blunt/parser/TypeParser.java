@@ -1,8 +1,6 @@
 package komu.blunt.parser;
 
-import komu.blunt.types.Kind;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeVariable;
+import komu.blunt.types.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +10,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static komu.blunt.parser.TokenType.*;
 import static komu.blunt.types.Type.*;
 
-final class TypeParser {
+public final class TypeParser {
 
     private final Lexer lexer;
 
@@ -20,6 +18,15 @@ final class TypeParser {
     private static final List<TokenType<?>> START_TOKENS =
             Arrays.asList(LPAREN, LBRACKET, IDENTIFIER, TYPE_OR_CTOR_NAME);
 
+    public static Type parseType(String s) {
+        return new TypeParser(new Lexer(s)).parseType();
+    }
+
+    public static Scheme parseScheme(String s) {
+        Type type = parseType(s);
+        return Qualified.quantifyAll(new Qualified<Type>(type));
+    }
+    
     TypeParser(Lexer lexer) {
         this.lexer = checkNotNull(lexer);
     }
