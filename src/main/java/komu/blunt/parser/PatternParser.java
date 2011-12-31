@@ -1,16 +1,16 @@
 package komu.blunt.parser;
 
 import com.google.common.collect.ImmutableList;
-import komu.blunt.types.DataTypeDefinitions;
+import com.google.common.collect.Lists;
 import komu.blunt.types.patterns.Pattern;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static komu.blunt.parser.TokenType.*;
-import static komu.blunt.types.DataTypeDefinitions.UNIT;
-import static komu.blunt.types.DataTypeDefinitions.tupleName;
+import static komu.blunt.types.DataTypeDefinitions.*;
 import static komu.blunt.types.patterns.Pattern.*;
 
 final class PatternParser {
@@ -69,7 +69,7 @@ final class PatternParser {
         } else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME)) {
             return constructor(lexer.readToken(TYPE_OR_CTOR_NAME).value);
 
-        } else if (lexer.readMatchingToken(LBRACKET)) {
+        } else if (lexer.nextTokenIs(LBRACKET)) {
             return parseBrackets();
 
 
@@ -79,9 +79,29 @@ final class PatternParser {
     }
 
     private Pattern parseBrackets() {
-        // TODO: support non-empty lists
+        lexer.expectToken(LBRACKET);
+
+        if (lexer.readMatchingToken(RBRACKET))
+            return constructor(NIL);
+        
+        List<Pattern> patterns = new ArrayList<Pattern>();
+
+        patterns.add(parsePattern());
+        while (lexer.readMatchingToken(COMMA))
+            patterns.add(parsePattern());
+
         lexer.expectToken(RBRACKET);
-        return constructor(DataTypeDefinitions.NIL);
+
+        return createList(patterns);
+    }
+
+    private Pattern createList(List<Pattern> patterns) {
+        Pattern result = constructor(NIL);
+
+        for (Pattern pattern : Lists.reverse(patterns))
+            result = constructor(CONS, pattern, result);
+
+        return result;
     }
 
     private Pattern parseParens() {

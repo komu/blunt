@@ -1,7 +1,6 @@
 package komu.blunt.parser;
 
 import komu.blunt.types.patterns.Pattern;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigInteger;
@@ -50,7 +49,6 @@ public class PatternParserTest {
     }
 
     @Test
-    @Ignore("not implemented")
     public void listPatterns() {
         assertParse("[x, y, z]",
                 constructor(CONS, variable("x"),
