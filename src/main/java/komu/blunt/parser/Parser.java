@@ -90,7 +90,7 @@ public final class Parser {
         
         List<Type> args = new ArrayList<Type>();
         while (!lexer.nextTokenIs(OR) && !lexer.nextTokenIs(END))
-            args.add(typeParser.parseType());
+            args.add(typeParser.parseTypePrimitive());
 
         Qualified<Type> type = new Qualified<Type>(functionType(args, resultType));
         return new ConstructorDefinition(name, quantify(vars, type), args.size());

@@ -32,15 +32,15 @@ final class TypeParser {
 
         return type;
     }
-    
+
     private Type parseBasic() {
         if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
-            return parseConcrete();
+            return parseTypeConcrete();
         else
             return parseTypePrimitive();
     }
 
-    private Type parseTypePrimitive() {
+    public Type parseTypePrimitive() {
         if (lexer.nextTokenIs(LPAREN))
             return parseParens();
         else if (lexer.nextTokenIs(LBRACKET))
@@ -53,7 +53,7 @@ final class TypeParser {
             throw lexer.parseError("expected type");
     }
 
-    private Type parseConcrete() {
+    public Type parseTypeConcrete() {
         String name = lexer.readToken(TYPE_OR_CTOR_NAME).value;
         
         List<Type> args = new ArrayList<Type>();
