@@ -10,7 +10,6 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static komu.blunt.types.Kind.STAR;
 import static komu.blunt.types.Type.functionType;
-import static komu.blunt.types.Type.tupleType;
 
 public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions, TypeCheckResult<Type>> {
     
@@ -119,21 +118,6 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
     public TypeCheckResult<Type> visit(ASTSet set, Assumptions as) {
         // TODO: assume sets is always correct since it's auto-generated
         return TypeCheckResult.of(Type.UNIT);
-    }
-
-    @Override
-    public TypeCheckResult<Type> visit(ASTTuple tuple, Assumptions as) {
-        // TODO: generalize tuples to type constructors
-        TypeCheckResult.Builder<Type> result = TypeCheckResult.builder(); 
-        List<Type> types = new ArrayList<Type>();
-        
-        for (ASTExpression exp : tuple.exps) {
-            TypeCheckResult<Type> r = typeCheck(exp, as);
-            result.addPredicates(r.predicates);
-            types.add(r.value);
-        }
-        
-        return result.build(tupleType(types));
     }
 
     @Override

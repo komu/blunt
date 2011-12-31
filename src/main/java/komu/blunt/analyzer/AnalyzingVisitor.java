@@ -91,12 +91,6 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     }
 
     @Override
-    public CoreExpression visit(ASTTuple tuple, StaticEnvironment env) {
-        String name = DataTypeDefinitions.tupleName(tuple.exps.size());
-        return new CoreConstructorExpression(name, analyzeAll(tuple.exps, env));
-    }
-
-    @Override
     public CoreExpression visit(ASTVariable variable, StaticEnvironment env) {
         return new CoreVariableExpression(env.lookup(variable.var));
     }

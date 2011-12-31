@@ -1,5 +1,7 @@
 package komu.blunt.ast;
 
+import komu.blunt.types.DataTypeDefinitions;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +17,17 @@ public final class ASTTuple extends ASTExpression {
 
     @Override
     public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
-        return visitor.visit(this, ctx);
+        return rewrite().accept(visitor, ctx);
+    }
+    
+    private ASTExpression rewrite() {
+        String name = DataTypeDefinitions.tupleName(exps.size());
+        ASTExpression call =  AST.constructor(name);
+        
+        for (ASTExpression exp : exps)
+            call = new ASTApplication(call, exp);
+
+        return call;
     }
 
     @Override

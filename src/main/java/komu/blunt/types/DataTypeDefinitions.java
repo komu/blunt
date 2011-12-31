@@ -8,8 +8,8 @@ import java.util.*;
 import static com.google.common.base.Strings.repeat;
 import static java.util.Collections.unmodifiableCollection;
 import static komu.blunt.parser.TypeParser.parseScheme;
-import static komu.blunt.types.Type.functionType;
-import static komu.blunt.types.Type.tupleType;
+import static komu.blunt.types.Qualified.quantifyAll;
+import static komu.blunt.types.Type.*;
 
 public class DataTypeDefinitions {
     public static final String CONS = ":";
@@ -22,6 +22,10 @@ public class DataTypeDefinitions {
         register(UNIT, "()", 0);
         register(NIL, "[a]", 0);
         register(CONS, "a -> [a] -> [a]", 2);
+
+        // TODO: create necessary tuples on demand
+        for (int arity = 2; arity < 30; arity++)
+            register(new ConstructorDefinition(tupleName(arity), tupleConstructorScheme(arity), arity));
     }
     
     private void register(String name, String scheme, int arity) {
@@ -41,10 +45,6 @@ public class DataTypeDefinitions {
     }
     
     public ConstructorDefinition findConstructor(String name) {
-        if (isTupleConstructor(name)) {
-            int arity = tupleArity(name);
-            return new ConstructorDefinition(name, tupleConstructorScheme(arity), arity);
-        }
         ConstructorDefinition ctor = constructors.get(name);
         if (ctor != null)
             return ctor;
@@ -55,24 +55,13 @@ public class DataTypeDefinitions {
     private static Scheme tupleConstructorScheme(int arity) {
         List<Type> types = new ArrayList<Type>(arity);
         for (int i = 0; i < arity; i++)
-            types.add(Type.typeVariable("t" + i, Kind.STAR));
+            types.add(typeVariable("t" + i));
 
-        return Qualified.quantifyAll(new Qualified<Type>(functionType(types, tupleType(types))));
-    }
-
-    public static int tupleArity(String name) {
-        if (isTupleConstructor(name))
-            return name.length()-1;
-        else
-            throw new IllegalArgumentException("not a tuple-type: " + name);
+        return quantifyAll(new Qualified<Type>(functionType(types, tupleType(types))));
     }
 
     public static String tupleName(int arity) {
         return "(" + repeat(",", arity-1) + ")";
-    }
-
-    private static boolean isTupleConstructor(String name) {
-        return name.matches("\\(,+\\)");
     }
 
     public Collection<ConstructorDefinition> getDeclaredConstructors() {
