@@ -8,14 +8,9 @@ public final class ConstructorPattern extends Pattern {
     public final String name;
     public final ImmutableList<Pattern> args;
 
-    public ConstructorPattern(String name, ImmutableList<Pattern> args) {
+    ConstructorPattern(String name, ImmutableList<Pattern> args) {
         this.name = checkNotNull(name);
         this.args = checkNotNull(args);
-    }
-
-    public ConstructorPattern(String name, Pattern... args) {
-        this.name = checkNotNull(name);
-        this.args = ImmutableList.copyOf(args);
     }
 
     @Override
@@ -37,5 +32,24 @@ public final class ConstructorPattern extends Pattern {
         sb.append(')');
 
         return sb.toString();
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode() * 79 + args.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+
+        if (obj instanceof ConstructorPattern) {
+            ConstructorPattern rhs = (ConstructorPattern) obj;
+
+            return name.equals(rhs.name)
+                && args.equals(rhs.args);
+        }
+
+        return false;
     }
 }

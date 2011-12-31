@@ -4,11 +4,11 @@ import com.google.common.collect.ImmutableList;
 import komu.blunt.ast.*;
 import komu.blunt.objects.Symbol;
 import komu.blunt.objects.Unit;
-import komu.blunt.types.*;
-import komu.blunt.types.patterns.ConstructorPattern;
-import komu.blunt.types.patterns.LiteralPattern;
+import komu.blunt.types.ConstructorDefinition;
+import komu.blunt.types.Qualified;
+import komu.blunt.types.Type;
+import komu.blunt.types.TypeVariable;
 import komu.blunt.types.patterns.Pattern;
-import komu.blunt.types.patterns.VariablePattern;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,18 +27,16 @@ public final class Parser {
     private final Lexer lexer;
     private final OperatorSet operators = new OperatorSet();
     private final TypeParser typeParser;
+    private final PatternParser patternParser;
 
     @SuppressWarnings("unchecked")
     private static final List<TokenType<?>> expressionStartTokens =
         Arrays.asList(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, CASE);
 
-    @SuppressWarnings("unchecked")
-    private static final List<TokenType<?>> patternStartTokens =
-        Arrays.asList(LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME);
-
     public Parser(String source) {
         this.lexer = new Lexer(source);
         this.typeParser = new TypeParser(lexer);
+        this.patternParser = new PatternParser(lexer);
     }
 
     public static ASTExpression parseExpression(String source) {
@@ -237,72 +235,11 @@ public final class Parser {
     }
 
     private ASTAlternative parseAlternative() {
-        Pattern pattern = parsePattern();
+        Pattern pattern = patternParser.parsePattern();
         lexer.expectIndentStartToken(RIGHT_ARROW);
         ASTExpression exp = parseExpression();
         lexer.expectToken(END);
         return AST.alternative(pattern, exp);
-    }
-
-    // <literal> | <variable> | ( <pattern> ) | <constructor> <pattern>* |
-    private Pattern parsePattern() {
-        Pattern pattern = parsePatternPrimitive();
-
-        if (lexer.nextTokenIs(OPERATOR) && lexer.peekToken(OPERATOR).value.isConstructor()) {
-            Operator op = lexer.readToken(OPERATOR).value;
-
-            pattern = new ConstructorPattern(op.toString(), pattern, parsePattern());
-        }
-
-        return pattern;
-    }
-
-    private Pattern parsePatternPrimitive() {
-        if (lexer.nextTokenIs(LITERAL)) {
-            return new LiteralPattern(lexer.readToken(LITERAL).value);
-
-        } else if (lexer.nextTokenIs(IDENTIFIER)) {
-            return new VariablePattern(symbol(lexer.readToken(IDENTIFIER).value));
-
-        } else if (lexer.readMatchingToken(LPAREN)) {
-            return parsePatternParens();
-
-        } else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME)) {
-            String name = lexer.readToken(TYPE_OR_CTOR_NAME).value;
-            ImmutableList.Builder<Pattern> args = ImmutableList.builder();
-
-            while (patternStartTokens.contains(lexer.peekTokenType()))
-                args.add(parsePattern());
-            
-            return new ConstructorPattern(name, args.build());
-
-        } else if (lexer.readMatchingToken(LBRACKET)) {
-            // TODO: support non-empty lists
-            lexer.expectToken(RBRACKET);
-            return new ConstructorPattern("[]");
-
-        } else {
-            throw parseError("expected pattern, got " + lexer.readToken());
-        }
-    }
-
-    private Pattern parsePatternParens() {
-        if (lexer.readMatchingToken(RPAREN))
-            return new LiteralPattern(Unit.INSTANCE);
-
-        ImmutableList.Builder<Pattern> patterns = ImmutableList.builder();
-        
-        do {
-            patterns.add(parsePattern());    
-        } while (lexer.readMatchingToken(COMMA));
-
-        lexer.expectToken(RPAREN);
-
-        ImmutableList<Pattern> pts = patterns.build();
-        if (pts.size() == 1)
-            return pts.get(0);
-        else
-            return new ConstructorPattern(DataTypeDefinitions.tupleName(pts.size()), pts);
     }
 
     // let [rec] <ident> <ident>* = <expr> in <expr>

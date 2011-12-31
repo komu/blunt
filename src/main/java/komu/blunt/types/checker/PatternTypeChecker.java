@@ -44,7 +44,8 @@ final class PatternTypeChecker implements PatternVisitor<Void,PatternTypeCheckRe
         ConstructorDefinition constructor = tc.findConstructor(pattern.name);
 
         if (pattern.args.size() != constructor.arity)
-            throw new TypeCheckException("invalid amount of arguments for constructor");
+            throw new TypeCheckException("invalid amount of arguments for constructor '" + pattern.name + "';" +
+                    " expected " + constructor.arity + ", but got " + pattern.args.size());
 
         PatternTypeCheckResult<List<Type>> result = assumptionsFrom(pattern.args);
         Type type = tc.newTVar(Kind.STAR);

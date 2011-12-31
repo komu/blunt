@@ -2,7 +2,7 @@ package komu.blunt.types.patterns;
 
 public final class WildcardPattern extends Pattern {
 
-    public static final WildcardPattern INSTANCE = new WildcardPattern();
+    static final WildcardPattern INSTANCE = new WildcardPattern();
 
     private WildcardPattern() {
     }

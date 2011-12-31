@@ -15,6 +15,7 @@ import static komu.blunt.types.Type.tupleType;
 public class DataTypeDefinitions {
     public static final String CONS = ":";
     public static final String NIL = "[]";
+    public static final String UNIT = "()";
 
     private final Map<String,ConstructorDefinition> constructors = new HashMap<String, ConstructorDefinition>(); 
     
@@ -31,8 +32,8 @@ public class DataTypeDefinitions {
     }
     
     public ConstructorDefinition findConstructor(String name) {
-        if (name.matches("\\(,+\\)")) {
-            int arity = name.length()-2;
+        if (isTupleConstructor(name)) {
+            int arity = tupleArity(name);
             return new ConstructorDefinition(name, tupleConstructorScheme(arity), arity);
         }
         ConstructorDefinition ctor = constructors.get(name);
@@ -50,7 +51,18 @@ public class DataTypeDefinitions {
         return Qualified.quantifyAll(new Qualified<Type>(functionType(types, tupleType(types))));
     }
 
+    public static int tupleArity(String name) {
+        if (isTupleConstructor(name))
+            return name.length()-1;
+        else
+            throw new IllegalArgumentException("not a tuple-type: " + name);
+    }
+
     public static String tupleName(int arity) {
-        return "(" + repeat(",", arity) + ")";
+        return "(" + repeat(",", arity-1) + ")";
+    }
+
+    private static boolean isTupleConstructor(String name) {
+        return name.matches("\\(,+\\)");
     }
 }
