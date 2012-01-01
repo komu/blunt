@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static java.util.Arrays.asList;
 import static komu.blunt.objects.Symbol.symbol;
 import static komu.blunt.parser.Associativity.LEFT;
 import static komu.blunt.parser.TokenType.*;
@@ -266,11 +265,7 @@ public final class Parser {
         if (!args.isEmpty())
             value = AST.lambda(args, value);
 
-        List<ImplicitBinding> bindings = asList(new ImplicitBinding(name, value));
-        if (recursive)
-            return AST.letRec(bindings, body);
-        else
-            return AST.let(bindings, body);
+        return AST.let(recursive, new ImplicitBinding(name, value), body);
     }
 
     // \ <ident> -> expr
@@ -298,7 +293,7 @@ public final class Parser {
 
             return op.isConstructor() ? AST.constructor(op.toString()) : AST.variable(op.toString());
         }
-        
+
         List<ASTExpression> exps = new ArrayList<ASTExpression>();
         
         do {
@@ -316,7 +311,7 @@ public final class Parser {
     // []
     // [<exp> (,<exp>)*]
     private ASTExpression parseList() {
-        ASTList list = new ASTList();
+        AST.ListBuilder list = AST.listBuilder();
 
         lexer.expectToken(LBRACKET);
 
@@ -328,7 +323,7 @@ public final class Parser {
 
         lexer.expectToken(RBRACKET);
 
-        return list;
+        return list.build();
     }
 
     private ASTExpression parseVariableOrConstructor() {

@@ -86,11 +86,6 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     }
 
     @Override
-    public CoreExpression visit(ASTList list, StaticEnvironment env) {
-        return analyze(list.rewrite(), env);
-    }
-
-    @Override
     public CoreExpression visit(ASTConstructor constructor, StaticEnvironment ctx) {
         ConstructorDefinition ctor = dataTypes.findConstructor(constructor.name);
 

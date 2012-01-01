@@ -104,12 +104,6 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
         return TypeCheckResult.of(inst.value, inst.predicates);
     }
 
-    @Override
-    public TypeCheckResult<Type> visit(ASTList list, Assumptions as) {
-        // TODO: don't include node for ASTList at all
-        return typeCheck(list.rewrite(), as);
-    }
-
     private TypeCheckResult<Type> typeCheck(ASTExpression exp, Assumptions as) {
         return tc.typeCheck(exp, as);
     }

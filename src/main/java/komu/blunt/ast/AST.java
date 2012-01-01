@@ -1,16 +1,16 @@
 package komu.blunt.ast;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.ConstructorDefinition;
 import komu.blunt.types.patterns.Pattern;
 
 import java.util.List;
 
-import static java.util.Arrays.asList;
+import static com.google.common.collect.Lists.newArrayList;
 import static komu.blunt.objects.Symbol.symbol;
-import static komu.blunt.types.DataTypeDefinitions.FALSE;
-import static komu.blunt.types.DataTypeDefinitions.TRUE;
+import static komu.blunt.types.DataTypeDefinitions.*;
 
 /**
  * Convenience methods for constructing syntax objects.
@@ -85,31 +85,27 @@ public final class AST {
     }
 
     public static ASTExpression letRec(Symbol name, ASTExpression value, ASTExpression body) {
-        return new ASTLetRec(asList(new ImplicitBinding(name, value)), body);
+        return new ASTLetRec(ImmutableList.of(new ImplicitBinding(name, value)), body);
     }
 
-    public static ASTExpression letRec(List<ImplicitBinding> bindings, ASTExpression body) {
-        return new ASTLetRec(bindings, body);
-    }
-
-    public static ASTExpression let(Symbol name, ASTExpression value, ASTExpression body) {
-        return new ASTLet(asList(new ImplicitBinding(name, value)), body);
-    }
-
-    public static ASTExpression let(List<ImplicitBinding> bindings, ASTExpression body) {
-        return new ASTLet(bindings, body);
-    }
-    
-    public static ASTSequence sequence(List<ASTExpression> exps) {
-        return new ASTSequence(exps);
+    public static ASTExpression let(boolean recursive, ImplicitBinding binding, ASTExpression body) {
+        ImmutableList<ImplicitBinding> bindings = ImmutableList.of(binding);
+        return recursive ? new ASTLetRec(bindings, body) : new ASTLet(bindings, body);
     }
 
     public static ASTSequence sequence(ASTExpression... exps) {
-        return new ASTSequence(asList(exps));
+        return new ASTSequence(ImmutableList.copyOf(exps));
     }
 
     public static ASTExpression tuple(List<ASTExpression> exps) {
-        return new ASTTuple(exps);
+        if (exps.size() < 2) throw new IllegalArgumentException("invalid sub expressions for tuple: " + exps);
+
+        ASTExpression call =  AST.constructor(tupleName(exps.size()));
+
+        for (ASTExpression exp : exps)
+            call = new ASTApplication(call, exp);
+
+        return call;
     }
 
     public static ASTExpression set(Symbol name, ASTExpression exp) {
@@ -118,5 +114,42 @@ public final class AST {
 
     public static ASTValueDefinition define(Symbol name, ASTExpression value) {
         return new ASTValueDefinition(name, value);
+    }
+    
+    public static ListBuilder listBuilder() {
+        return new ListBuilder();
+    }
+
+    public static final class ListBuilder {
+        private final List<ASTExpression> exps = newArrayList();
+        
+        public void add(ASTExpression exp) {
+            exps.add(exp);
+        }
+        
+        public ASTExpression build() {
+            ASTExpression list = constructor(NIL);
+
+            for (ASTExpression exp : Lists.reverse(exps))
+                list = constructor(CONS, exp, list);
+
+            return list;
+        }
+    }
+
+    public static SequenceBuilder sequenceBuilder() {
+        return new SequenceBuilder();
+    }
+
+    public static final class SequenceBuilder {
+        private final ImmutableList.Builder<ASTExpression> exps = ImmutableList.builder();
+
+        public void add(ASTExpression exp) {
+            exps.add(exp);
+        }
+
+        public ASTSequence build() {
+            return new ASTSequence(exps.build());
+        }
     }
 }

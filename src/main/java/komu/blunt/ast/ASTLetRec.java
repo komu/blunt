@@ -1,18 +1,17 @@
 package komu.blunt.ast;
 
-import komu.blunt.types.DataTypeDefinitions;
+import com.google.common.collect.ImmutableList;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.types.DataTypeDefinitions.UNIT;
 
 public final class ASTLetRec extends ASTExpression {
-    public final List<ImplicitBinding> bindings;
+    public final ImmutableList<ImplicitBinding> bindings;
     public final ASTExpression body;
 
-    ASTLetRec(List<ImplicitBinding> bindings, ASTExpression body) {
+    ASTLetRec(ImmutableList<ImplicitBinding> bindings, ASTExpression body) {
         this.bindings = checkNotNull(bindings);
         this.body = checkNotNull(body);
     }
@@ -23,17 +22,17 @@ public final class ASTLetRec extends ASTExpression {
     }
 
     public ASTLet rewriteToLet() {
-        List<ImplicitBinding> newBindings = new ArrayList<ImplicitBinding>(bindings.size());
+        ImmutableList.Builder<ImplicitBinding> newBindings = ImmutableList.builder();
+        AST.SequenceBuilder bodyExps = AST.sequenceBuilder();
 
-        ASTSequence bodyExps = AST.sequence();
         for (ImplicitBinding binding : bindings) {
-            newBindings.add(new ImplicitBinding(binding.name, AST.apply(AST.variable("unsafe-null"), AST.constructor(DataTypeDefinitions.UNIT))));
+            newBindings.add(new ImplicitBinding(binding.name, AST.apply(AST.variable("unsafe-null"), AST.constructor(UNIT))));
             bodyExps.add(AST.set(binding.name, binding.expr));
         }
 
         bodyExps.add(body);
 
-        return new ASTLet(newBindings, bodyExps);
+        return new ASTLet(newBindings.build(), bodyExps.build());
     }
 
     @Override

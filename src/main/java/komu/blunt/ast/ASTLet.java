@@ -1,5 +1,6 @@
 package komu.blunt.ast;
 
+import com.google.common.collect.ImmutableList;
 import komu.blunt.objects.Symbol;
 
 import java.util.ArrayList;
@@ -9,10 +10,10 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTLet extends ASTExpression {
-    public final List<ImplicitBinding> bindings;
+    public final ImmutableList<ImplicitBinding> bindings;
     public final ASTExpression body;
 
-    ASTLet(List<ImplicitBinding> bindings, ASTExpression body) {
+    ASTLet(ImmutableList<ImplicitBinding> bindings, ASTExpression body) {
         this.bindings = checkNotNull(bindings);
         this.body = checkNotNull(body);
     }
