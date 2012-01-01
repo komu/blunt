@@ -198,15 +198,32 @@ public final class Lexer {
         SourceLocation location = getSourceLocation();
 
         StringBuilder sb = new StringBuilder();
-        // TODO: escaping
         expect('"');
 
-        while (reader.peek() != '"')
-            sb.append(read());
-
-        expect('"');
+        boolean escaped = false;
+        while (true) {
+            char ch = readChar();
+            if (escaped) {
+                sb.append(ch);
+                escaped = false;
+            } else if (ch == '\\') {
+                escaped = true;
+            } else if (ch == '"') {
+                break;
+            } else {
+                sb.append(ch);
+            }
+        }
 
         return new Token<Object>(TokenType.LITERAL, sb.toString(), location);
+    }
+    
+    private char readChar() {
+        int ch = reader.read();
+        if (ch != -1)
+            return (char) ch;
+        else
+            throw parseError("unexpected eof");
     }
 
     private Token readNumber() {
