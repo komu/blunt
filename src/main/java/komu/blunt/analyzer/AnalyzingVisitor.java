@@ -46,11 +46,6 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     }
 
     @Override
-    public CoreExpression visit(ASTIf ifExp, StaticEnvironment env) {
-        return new CoreIfExpression(analyze(ifExp.test, env), analyze(ifExp.consequent, env), analyze(ifExp.alternative, env));
-    }
-
-    @Override
     public CoreExpression visit(ASTLambda lambda, StaticEnvironment env) {
         if (lambda.arguments.size() == 1) {
             Symbol arg = lambda.arguments.get(0);

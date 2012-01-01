@@ -15,6 +15,8 @@ public class DataTypeDefinitions {
     public static final String CONS = ":";
     public static final String NIL = "[]";
     public static final String UNIT = "()";
+    public static final String TRUE = "True";
+    public static final String FALSE = "False";
 
     private final Map<String,ConstructorDefinition> constructors = new HashMap<String, ConstructorDefinition>(); 
     

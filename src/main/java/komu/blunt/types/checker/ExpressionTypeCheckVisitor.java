@@ -42,22 +42,6 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
     }
 
     @Override
-    public TypeCheckResult<Type> visit(ASTIf ifExp, Assumptions as) {
-        TypeCheckResult<Type> tyTest = typeCheck(ifExp.test, as);
-        TypeCheckResult<Type> tyConsequent = typeCheck(ifExp.consequent, as);
-        TypeCheckResult<Type> tyAlternative = typeCheck(ifExp.alternative, as);
-
-        tc.unify(tyTest.value, Type.BOOLEAN);
-        tc.unify(tyConsequent.value, tyAlternative.value);
-
-        TypeCheckResult.Builder<Type> result = TypeCheckResult.builder();
-        result.addPredicates(tyTest.predicates);
-        result.addPredicates(tyConsequent.predicates);
-        result.addPredicates(tyAlternative.predicates);
-        return result.build(tyConsequent.value);
-    }
-
-    @Override
     public TypeCheckResult<Type> visit(ASTLambda lambda, Assumptions as) {
         if (lambda.arguments.size() == 1) {
             Symbol arg = lambda.arguments.get(0);

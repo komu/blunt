@@ -9,6 +9,8 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static komu.blunt.objects.Symbol.symbol;
+import static komu.blunt.types.DataTypeDefinitions.FALSE;
+import static komu.blunt.types.DataTypeDefinitions.TRUE;
 
 /**
  * Convenience methods for constructing syntax objects.
@@ -59,13 +61,18 @@ public final class AST {
     }
 
     public static ASTExpression ifExp(ASTExpression test, ASTExpression cons, ASTExpression alt) {
-        return new ASTIf(test, cons, alt);
+        return caseExp(test, alternative(Pattern.constructor(TRUE), cons),
+                             alternative(Pattern.constructor(FALSE), alt));
     }
 
     public static ASTExpression caseExp(ASTExpression exp, ImmutableList<ASTAlternative> alts) {
         return new ASTCase(exp, alts);
     }
 
+    public static ASTExpression caseExp(ASTExpression exp, ASTAlternative... alts) {
+        return new ASTCase(exp, ImmutableList.copyOf(alts));
+    }
+    
     public static ASTAlternative alternative(Pattern pattern, ASTExpression exp) {
         return new ASTAlternative(pattern, exp);
     }

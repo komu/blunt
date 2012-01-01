@@ -29,8 +29,8 @@ public class ParserTest {
     }
     
     @Test
-    public void ifExpression() {
-        assertThat(parsing("if true then 1 else 2"), producesExpressionMatching("(if true 1 2)"));
+    public void ifIsRewrittenToCase() {
+        assertThat(parsing("if true then 1 else 2"), producesExpressionMatching("case true of [True -> 1, False -> 2]"));
     }
 
     @Test
