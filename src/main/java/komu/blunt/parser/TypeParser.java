@@ -60,7 +60,7 @@ public final class TypeParser {
     }
 
     private Predicate parsePredicate() {
-        String className = lexer.readToken(TYPE_OR_CTOR_NAME).value;
+        String className = lexer.readTokenValue(TYPE_OR_CTOR_NAME);
         Type type = parseType();
         return Predicate.isIn(className, type);
     }
@@ -93,19 +93,19 @@ public final class TypeParser {
         else if (lexer.nextTokenIs(IDENTIFIER))
             return parseTypeVariable();
         else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
-            return genericType(lexer.readToken(TYPE_OR_CTOR_NAME).value);
+            return genericType(lexer.readTokenValue(TYPE_OR_CTOR_NAME));
         else
             throw lexer.parseError("expected type");
     }
 
     public Type parseTypeConcrete() {
-        String name = lexer.readToken(TYPE_OR_CTOR_NAME).value;
+        String name = lexer.readTokenValue(TYPE_OR_CTOR_NAME);
         
         List<Type> args = new ArrayList<Type>();
-        while (START_TOKENS.contains(lexer.peekTokenType()))
+        while (lexer.nextTokenIsOneOf(START_TOKENS))
             args.add(parseTypePrimitive());
         
-        return Type.genericType(name, args);
+        return genericType(name, args);
     }
 
     private Type parseParens() {
@@ -137,7 +137,7 @@ public final class TypeParser {
     }
     
     public TypeVariable parseTypeVariable() {
-        String name = lexer.readToken(IDENTIFIER).value;
+        String name = lexer.readTokenValue(IDENTIFIER);
         return typeVariable(name);
     }
 }

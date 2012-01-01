@@ -1,6 +1,7 @@
 package komu.blunt.parser;
 
 import java.math.BigInteger;
+import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Character.*;
@@ -21,7 +22,11 @@ public final class Lexer {
         this.reader = new SourceReader(source);
         this.operatorSet = checkNotNull(operatorSet);
     }
-    
+
+    public boolean hasMoreTokens() {
+        return !nextTokenIs(EOF);
+    }
+
     public TokenType<?> peekTokenType() {
         return peekToken().type;
     }
@@ -33,28 +38,28 @@ public final class Lexer {
     
     public void pushBlockStartAtNextToken() {
         indents.push(peekToken().getLocation().column);
-    }    
-
-    public SourceLocation getSourceLocation() {
-        return reader.getLocation();
     }
 
     public boolean nextTokenIs(TokenType<?> type) {
         return peekTokenType() == type;
     }
 
-    public Token<?> peekToken() {
+    public boolean nextTokenIsOneOf(Collection<TokenType<?>> types) {
+        return types.contains(peekTokenType());
+    }
+
+    private Token<?> peekToken() {
         if (nextToken == null)
             nextToken = readTokenInternal();
 
         return nextToken;
     }
 
-    public <T> Token<T> peekToken(TokenType<T> type) {
-        return peekToken().asType(type);
+    public <T> T peekTokenValue(TokenType<T> type) {
+        return peekToken().asType(type).value;
     }
     
-    public Token<?> readToken() {
+    private Token<?> readToken() {
         if (nextToken != null) {
             Token token = nextToken;
             nextToken = null;
@@ -64,12 +69,15 @@ public final class Lexer {
         }
     }
 
-    public <T> Token<T> readToken(TokenType<T> type) {
-        Token<?> token = readToken();
-        if (token.type == type)
-            return token.asType(type);
+    private <T> Token<T> readToken(TokenType<T> type) {
+        if (nextTokenIs(type))
+            return readToken().asType(type);
         else
-            throw parseError("expected token of type " + type + ", but got " + token);
+            throw expectFailure("token of type " + type);
+    }
+
+    public <T> T readTokenValue(TokenType<T> type) {
+        return readToken(type).value;
     }
 
     public void expectToken(TokenType<?> expected) {
@@ -86,9 +94,8 @@ public final class Lexer {
     }
 
     public Operator readOperatorMatchingLevel(int level) {
-        Token<?> token = peekToken();
-        if (token.type == OPERATOR) {
-            Operator op = token.asType(OPERATOR).value;
+        if (nextTokenIs(OPERATOR)) {
+            Operator op = peekTokenValue(OPERATOR);
 
             if (level == op.precedence) {
                 readToken();
@@ -155,6 +162,9 @@ public final class Lexer {
 
         String name = sb.toString();
         
+        if (name.equals("_"))
+            return Token.ofType(UNDERSCORE, location);
+
         Keyword keyword = TokenType.keyword(name);
 
         return (keyword != null) ? Token.ofType(keyword, location)
@@ -170,6 +180,10 @@ public final class Lexer {
         return isJavaIdentifierPart(ch) || "?!'".indexOf(ch) != -1;
     }
 
+    private static boolean isOperatorCharacter(int ch) {
+        return "=-+*/<>%?!|&$:.\\~".indexOf(ch) != -1;
+    }
+
     private Token readOperator() {
         SourceLocation location = reader.getLocation();
 
@@ -182,27 +196,27 @@ public final class Lexer {
 
         if (op.equals("\\"))
             return Token.ofType(LAMBDA, location);
-        if (op.equals("="))
+        else if (op.equals("="))
             return Token.ofType(ASSIGN, location);
-        if (op.equals("|"))
+        else if (op.equals("|"))
             return Token.ofType(OR, location);
-        if (op.equals("->"))
+        else if (op.equals("->"))
             return Token.ofType(RIGHT_ARROW, location);
-        if (op.equals("=>"))
+        else if (op.equals("=>"))
             return Token.ofType(BIG_RIGHT_ARROW, location);
         else
             return new Token<Operator>(OPERATOR, operatorSet.operator(sb.toString()), location);
     }
 
     private Token readString() {
-        SourceLocation location = getSourceLocation();
+        SourceLocation location = reader.getLocation();
 
         StringBuilder sb = new StringBuilder();
         expect('"');
 
         boolean escaped = false;
         while (true) {
-            char ch = readChar();
+            char ch = read();
             if (escaped) {
                 sb.append(ch);
                 escaped = false;
@@ -217,17 +231,9 @@ public final class Lexer {
 
         return new Token<Object>(TokenType.LITERAL, sb.toString(), location);
     }
-    
-    private char readChar() {
-        int ch = reader.read();
-        if (ch != -1)
-            return (char) ch;
-        else
-            throw parseError("unexpected eof");
-    }
 
     private Token readNumber() {
-        SourceLocation location = getSourceLocation();
+        SourceLocation location = reader.getLocation();
 
         StringBuilder sb = new StringBuilder();
 
@@ -245,7 +251,7 @@ public final class Lexer {
             throw parseError("unexpected EOF");
     }
 
-    public int peek() {
+    private int peek() {
         return reader.peek();
     }
 
@@ -254,14 +260,6 @@ public final class Lexer {
         if (ch != expected)
             throw parseError("unexpected char: " + ch);
     }
-    
-    private static boolean isOperatorCharacter(int ch) {
-        return "=-+*/<>%?!|&$:.\\~".indexOf(ch) != -1;
-    }
-    
-    SyntaxException parseError(String message) {
-        return new SyntaxException("[" + getSourceLocation() + "] " + message);
-    }
 
     public int save() {
         return reader.getPosition();
@@ -269,5 +267,13 @@ public final class Lexer {
 
     public void restore(int state) {
         reader.setPosition(state);
+    }
+
+    public SyntaxException parseError(String message) {
+        return new SyntaxException("[" + reader.getLocation() + "] " + message);
+    }
+
+    public SyntaxException expectFailure(String expected) {
+        return parseError("expected " + expected + ", but got " + readToken());
     }
 }

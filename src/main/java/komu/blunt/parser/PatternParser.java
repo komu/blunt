@@ -19,7 +19,7 @@ final class PatternParser {
 
     @SuppressWarnings("unchecked")
     private static final List<TokenType<?>> PATTERN_START_TOKENS =
-        Arrays.asList(LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME);
+        Arrays.asList(LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, UNDERSCORE);
 
     PatternParser(Lexer lexer) {
         this.lexer = checkNotNull(lexer);
@@ -28,10 +28,10 @@ final class PatternParser {
     // <literal> | <variable> | ( <pattern> ) | <constructor> <pattern>* |
     public Pattern parsePattern() {
         if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME)) {
-            String name = lexer.readToken(TYPE_OR_CTOR_NAME).value;
+            String name = lexer.readTokenValue(TYPE_OR_CTOR_NAME);
             ImmutableList.Builder<Pattern> args = ImmutableList.builder();
 
-            while (PATTERN_START_TOKENS.contains(lexer.peekTokenType()))
+            while (lexer.nextTokenIsOneOf(PATTERN_START_TOKENS))
                 args.add(parseSimplePattern());
 
             return constructor(name, args.build());
@@ -43,8 +43,8 @@ final class PatternParser {
     private Pattern parseSimplePattern() {
         Pattern pattern = parsePrimitivePattern();
 
-        if (lexer.nextTokenIs(OPERATOR) && lexer.peekToken(OPERATOR).value.isConstructor()) {
-            Operator op = lexer.readToken(OPERATOR).value;
+        if (lexer.nextTokenIs(OPERATOR) && lexer.peekTokenValue(OPERATOR).isConstructor()) {
+            Operator op = lexer.readTokenValue(OPERATOR);
 
             pattern = constructor(op.toString(), pattern, parsePattern());
         }
@@ -54,27 +54,26 @@ final class PatternParser {
 
     private Pattern parsePrimitivePattern() {
         if (lexer.nextTokenIs(LITERAL)) {
-            return literal(lexer.readToken(LITERAL).value);
+            return literal(lexer.readTokenValue(LITERAL));
+
+        } else if (lexer.readMatchingToken(UNDERSCORE)) {
+            return wildcard();
 
         } else if (lexer.nextTokenIs(IDENTIFIER)) {
-            String name = lexer.readToken(IDENTIFIER).value;
-            if (name.equals("_"))
-                return wildcard();
-            else
-                return variable(name);
+            return variable(lexer.readTokenValue(IDENTIFIER));
 
         } else if (lexer.readMatchingToken(LPAREN)) {
             return parseParens();
 
         } else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME)) {
-            return constructor(lexer.readToken(TYPE_OR_CTOR_NAME).value);
+            return constructor(lexer.readTokenValue(TYPE_OR_CTOR_NAME));
 
         } else if (lexer.nextTokenIs(LBRACKET)) {
             return parseBrackets();
 
 
         } else {
-            throw lexer.parseError("expected pattern, got " + lexer.readToken());
+            throw lexer.expectFailure("pattern");
         }
     }
 

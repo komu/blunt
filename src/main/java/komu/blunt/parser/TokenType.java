@@ -33,6 +33,7 @@ public class TokenType<T> {
     public static final Punctuation LBRACKET = new Punctuation("[");
     public static final Punctuation RBRACKET = new Punctuation("]");
     public static final Punctuation ASSIGN = new Punctuation("=");
+    public static final Punctuation UNDERSCORE = new Punctuation("_");
     public static final Punctuation OR = new Punctuation("|");
     public static final Punctuation RIGHT_ARROW = new Punctuation("->");
     public static final Punctuation BIG_RIGHT_ARROW = new Punctuation("=>");
