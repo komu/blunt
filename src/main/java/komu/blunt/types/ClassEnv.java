@@ -13,9 +13,8 @@ import java.util.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
-import static komu.blunt.types.Kind.STAR;
 import static komu.blunt.types.Predicate.isIn;
-import static komu.blunt.types.Type.tupleType;
+import static komu.blunt.types.Type.*;
 import static komu.blunt.types.checker.TypeUtils.getTypeVariables;
 
 public final class ClassEnv {
@@ -70,19 +69,19 @@ public final class ClassEnv {
         addInstance(isIn("Ord", Type.INTEGER));
         addInstance(isIn("Ord", Type.STRING));
 
-        addInstance(asList(isIn("Ord", Type.typeVariable("a", STAR)),
-                           isIn("Ord", Type.typeVariable("b", STAR))),
-                    isIn("Ord", tupleType(Type.typeVariable("a", STAR), Type.typeVariable("b", STAR))));
+        addInstance(asList(isIn("Ord", typeVariable("a")),
+                           isIn("Ord", typeVariable("b"))),
+                    isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))));
 
-        addInstance(asList(isIn("Eq", Type.typeVariable("a", STAR)),
-                           isIn("Eq", Type.typeVariable("b", STAR))),
-                    isIn("Eq", tupleType(Type.typeVariable("a", STAR), Type.typeVariable("b", STAR))));
+        addInstance(asList(isIn("Eq", typeVariable("a")),
+                           isIn("Eq", typeVariable("b"))),
+                    isIn("Eq", tupleType(typeVariable("a"), typeVariable("b"))));
 
-        addInstance(asList(isIn("Eq", Type.typeVariable("a", STAR))),
-                    isIn("Eq", Type.listType(Type.typeVariable("a", STAR))));
+        addInstance(asList(isIn("Eq", typeVariable("a"))),
+                    isIn("Eq", listType(typeVariable("a"))));
 
-        addInstance(asList(isIn("Eq", Type.typeVariable("a", STAR))),
-                    isIn("Eq", Type.genericType("Maybe", Type.typeVariable("a", STAR))));
+        addInstance(asList(isIn("Eq", typeVariable("a"))),
+                    isIn("Eq", genericType("Maybe", typeVariable("a"))));
     }
 
     public void addInstance(Predicate predicate) {
