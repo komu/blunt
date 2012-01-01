@@ -45,7 +45,7 @@ public class ParserTest {
     
     @Test
     public void lambdaExpression() {
-        assertThat(parsing("\\x -> y"), producesExpressionMatching("(lambda [x] y)"));
+        assertThat(parsing("\\x -> y"), producesExpressionMatching("(lambda x y)"));
     }
     
     @Test

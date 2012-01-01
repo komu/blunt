@@ -53,11 +53,18 @@ public final class AST {
     }
     
     public static ASTExpression lambda(Symbol argument, ASTExpression body) {
-        return new ASTLambda(asList(argument), body);
+        return new ASTLambda(argument, body);
     }
 
     public static ASTExpression lambda(List<Symbol> arguments, ASTExpression body) {
-        return new ASTLambda(arguments, body);
+        if (arguments.isEmpty()) throw new IllegalArgumentException("no arguments for lambda");
+        
+        Symbol head = arguments.get(0);
+        List<Symbol> tail = arguments.subList(1, arguments.size());
+        if (arguments.size() == 1)
+            return lambda(head, body);
+        else
+            return lambda(head, lambda(tail, body));
     }
 
     public static ASTExpression ifExp(ASTExpression test, ASTExpression cons, ASTExpression alt) {

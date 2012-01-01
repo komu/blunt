@@ -43,19 +43,13 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
 
     @Override
     public TypeCheckResult<Type> visit(ASTLambda lambda, Assumptions as) {
-        if (lambda.arguments.size() == 1) {
-            Symbol arg = lambda.arguments.get(0);
+        TypeVariable argumentType = tc.newTVar();
 
-            TypeVariable argumentType = tc.newTVar(Kind.STAR);
+        Assumptions as2 = Assumptions.singleton(lambda.argument, argumentType.toScheme());
 
-            Assumptions as2 = Assumptions.singleton(arg, argumentType.toScheme());
+        TypeCheckResult<Type> result = typeCheck(lambda.body, as.join(as2));
 
-            TypeCheckResult<Type> result = typeCheck(lambda.body, as.join(as2));
-
-            return TypeCheckResult.of(functionType(argumentType, result.value), result.predicates);
-        } else {
-            return typeCheck(lambda.rewrite(), as);
-        }
+        return TypeCheckResult.of(functionType(argumentType, result.value), result.predicates);
     }
 
     @Override

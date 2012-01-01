@@ -47,13 +47,8 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
 
     @Override
     public CoreExpression visit(ASTLambda lambda, StaticEnvironment env) {
-        if (lambda.arguments.size() == 1) {
-            Symbol arg = lambda.arguments.get(0);
-            StaticEnvironment newEnv = env.extend(arg);
-            return new CoreLambdaExpression(arg, analyze(lambda.body, newEnv));
-        } else {
-            return analyze(lambda.rewrite(), env);
-        }
+        StaticEnvironment newEnv = env.extend(lambda.argument);
+        return new CoreLambdaExpression(lambda.argument, analyze(lambda.body, newEnv));
     }
 
     @Override
