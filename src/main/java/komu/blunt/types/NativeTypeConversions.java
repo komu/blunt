@@ -10,8 +10,7 @@ import java.util.Map;
 
 import static java.lang.reflect.Modifier.isStatic;
 import static komu.blunt.types.Qualified.quantifyAll;
-import static komu.blunt.types.Type.functionType;
-import static komu.blunt.types.Type.tupleType;
+import static komu.blunt.types.Type.*;
 
 public final class NativeTypeConversions {
 
@@ -83,7 +82,7 @@ public final class NativeTypeConversions {
     private TypeVariable variableFor(java.lang.reflect.TypeVariable<?> tv) {
         TypeVariable var = typeVariableMap.get(tv);
         if (var == null) {
-            var = new TypeVariable(tv.getName(), Kind.STAR); // TODO: kind
+            var = typeVariable(tv.getName());
             typeVariableMap.put(tv, var);
         }
         return var;

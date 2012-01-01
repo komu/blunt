@@ -20,14 +20,14 @@ final class PatternTypeChecker implements PatternVisitor<Void,PatternTypeCheckRe
 
     @Override
     public PatternTypeCheckResult<Type> visit(VariablePattern pattern, Void ctx) {
-        TypeVariable tv = tc.newTVar(Kind.STAR);
+        TypeVariable tv = tc.newTVar();
 
         return new PatternTypeCheckResult<Type>(Assumptions.singleton(pattern.var, tv.toScheme()), tv);
     }
 
     @Override
     public PatternTypeCheckResult<Type> visit(WildcardPattern pattern, Void ctx) {
-        TypeVariable tv = tc.newTVar(Kind.STAR);
+        TypeVariable tv = tc.newTVar();
 
         return new PatternTypeCheckResult<Type>(Assumptions.empty(), tv);
     }
@@ -48,7 +48,7 @@ final class PatternTypeChecker implements PatternVisitor<Void,PatternTypeCheckRe
                     " expected " + constructor.arity + ", but got " + pattern.args.size());
 
         PatternTypeCheckResult<List<Type>> result = assumptionsFrom(pattern.args);
-        Type type = tc.newTVar(Kind.STAR);
+        Type type = tc.newTVar();
 
         Qualified<Type> q = tc.freshInstance(constructor.scheme);
         

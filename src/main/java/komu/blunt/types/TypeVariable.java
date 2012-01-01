@@ -13,7 +13,7 @@ public final class TypeVariable extends Type {
     private final String name;
     private final Kind kind;
 
-    public TypeVariable(String name, Kind kind) {
+    TypeVariable(String name, Kind kind) {
         this.name = checkNotNull(name);
         this.kind = checkNotNull(kind);
     }

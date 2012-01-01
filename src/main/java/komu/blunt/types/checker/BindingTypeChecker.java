@@ -68,7 +68,7 @@ final class BindingTypeChecker {
     }
 
     private TypeCheckResult<Assumptions> typeCheckImplicitGroup(List<ImplicitBinding> bindings, Assumptions as) {
-        List<Type> typeVariables = tc.newTVars(bindings.size(), Kind.STAR);
+        List<Type> typeVariables = tc.newTVars(bindings.size());
         List<Predicate> predicates = typeCheckAndUnifyBindings(bindings, typeVariables, as);
 
         List<Type> types = tc.applySubstitution(typeVariables);

@@ -14,6 +14,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static komu.blunt.types.Qualified.quantifyAll;
+import static komu.blunt.types.Type.typeVariable;
 import static komu.blunt.types.checker.Unifier.mgu;
 
 public final class TypeChecker {
@@ -78,13 +79,13 @@ public final class TypeChecker {
     }
 
     TypeVariable newTVar(Kind kind) {
-        return new TypeVariable(typeName(typeSequence++), kind);
+        return typeVariable(typeName(typeSequence++), kind);
     }
 
-    List<Type> newTVars(final int size, final Kind kind) {
+    List<Type> newTVars(int size) {
         List<Type> types = new ArrayList<Type>(size);
         for (int i = 0; i < size; i++)
-            types.add(newTVar(kind));
+            types.add(newTVar());
         return types;
     }
 

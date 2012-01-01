@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static komu.blunt.types.Kind.STAR;
 import static komu.blunt.types.Type.functionType;
 
 public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions, TypeCheckResult<Type>> {
@@ -26,7 +25,7 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
 
         TypeCheckResult<Type> tf = typeCheck(application.arg, as);
 
-        Type t = tc.newTVar(STAR);
+        Type t = tc.newTVar();
 
         tc.unify(functionType(tf.value, t), te.value);
 

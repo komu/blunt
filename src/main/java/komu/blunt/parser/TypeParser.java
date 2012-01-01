@@ -138,6 +138,6 @@ public final class TypeParser {
     
     public TypeVariable parseTypeVariable() {
         String name = lexer.readToken(IDENTIFIER).value;
-        return new TypeVariable(name, Kind.STAR);
+        return typeVariable(name);
     }
 }
