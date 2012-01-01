@@ -1,8 +1,8 @@
 package komu.blunt.parser;
 
 import java.math.BigInteger;
-import java.util.Collection;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.Character.*;
 import static komu.blunt.parser.TokenType.*;
 
@@ -11,9 +11,15 @@ public final class Lexer {
     private final SourceReader reader;
     private Token<?> nextToken = null;
     private final IndentStack indents = new IndentStack();
+    private final OperatorSet operatorSet;
     
     public Lexer(String source) {
+        this(source, new OperatorSet());
+    }
+
+    public Lexer(String source, OperatorSet operatorSet) {
         this.reader = new SourceReader(source);
+        this.operatorSet = checkNotNull(operatorSet);
     }
     
     public TokenType<?> peekTokenType() {
@@ -79,19 +85,19 @@ public final class Lexer {
         }
     }
 
-    public <T> T readMatching(TokenType<T> type, Collection<T> operators) {
+    public Operator readOperatorMatchingLevel(int level) {
         Token<?> token = peekToken();
+        if (token.type == OPERATOR) {
+            Operator op = token.asType(OPERATOR).value;
 
-        if (token.type == type) {
-            T value = token.asType(type).value;
-            if (operators.contains(value)) {
+            if (level == op.precedence) {
                 readToken();
-                return value;
+                return op;
             }
         }
 
         return null;
-    }    
+    }
 
     private Token readTokenInternal() {
         skipWhitespace();
@@ -185,7 +191,7 @@ public final class Lexer {
         if (op.equals("=>"))
             return Token.ofType(BIG_RIGHT_ARROW, location);
         else
-            return new Token<Operator>(OPERATOR, new Operator(sb.toString()), location);
+            return new Token<Operator>(OPERATOR, operatorSet.operator(sb.toString()), location);
     }
 
     private Token readString() {

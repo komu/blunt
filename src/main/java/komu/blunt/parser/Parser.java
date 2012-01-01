@@ -29,7 +29,7 @@ public final class Parser {
         Arrays.asList(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, CASE);
 
     public Parser(String source) {
-        this.lexer = new Lexer(source);
+        this.lexer = new Lexer(source, operators);
         this.typeParser = new TypeParser(lexer);
         this.patternParser = new PatternParser(lexer);
     }
@@ -123,22 +123,13 @@ public final class Parser {
         ASTExpression exp = parseExp(0);
 
         while (true) {
-            if (customOperator(lexer.peekToken())) {
-                Operator operator = lexer.readToken(OPERATOR).value;
-                Associativity associativity = operators.getAssociativity(operator);
-                ASTExpression rhs = associativity == LEFT ? parseExp(0) : parseExpression();
-                exp = binary(operator, exp, rhs);
-            } else if (lexer.readMatchingToken(SEMICOLON)) {
+            if (lexer.readMatchingToken(SEMICOLON)) {
                 ASTExpression rhs = parseExp(0);
                 exp = AST.sequence(exp, rhs);
             } else {
                 return exp;
             }
         }
-    }
-
-    private static boolean customOperator(Token<?> token) {
-        return token.type == OPERATOR && !token.asType(OPERATOR).value.isBuiltin();
     }
 
     private ASTExpression parseExp(int level) {
@@ -152,10 +143,9 @@ public final class Parser {
         ASTExpression exp = parseExp(level + 1);
 
         while (true) {
-            Operator op = lexer.readMatching(OPERATOR, operators.operator(level));
+            Operator op = lexer.readOperatorMatchingLevel(level);
             if (op != null) {
-                Associativity associativity = operators.getAssociativity(op);
-                ASTExpression rhs = parseExp(associativity == LEFT ? level+1 : level);
+                ASTExpression rhs = parseExp(op.associativity == LEFT ? level+1 : level);
                 exp = binary(op, exp, rhs);
             } else {
                 return exp;
