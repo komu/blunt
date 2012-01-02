@@ -3,13 +3,9 @@ package komu.blunt.parser;
 import com.google.common.collect.ImmutableList;
 import komu.blunt.ast.AST;
 import komu.blunt.ast.ASTDataDefinition;
-import komu.blunt.types.ConstructorDefinition;
-import komu.blunt.types.Qualified;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeVariable;
+import komu.blunt.types.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -32,35 +28,52 @@ final class DataTypeParser {
     ASTDataDefinition parseDataDefinition() {
         lexer.expectIndentStartToken(DATA);
 
-        String name = lexer.readTokenValue(TYPE_OR_CTOR_NAME);
+        DataTypeBuilder builder = new DataTypeBuilder(lexer.readTokenValue(TYPE_OR_CTOR_NAME));
         
-        List<TypeVariable> vars = new ArrayList<TypeVariable>();
-        while (!lexer.nextTokenIs(ASSIGN))
-            vars.add(typeParser.parseTypeVariable());
+        while (!lexer.readMatchingToken(ASSIGN))
+            builder.addVariable(typeParser.parseTypeVariable());
 
-        lexer.expectToken(ASSIGN);
-
-        ImmutableList.Builder<ConstructorDefinition> constructors = ImmutableList.builder();
-        
-        Type resultType = genericType(name, vars);
-        
         do {
-            constructors.add(parseConstructorDefinition(vars, resultType));
+            parseConstructor(builder);
         } while (lexer.readMatchingToken(OR));
 
         lexer.expectToken(END);
 
-        return AST.data(name, constructors.build());
+        return builder.build();
     }
 
-    private ConstructorDefinition parseConstructorDefinition(Collection<TypeVariable> vars, Type resultType) {
-        String name = lexer.readTokenValue(TYPE_OR_CTOR_NAME);
-        
+    private void parseConstructor(DataTypeBuilder builder) {
+        String constructorName = lexer.readTokenValue(TYPE_OR_CTOR_NAME);
+
         List<Type> args = new ArrayList<Type>();
         while (!lexer.nextTokenIs(OR) && !lexer.nextTokenIs(END))
             args.add(typeParser.parseTypePrimitive());
 
-        Qualified<Type> type = new Qualified<Type>(functionType(args, resultType));
-        return new ConstructorDefinition(name, quantify(vars, type), args.size());
-    }    
+        builder.addConstructor(constructorName, args);
+    }
+
+    private static final class DataTypeBuilder {
+
+        private final String typeName;
+        private final List<TypeVariable> vars = new ArrayList<TypeVariable>();
+        private final ImmutableList.Builder<ConstructorDefinition> constructors = ImmutableList.builder();
+
+        public DataTypeBuilder(String typeName) {
+            this.typeName = checkNotNull(typeName);
+        }
+        
+        public void addVariable(TypeVariable variable) {
+            vars.add(checkNotNull(variable));
+        }
+
+        public void addConstructor(String constructorName, List<Type> args) {
+            Type resultType = genericType(typeName, vars);
+            Scheme scheme = quantify(vars, new Qualified<Type>(functionType(args, resultType)));
+            constructors.add(new ConstructorDefinition(constructorName, scheme, args.size()));
+        }
+
+        public ASTDataDefinition build() {
+            return AST.data(typeName, constructors.build());
+        }
+    }
 }
