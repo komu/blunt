@@ -17,12 +17,18 @@ data Maybe a = Just a
 nil? [] = True
 nil? _  = False
 
+fst (x,_) = x
+
+snd (_,x) = x
 
 head (x:_) = x
 head []     = error "can't get head of empty list"
 
 tail (_:xs) = xs
 tail []     = error "can't get tail of empty list"
+
+tails [] = [[]]
+tails xs = xs : tails (tail xs)
 
 id x = x
 
