@@ -2,7 +2,6 @@ package komu.blunt.asm.opcodes;
 
 import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
-import komu.blunt.eval.Environment;
 import komu.blunt.objects.CompoundProcedure;
 import komu.blunt.objects.Function;
 
@@ -34,9 +33,9 @@ public class OpApply extends OpCode {
     }
 
     private void executeCompound(VM vm, CompoundProcedure procedure, Object arg) {
-        Environment env = procedure.env.extend(arg);
+        //Environment env = procedure.env.extend(arg);
         vm.save(Register.ENV, Register.PC, Register.PROCEDURE, Register.ARG);
-        vm.set(Register.ENV, env);
+        vm.set(Register.ENV, procedure.env);
         vm.set(Register.PC, procedure.address);
     }
 

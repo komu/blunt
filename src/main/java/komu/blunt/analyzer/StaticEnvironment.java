@@ -66,4 +66,8 @@ public final class StaticEnvironment {
 
         return env;
     }
+
+    public int size() {
+        return variables.size();
+    }
 }

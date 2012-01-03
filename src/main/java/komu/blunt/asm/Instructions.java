@@ -72,10 +72,10 @@ public final class Instructions {
         instructions.add(new OpLoadLambda(target, label));
     }
 
-    public void loadNewArray(Register target, int size) {
-        instructions.add(new OpLoadNewArray(target, size));
+    public void createEnvironment(Register target, Register env, Register args, int envSize) {
+        instructions.add(new OpCreateEnvironment(target, env, args, envSize));
     }
-    
+
     public void loadExtracted(Register target, Register source, PatternPath path) {
         instructions.add(new OpLoadExtracted(target, source, path));
     }

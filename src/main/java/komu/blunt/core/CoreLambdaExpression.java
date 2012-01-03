@@ -4,17 +4,19 @@ import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Label;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
-import komu.blunt.objects.Symbol;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreLambdaExpression extends CoreExpression {
 
-    private final Symbol argumentName;
+    private final int envSize;
     private final CoreExpression body;
 
-    public CoreLambdaExpression(Symbol argumentName, CoreExpression body) {
-        this.argumentName = checkNotNull(argumentName);
+    public CoreLambdaExpression(int envSize, CoreExpression body) {
+        checkArgument(envSize >= 0);
+
+        this.envSize = envSize;
         this.body = checkNotNull(body);
     }
 
@@ -32,6 +34,7 @@ public final class CoreLambdaExpression extends CoreExpression {
         }
 
         instructions.label(lambda);
+        instructions.createEnvironment(Register.ENV, Register.ENV, Register.ARG, envSize);
         body.assemble(instructions, Register.VAL, Linkage.RETURN);
         instructions.label(afterLambda);
     }

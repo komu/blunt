@@ -48,7 +48,8 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     @Override
     public CoreExpression visit(ASTLambda lambda, StaticEnvironment env) {
         StaticEnvironment newEnv = env.extend(lambda.argument);
-        return new CoreLambdaExpression(lambda.argument, analyze(lambda.body, newEnv));
+        CoreExpression body = analyze(lambda.body, newEnv);
+        return new CoreLambdaExpression(newEnv.size(), body);
     }
 
     @Override
@@ -60,7 +61,9 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
 
         ImplicitBinding binding = let.bindings.get(0);
 
-        return new CoreLetExpression(binding.name, analyze(binding.expr, env), analyze(let.body, newEnv));
+        CoreExpression expr = analyze(binding.expr, env);
+        CoreExpression body = analyze(let.body, newEnv);
+        return new CoreLetExpression(newEnv.size(), expr, body);
     }
 
     @Override
@@ -103,7 +106,8 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
 
         Symbol var = symbol("$match"); // TODO: fresh name
         VariableReference matchedObject = newEnv.define(var);
-        return new CoreLetExpression(var, exp, createAlts(matchedObject, astCase.alternatives, newEnv));
+        CoreExpression body = createAlts(matchedObject, astCase.alternatives, newEnv);
+        return new CoreLetExpression(newEnv.size(), exp, body);
     }
     
     private CoreExpression createAlts(VariableReference matchedObject, List<ASTAlternative> alts, StaticEnvironment env) {
