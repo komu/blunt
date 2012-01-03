@@ -95,7 +95,7 @@ public final class TypeParser {
         else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
             return genericType(lexer.readTokenValue(TYPE_OR_CTOR_NAME));
         else
-            throw lexer.parseError("expected type");
+            throw lexer.expectFailure("type");
     }
 
     public Type parseTypeConcrete() {

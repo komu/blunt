@@ -37,6 +37,14 @@ final class DataTypeParser {
             parseConstructor(builder);
         } while (lexer.readMatchingToken(OR));
 
+        if (lexer.readMatchingToken(DERIVING)) {
+            lexer.expectToken(LPAREN);
+            do {
+                builder.addAutomaticallyDerivedClass(lexer.readTokenValue(TYPE_OR_CTOR_NAME));
+            } while (lexer.readMatchingToken(COMMA));
+            lexer.expectToken(RPAREN);
+        }
+
         lexer.expectToken(END);
 
         return builder.build();
@@ -46,7 +54,7 @@ final class DataTypeParser {
         String constructorName = lexer.readTokenValue(TYPE_OR_CTOR_NAME);
 
         List<Type> args = new ArrayList<Type>();
-        while (!lexer.nextTokenIs(OR) && !lexer.nextTokenIs(END))
+        while (!lexer.nextTokenIs(OR) && !lexer.nextTokenIs(END) && !lexer.nextTokenIs(DERIVING))
             args.add(typeParser.parseTypePrimitive());
 
         builder.addConstructor(constructorName, args);
@@ -57,6 +65,7 @@ final class DataTypeParser {
         private final String typeName;
         private final List<TypeVariable> vars = new ArrayList<TypeVariable>();
         private final ImmutableList.Builder<ConstructorDefinition> constructors = ImmutableList.builder();
+        private final ImmutableList.Builder<String> derivedClasses = ImmutableList.builder();
 
         public DataTypeBuilder(String typeName) {
             this.typeName = checkNotNull(typeName);
@@ -67,13 +76,20 @@ final class DataTypeParser {
         }
 
         public void addConstructor(String constructorName, List<Type> args) {
-            Type resultType = genericType(typeName, vars);
-            Scheme scheme = quantify(vars, new Qualified<Type>(functionType(args, resultType)));
+            Scheme scheme = quantify(vars, new Qualified<Type>(functionType(args, getType())));
             constructors.add(new ConstructorDefinition(constructorName, scheme, args.size()));
         }
 
+        private Type getType() {
+            return genericType(typeName, vars);
+        }
+
+        public void addAutomaticallyDerivedClass(String className) {
+            derivedClasses.add(className);   
+        }
+        
         public ASTDataDefinition build() {
-            return AST.data(typeName, constructors.build());
+            return AST.data(typeName, getType(), constructors.build(), derivedClasses.build());
         }
     }
 }

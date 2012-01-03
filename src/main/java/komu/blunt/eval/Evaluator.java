@@ -20,6 +20,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 
 import static komu.blunt.eval.ConstructorArgumentCollector.createConstructor;
+import static komu.blunt.types.Predicate.isIn;
 
 public final class Evaluator {
 
@@ -74,6 +75,10 @@ public final class Evaluator {
 
         for (ConstructorDefinition ctor : definition.constructors)
             createConstructorFunction(ctor);
+        
+        for (String className : definition.derivedClasses) {
+            classEnv.addInstance(isIn(className, definition.type));
+        }
     }
 
     private void createConstructorFunction(ConstructorDefinition ctor) {

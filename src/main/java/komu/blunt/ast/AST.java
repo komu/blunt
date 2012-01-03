@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.ConstructorDefinition;
+import komu.blunt.types.Type;
 import komu.blunt.types.patterns.Pattern;
 
 import java.util.List;
@@ -19,12 +20,8 @@ public final class AST {
 
     private AST() { }
 
-    public static ASTDataDefinition data(String name, ImmutableList<ConstructorDefinition> constructors) {
-        return new ASTDataDefinition(name, constructors);
-    }
-
-    public static ASTDataDefinition data(String name, ConstructorDefinition... constructors) {
-        return data(name, ImmutableList.copyOf(constructors));
+    public static ASTDataDefinition data(String name, Type type, ImmutableList<ConstructorDefinition> constructors, ImmutableList<String> derivedClasses) {
+        return new ASTDataDefinition(name, type, constructors, derivedClasses);
     }
 
     public static ASTExpression constant(Object value) {

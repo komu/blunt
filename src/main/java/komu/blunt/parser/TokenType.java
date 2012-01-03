@@ -23,6 +23,7 @@ public class TokenType<T> {
     public static final Keyword DATA = new Keyword("data");
     public static final Keyword CASE = new Keyword("case");
     public static final Keyword OF   = new Keyword("of");
+    public static final Keyword DERIVING = new Keyword("deriving");
 
     public static final Punctuation LAMBDA = new Punctuation("\\");
     public static final Punctuation LPAREN = new Punctuation("(");
@@ -50,9 +51,14 @@ public class TokenType<T> {
             
             keywords.put(name, this);
         }
+
+        @Override
+        public String toString() {
+            return "keyword '" + name + "'";
+        }
     }
 
-    private final String name;
+    final String name;
     final Class<T> valueType;
     
     private TokenType(Class<T> valueType, String name) {
