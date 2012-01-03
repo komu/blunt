@@ -98,7 +98,10 @@ public final class AST {
     }
 
     public static ASTExpression tuple(List<ASTExpression> exps) {
-        if (exps.size() < 2) throw new IllegalArgumentException("invalid sub expressions for tuple: " + exps);
+        if (exps.isEmpty())
+            return AST.constructor(UNIT);
+        if (exps.size() == 1)
+            return exps.get(0);
 
         ASTExpression call =  AST.constructor(tupleName(exps.size()));
 

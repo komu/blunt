@@ -40,7 +40,7 @@ final class PatternParser {
         }
     }
 
-    private Pattern parseSimplePattern() {
+    public Pattern parseSimplePattern() {
         Pattern pattern = parsePrimitivePattern();
 
         if (lexer.nextTokenIs(OPERATOR) && lexer.peekTokenValue(OPERATOR).isConstructor()) {

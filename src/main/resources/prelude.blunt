@@ -14,20 +14,15 @@ data Boolean = True | False
 data Maybe a = Just a
              | Nothing
 
-nil? xs =
-  case xs of
-   [] -> True
-   _  -> False
+nil? [] = True
+nil? _  = False
 
-head xs =
-  case xs of
-   x:_ -> x
-   []  -> error "can't get head of empty list"
 
-tail xs =
-  case xs of
-   _:xs -> xs
-   []   -> error "can't get tail of empty list"
+head (x:_) = x
+head []     = error "can't get head of empty list"
+
+tail (_:xs) = xs
+tail []     = error "can't get tail of empty list"
 
 id x = x
 
@@ -39,15 +34,11 @@ f $ x = f x
 
 flip f x y = f y x
 
-foldr f e xs =
-  case xs of
-     []   -> e
-     x:xs -> f x (foldr f e xs)
+foldr f e []     = e
+foldr f e (x:xs) = f x (foldr f e xs)
 
-foldl f e xs =
-  case xs of
-     []   -> e
-     x:xs -> foldl f (f e x) xs
+foldl f e []     = e
+foldl f e (x:xs) = foldl f (f e x) xs
 
 foldl1 f ls = foldr f (head ls) (tail ls)
 
@@ -84,25 +75,19 @@ or = foldr (||) False
 
 zero? x = x == 0
 
-take n ls =
-  if nil? ls || zero? n
-    then []
-    else head ls : take (n - 1) (tail ls)
+take _ []     = []
+take 0 _      = []
+take n (x:xs) = x : take (n-1) xs
 
-drop n ls =
-  if not (nil? ls) && n > 0
-    then drop (n - 1) (tail ls)
-    else ls
+drop _ []     = []
+drop 0 xs     = xs
+drop n (_:xs) = drop (n-1) xs
 
-takeWhile p ls =
-  case ls of
-    []   -> []
-    x:xs -> if p x then x : takeWhile p xs else []
+takeWhile p []     = []
+takeWhile p (x:xs) = if p x then x : takeWhile p xs else []
 
-dropWhile p ls =
-  case ls of
-    []   -> []
-    x:xs -> if p x then dropWhile p xs else ls
+dropWhile p []     = []
+dropWhile p (x:xs) = if p x then dropWhile p xs else (x:xs)
 
 all p = foldl (\x y -> p y && x) True
 
@@ -118,10 +103,8 @@ curry f x y = f (x, y)
 
 uncurry f p = f (fst p) (snd p)
 
-zipWith f as bs =
-  case (as, bs) of
-    (x:xs,y:ys) -> f x y : zipWith f xs ys
-    _           -> []
+zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
+zipWith f _      _      = []
 
 zip = zipWith (\x y -> (x,y))
 
@@ -147,19 +130,13 @@ minimum = foldl1 min
 
 maximum = foldl1 max
 
-sort ls =
-  case ls of
-    []   -> []
-    x:xs -> sort (filter (\y -> y < x) xs) ++ [x] ++ sort (filter (\y -> y >= x) xs)
+sort []     = []
+sort (x:xs) = sort (filter (\y -> y < x) xs) ++ [x] ++ sort (filter (\y -> y >= x) xs)
 
-delete x xs =
-  case xs of
-    []   -> []
-    y:ys -> if x == y then ys else y : delete x ys
+delete x [] = []
+delete x (y:ys) = if x == y then ys else y : delete x ys
 
 (\\) = foldr delete
 
-maybe e f m =
-  case m of
-    Just x  -> f x
-    Nothing -> e
+maybe e f (Just x) = f x
+maybe e f Nothing  = e

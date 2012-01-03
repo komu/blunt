@@ -7,9 +7,9 @@ import komu.blunt.types.DataTypeDefinitions;
 import komu.blunt.types.patterns.Pattern;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static komu.blunt.objects.Symbol.symbol;
 import static komu.blunt.parser.Associativity.LEFT;
 import static komu.blunt.parser.TokenType.*;
@@ -24,7 +24,7 @@ public final class Parser {
 
     @SuppressWarnings("unchecked")
     private static final List<TokenType<?>> expressionStartTokens =
-        Arrays.asList(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, CASE);
+        asList(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, CASE);
 
     public Parser(String source) {
         this.lexer = new Lexer(source, operators);
@@ -54,34 +54,101 @@ public final class Parser {
     }
 
 
-    // <ident> <op> <ident> = <exp> ;;
-    // <ident> <ident>* = <exp> ;;
     private ASTValueDefinition parseValueDefinition() {
+        LexerState lexerState = lexer.save();
+        try {
+            try {
+                return parseSimpleDefinition();
+            } catch (SyntaxException e) {
+                lexer.restore(lexerState);
+                return parseOperatorDefinition();
+            }
+
+        } catch (SyntaxException e) {
+            lexer.restore(lexerState);
+            return parseNormalValueDefinition();
+        }
+    }
+
+    private ASTValueDefinition parseSimpleDefinition() {
         lexer.pushBlockStartAtNextToken();
 
         Symbol name = parseIdentifier();
-        List<Symbol> args = new ArrayList<Symbol>();
+
+        lexer.expectToken(ASSIGN);
+        ASTExpression value = parseExpression();
+        lexer.expectToken(END);
+        return AST.define(name, value);
+    }
+
+    // <pattern> <op> <pattern> = <exp> ;;
+    private ASTValueDefinition parseOperatorDefinition() {
+        lexer.pushBlockStartAtNextToken();
         
-        if (lexer.nextTokenIs(OPERATOR)) {
-            Operator op = lexer.readTokenValue(OPERATOR);
-            args.add(name);
-            args.add(parseIdentifier());
-            name = symbol(op.toString());
-
-        } else {
-            while (!lexer.nextTokenIs(ASSIGN))
-                args.add(parseIdentifier());
-        }
-
+        Pattern left = patternParser.parseSimplePattern();
+        Operator op = lexer.readTokenValue(OPERATOR);
+        Pattern right = patternParser.parseSimplePattern();
+     
         lexer.expectToken(ASSIGN);
 
         ASTExpression value = parseExpression();
         lexer.expectToken(END);
 
-        if (args.isEmpty())
-            return AST.define(name, value);
-        else
-            return AST.define(name, AST.lambda(args, value));
+        FunctionBuilder functionBuilder = new FunctionBuilder();
+        functionBuilder.addAlternative(ImmutableList.of(left, right), value);
+        return AST.define(op.toSymbol(), functionBuilder.build());
+    }
+    
+    // <ident> <pattern>+ = <exp> ;;
+    private ASTValueDefinition parseNormalValueDefinition() {
+        FunctionBuilder functionBuilder = new FunctionBuilder();
+
+        Symbol name = null;
+        while (name == null || nextTokenIsIdentifier(name)) {
+            lexer.pushBlockStartAtNextToken();
+            name = parseIdentifier();
+
+            ImmutableList.Builder<Pattern> argsBuilder = ImmutableList.builder();
+
+            while (!lexer.nextTokenIs(ASSIGN))
+                argsBuilder.add(patternParser.parseSimplePattern());
+
+            lexer.expectToken(ASSIGN);
+
+            ASTExpression value = parseExpression();
+            lexer.expectToken(END);
+            functionBuilder.addAlternative(argsBuilder.build(), value);
+        }
+
+        return AST.define(name, functionBuilder.build());
+    }
+
+    private boolean nextTokenIsIdentifier(Symbol name) {
+        return lexer.nextTokenIs(IDENTIFIER) && lexer.peekTokenValue(IDENTIFIER).equals(name.toString());
+    }
+
+    private static class FunctionBuilder {
+        private final List<Symbol> symbols = new ArrayList<Symbol>();
+        private final List<ASTExpression> exps = new ArrayList<ASTExpression>();
+        private final ImmutableList.Builder<ASTAlternative> alternatives = ImmutableList.builder();
+        
+        void addAlternative(ImmutableList<Pattern> args, ASTExpression body) {
+            if (exps.isEmpty()) {
+                for (int i = 0; i < args.size(); i++) {
+                    Symbol var = symbol("$arg" + i); // TODO: fresh symbols
+                    symbols.add(var);
+                    exps.add(AST.variable(var));
+                }                            
+            } else if (args.size() != exps.size()) {
+                throw new SyntaxException("invalid amount of arguments");
+            }
+            
+            alternatives.add(AST.alternative(Pattern.tuple(args), body));
+        }
+        
+        ASTExpression build() {
+            return AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alternatives.build()));
+        }
     }
 
     public ASTExpression parseExpression() {
