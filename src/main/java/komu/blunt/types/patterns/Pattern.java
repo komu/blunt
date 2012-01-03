@@ -1,7 +1,9 @@
 package komu.blunt.types.patterns;
 
 import com.google.common.collect.ImmutableList;
+import komu.blunt.objects.Symbol;
 
+import static komu.blunt.objects.Symbol.symbol;
 import static komu.blunt.types.DataTypeDefinitions.UNIT;
 import static komu.blunt.types.DataTypeDefinitions.tupleName;
 
@@ -21,6 +23,10 @@ public abstract class Pattern {
     }
 
     public static Pattern variable(String name) {
+        return variable(symbol(name));
+    }
+
+    public static Pattern variable(Symbol name) {
         return new VariablePattern(name);
     }
 

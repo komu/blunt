@@ -2,12 +2,14 @@ package komu.blunt.types.patterns;
 
 import komu.blunt.objects.Symbol;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public final class VariablePattern extends Pattern {
     
     public final Symbol var;
     
-    VariablePattern(String var) {
-        this.var = Symbol.symbol(var);
+    VariablePattern(Symbol var) {
+        this.var = checkNotNull(var);
     }
 
     @Override
