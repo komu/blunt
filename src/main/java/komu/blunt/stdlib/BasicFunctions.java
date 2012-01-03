@@ -82,4 +82,9 @@ public class BasicFunctions {
     public static <T> T error(String message) {
         throw new EvaluationException(message);
     }
+    
+    @LibraryFunction("print")
+    public static <T> void print(T value) {
+        System.out.print(value);
+    }
 }
