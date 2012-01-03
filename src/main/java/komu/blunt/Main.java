@@ -17,7 +17,6 @@ public class Main {
         Prompt prompt = new Prompt();
         
         evaluator.loadResource("prelude.blunt");
-        evaluator.loadResource("river.blunt");
 
         while (true) {
             try {
