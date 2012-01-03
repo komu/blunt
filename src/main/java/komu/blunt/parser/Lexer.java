@@ -218,7 +218,12 @@ public final class Lexer {
         while (true) {
             char ch = read();
             if (escaped) {
-                sb.append(ch);
+                switch (ch) {
+                case 'n': sb.append('\n'); break;
+                case 't': sb.append('\t'); break;
+                case 'r': sb.append('\r'); break;
+                default: sb.append(ch);
+                }
                 escaped = false;
             } else if (ch == '\\') {
                 escaped = true;
