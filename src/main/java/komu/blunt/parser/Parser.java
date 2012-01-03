@@ -4,12 +4,15 @@ import com.google.common.collect.ImmutableList;
 import komu.blunt.ast.*;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.DataTypeDefinitions;
+import komu.blunt.types.patterns.ConstructorPattern;
 import komu.blunt.types.patterns.Pattern;
+import komu.blunt.types.patterns.VariablePattern;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static komu.blunt.objects.Symbol.symbol;
 import static komu.blunt.parser.Associativity.LEFT;
 import static komu.blunt.parser.TokenType.*;
@@ -147,7 +150,45 @@ public final class Parser {
         }
         
         ASTExpression build() {
-            return AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alternatives.build()));
+            ImmutableList<ASTAlternative> alts = alternatives.build();
+            
+            // optimization
+            List<Symbol> simpleVars = containsOnlyVariablePatterns(alts);
+            if (simpleVars != null)
+                return AST.lambda(simpleVars, alts.get(0).value);
+
+            return AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alts));
+        }
+
+        private List<Symbol> containsOnlyVariablePatterns(ImmutableList<ASTAlternative> alts) {
+            if (alts.size() == 1)
+                return variablePattern(alts.get(0).pattern);
+            return null;
+        }
+
+        private List<Symbol> variablePattern(Pattern pattern) {
+            if (pattern instanceof VariablePattern)
+                return singletonList(((VariablePattern) pattern).var);
+            
+            if (pattern instanceof ConstructorPattern) {
+                ConstructorPattern c = (ConstructorPattern) pattern;
+               
+                if (!c.name.equals(DataTypeDefinitions.tupleName(c.args.size())))
+                    return null;
+                
+                List<Symbol> vars = new ArrayList<Symbol>(c.args.size());
+                
+                for (Pattern p : c.args)
+                    if (p instanceof VariablePattern) {
+                        vars.add(((VariablePattern) p).var);
+                    } else {
+                        return null;
+                    }
+
+                return vars;
+            }
+
+            return null;
         }
     }
 
