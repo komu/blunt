@@ -10,6 +10,7 @@ public final class Analyzer {
 
     public static CoreExpression analyze(ASTExpression exp, DataTypeDefinitions dataTypes, StaticEnvironment env) {
         AnalyzingVisitor visitor = new AnalyzingVisitor(dataTypes);
-        return visitor.analyze(IdentifierRenamer.rename(exp), env);
+        ASTExpression renamed = IdentifierRenamer.rename(exp);
+        return visitor.analyze(renamed, env);
     }
 }

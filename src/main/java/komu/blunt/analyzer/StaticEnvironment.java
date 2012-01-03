@@ -58,6 +58,10 @@ public final class StaticEnvironment {
         return extend(asList(symbol));
     }
 
+    public StaticEnvironment extend() {
+        return new StaticEnvironment(this);
+    }
+
     public StaticEnvironment extend(List<Symbol> symbols) {
         StaticEnvironment env = new StaticEnvironment(this);
 

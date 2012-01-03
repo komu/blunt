@@ -17,6 +17,7 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
 
     private final DataTypeDefinitions dataTypes;
     private final PatternAnalyzer patternAnalyzer = new PatternAnalyzer();
+    private int sequence = 1;
 
     public AnalyzingVisitor(DataTypeDefinitions dataTypes) {
         this.dataTypes = checkNotNull(dataTypes);
@@ -57,18 +58,25 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
         if (let.bindings.size() != 1)
             throw new UnsupportedOperationException("multi-var let is not supported");
 
-        StaticEnvironment newEnv = env.extend(let.getVariables());
-
         ImplicitBinding binding = let.bindings.get(0);
+        VariableReference var = env.define(binding.name);
 
         CoreExpression expr = analyze(binding.expr, env);
-        CoreExpression body = analyze(let.body, newEnv);
-        return new CoreLetExpression(newEnv.size(), expr, body);
+        CoreExpression body = analyze(let.body, env);
+        return new CoreLetExpression(var, expr, body);
     }
 
     @Override
-    public CoreExpression visit(ASTLetRec letRec, StaticEnvironment env) {
-        return analyze(letRec.rewriteToLet(), env);
+    public CoreExpression visit(ASTLetRec let, StaticEnvironment env) {
+        if (let.bindings.size() != 1)
+            throw new UnsupportedOperationException("multi-var let is not supported");
+
+        ImplicitBinding binding = let.bindings.get(0);
+        VariableReference var = env.define(binding.name);
+
+        CoreExpression expr = analyze(binding.expr, env);
+        CoreExpression body = analyze(let.body, env);
+        return new CoreLetExpression(var, expr, body);
     }
 
     @Override
@@ -102,12 +110,10 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     public CoreExpression visit(ASTCase astCase, StaticEnvironment env) {
         CoreExpression exp = analyze(astCase.exp, env);
 
-        StaticEnvironment newEnv = new StaticEnvironment(env);
-
-        Symbol var = symbol("$match"); // TODO: fresh name
-        VariableReference matchedObject = newEnv.define(var);
-        CoreExpression body = createAlts(matchedObject, astCase.alternatives, newEnv);
-        return new CoreLetExpression(newEnv.size(), exp, body);
+        Symbol var = symbol("$match" + sequence++);
+        VariableReference matchedObject = env.define(var);
+        CoreExpression body = createAlts(matchedObject, astCase.alternatives, env);
+        return new CoreLetExpression(matchedObject, exp, body);
     }
     
     private CoreExpression createAlts(VariableReference matchedObject, List<ASTAlternative> alts, StaticEnvironment env) {

@@ -2,6 +2,7 @@ package komu.blunt.eval;
 
 import com.google.common.io.Resources;
 import komu.blunt.analyzer.Analyzer;
+import komu.blunt.analyzer.StaticEnvironment;
 import komu.blunt.analyzer.VariableReference;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
@@ -37,7 +38,7 @@ public final class Evaluator {
 
     public CoreExpression analyze(ASTExpression expr) {
         typeCheck(expr);
-        CoreExpression exp = toCore(expr);
+        CoreExpression exp = toCore(expr, rootBindings.staticEnvironment.extend());
         return exp;
     }
     
@@ -56,9 +57,10 @@ public final class Evaluator {
             
             rootBindings.defineVariableType(definition.name, type);
             VariableReference var = rootBindings.staticEnvironment.define(definition.name);
+
             CoreExpression exp = Analyzer.analyze(definition.value, rootBindings.dataTypes, rootBindings.staticEnvironment);
 
-            run(new CoreDefineExpression(exp, var));
+            run(new CoreDefineExpression(exp, var), rootBindings.runtimeEnvironment);
             return null;
         }
 
@@ -86,11 +88,11 @@ public final class Evaluator {
             rootBindings.bind(ctor.name, ctor.scheme, createConstructor(ctor));
     }
 
-    private Object run(CoreExpression expression) {
+    private Object run(CoreExpression expression, Environment env) {
         int pos = instructions.pos();
         expression.assemble(instructions, Register.VAL, Linkage.NEXT);
 
-        VM vm = new VM(instructions, rootBindings.runtimeEnvironment);
+        VM vm = new VM(instructions, env);
         vm.set(Register.PC, pos);
         return vm.run();
     }
@@ -100,10 +102,11 @@ public final class Evaluator {
     }
 
     public ResultWithType evaluateWithType(ASTExpression exp) {
+        StaticEnvironment env = rootBindings.staticEnvironment.extend();
         Qualified<Type> type = typeCheck(exp);
-        CoreExpression expression = toCore(exp);
+        CoreExpression expression = toCore(exp, env);
 
-        Object result = run(expression);
+        Object result = run(expression, rootBindings.runtimeEnvironment.extend(env.size()));
 
         return new ResultWithType(result, type);
     }
@@ -112,8 +115,8 @@ public final class Evaluator {
         return TypeChecker.typeCheck(exp, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions());
     }
 
-    private CoreExpression toCore(ASTExpression exp) {
-        return Analyzer.analyze(exp, rootBindings.dataTypes, rootBindings.staticEnvironment);
+    private CoreExpression toCore(ASTExpression exp, StaticEnvironment env) {
+        return Analyzer.analyze(exp, rootBindings.dataTypes, env);
     }
 
     public void dump() {

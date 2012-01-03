@@ -21,4 +21,8 @@ public abstract class Environment {
         args[0] = arg;
         return new NestedEnvironment(args, this);
     }
+
+    public Environment extend(int envSize) {
+        return new NestedEnvironment(new Object[envSize], this);
+    }
 }

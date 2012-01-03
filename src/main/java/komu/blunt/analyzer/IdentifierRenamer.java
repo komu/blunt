@@ -5,6 +5,10 @@ import komu.blunt.ast.*;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.patterns.*;
 
+/**
+ * Walks the AST to rename all local variables so that they become unique. This makes
+ * further optimizations simpler.
+ */
 public final class IdentifierRenamer implements ASTVisitor<IdentifierMapping, ASTExpression>, PatternVisitor<IdentifierMapping, Pattern> {
 
     private int sequence = 1;
