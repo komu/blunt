@@ -40,7 +40,7 @@ public final class TypeParser {
     }
 
     private List<Predicate> parseOptionalPredicates() {
-        int lexerState = lexer.save();
+        LexerState lexerState = lexer.save();
         try {
             List<Predicate> predicates = new ArrayList<Predicate>();
             if (lexer.readMatchingToken(LPAREN)) {

@@ -261,12 +261,14 @@ public final class Lexer {
             throw parseError("unexpected char: " + ch);
     }
 
-    public int save() {
-        return reader.getPosition();
+    public LexerState save() {
+        return new LexerState(reader.getPosition(), indents.toList(), nextToken);
     }
 
-    public void restore(int state) {
-        reader.setPosition(state);
+    public void restore(LexerState state) {
+        reader.setPosition(state.position);
+        indents.reset(state.indents);
+        nextToken = state.nextToken;
     }
 
     public SyntaxException parseError(String message) {

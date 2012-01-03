@@ -18,4 +18,13 @@ final class IndentStack {
         }
         return false;
     }
+
+    public List<Integer> toList() {
+        return new ArrayList<Integer>(indents);
+    }
+
+    public void reset(List<Integer> indents) {
+        this.indents.clear();
+        this.indents.addAll(indents);
+    }
 }
