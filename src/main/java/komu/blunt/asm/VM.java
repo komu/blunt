@@ -2,6 +2,7 @@ package komu.blunt.asm;
 
 import komu.blunt.asm.opcodes.OpCode;
 import komu.blunt.eval.Environment;
+import komu.blunt.eval.RootEnvironment;
 
 import java.util.ArrayList;
 import java.util.EnumMap;
@@ -13,10 +14,12 @@ public final class VM {
     private final EnumMap<Register, Object> registers = new EnumMap<Register, Object>(Register.class);
     private final Instructions instructions;
     private final ArrayList<Object> stack = new ArrayList<Object>();
+    private final RootEnvironment globalEnvironment;
 
-    public VM(Instructions instructions, Environment env) {
+    public VM(Instructions instructions, Environment env, RootEnvironment globalEnvironment) {
         this.instructions = checkNotNull(instructions);
-        registers.put(Register.ENV, env);
+        this.globalEnvironment = checkNotNull(globalEnvironment);
+        registers.put(Register.ENV, checkNotNull(env));
         registers.put(Register.PC, 0);
     }
 
@@ -60,5 +63,9 @@ public final class VM {
     public void restore(Register... registers) {
         for (int i = registers.length-1; i >= 0; i--)
             set(registers[i], pop());
+    }
+
+    public RootEnvironment getGlobalEnvironment() {
+        return globalEnvironment;
     }
 }

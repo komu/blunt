@@ -4,6 +4,7 @@ import komu.blunt.analyzer.VariableReference;
 
 import java.util.Arrays;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.Math.max;
 
 public final class RootEnvironment extends Environment {
@@ -34,6 +35,6 @@ public final class RootEnvironment extends Environment {
     }
 
     private static void checkFrame(int frame) {
-        if (frame != 0) throw new IllegalArgumentException("invalid frame: " + frame);
+        checkArgument(frame == 0 || frame == VariableReference.GLOBAL_FRAME, "invalid frame %s", frame);
     }
 }

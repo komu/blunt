@@ -28,7 +28,7 @@ public final class StaticEnvironment {
     private VariableReference lookup(Symbol name, int depth) {
         VariableInfo var = variables.get(name);
         if (var != null)
-            return new VariableReference(depth, var.offset, name);
+            return reference(depth, var.offset, name);
         else if (parent != null)
             return parent.lookup(name, depth+1);
         else
@@ -41,17 +41,24 @@ public final class StaticEnvironment {
 
         int offset = variables.size();
         variables.put(name, new VariableInfo(name, offset));
-        return new VariableReference(0, offset, name);
+        return reference(0, offset, name);
     }
     
     public VariableReference lookupInCurrentScopeOrDefine(Symbol symbol) {
         VariableInfo var = variables.get(symbol);
         
         if (var != null) {
-            return new VariableReference(0, var.offset, var.name);
+            return reference(0, var.offset, var.name);
         } else {
             return define(symbol);
         }
+    }
+    
+    private VariableReference reference(int frame, int offset, Symbol name) {
+        if (parent == null)
+            return VariableReference.global(offset, name);
+        else
+            return VariableReference.nested(frame, offset, name);
     }
 
     public StaticEnvironment extend(Symbol symbol) {

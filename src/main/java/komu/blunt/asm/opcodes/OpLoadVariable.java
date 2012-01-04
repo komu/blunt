@@ -18,7 +18,7 @@ public final class OpLoadVariable extends OpCode {
 
     @Override
     public void execute(VM vm) {
-        Environment env = (Environment) vm.get(Register.ENV);
+        Environment env = variable.isGlobal() ? vm.getGlobalEnvironment() : (Environment) vm.get(Register.ENV);
         Object value = env.lookup(variable);
         vm.set(register, value);
     }

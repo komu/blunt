@@ -92,7 +92,7 @@ public final class Evaluator {
         int pos = instructions.pos();
         expression.assemble(instructions, Register.VAL, Linkage.NEXT);
 
-        VM vm = new VM(instructions, env);
+        VM vm = new VM(instructions, env, rootBindings.runtimeEnvironment);
         vm.set(Register.PC, pos);
         return vm.run();
     }

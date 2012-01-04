@@ -18,7 +18,7 @@ public final class OpStoreVariable extends OpCode {
 
     @Override
     public void execute(VM vm) {
-        Environment env = (Environment) vm.get(Register.ENV);
+        Environment env = variable.isGlobal() ? vm.getGlobalEnvironment() : (Environment) vm.get(Register.ENV);
         Object value = vm.get(register);
         env.set(variable, value);
     }
