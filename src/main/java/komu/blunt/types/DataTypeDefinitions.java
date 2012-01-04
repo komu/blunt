@@ -21,17 +21,17 @@ public class DataTypeDefinitions {
     private final Map<String,ConstructorDefinition> constructors = new HashMap<String, ConstructorDefinition>(); 
     
     public DataTypeDefinitions() {
-        register(UNIT, "()", 0);
-        register(NIL, "[a]", 0);
-        register(CONS, "a -> [a] -> [a]", 2);
+        register(0, UNIT, "()", 0);
+        register(0, NIL, "[a]", 0);
+        register(1, CONS, "a -> [a] -> [a]", 2);
 
         // TODO: create necessary tuples on demand
         for (int arity = 2; arity < 30; arity++)
-            register(new ConstructorDefinition(tupleName(arity), tupleConstructorScheme(arity), arity));
+            register(new ConstructorDefinition(arity-2, tupleName(arity), tupleConstructorScheme(arity), arity));
     }
     
-    private void register(String name, String scheme, int arity) {
-        register(new ConstructorDefinition(name, parseScheme(scheme), arity));
+    private void register(int index, String name, String scheme, int arity) {
+        register(new ConstructorDefinition(0, name, parseScheme(scheme), arity));
     }
 
     public void register(ASTDataDefinition definition) {

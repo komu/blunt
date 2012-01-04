@@ -68,6 +68,9 @@ public final class ClassEnv {
         addInstance(isIn("Ord", Type.BOOLEAN));
         addInstance(isIn("Ord", Type.INTEGER));
         addInstance(isIn("Ord", Type.STRING));
+        
+        addInstance(isIn("Eq", Type.genericType("Ordering")));
+        addInstance(isIn("Ord", Type.genericType("Ordering")));
 
         addInstance(asList(isIn("Ord", typeVariable("a")),
                            isIn("Ord", typeVariable("b"))),

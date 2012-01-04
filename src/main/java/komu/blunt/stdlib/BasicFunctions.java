@@ -2,6 +2,7 @@ package komu.blunt.stdlib;
 
 import com.google.common.base.Objects;
 import komu.blunt.objects.EvaluationException;
+import komu.blunt.objects.TypeConstructorValue;
 
 import java.math.BigInteger;
 
@@ -38,39 +39,22 @@ public class BasicFunctions {
         return x.mod(y);
     }
 
-    @LibraryFunction("primitiveOpLt")
-    @TypeScheme("Ord a => (a,a) -> Boolean")
-    public static <T extends Comparable<T>> boolean lt(T x, T y) {
-        return x.compareTo(y) < 0;
-    }
-
-    @LibraryFunction("primitiveOpGt")
-    @TypeScheme("Ord a => (a,a) -> Boolean")
-    public static <T extends Comparable<T>> boolean gt(T x, T y) {
-        return x.compareTo(y) > 0;
-    }
-
-    @LibraryFunction("primitiveOpLe")
-    @TypeScheme("Ord a => (a,a) -> Boolean")
-    public static <T extends Comparable<T>> boolean le(T x, T y) {
-        return x.compareTo(y) <= 0;
-    }
-
-    @LibraryFunction("primitiveOpGe")
-    @TypeScheme("Ord a => (a,a) -> Boolean")
-    public static <T extends Comparable<T>> boolean ge(T x, T y) {
-        return x.compareTo(y) >= 0;
-    }
-
     @LibraryFunction("primitiveOpEq")
     @TypeScheme("Eq a => (a,a) -> Boolean")
     public static <T> boolean equal(T x, T y) {
         return Objects.equal(x, y);
     }
 
-    @LibraryFunction("unsafe-null")
-    public static <T> T unsafeNull() {
-        return null;
+    @LibraryFunction("primitiveCompare")
+    @TypeScheme("Ord a => (a,a) -> Ordering")
+    public static <T extends Comparable<T>> TypeConstructorValue compare(T x, T y) {
+        int r = x.compareTo(y);
+        if (r < 0)
+            return BasicValues.LT;
+        else if (r > 0)
+            return BasicValues.GT;
+        else
+            return BasicValues.EQ;
     }
 
     @LibraryFunction("show")

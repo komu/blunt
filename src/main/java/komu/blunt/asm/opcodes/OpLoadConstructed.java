@@ -10,13 +10,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class OpLoadConstructed extends OpCode {
 
     private final Register target;
+    private final int index;
     private final String name;
     private final int size;
 
-    public OpLoadConstructed(Register target, String name, int size) {
+    public OpLoadConstructed(Register target, int index, String name, int size) {
         checkArgument(size >= 0);
 
         this.target = checkNotNull(target);
+        this.index = checkNotNull(index);
         this.name = checkNotNull(name);
         this.size = size;
     }
@@ -26,7 +28,7 @@ public class OpLoadConstructed extends OpCode {
         Object[] array = new Object[size];
         for (int i = 0; i < size; i++)
             array[i] = vm.pop();
-        vm.set(target, new TypeConstructorValue(name, array));
+        vm.set(target, new TypeConstructorValue(index, name, array));
     }
 
     @Override

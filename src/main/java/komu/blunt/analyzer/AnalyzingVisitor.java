@@ -101,7 +101,7 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
         ConstructorDefinition ctor = dataTypes.findConstructor(constructor.name);
 
         if (ctor.arity == 0)
-            return AST.constant(new TypeConstructorValue(ctor.name)).accept(this, ctx);
+            return AST.constant(new TypeConstructorValue(ctor.index, ctor.name)).accept(this, ctx);
         else
             return AST.variable(ctor.name).accept(this, ctx);
     }

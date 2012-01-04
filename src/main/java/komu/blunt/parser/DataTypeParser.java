@@ -66,6 +66,7 @@ final class DataTypeParser {
         private final List<TypeVariable> vars = new ArrayList<TypeVariable>();
         private final ImmutableList.Builder<ConstructorDefinition> constructors = ImmutableList.builder();
         private final ImmutableList.Builder<String> derivedClasses = ImmutableList.builder();
+        private int constructorIndex = 0;
 
         public DataTypeBuilder(String typeName) {
             this.typeName = checkNotNull(typeName);
@@ -77,7 +78,7 @@ final class DataTypeParser {
 
         public void addConstructor(String constructorName, List<Type> args) {
             Scheme scheme = quantify(vars, new Qualified<Type>(functionType(args, getType())));
-            constructors.add(new ConstructorDefinition(constructorName, scheme, args.size()));
+            constructors.add(new ConstructorDefinition(constructorIndex++, constructorName, scheme, args.size()));
         }
 
         private Type getType() {

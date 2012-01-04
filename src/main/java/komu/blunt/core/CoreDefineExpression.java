@@ -4,8 +4,7 @@ import komu.blunt.analyzer.VariableReference;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
-import komu.blunt.objects.TypeConstructorValue;
-import komu.blunt.types.DataTypeDefinitions;
+import komu.blunt.stdlib.BasicValues;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -25,7 +24,7 @@ public final class CoreDefineExpression extends CoreExpression {
 
         instructions.storeVariable(var, target);
 
-        instructions.loadConstant(target, new TypeConstructorValue(DataTypeDefinitions.UNIT));
+        instructions.loadConstant(target, BasicValues.UNIT);
         instructions.finishWithLinkage(linkage);
     }
 }

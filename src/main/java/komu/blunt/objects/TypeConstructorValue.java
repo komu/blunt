@@ -2,19 +2,24 @@ package komu.blunt.objects;
 
 import java.util.Arrays;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class TypeConstructorValue implements Comparable<TypeConstructorValue> {
-    
+
+    public final int index;
     public final String name;
     public final Object[] items;
     private static final Object[] EMPTY_ARRAY = new Object[0];
 
-    public TypeConstructorValue(String name) {
-        this(name, EMPTY_ARRAY);
+    public TypeConstructorValue(int index, String name) {
+        this(index, name, EMPTY_ARRAY);
     }
 
-    public TypeConstructorValue(String name, Object[] items) {
+    public TypeConstructorValue(int index, String name, Object[] items) {
+        checkArgument(index >= 0);
+
+        this.index = index;
         this.name = checkNotNull(name);
         this.items = checkNotNull(items);
     }
@@ -88,7 +93,7 @@ public final class TypeConstructorValue implements Comparable<TypeConstructorVal
         if (obj instanceof TypeConstructorValue) {
             TypeConstructorValue rhs = (TypeConstructorValue) obj;
             
-            return name.equals(rhs.name)
+            return index == rhs.index
                 && Arrays.equals(items, rhs.items);
         }
         
@@ -103,9 +108,10 @@ public final class TypeConstructorValue implements Comparable<TypeConstructorVal
     @Override
     @SuppressWarnings("unchecked")
     public int compareTo(TypeConstructorValue o) {
-        assert name.equals(o.name);
-        assert items.length == o.items.length;
-        
+        if (index != o.index) {
+            return index - o.index;
+        }
+
         for (int i = 0; i < items.length; i++) {
             Comparable lhs = (Comparable) items[i];
             Comparable rhs = (Comparable) o.items[i];

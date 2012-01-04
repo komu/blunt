@@ -1,18 +1,29 @@
+compare x y = primitiveCompare (x,y)
 x == y  = primitiveOpEq (x,y)
-x <  y  = primitiveOpLt (x,y)
-x <= y  = primitiveOpLe (x,y)
-x >  y  = primitiveOpGt (x,y)
-x >= y  = primitiveOpGe (x,y)
 x * y   = primitiveOpMultiply (x,y)
 x / y   = primitiveOpDivide (x,y)
 x + y   = primitiveOpPlus (x,y)
 x - y   = primitiveOpMinus (x,y)
 mod x y = primitiveMod (x,y)
 
-data Boolean = True | False
+data Boolean = False | True
 
-data Maybe a = Just a
-             | Nothing
+data Maybe a = Just a | Nothing
+
+data Either a b = Left a | Right b
+
+data Ordering = LT | EQ | GT
+
+x || y = if x then True else y
+
+x && y = if x then y else False
+
+not x = if x then False else True
+
+x <  y  = compare x y == LT
+x <= y  = let r = compare x y in r == EQ || r == LT
+x >  y  = compare x y == GT
+x >= y  = let r = compare x y in r == EQ || r == GT
 
 nil? [] = True
 nil? _  = False
@@ -68,12 +79,6 @@ range2 step min max =
     else []
 
 range = range2 1
-
-x || y = if x then True else y
-
-x && y = if x then y else False
-
-not x = if x then False else True
 
 and = foldr (&&) True
 
@@ -146,3 +151,9 @@ delete x (y:ys) = if x == y then ys else y : delete x ys
 
 maybe e f (Just x) = f x
 maybe e f Nothing  = e
+
+xs !! n =
+  case (xs,n) of
+    ([],_)   -> error "index out of bounds"
+    (x:_,0)  -> x
+    (_:xs,n) -> xs !! (n-1)

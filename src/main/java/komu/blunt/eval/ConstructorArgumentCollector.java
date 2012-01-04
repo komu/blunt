@@ -14,7 +14,7 @@ final class ConstructorArgumentCollector implements Function {
 
     public static Object createConstructor(ConstructorDefinition ctor) {
         if (ctor.arity == 0)
-            return new TypeConstructorValue(ctor.name);
+            return new TypeConstructorValue(ctor.index, ctor.name);
         else
             return new ConstructorArgumentCollector(ctor, ImmutableList.of());
     }
@@ -28,7 +28,7 @@ final class ConstructorArgumentCollector implements Function {
     public Object apply(Object arg) {
         ImmutableList<Object> newArgs = ImmutableList.builder().addAll(args).add(arg).build();
         if (newArgs.size() == ctor.arity)
-            return new TypeConstructorValue(ctor.name, newArgs.toArray());
+            return new TypeConstructorValue(ctor.index, ctor.name, newArgs.toArray());
         else
             return new ConstructorArgumentCollector(ctor, newArgs);
     }

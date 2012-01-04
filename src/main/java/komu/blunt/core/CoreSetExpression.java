@@ -4,8 +4,7 @@ import komu.blunt.analyzer.VariableReference;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
-import komu.blunt.objects.TypeConstructorValue;
-import komu.blunt.types.DataTypeDefinitions;
+import komu.blunt.stdlib.BasicValues;
 
 public final class CoreSetExpression extends CoreExpression {
 
@@ -26,7 +25,7 @@ public final class CoreSetExpression extends CoreExpression {
 
         instructions.popRegister(Register.VAL);
 
-        instructions.loadConstant(target, new TypeConstructorValue(DataTypeDefinitions.UNIT));
+        instructions.loadConstant(target, BasicValues.UNIT);
         instructions.finishWithLinkage(linkage);
     }
 
