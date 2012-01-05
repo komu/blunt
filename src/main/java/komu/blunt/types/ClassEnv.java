@@ -60,18 +60,13 @@ public final class ClassEnv {
     private void addDefaultInstances() {
         addInstance(isIn("Num", Type.INTEGER));
         addInstance(isIn("Eq", Type.INTEGER));
-        addInstance(isIn("Eq", Type.BOOLEAN));
         addInstance(isIn("Eq", Type.STRING));
         addInstance(isIn("Eq", Type.UNIT));
 
         addInstance(isIn("Ord", Type.UNIT));
-        addInstance(isIn("Ord", Type.BOOLEAN));
         addInstance(isIn("Ord", Type.INTEGER));
         addInstance(isIn("Ord", Type.STRING));
         
-        addInstance(isIn("Eq", Type.genericType("Ordering")));
-        addInstance(isIn("Ord", Type.genericType("Ordering")));
-
         addInstance(asList(isIn("Ord", typeVariable("a")),
                            isIn("Ord", typeVariable("b"))),
                     isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))));

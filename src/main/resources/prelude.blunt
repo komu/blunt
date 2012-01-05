@@ -6,13 +6,13 @@ x + y   = primitiveOpPlus (x,y)
 x - y   = primitiveOpMinus (x,y)
 mod x y = primitiveMod (x,y)
 
-data Boolean = False | True
+data Boolean = False | True deriving (Eq, Ord)
 
 data Maybe a = Just a | Nothing
 
 data Either a b = Left a | Right b
 
-data Ordering = LT | EQ | GT
+data Ordering = LT | EQ | GT deriving (Eq, Ord)
 
 x || y = if x then True else y
 
@@ -57,15 +57,17 @@ foldr f e (x:xs) = f x (foldr f e xs)
 foldl f e []     = e
 foldl f e (x:xs) = foldl f (f e x) xs
 
-foldl1 f ls = foldr f (head ls) (tail ls)
+foldl1 f ls = foldl f (head ls) (tail ls)
 
 sum = foldl (+) 0
 
 product = foldl (*) 1
 
-map f = foldr (\x y -> f x : y) []
+map _ []     = []
+map f (x:xs) = f x : map f xs
 
-filter p = foldr (\x xs -> if p x then x : xs else xs) []
+filter _ []     = []
+filter p (x:xs) = if p x then x : filter p xs else filter p xs
 
 reverse = foldl (flip (:)) []
 
@@ -117,7 +119,12 @@ uncurry f p = f (fst p) (snd p)
 zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
 zipWith f _      _      = []
 
+zipWith3 f (x:xs) (y:ys) (z:zs) = f x y z : zipWith3 f xs ys zs
+zipWith3 f _      _      _      = []
+
 zip = zipWith (\x y -> (x,y))
+
+zip3 = zipWith3 (\x y z -> (x, y, z))
 
 elem x = any ((==) x)
 
@@ -142,7 +149,7 @@ minimum = foldl1 min
 maximum = foldl1 max
 
 sort []     = []
-sort (x:xs) = sort (filter (\y -> y < x) xs) ++ [x] ++ sort (filter (\y -> y >= x) xs)
+sort (x:xs) = sort (filter (\y -> y < x) xs) ++ (x : sort (filter (\y -> y >= x) xs))
 
 delete x [] = []
 delete x (y:ys) = if x == y then ys else y : delete x ys
@@ -157,3 +164,43 @@ xs !! n =
     ([],_)   -> error "index out of bounds"
     (x:_,0)  -> x
     (_:xs,n) -> xs !! (n-1)
+
+init []     = error "empty list"
+init [_]    = []
+init (x:xs) = x : init xs
+
+last []     = error "empty list"
+last [x]    = x
+last (_:xs) = last xs
+
+until p f x = if p x
+                then x
+                else until p f (f x)
+
+either f _ (Left x)  = f x
+either _ f (Right x) = f x
+
+replicate 0 _ = []
+replicate n x = x : replicate (n-1) x
+
+lookup k []          = Nothing
+lookup k ((k',v):xs) = if k == k' then Just v else lookup k xs
+
+splitAt n xs = (take n xs, drop n xs)
+
+scanl _ x []     = [x]
+scanl f x (y:ys) = x : scanl f (f x y) ys
+
+scanl1 _ []      = []
+scanl1 f (x:xs)  = scanl f x xs
+
+scanr _ x []     = [x]
+scanr f x (y:ys) = foldr f x (y:ys) : scanr f x ys
+
+-- scanr1 :: (a -> a -> a) -> [a] -> [a]
+-- lines :: String -> [String]
+-- unlines :: [String] -> String
+-- words :: String -> [String]
+-- unwords :: [String] -> String
+-- unzip :: [(a, b)] -> ([a], [b])
+-- unzip3 :: [(a, b, c)] -> ([a], [b], [c])
