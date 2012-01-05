@@ -34,7 +34,7 @@ public final class CoreLambdaExpression extends CoreExpression {
         }
 
         instructions.label(lambda);
-        instructions.createEnvironment(Register.ENV, Register.ENV, Register.ARG, envSize);
+        instructions.createEnvironment(envSize);
         body.assemble(instructions, Register.VAL, Linkage.RETURN);
         instructions.label(afterLambda);
     }

@@ -5,13 +5,16 @@ import komu.blunt.eval.Environment;
 import komu.blunt.eval.RootEnvironment;
 
 import java.util.ArrayList;
-import java.util.EnumMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class VM {
     
-    private final EnumMap<Register, Object> registers = new EnumMap<Register, Object>(Register.class);
+    public Object val;
+    public Object env;
+    public Object procedure;
+    public Object arg;
+    public int pc = 0;
     private final Instructions instructions;
     private final ArrayList<Object> stack = new ArrayList<Object>();
     private final RootEnvironment globalEnvironment;
@@ -19,32 +22,56 @@ public final class VM {
     public VM(Instructions instructions, Environment env, RootEnvironment globalEnvironment) {
         this.instructions = checkNotNull(instructions);
         this.globalEnvironment = checkNotNull(globalEnvironment);
-        registers.put(Register.ENV, checkNotNull(env));
-        registers.put(Register.PC, 0);
+
+        this.env = checkNotNull(env);
     }
 
     public Object run() {
         while (true) {
-            int pc = (Integer) get(Register.PC);
             if (pc >= instructions.count()) break;
-            OpCode op = instructions.get(pc);
-            set(Register.PC, pc + 1);
+            OpCode op = instructions.get(pc++);
             op.execute(this);
         }
         
-        return registers.get(Register.VAL);
+        return val;
     }
 
     public Object get(Register register) {
-        return registers.get(register);
+        switch (register) {
+        case VAL: return val;
+        case ARG: return arg;
+        case ENV: return env;
+        case PC: return pc;
+        case PROCEDURE: return procedure;
+        }
+
+        throw new IllegalArgumentException("unknown register: " + register);
     }
     
     public void set(Register register, Object value) {
-        registers.put(register, value);
+        switch (register) {
+        case VAL:
+            val = value;
+            break;
+        case ARG:
+            arg = value;
+            break;
+        case ENV:
+            env = value;
+            break;
+        case PC:
+            pc = (Integer) value;
+            break;
+        case PROCEDURE:
+            procedure = value;
+            break;
+        default:
+            throw new IllegalArgumentException("unknown register: " + register);
+        }
     }
     
     public void jump(Label label) {
-        set(Register.PC, label.getAddress());
+        this.pc = label.getAddress();
     }
     
     public void push(Object object) {

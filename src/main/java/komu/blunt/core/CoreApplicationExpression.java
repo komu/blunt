@@ -27,7 +27,7 @@ public final class CoreApplicationExpression extends CoreExpression {
 
         // TODO: tail calls
 
-        instructions.apply(Register.PROCEDURE, Register.ARG);
+        instructions.apply();
         if (target != Register.VAL)
             instructions.copy(target, Register.VAL);
 

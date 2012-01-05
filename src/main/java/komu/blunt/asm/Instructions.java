@@ -72,8 +72,8 @@ public final class Instructions {
         instructions.add(new OpLoadLambda(target, label));
     }
 
-    public void createEnvironment(Register target, Register env, Register args, int envSize) {
-        instructions.add(new OpCreateEnvironment(target, env, args, envSize));
+    public void createEnvironment(int envSize) {
+        instructions.add(new OpCreateEnvironment(envSize));
     }
 
     public void loadExtracted(Register target, Register source, PatternPath path) {
@@ -96,8 +96,8 @@ public final class Instructions {
         instructions.add(new OpPopRegister(register));
     }
 
-    public void apply(Register procedure, Register argv) {
-        instructions.add(new OpApply(procedure, argv));
+    public void apply() {
+        instructions.add(OpApply.INSTANCE);
     }
     
     public void copy(Register target, Register source) {
