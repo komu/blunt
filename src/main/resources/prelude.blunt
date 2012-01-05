@@ -148,8 +148,21 @@ minimum = foldl1 min
 
 maximum = foldl1 max
 
-sort []     = []
-sort (x:xs) = sort (filter (\y -> y < x) xs) ++ (x : sort (filter (\y -> y >= x) xs))
+splitReverse xs =
+  let rec loop xs ls rs =
+     case xs of
+       []     -> (ls,rs)
+       (y:ys) -> loop ys (y:rs) ls
+  in loop xs [] []
+
+mergeSorted []     ys     = ys
+mergeSorted xs     []     = xs
+mergeSorted (x:xs) (y:ys) = if x <= y then x : mergeSorted xs (y:ys) else y : mergeSorted (x:xs) ys
+
+sort []  = []
+sort [x] = [x]
+sort xs  = case splitReverse xs of
+             (ys,zs) -> mergeSorted (sort ys) (sort zs)
 
 delete x [] = []
 delete x (y:ys) = if x == y then ys else y : delete x ys
