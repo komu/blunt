@@ -10,6 +10,9 @@ public final class OpLoadConstant extends OpCode {
     private final Object value;
 
     public OpLoadConstant(Register target, Object value) {
+        if (!target.isValidValue(value))
+            throw new IllegalArgumentException("invalid value for register " + target + ": " + value);
+
         this.target = checkNotNull(target);
         this.value = value;
     }
