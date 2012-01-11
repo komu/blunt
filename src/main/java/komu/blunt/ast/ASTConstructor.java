@@ -19,4 +19,9 @@ public final class ASTConstructor extends ASTExpression {
     public String toString() {
         return name;
     }
+
+    @Override
+    public ASTExpression simplify() {
+        return this;
+    }
 }

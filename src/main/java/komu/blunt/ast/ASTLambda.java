@@ -22,4 +22,9 @@ public final class ASTLambda extends ASTExpression {
     public String toString() {
         return "(lambda " + argument + " " + body + ")";
     }
+
+    @Override
+    public ASTExpression simplify() {
+        return new ASTLambda(argument, body.simplify());
+    }
 }

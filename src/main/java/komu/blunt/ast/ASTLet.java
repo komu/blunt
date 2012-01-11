@@ -21,6 +21,14 @@ public final class ASTLet extends ASTExpression {
     }
 
     @Override
+    public ASTExpression simplify() {
+        ImmutableList.Builder<ImplicitBinding> simplifiedBindings = ImmutableList.builder();
+        for (ImplicitBinding binding : bindings)
+            simplifiedBindings.add(binding.simplify());
+        return new ASTLet(simplifiedBindings.build(), body.simplify());
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("(let (");

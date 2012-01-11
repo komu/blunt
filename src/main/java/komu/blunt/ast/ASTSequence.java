@@ -23,7 +23,21 @@ public final class ASTSequence extends ASTExpression {
     public ImmutableList<ASTExpression> allButLast() {
         return exps.subList(0, exps.size()-1);
     }
-    
+
+    @Override
+    public ASTExpression simplify() {
+        ImmutableList.Builder<ASTExpression> builder = ImmutableList.builder();
+
+        for (ASTExpression exp : exps)
+            builder.add(exp.simplify());
+        
+        ImmutableList<ASTExpression> result = builder.build();
+        if (result.size() == 1)
+            return result.get(0);
+        else
+            return new ASTSequence(result);
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

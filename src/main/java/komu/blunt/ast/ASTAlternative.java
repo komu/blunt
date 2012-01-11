@@ -18,4 +18,8 @@ public final class ASTAlternative {
     public String toString() {
         return pattern + " -> " + value;
     }
+
+    public ASTAlternative simplify() {
+        return new ASTAlternative(pattern, value.simplify());
+    }
 }

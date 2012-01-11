@@ -20,4 +20,9 @@ public final class ASTVariable extends ASTExpression {
     public String toString() {
         return var.toString();
     }
+
+    @Override
+    public ASTExpression simplify() {
+        return this;
+    }
 }

@@ -42,7 +42,7 @@ public final class AST {
         for (ASTExpression arg : args)
             exp = new ASTApplication(exp, arg);
         
-        return exp;
+        return exp.simplify();
     }
 
     public static ASTExpression constructor(String name, ASTExpression... args) {

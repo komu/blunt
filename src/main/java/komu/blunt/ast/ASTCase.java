@@ -20,6 +20,16 @@ public final class ASTCase extends ASTExpression {
     }
 
     @Override
+    public ASTExpression simplify() {
+        ImmutableList.Builder<ASTAlternative> alts = ImmutableList.builder();
+        
+        for (ASTAlternative alt : alternatives)
+            alts.add(alt.simplify());
+
+        return new ASTCase(exp.simplify(), alts.build());
+    }
+
+    @Override
     public String toString() {
         return "case " + exp + " of " + alternatives;
     }

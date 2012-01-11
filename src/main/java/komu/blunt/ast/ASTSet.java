@@ -22,4 +22,9 @@ public final class ASTSet extends ASTExpression {
     public String toString() {
         return "(set! " + var + " " + exp + ")";
     }
+
+    @Override
+    public ASTExpression simplify() {
+        return new ASTSet(var, exp.simplify());
+    }
 }

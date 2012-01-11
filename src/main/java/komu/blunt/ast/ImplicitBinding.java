@@ -27,4 +27,8 @@ public final class ImplicitBinding {
             names.add(b.name);
         return names;
     }
+
+    public ImplicitBinding simplify() {
+        return new ImplicitBinding(name, expr.simplify());
+    }
 }

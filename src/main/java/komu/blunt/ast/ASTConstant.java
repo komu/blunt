@@ -20,6 +20,11 @@ public final class ASTConstant extends ASTExpression {
     }
 
     @Override
+    public ASTExpression simplify() {
+        return this;
+    }
+
+    @Override
     public String toString() {
         return String.valueOf(value);
     }

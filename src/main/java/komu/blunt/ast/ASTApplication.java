@@ -21,4 +21,17 @@ public final class ASTApplication extends ASTExpression {
     public String toString() {
         return "(" + func + " " + arg + ")";
     }
+
+    @Override
+    public ASTExpression simplify() {
+        ASTExpression simplifiedFunc = func.simplify();
+        ASTExpression simplifiedArg = arg.simplify();
+     
+        if (simplifiedFunc instanceof ASTLambda) {
+            ASTLambda lambda = (ASTLambda) simplifiedFunc;
+            
+            return AST.let(false, new ImplicitBinding(lambda.argument, simplifiedArg), lambda.body).simplify();
+        }
+        return new ASTApplication(simplifiedFunc, simplifiedArg);
+    }
 }
