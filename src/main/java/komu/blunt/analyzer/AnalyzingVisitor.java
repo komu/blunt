@@ -128,8 +128,8 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     }
 
     private CoreAlternative analyze(ASTAlternative alt, VariableReference matchedObject, StaticEnvironment env) {
-        CoreExpression extractor = patternAnalyzer.createExtractor(alt.pattern, matchedObject, env);
+        PatternExtractor extractor = patternAnalyzer.createExtractor(alt.pattern, matchedObject, env);
         CoreExpression body = analyze(alt.value, env);
-        return new CoreAlternative(extractor, body);
+        return new CoreAlternative(extractor.predicate, new CoreSequenceExpression(extractor.extractor, body));
     }
 }

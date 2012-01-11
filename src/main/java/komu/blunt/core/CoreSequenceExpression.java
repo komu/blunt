@@ -26,10 +26,14 @@ public final class CoreSequenceExpression extends CoreExpression {
     public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
         Instructions instructions = new Instructions();
 
-        for (CoreExpression exp : allButLast())
-            instructions.append(exp.assemble(asm, target, Linkage.NEXT));
+        if (!expressions.isEmpty()) {
+            for (CoreExpression exp : allButLast())
+                instructions.append(exp.assemble(asm, target, Linkage.NEXT));
 
-        instructions.append(last().assemble(asm, target, linkage));
+            instructions.append(last().assemble(asm, target, linkage));
+        } else {
+            instructions.finishWithLinkage(linkage);
+        }
 
         return instructions;
     }
