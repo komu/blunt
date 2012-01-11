@@ -13,10 +13,11 @@ public final class OperatorSet {
     private static final int DEFAULT_PRECEDENCE = 0;
     
     public OperatorSet() {
-        add(1, Associativity.RIGHT, ":");
-        add(2, "==", "<", "<=", ">", ">=");
-        add(3, "+", "-");
-        add(4, "*", "/", "%");
+        add(1, Associativity.RIGHT, "$");
+        add(2, Associativity.RIGHT, ":");
+        add(3, "==", "<", "<=", ">", ">=");
+        add(4, "+", "-");
+        add(5, "*", "/", "%");
     }
 
     public void add(int precedence, String... names) {
