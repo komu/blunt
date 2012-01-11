@@ -107,11 +107,7 @@ public final class Instructions {
     public void equalConstant(Register target, Register source, Object value) {
         instructions.add(new OpEqualConstant(target, source, value));
     }
-    
-    public void loadConstructed(Register target, int index, String name, int size) {
-        instructions.add(new OpLoadConstructed(target, index, name, size));
-    }
-    
+
     public int count() {
         return instructions.size();
     }
