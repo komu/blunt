@@ -10,10 +10,11 @@ public abstract class CoreExpression {
     public abstract void assemble(Instructions instructions, Register target, Linkage linkage);
 
     public static CoreExpression and(List<CoreExpression> exps) {
-        if (exps.isEmpty()) {
+        if (exps.isEmpty())
             return new CoreConstantExpression(true);
-        } else {
+        else if (exps.size() == 1)
+            return exps.get(0);
+        else
             return new CoreIfExpression(exps.get(0), and(exps.subList(1, exps.size())), new CoreConstantExpression(false));
-        }
     }
 }
