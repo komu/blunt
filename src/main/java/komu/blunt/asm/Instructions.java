@@ -22,8 +22,35 @@ public final class Instructions {
                 getLabels(label.getAddress()).add(label);
             }
         }
-    }    
-    
+    }
+
+    /**
+     * Returns an instruction stream identical to this one, but which guarantees
+     * that given register will not be modified.
+     * <p>
+     * If the instructions in the stream will never modify given register, then
+     * it is safe to return the stream as it is.
+     */
+    public Instructions preserving(Register register) {
+        if (modifies(register)) {
+            Instructions instructions = new Instructions();
+            instructions.pushRegister(register);
+            instructions.append(this);
+            instructions.popRegister(register);
+            return instructions;
+        } else {
+            return this;
+        }
+    }
+
+    private boolean modifies(Register register) {
+        for (OpCode op : instructions)
+            if (op.modifies(register))
+                return true;
+
+        return false;
+    }
+
     public void jumpIfFalse(Register register, Label label) {
         instructions.add(new OpJumpIfFalse(register, label));
     }

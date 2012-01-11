@@ -23,13 +23,7 @@ public final class CoreApplicationExpression extends CoreExpression {
         Instructions instructions = new Instructions();
         
         instructions.append(func.assemble(asm, Register.PROCEDURE, Linkage.NEXT));
-
-        // TODO: save the procedure register only if assembling arg will touch it
-        instructions.pushRegister(Register.PROCEDURE);
-
-        instructions.append(arg.assemble(asm, Register.ARG, Linkage.NEXT));
-
-        instructions.popRegister(Register.PROCEDURE);
+        instructions.append(arg.assemble(asm, Register.ARG, Linkage.NEXT).preserving(Register.PROCEDURE));
 
         if (linkage == Linkage.RETURN && target == Register.VAL) {
             instructions.applyTail();
