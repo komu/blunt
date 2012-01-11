@@ -117,7 +117,7 @@ concatMap f = concat . map f
 
 curry f x y = f (x, y)
 
-uncurry f p = f (fst p) (snd p)
+uncurry f (x,y) = f x y
 
 zipWith f (x:xs) (y:ys) = f x y : zipWith f xs ys
 zipWith f _      _      = []
@@ -215,6 +215,8 @@ scanr f x (y:ys) = foldr f x (y:ys) : scanr f x ys
 
 fromJust (Just x) = x
 fromJust Nothing  = error "Nothing"
+
+singleton x = [x]
 
 -- scanr1 :: (a -> a -> a) -> [a] -> [a]
 -- lines :: String -> [String]
