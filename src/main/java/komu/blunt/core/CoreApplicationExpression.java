@@ -19,6 +19,8 @@ public final class CoreApplicationExpression extends CoreExpression {
     @Override
     public void assemble(Instructions instructions, Register target, Linkage linkage) {
         func.assemble(instructions, Register.PROCEDURE, Linkage.NEXT);
+
+        // TODO: save the procedure register only if assembling arg will touch it
         instructions.pushRegister(Register.PROCEDURE);
 
         arg.assemble(instructions, Register.ARG, Linkage.NEXT);
