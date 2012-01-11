@@ -53,7 +53,7 @@ final class DataTypeParser {
     private void parseConstructor(DataTypeBuilder builder) {
         String constructorName = lexer.readTokenValue(TYPE_OR_CTOR_NAME);
 
-        List<Type> args = new ArrayList<Type>();
+        List<Type> args = new ArrayList<>();
         while (!lexer.nextTokenIs(OR) && !lexer.nextTokenIs(END) && !lexer.nextTokenIs(DERIVING))
             args.add(typeParser.parseTypePrimitive());
 
@@ -63,7 +63,7 @@ final class DataTypeParser {
     private static final class DataTypeBuilder {
 
         private final String typeName;
-        private final List<TypeVariable> vars = new ArrayList<TypeVariable>();
+        private final List<TypeVariable> vars = new ArrayList<>();
         private final ImmutableList.Builder<ConstructorDefinition> constructors = ImmutableList.builder();
         private final ImmutableList.Builder<String> derivedClasses = ImmutableList.builder();
         private int constructorIndex = 0;
@@ -77,7 +77,7 @@ final class DataTypeParser {
         }
 
         public void addConstructor(String constructorName, List<Type> args) {
-            Scheme scheme = quantify(vars, new Qualified<Type>(functionType(args, getType())));
+            Scheme scheme = quantify(vars, new Qualified<>(functionType(args, getType())));
             constructors.add(new ConstructorDefinition(constructorIndex++, constructorName, scheme, args.size()));
         }
 

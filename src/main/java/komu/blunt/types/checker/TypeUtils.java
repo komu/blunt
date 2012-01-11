@@ -13,13 +13,13 @@ public final class TypeUtils {
     }
     
     public static Set<TypeVariable> getTypeVariables(Types<?> t) {
-        LinkedHashSet<TypeVariable> types = new LinkedHashSet<TypeVariable>();
+        LinkedHashSet<TypeVariable> types = new LinkedHashSet<>();
         t.addTypeVariables(types);
         return types;
     }
 
     public static <T extends Types<T>> List<T> applySubstitution(Substitution substitution, Collection<? extends T> ts) {
-        List<T> result = new ArrayList<T>(ts.size());
+        List<T> result = new ArrayList<>(ts.size());
         
         for (T t : ts)
             result.add(t.apply(substitution));

@@ -18,7 +18,7 @@ public class DataTypeDefinitions {
     public static final String TRUE = "True";
     public static final String FALSE = "False";
 
-    private final Map<String,ConstructorDefinition> constructors = new HashMap<String, ConstructorDefinition>(); 
+    private final Map<String,ConstructorDefinition> constructors = new HashMap<>();
     
     public DataTypeDefinitions() {
         register(0, UNIT, "()", 0);
@@ -55,11 +55,11 @@ public class DataTypeDefinitions {
     }
 
     private static Scheme tupleConstructorScheme(int arity) {
-        List<Type> types = new ArrayList<Type>(arity);
+        List<Type> types = new ArrayList<>(arity);
         for (int i = 0; i < arity; i++)
             types.add(typeVariable("t" + i));
 
-        return quantifyAll(new Qualified<Type>(functionType(types, tupleType(types))));
+        return quantifyAll(new Qualified<>(functionType(types, tupleType(types))));
     }
 
     public static String tupleName(int arity) {

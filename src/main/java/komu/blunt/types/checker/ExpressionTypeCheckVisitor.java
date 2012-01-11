@@ -83,7 +83,7 @@ public final class ExpressionTypeCheckVisitor implements ASTVisitor<Assumptions,
 
     @Override
     public TypeCheckResult<Type> visit(ASTSequence sequence, Assumptions as) {
-        List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Predicate> predicates = new ArrayList<>();
 
         for (ASTExpression exp : sequence.allButLast())
             predicates.addAll(typeCheck(exp, as).predicates);

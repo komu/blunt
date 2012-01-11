@@ -83,7 +83,7 @@ final class PatternParser {
         if (lexer.readMatchingToken(RBRACKET))
             return constructor(NIL);
         
-        List<Pattern> patterns = new ArrayList<Pattern>();
+        List<Pattern> patterns = new ArrayList<>();
 
         patterns.add(parsePattern());
         while (lexer.readMatchingToken(COMMA))

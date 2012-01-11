@@ -28,7 +28,7 @@ final class AnalyzingVisitor implements ASTVisitor<StaticEnvironment, CoreExpres
     }
 
     private List<CoreExpression> analyzeAll(List<ASTExpression> exps, StaticEnvironment env) {
-        List<CoreExpression> result = new ArrayList<CoreExpression>(exps.size());
+        List<CoreExpression> result = new ArrayList<>(exps.size());
 
         for (ASTExpression exp : exps)
             result.add(analyze(exp, env));

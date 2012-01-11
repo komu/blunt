@@ -14,7 +14,7 @@ public final class Scheme implements Types<Scheme> {
     public final Qualified<Type> type;
     
     public Scheme(List<Kind> kinds, Qualified<Type> type) {
-        this.kinds = new ArrayList<Kind>(kinds);
+        this.kinds = new ArrayList<>(kinds);
         this.type = checkNotNull(type);
     }
 

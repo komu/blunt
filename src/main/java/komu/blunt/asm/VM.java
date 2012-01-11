@@ -16,7 +16,7 @@ public final class VM {
     public Object arg;
     public int pc = 0;
     private final Instructions instructions;
-    private final ArrayList<Object> stack = new ArrayList<Object>();
+    private final ArrayList<Object> stack = new ArrayList<>();
     private final RootEnvironment globalEnvironment;
 
     public VM(Instructions instructions, Environment env, RootEnvironment globalEnvironment) {

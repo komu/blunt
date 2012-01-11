@@ -1,14 +1,11 @@
 package komu.blunt.parser;
 
 import komu.blunt.ast.ASTExpression;
-import org.hamcrest.Matcher;
 import org.junit.Test;
 
 import java.math.BigInteger;
 
 import static komu.blunt.parser.ASTMatchers.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 public class ParserTest {
@@ -92,9 +89,5 @@ public class ParserTest {
 
     private static ASTExpression parsing(String s) {
         return Parser.parseExpression(s);
-    }
-
-    private static Matcher<Object> producesEof() {
-        return is(nullValue());
     }
 }

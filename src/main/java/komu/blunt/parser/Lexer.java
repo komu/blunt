@@ -168,8 +168,8 @@ public final class Lexer {
         Keyword keyword = TokenType.keyword(name);
 
         return (keyword != null) ? Token.ofType(keyword, location)
-             : isUpperCase(name.charAt(0)) ? new Token<String>(TYPE_OR_CTOR_NAME, name, location)
-             : new Token<String>(IDENTIFIER, name, location);
+             : isUpperCase(name.charAt(0)) ? new Token<>(TYPE_OR_CTOR_NAME, name, location)
+             : new Token<>(IDENTIFIER, name, location);
     }
 
     private static boolean isIdentifierStart(int ch) {
@@ -193,19 +193,14 @@ public final class Lexer {
             sb.append(read());
 
         String op = sb.toString();
-
-        if (op.equals("\\"))
-            return Token.ofType(LAMBDA, location);
-        else if (op.equals("="))
-            return Token.ofType(ASSIGN, location);
-        else if (op.equals("|"))
-            return Token.ofType(OR, location);
-        else if (op.equals("->"))
-            return Token.ofType(RIGHT_ARROW, location);
-        else if (op.equals("=>"))
-            return Token.ofType(BIG_RIGHT_ARROW, location);
-        else
-            return new Token<Operator>(OPERATOR, operatorSet.operator(sb.toString()), location);
+        switch (op) {
+        case "\\":  return Token.ofType(LAMBDA, location);
+        case "=":   return Token.ofType(ASSIGN, location);
+        case "|":   return Token.ofType(OR, location);
+        case "->":  return Token.ofType(RIGHT_ARROW, location);
+        case "=>":  return Token.ofType(BIG_RIGHT_ARROW, location);
+        default:    return new Token<>(OPERATOR, operatorSet.operator(op), location);
+        }
     }
 
     private Token readString() {
@@ -234,7 +229,7 @@ public final class Lexer {
             }
         }
 
-        return new Token<Object>(TokenType.LITERAL, sb.toString(), location);
+        return new Token<>(TokenType.LITERAL, sb.toString(), location);
     }
 
     private Token readNumber() {
@@ -245,7 +240,7 @@ public final class Lexer {
         while (isDigit(reader.peek()))
             sb.append(read());
 
-        return new Token<Object>(LITERAL, new BigInteger(sb.toString()), location);
+        return new Token<>(LITERAL, new BigInteger(sb.toString()), location);
     }
     
     private char read() {

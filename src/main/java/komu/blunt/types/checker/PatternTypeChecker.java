@@ -36,7 +36,7 @@ final class PatternTypeChecker implements PatternVisitor<Void,PatternTypeCheckRe
     public PatternTypeCheckResult<Type> visit(LiteralPattern pattern, Void ctx) {
         Type type = Type.fromClass(pattern.value.getClass());
 
-        return new PatternTypeCheckResult<Type>(Assumptions.empty(), type);
+        return new PatternTypeCheckResult<>(Assumptions.empty(), type);
     }
     
     @Override
@@ -54,17 +54,17 @@ final class PatternTypeChecker implements PatternVisitor<Void,PatternTypeCheckRe
         
         tc.unify(q.value, functionType(result.value, type));
 
-        List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Predicate> predicates = new ArrayList<>();
         predicates.addAll(result.predicates);
         predicates.addAll(q.predicates);
 
-        return new PatternTypeCheckResult<Type>(predicates, result.as, type);
+        return new PatternTypeCheckResult<>(predicates, result.as, type);
     }
 
     PatternTypeCheckResult<List<Type>> assumptionsFrom(List<Pattern> patterns) {
-        List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Predicate> predicates = new ArrayList<>();
         Assumptions as = Assumptions.empty();
-        List<Type> types = new ArrayList<Type>(patterns.size());
+        List<Type> types = new ArrayList<>(patterns.size());
 
         for (Pattern pattern : patterns) {
             PatternTypeCheckResult<Type> result = tc.typeCheck(pattern);
@@ -73,6 +73,6 @@ final class PatternTypeChecker implements PatternVisitor<Void,PatternTypeCheckRe
             types.add(result.value);
         }
         
-        return new PatternTypeCheckResult<List<Type>>(predicates, as, types);
+        return new PatternTypeCheckResult<>(predicates, as, types);
     }
 }

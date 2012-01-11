@@ -18,12 +18,10 @@ public class BasicValues {
     }
 
     public static Object convertToJava(TypeConstructorValue value) {
-        if (value.name.equals("True")) {
-            return true;
-        } else if (value.name.equals("False")) {
-            return false;
-        } else {
-            return value;
+        switch (value.name) {
+        case "True":    return true;
+        case "False":   return false;
+        default:        return value;
         }
     }
 }

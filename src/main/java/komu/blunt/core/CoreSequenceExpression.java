@@ -14,7 +14,7 @@ public final class CoreSequenceExpression extends CoreExpression {
     private final List<CoreExpression> expressions;
     
     public CoreSequenceExpression(List<CoreExpression> expressions) {
-        this.expressions = new ArrayList<CoreExpression>(expressions);
+        this.expressions = new ArrayList<>(expressions);
     }
 
     public CoreSequenceExpression(CoreExpression... expressions) {

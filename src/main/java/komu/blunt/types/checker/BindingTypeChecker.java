@@ -55,7 +55,7 @@ final class BindingTypeChecker {
     }
 
     private List<Predicate> typeCheckExplicits(BindGroup bindGroup, Assumptions as) {
-        List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Predicate> predicates = new ArrayList<>();
 
         for (ExplicitBinding b : bindGroup.explicitBindings)
             predicates.addAll(typeCheck(b, as));
@@ -74,8 +74,8 @@ final class BindingTypeChecker {
         List<Type> types = tc.applySubstitution(typeVariables);
         Set<TypeVariable> fs = TypeUtils.getTypeVariables(tc.applySubstitution(as));
         
-        List<Set<TypeVariable>> vss = new ArrayList<Set<TypeVariable>>(types.size());
-        Set<TypeVariable> genericVariables = new HashSet<TypeVariable>();
+        List<Set<TypeVariable>> vss = new ArrayList<>(types.size());
+        Set<TypeVariable> genericVariables = new HashSet<>();
         for (Type t : types) {
             Set<TypeVariable> vars = getTypeVariables(t);
             vss.add(vars);
@@ -89,9 +89,9 @@ final class BindingTypeChecker {
         List<Predicate> deferredPredicates = split.first;
         List<Predicate> retainedPredicates = split.second;
 
-        List<Scheme> finalSchemes = new ArrayList<Scheme>(types.size());
+        List<Scheme> finalSchemes = new ArrayList<>(types.size());
         for (Type t : types)
-            finalSchemes.add(quantify(genericVariables, new Qualified<Type>(retainedPredicates, t)));
+            finalSchemes.add(quantify(genericVariables, new Qualified<>(retainedPredicates, t)));
 
         Assumptions finalAssumptions = Assumptions.from(bindingNames(bindings), finalSchemes);
         return TypeCheckResult.of(finalAssumptions, deferredPredicates);
@@ -100,7 +100,7 @@ final class BindingTypeChecker {
     private List<Predicate> typeCheckAndUnifyBindings(List<ImplicitBinding> bs, List<Type> ts, Assumptions as) {
         Assumptions as2 = Assumptions.from(bindingNames(bs), toSchemes(ts)).join(as);
 
-        List<Predicate> predicates = new ArrayList<Predicate>();
+        List<Predicate> predicates = new ArrayList<>();
 
         for (int i = 0; i < ts.size(); i++) {
             ASTExpression exp = bs.get(i).expr;

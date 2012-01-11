@@ -8,7 +8,6 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Collections.singleton;
 import static java.util.Collections.unmodifiableList;
 import static komu.blunt.types.checker.TypeUtils.getTypeVariables;
 
@@ -35,20 +34,16 @@ public final class Qualified<T extends Types<T>> implements Types<Qualified<T>> 
 
     @Override
     public Qualified<T> apply(Substitution substitution) {
-        return new Qualified<T>(TypeUtils.applySubstitution(substitution, predicates), value.apply(substitution));
+        return new Qualified<>(TypeUtils.applySubstitution(substitution, predicates), value.apply(substitution));
     }
 
     public static Scheme quantifyAll(Qualified<Type> qt) {
         return quantify(TypeUtils.getTypeVariables(qt), qt);
     }
 
-    public static Scheme quantify(TypeVariable vs, Qualified<Type> qt) {
-        return quantify(singleton(vs), qt);
-    }
-    
     public static Scheme quantify(Collection<TypeVariable> vs, Qualified<Type> qt) {
-        List<Kind> kinds = new ArrayList<Kind>();
-        List<TypeVariable> vars = new ArrayList<TypeVariable>();
+        List<Kind> kinds = new ArrayList<>();
+        List<TypeVariable> vars = new ArrayList<>();
 
         for (TypeVariable v : getTypeVariables(qt))
             if (vs.contains(v)) {
@@ -60,11 +55,11 @@ public final class Qualified<T extends Types<T>> implements Types<Qualified<T>> 
     }
 
     public static Qualified<Type> instantiate(List<TypeVariable> ts, Qualified<Type> t) {
-        List<Predicate> ps = new ArrayList<Predicate>(t.predicates.size());
+        List<Predicate> ps = new ArrayList<>(t.predicates.size());
         for (Predicate p : t.predicates)
             ps.add(p.instantiate(ts));
        
-        return new Qualified<Type>(ps, t.value.instantiate(ts));
+        return new Qualified<>(ps, t.value.instantiate(ts));
     }
 
     @Override

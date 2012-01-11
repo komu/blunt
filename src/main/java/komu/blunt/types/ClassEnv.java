@@ -19,7 +19,7 @@ import static komu.blunt.types.checker.TypeUtils.getTypeVariables;
 
 public final class ClassEnv {
     
-    private final Map<String,TypeClass> classes = new HashMap<String, TypeClass>();
+    private final Map<String,TypeClass> classes = new HashMap<>();
     private final List<Type> defaults = newArrayList(Type.INTEGER);
 
     public ClassEnv() {
@@ -92,7 +92,7 @@ public final class ClassEnv {
         if (predicate.overlapsAny(cl.instancePredicates()))
             throw new RuntimeException("overlapping instances");
 
-        cl.addInstance(new Qualified<Predicate>(predicates, predicate));
+        cl.addInstance(new Qualified<>(predicates, predicate));
     }
 
     public void addClass(String name, String... superClasses) {
@@ -110,7 +110,7 @@ public final class ClassEnv {
     }
 
     private List<Predicate> bySuper(Predicate predicate) {
-        List<Predicate> result = new ArrayList<Predicate>();
+        List<Predicate> result = new ArrayList<>();
         result.add(predicate);
 
         for (String superName : getSuperClasses(predicate.className))
@@ -150,7 +150,7 @@ public final class ClassEnv {
     }
 
     private List<Predicate> toHfns(List<Predicate> predicates) {
-        List<Predicate> result = new ArrayList<Predicate>();
+        List<Predicate> result = new ArrayList<>();
 
         for (Predicate predicate : predicates)
             if (predicate.inHnf()) {
@@ -167,8 +167,8 @@ public final class ClassEnv {
     }
     
     private List<Predicate> simplify(List<Predicate> ps) {
-        Set<Predicate> combinedPredicates = new HashSet<Predicate>();
-        List<Predicate> rs = new ArrayList<Predicate>();
+        Set<Predicate> combinedPredicates = new HashSet<>();
+        List<Predicate> rs = new ArrayList<>();
 
         for (Predicate p : ps) {
             if (!entails(combinedPredicates, p)) {
@@ -187,8 +187,8 @@ public final class ClassEnv {
     public Pair<List<Predicate>, List<Predicate>> split(Set<TypeVariable> fixedVariables,
                                                         Set<TypeVariable> quantifyVariables,
                                                         List<Predicate> originalPredicates) {
-        List<Predicate> deferredPredicates = new ArrayList<Predicate>();
-        List<Predicate> retainedPredicates = new ArrayList<Predicate>();
+        List<Predicate> deferredPredicates = new ArrayList<>();
+        List<Predicate> retainedPredicates = new ArrayList<>();
 
         for (Predicate predicate : reduce(originalPredicates))
             if (fixedVariables.containsAll(getTypeVariables(predicate)))
@@ -197,7 +197,7 @@ public final class ClassEnv {
                 retainedPredicates.add(predicate);
 
         // TODO: defaulted
-        return new Pair<List<Predicate>,List<Predicate>>(deferredPredicates, retainedPredicates);
+        return new Pair<>(deferredPredicates, retainedPredicates);
     }
 
     private Set<String> allClassNames() {

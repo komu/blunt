@@ -30,11 +30,7 @@ public class Main {
                     ResultWithType result = evaluator.evaluateWithType(exp);
                     System.out.println(result);
                 }
-            } catch (SyntaxException e) {
-                System.out.println(e);
-            } catch (AnalyzationException e) {
-                System.out.println(e);
-            } catch (EvaluationException e) {
+            } catch (SyntaxException | AnalyzationException | EvaluationException e) {
                 System.out.println(e);
             } catch (Exception e) {
                 e.printStackTrace();

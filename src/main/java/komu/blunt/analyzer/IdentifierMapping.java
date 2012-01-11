@@ -7,7 +7,7 @@ import java.util.HashMap;
 final class IdentifierMapping {
     
     private final IdentifierMapping parent;
-    private final HashMap<Symbol, Symbol> mappings = new HashMap<Symbol, Symbol>();
+    private final HashMap<Symbol, Symbol> mappings = new HashMap<>();
     
     public IdentifierMapping() {
         this.parent = null;    

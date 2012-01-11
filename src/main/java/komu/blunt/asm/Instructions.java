@@ -10,8 +10,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Instructions {
     
-    private final List<OpCode> instructions = new ArrayList<OpCode>();
-    private final Map<Integer,Set<Label>> labelMap = new HashMap<Integer,Set<Label>>();
+    private final List<OpCode> instructions = new ArrayList<>();
+    private final Map<Integer,Set<Label>> labelMap = new HashMap<>();
     private int labelCounter = 0;
 
     public void jumpIfFalse(Register register, Label label) {
@@ -26,7 +26,7 @@ public final class Instructions {
     private Set<Label> getLabels(int address) {
         Set<Label> labels = labelMap.get(address);
         if (labels == null) {
-            labels = new HashSet<Label>();
+            labels = new HashSet<>();
             labelMap.put(address, labels);
         }
         return labels;

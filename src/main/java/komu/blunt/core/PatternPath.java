@@ -21,7 +21,7 @@ public final class PatternPath {
     }
     
     public List<Integer> indices() {
-        List<Integer> indices = new ArrayList<Integer>();
+        List<Integer> indices = new ArrayList<>();
         
         for (PatternPath p = this; p.parent != null; p = p.parent) 
             indices.add(p.index);

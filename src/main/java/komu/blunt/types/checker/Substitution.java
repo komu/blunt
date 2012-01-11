@@ -86,7 +86,7 @@ public final class Substitution {
     }
     
     public List<Type> apply(List<Type> types) {
-        List<Type> result = new ArrayList<Type>(types.size());
+        List<Type> result = new ArrayList<>(types.size());
         
         for (Type type : types)
             result.add(type.apply(this));

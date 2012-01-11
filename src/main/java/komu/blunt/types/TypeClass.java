@@ -9,10 +9,10 @@ import java.util.List;
 public final class TypeClass {
 
     final List<String> superClasses;
-    final List<ClassInstance> instances = new ArrayList<ClassInstance>();
+    final List<ClassInstance> instances = new ArrayList<>();
     
     public TypeClass(List<String> superClasses) {
-        this.superClasses = new ArrayList<String>(superClasses);
+        this.superClasses = new ArrayList<>(superClasses);
     }
 
     public void addInstance(Qualified<Predicate> qual) {

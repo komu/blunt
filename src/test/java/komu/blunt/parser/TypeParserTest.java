@@ -62,16 +62,16 @@ public class TypeParserTest {
         TypeVariable a = typeVariable("a");
         TypeVariable b = typeVariable("b");
 
-        verifyParsing("Num a => a -> a", new Qualified<Type>(Arrays.<Predicate>asList(isIn("Num", a)), functionType(a, a)));
-        verifyParsing("(Num a) => a -> a", new Qualified<Type>(Arrays.<Predicate>asList(isIn("Num", a)), functionType(a, a)));
+        verifyParsing("Num a => a -> a", new Qualified<>(Arrays.<Predicate>asList(isIn("Num", a)), functionType(a, a)));
+        verifyParsing("(Num a) => a -> a", new Qualified<>(Arrays.<Predicate>asList(isIn("Num", a)), functionType(a, a)));
         verifyParsing("(Num a, Ord a, Num b) => a -> b",
-                new Qualified<Type>(Arrays.<Predicate>asList(isIn("Num", a), isIn("Ord", a), isIn("Num", b)),
+                new Qualified<>(Arrays.<Predicate>asList(isIn("Num", a), isIn("Ord", a), isIn("Num", b)),
                         functionType(a, b)));
     }
     
     @Test
     public void parseQualifiedWithoutQualifications() {
-        verifyParsing("a -> a", new Qualified<Type>(functionType(typeVariable("a"), typeVariable("a"))));
+        verifyParsing("a -> a", new Qualified<>(functionType(typeVariable("a"), typeVariable("a"))));
     }
 
     private static void verifyParsing(String s, Qualified<Type> type) {

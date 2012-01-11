@@ -36,13 +36,13 @@ public final class TypeParser {
     private Qualified<Type> parseQualified() {
         List<Predicate> predicates = parseOptionalPredicates();
         Type type = parseType();
-        return new Qualified<Type>(predicates, type);
+        return new Qualified<>(predicates, type);
     }
 
     private List<Predicate> parseOptionalPredicates() {
         LexerState lexerState = lexer.save();
         try {
-            List<Predicate> predicates = new ArrayList<Predicate>();
+            List<Predicate> predicates = new ArrayList<>();
             if (lexer.readMatchingToken(LPAREN)) {
                 do {
                     predicates.add(parsePredicate());
@@ -101,7 +101,7 @@ public final class TypeParser {
     public Type parseTypeConcrete() {
         String name = lexer.readTokenValue(TYPE_OR_CTOR_NAME);
         
-        List<Type> args = new ArrayList<Type>();
+        List<Type> args = new ArrayList<>();
         while (lexer.nextTokenIsOneOf(START_TOKENS))
             args.add(parseTypePrimitive());
         
@@ -114,7 +114,7 @@ public final class TypeParser {
         if (lexer.readMatchingToken(RPAREN))
             return Type.UNIT;
 
-        List<Type> types = new ArrayList<Type>();
+        List<Type> types = new ArrayList<>();
         types.add(parseType());
         
         while (lexer.readMatchingToken(COMMA))

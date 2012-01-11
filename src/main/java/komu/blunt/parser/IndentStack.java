@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 final class IndentStack {
-    private final List<Integer> indents = new ArrayList<Integer>();
+    private final List<Integer> indents = new ArrayList<>();
 
     public void push(int column) {
         indents.add(column);
@@ -20,7 +20,7 @@ final class IndentStack {
     }
 
     public List<Integer> toList() {
-        return new ArrayList<Integer>(indents);
+        return new ArrayList<>(indents);
     }
 
     public void reset(List<Integer> indents) {

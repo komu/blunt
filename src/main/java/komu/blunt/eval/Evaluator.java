@@ -42,7 +42,7 @@ public final class Evaluator {
         return exp;
     }
     
-    public void load(String source) throws IOException {
+    public void load(String source) {
         Parser parser = new Parser(source);
 
         MyDefinitionVisitor visitor = new MyDefinitionVisitor();

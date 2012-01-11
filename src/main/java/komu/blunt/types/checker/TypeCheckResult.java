@@ -18,11 +18,11 @@ public final class TypeCheckResult<T> {
     }
 
     public static <T> Builder<T> builder() {
-        return new Builder<T>();
+        return new Builder<>();
     }
     
     public static <T> TypeCheckResult<T> of(T value) {
-        return new TypeCheckResult<T>(value, ImmutableList.<Predicate>of());
+        return new TypeCheckResult<>(value, ImmutableList.<Predicate>of());
     }
 
     public static <T> TypeCheckResult<T> of(T value, List<Predicate> p1) {
@@ -54,7 +54,7 @@ public final class TypeCheckResult<T> {
         }
         
         public TypeCheckResult<T> build(T type) {
-            return new TypeCheckResult<T>(type, predicates.build());
+            return new TypeCheckResult<>(type, predicates.build());
         }
     }
 }

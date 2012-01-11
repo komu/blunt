@@ -22,7 +22,7 @@ public final class ImplicitBinding {
     }
 
     public static List<Symbol> bindingNames(List<ImplicitBinding> bs) {
-        List<Symbol> names = new ArrayList<Symbol>(bs.size());
+        List<Symbol> names = new ArrayList<>(bs.size());
         for (ImplicitBinding b : bs)
             names.add(b.name);
         return names;

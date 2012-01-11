@@ -11,7 +11,7 @@ import static java.util.Arrays.asList;
 public final class StaticEnvironment {
 
     private final StaticEnvironment parent;
-    private final Map<Symbol, VariableInfo> variables = new HashMap<Symbol, VariableInfo>();
+    private final Map<Symbol, VariableInfo> variables = new HashMap<>();
 
     public StaticEnvironment() {
         this(null);

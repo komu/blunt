@@ -87,7 +87,7 @@ public abstract class Type implements Types<Type> {
     public abstract Kind getKind();
 
     protected final Set<TypeVariable> getTypeVariables() {
-        Set<TypeVariable> vars = new LinkedHashSet<TypeVariable>();
+        Set<TypeVariable> vars = new LinkedHashSet<>();
         addTypeVariables(vars);
         return vars;
     }
@@ -102,11 +102,11 @@ public abstract class Type implements Types<Type> {
     }
     
     public Scheme toScheme() {
-        return new Scheme(Collections.<Kind>emptyList(), new Qualified<Type>(this));
+        return new Scheme(Collections.<Kind>emptyList(), new Qualified<>(this));
     }
     
     public static List<Scheme> toSchemes(List<? extends Type> ts) {
-        List<Scheme> schemes = new ArrayList<Scheme>(ts.size());
+        List<Scheme> schemes = new ArrayList<>(ts.size());
         for (Type t : ts)
             schemes.add(t.toScheme());
         return schemes;

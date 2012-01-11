@@ -41,7 +41,7 @@ public final class Parser {
     }
     
     public List<ASTDefinition> parseDefinitions() {
-        List<ASTDefinition> result = new ArrayList<ASTDefinition>();
+        List<ASTDefinition> result = new ArrayList<>();
         
         while (lexer.hasMoreTokens())
             result.add(parseDefinition());
@@ -131,8 +131,8 @@ public final class Parser {
     }
 
     private static class FunctionBuilder {
-        private final List<Symbol> symbols = new ArrayList<Symbol>();
-        private final List<ASTExpression> exps = new ArrayList<ASTExpression>();
+        private final List<Symbol> symbols = new ArrayList<>();
+        private final List<ASTExpression> exps = new ArrayList<>();
         private final ImmutableList.Builder<ASTAlternative> alternatives = ImmutableList.builder();
         
         void addAlternative(ImmutableList<Pattern> args, ASTExpression body) {
@@ -176,7 +176,7 @@ public final class Parser {
                 if (!c.name.equals(DataTypeDefinitions.tupleName(c.args.size())))
                     return null;
                 
-                List<Symbol> vars = new ArrayList<Symbol>(c.args.size());
+                List<Symbol> vars = new ArrayList<>(c.args.size());
                 
                 for (Pattern p : c.args)
                     if (p instanceof VariablePattern) {
@@ -307,7 +307,7 @@ public final class Parser {
         
         Symbol name = parseIdentifier();
 
-        List<Symbol> args = new ArrayList<Symbol>();
+        List<Symbol> args = new ArrayList<>();
 
         if (lexer.nextTokenIs(OPERATOR)) {
             Operator op = lexer.readTokenValue(OPERATOR);
@@ -335,7 +335,7 @@ public final class Parser {
     private ASTExpression parseLambda() {
         lexer.expectToken(LAMBDA);
 
-        List<Symbol> args = new ArrayList<Symbol>();
+        List<Symbol> args = new ArrayList<>();
         
         do {
             args.add(parseIdentifier());
@@ -357,7 +357,7 @@ public final class Parser {
             return op.isConstructor() ? AST.constructor(op.toString()) : AST.variable(op.toString());
         }
 
-        List<ASTExpression> exps = new ArrayList<ASTExpression>();
+        List<ASTExpression> exps = new ArrayList<>();
         
         do {
             exps.add(parseExpression());    

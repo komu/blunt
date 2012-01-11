@@ -39,7 +39,7 @@ final class PatternAnalyzer {
 
         @Override
         public CoreExpression visit(ConstructorPattern pattern, PatternPath path) {
-            List<CoreExpression> exps = new ArrayList<CoreExpression>(1 + pattern.args.size());
+            List<CoreExpression> exps = new ArrayList<>(1 + pattern.args.size());
             exps.add(matchesConstructor(path, pattern.name));
 
             int i = 0;

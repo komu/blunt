@@ -9,7 +9,7 @@ public final class Token<T> {
     private final SourceLocation location;
 
     public static <T> Token<T> ofType(TokenType<T> type, SourceLocation location) {
-        return new Token<T>(type, location);
+        return new Token<>(type, location);
     }
 
     private Token(TokenType<T> type, SourceLocation location) {

@@ -14,7 +14,7 @@ import static komu.blunt.types.Type.*;
 
 public final class NativeTypeConversions {
 
-    private final Map<java.lang.reflect.TypeVariable<?>,TypeVariable> typeVariableMap = new HashMap<java.lang.reflect.TypeVariable<?>, TypeVariable>();
+    private final Map<java.lang.reflect.TypeVariable<?>,TypeVariable> typeVariableMap = new HashMap<>();
 
     private NativeTypeConversions() { }
 
@@ -30,15 +30,15 @@ public final class NativeTypeConversions {
         Type returnType = resolve(m.getGenericReturnType());
 
         if (argumentTypes.isEmpty())
-            return quantifyAll(new Qualified<Type>(functionType(Type.UNIT, returnType)));
+            return quantifyAll(new Qualified<>(functionType(Type.UNIT, returnType)));
         else if (argumentTypes.size() == 1)
-            return quantifyAll(new Qualified<Type>(functionType(argumentTypes.get(0), returnType)));
+            return quantifyAll(new Qualified<>(functionType(argumentTypes.get(0), returnType)));
         else
-            return quantifyAll(new Qualified<Type>(functionType(returnType, tupleType(argumentTypes))));
+            return quantifyAll(new Qualified<>(functionType(returnType, tupleType(argumentTypes))));
     }
 
     private List<Type> resolveArgumentTypes(Method m) {
-        List<Type> result = new ArrayList<Type>(m.getParameterTypes().length + 1);
+        List<Type> result = new ArrayList<>(m.getParameterTypes().length + 1);
 
         // If the method is not static, the receiver is considered as an argument
         if (!isStatic(m.getModifiers()))
@@ -89,7 +89,7 @@ public final class NativeTypeConversions {
     }
 
     private List<Type> resolveAll(java.lang.reflect.Type[] types) {
-        List<Type> result = new ArrayList<Type>(types.length);
+        List<Type> result = new ArrayList<>(types.length);
 
         for (java.lang.reflect.Type type : types)
             result.add(resolve(type));

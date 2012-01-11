@@ -46,7 +46,7 @@ public final class TypeChecker {
 
     private Qualified<Type> normalize(TypeCheckResult<Type> result) {
         List<Predicate> ps = classEnv.reduce(applySubstitution(result.predicates));
-        return applySubstitution(new Qualified<Type>(ps, result.value));
+        return applySubstitution(new Qualified<>(ps, result.value));
     }
 
     TypeCheckResult<Type> typeCheck(ASTExpression exp, Assumptions as) {
@@ -67,7 +67,7 @@ public final class TypeChecker {
     }
 
     Qualified<Type> freshInstance(Scheme scheme) {
-        List<TypeVariable> ts = new ArrayList<TypeVariable>(scheme.kinds.size());
+        List<TypeVariable> ts = new ArrayList<>(scheme.kinds.size());
         for (Kind kind : scheme.kinds)
             ts.add(newTVar(kind));
 
@@ -83,7 +83,7 @@ public final class TypeChecker {
     }
 
     List<Type> newTVars(int size) {
-        List<Type> types = new ArrayList<Type>(size);
+        List<Type> types = new ArrayList<>(size);
         for (int i = 0; i < size; i++)
             types.add(newTVar());
         return types;

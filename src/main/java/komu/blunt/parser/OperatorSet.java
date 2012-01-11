@@ -8,7 +8,7 @@ import static java.lang.Math.max;
 
 public final class OperatorSet {
     
-    private final Map<String,Operator> ops = new HashMap<String, Operator>();
+    private final Map<String,Operator> ops = new HashMap<>();
     private int maxPrecedence = 0;
     private static final int DEFAULT_PRECEDENCE = 0;
     

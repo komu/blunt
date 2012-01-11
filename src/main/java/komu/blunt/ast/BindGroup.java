@@ -7,8 +7,8 @@ import java.util.List;
 
 public final class BindGroup {
 
-    public final List<ExplicitBinding> explicitBindings = new ArrayList<ExplicitBinding>();
-    public final List<List<ImplicitBinding>> implicitBindings = new ArrayList<List<ImplicitBinding>>();
+    public final List<ExplicitBinding> explicitBindings = new ArrayList<>();
+    public final List<List<ImplicitBinding>> implicitBindings = new ArrayList<>();
     
     public BindGroup(List<ExplicitBinding> explicitBindings,
                      List<ImplicitBinding> implicitBindings) {

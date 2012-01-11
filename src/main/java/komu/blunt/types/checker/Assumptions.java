@@ -84,7 +84,7 @@ public final class Assumptions implements Types<Assumptions> {
     }
 
     public static final class Builder {
-        private Map<Symbol, Scheme> mappings = new HashMap<Symbol, Scheme>();
+        private Map<Symbol, Scheme> mappings = new HashMap<>();
         private boolean built = false;
 
         public Builder add(Symbol name, Scheme scheme) {
@@ -110,7 +110,7 @@ public final class Assumptions implements Types<Assumptions> {
         
         private void ensurePrivateCopy() {
             if (built) {
-                mappings = new HashMap<Symbol, Scheme>(mappings);
+                mappings = new HashMap<>(mappings);
                 built = false;
             }
         }

@@ -16,7 +16,7 @@ public final class CollectionUtils {
         if (!it.hasNext())
             return emptySet();
 
-        Set<T> result = new HashSet<T>(it.next());
+        Set<T> result = new HashSet<>(it.next());
         while (it.hasNext())
             result.retainAll(it.next());
 
