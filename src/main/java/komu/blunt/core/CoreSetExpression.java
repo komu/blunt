@@ -20,8 +20,8 @@ public final class CoreSetExpression extends CoreExpression {
     public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
         Instructions instructions = new Instructions();
 
-        instructions.append(exp.assemble(asm, target, Linkage.NEXT));
-        instructions.storeVariable(var, target);
+        instructions.append(exp.assemble(asm, Register.VAL, Linkage.NEXT));
+        instructions.storeVariable(var, Register.VAL);
 
         instructions.finishWithLinkage(linkage);
 
