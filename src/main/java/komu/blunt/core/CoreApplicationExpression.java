@@ -29,9 +29,10 @@ public final class CoreApplicationExpression extends CoreExpression {
             instructions.applyTail();
 
         } else {
-            instructions.pushRegister(Register.ENV);
+            if (linkage != Linkage.RETURN) instructions.pushRegister(Register.ENV);
             instructions.apply();
-            instructions.popRegister(Register.ENV);
+            if (linkage != Linkage.RETURN) instructions.popRegister(Register.ENV);
+
             if (target != Register.VAL)
                 instructions.copy(target, Register.VAL);
 
