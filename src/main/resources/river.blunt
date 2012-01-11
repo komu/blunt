@@ -1,0 +1,67 @@
+data Person = Father | Boy | Mother | Girl | Police | Prisoner
+    deriving (Eq, Show, Ord)
+
+data Side = West | East deriving (Eq, Show)
+
+data Game = G Side [Person] [Person] deriving (Eq, Show)
+
+initialGame            = G West (sort [Father, Boy, Boy, Mother, Girl, Girl, Police, Prisoner]) []
+
+isGameEnded (G East [] _) = True
+isGameEnded _             = False
+
+candidatePeople (G West w _) = w
+candidatePeople (G East _ e) = e
+
+canUseBoat Father = True
+canUseBoat Mother = True
+canUseBoat Police = True
+canUseBoat _      = False
+
+move (G West w e) m    = G East (w \\ m) (mergeSorted e m)
+move (G East w e) m    = G West (mergeSorted w m) (e \\ m)
+
+a ==> b = if a then b else True
+
+canShareBank ps =
+    let onBank p         = elem p ps
+    in let isAlone p     = [p] == ps
+    in let fatherOk      = onBank Father   ==> (onBank Mother || not (onBank Girl))
+    in let motherOk      = onBank Mother   ==> (onBank Father || not (onBank Boy))
+    in let prisonerOk    = onBank Prisoner ==> (onBank Police || isAlone Prisoner)
+    in fatherOk && motherOk && prisonerOk
+
+validState (G _ w e)   = canShareBank w && canShareBank e
+
+isValidMove g m        = any canUseBoat m && validState (move g m)
+
+pairs xs = concatMap (\p -> case p of
+                                      (y:ys) -> map (\z -> (y,z)) ys
+                                      _      -> []
+                     )
+                     (tails xs)
+
+validMoves g =
+   let people           = candidatePeople g
+   in let singleMoves   = map singleton people
+   in let pairMoves     = map (\(x,y) -> [x,y]) (pairs people)
+   in filter (isValidMove g) (singleMoves ++ pairMoves)
+
+concatMapMaybe f []     = Nothing
+concatMapMaybe f (x:xs) = case f x of
+                            Just y -> Just y
+                            Nothing -> concatMapMaybe f xs
+
+solve () =
+  let rec solve' vs ts s = if isGameEnded s
+                             then Just (reverse ts)
+                             else concatMapMaybe (\t ->
+                                  let s' = move s t
+                                  in if elem s' vs
+                                       then Nothing
+                                       else solve' (s':vs) (t:ts) s') (validMoves s)
+  in fromJust $ solve' [initialGame] [] initialGame
+
+river () =
+    let printRow x = print x; print "\n"
+    in foreach printRow (solve ())
