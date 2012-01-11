@@ -50,7 +50,6 @@ public final class Instructions {
         if (linkage == Linkage.NEXT) {
             // nada
         } else if (linkage == Linkage.RETURN) {
-            //popRegister(Register.ENV);
             popRegister(Register.PC);
         } else {
             jump(linkage.label);
@@ -98,7 +97,11 @@ public final class Instructions {
     }
 
     public void apply() {
-        instructions.add(OpApply.INSTANCE);
+        instructions.add(OpApply.NORMAL);
+    }
+
+    public void applyTail() {
+        instructions.add(OpApply.TAIL);
     }
     
     public void copy(Register target, Register source) {

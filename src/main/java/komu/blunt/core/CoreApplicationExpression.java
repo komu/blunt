@@ -27,15 +27,18 @@ public final class CoreApplicationExpression extends CoreExpression {
 
         instructions.popRegister(Register.PROCEDURE);
 
-        // TODO: tail calls
+        if (linkage == Linkage.RETURN && target == Register.VAL) {
+            instructions.applyTail();
 
-        instructions.pushRegister(Register.ENV);
-        instructions.apply();
-        instructions.popRegister(Register.ENV);
-        if (target != Register.VAL)
-            instructions.copy(target, Register.VAL);
+        } else {
+            instructions.pushRegister(Register.ENV);
+            instructions.apply();
+            instructions.popRegister(Register.ENV);
+            if (target != Register.VAL)
+                instructions.copy(target, Register.VAL);
 
-        instructions.finishWithLinkage(linkage);
+            instructions.finishWithLinkage(linkage);
+        }
     }
 
     @Override

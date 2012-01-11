@@ -4,30 +4,38 @@ import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
 import komu.blunt.objects.CompoundProcedure;
 import komu.blunt.objects.PrimitiveProcedure;
+import komu.blunt.objects.Procedure;
 
 public final class OpApply extends OpCode {
 
-    public static final OpApply INSTANCE = new OpApply();
+    public static final OpApply NORMAL = new OpApply(false);
+    public static final OpApply TAIL = new OpApply(true);
 
-    private OpApply() { }
+    private final boolean tail;
+
+    private OpApply(boolean tail) {
+        this.tail = tail;
+    }
 
     @Override
     public void execute(VM vm) {
-        Object procedure = vm.procedure;
+        Procedure procedure = vm.procedure;
 
-        if (procedure instanceof PrimitiveProcedure) {
+        if (procedure instanceof PrimitiveProcedure)
             executePrimitive(vm, (PrimitiveProcedure) procedure);
-        } else {
+        else
             executeCompound(vm, (CompoundProcedure) procedure);
-        }
     }
 
     private void executePrimitive(VM vm, PrimitiveProcedure procedure) {
         vm.val = procedure.apply(vm.arg);
+        if (tail)
+            vm.pc = (Integer) vm.pop();
     }
 
     private void executeCompound(VM vm, CompoundProcedure procedure) {
-        vm.push(vm.pc);
+        if (!tail)
+            vm.push(vm.pc);
 
         vm.env = procedure.env;
         vm.pc = procedure.address;
@@ -35,6 +43,6 @@ public final class OpApply extends OpCode {
 
     @Override
     public String toString() {
-        return String.format("(apply %s %s)", Register.PROCEDURE, Register.ARG);
+        return String.format("(%s %s %s)", tail ? "tail-call" : "call", Register.PROCEDURE, Register.ARG);
     }
 }
