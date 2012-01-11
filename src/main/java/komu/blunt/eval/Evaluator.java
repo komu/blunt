@@ -28,6 +28,7 @@ public final class Evaluator {
     private final RootBindings rootBindings = new RootBindings();
     private final Instructions instructions = new Instructions();
     private final ClassEnv classEnv = new ClassEnv();
+    private long steps = 0;
 
     public Evaluator() {
         new NativeFunctionRegisterer(rootBindings).register(BasicFunctions.class);
@@ -94,7 +95,9 @@ public final class Evaluator {
 
         VM vm = new VM(instructions, env, rootBindings.runtimeEnvironment);
         vm.set(Register.PC, pos);
-        return vm.run();
+        Object result = vm.run();
+        steps += vm.steps;
+        return result;
     }
 
     public Object evaluate(ASTExpression exp) {
@@ -117,6 +120,10 @@ public final class Evaluator {
 
     private CoreExpression toCore(ASTExpression exp, StaticEnvironment env) {
         return Analyzer.analyze(exp, rootBindings.dataTypes, env);
+    }
+
+    public long getSteps() {
+        return steps;
     }
 
     public void dump() {

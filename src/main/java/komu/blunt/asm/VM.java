@@ -18,6 +18,7 @@ public final class VM {
     private final Instructions instructions;
     private final ArrayList<Object> stack = new ArrayList<>();
     private final RootEnvironment globalEnvironment;
+    public long steps = 0;
 
     public VM(Instructions instructions, Environment env, RootEnvironment globalEnvironment) {
         this.instructions = checkNotNull(instructions);
@@ -30,6 +31,7 @@ public final class VM {
         while (true) {
             if (pc >= instructions.count()) break;
             OpCode op = instructions.get(pc++);
+            steps++;
             op.execute(this);
         }
         
