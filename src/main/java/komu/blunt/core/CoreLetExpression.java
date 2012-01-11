@@ -21,8 +21,10 @@ public final class CoreLetExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
-        new CoreSetExpression(var, value).assemble(asm, instructions, target, Linkage.NEXT);
-        body.assemble(asm, instructions, target, linkage);
+    public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
+        Instructions instructions = new Instructions();
+        instructions.append(new CoreSetExpression(var, value).assemble(asm, target, Linkage.NEXT));
+        instructions.append(body.assemble(asm, target, linkage));
+        return instructions;
     }
 }

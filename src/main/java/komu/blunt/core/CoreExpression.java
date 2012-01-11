@@ -8,7 +8,8 @@ import komu.blunt.asm.Register;
 import java.util.List;
 
 public abstract class CoreExpression {
-    public abstract void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage);
+
+    public abstract Instructions assemble(Assembler asm, Register target, Linkage linkage);
 
     public static CoreExpression and(List<CoreExpression> exps) {
         if (exps.isEmpty())

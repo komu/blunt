@@ -11,6 +11,13 @@ public final class Label {
         this.name = checkNotNull(name);
     }
 
+    void relocateBy(int offset) {
+        if (offset < 0) throw new IllegalArgumentException("negative offset: " + offset);
+        if (address == -1) throw new IllegalStateException("can't relocate label without original address");
+
+        address += offset;
+    }
+
     public void setAddress(int address) {
         if (address < 0) throw new IllegalArgumentException("negative address");
         

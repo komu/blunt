@@ -16,9 +16,11 @@ public final class CoreConstantExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+    public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
+        Instructions instructions = new Instructions();
         instructions.loadConstant(target, value);
         instructions.finishWithLinkage(linkage);
+        return instructions;
     }
 
     @Override

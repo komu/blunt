@@ -17,7 +17,9 @@ public final class CoreIfExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+    public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
+        Instructions instructions = new Instructions();
+
         Label after = asm.newLabel("if-after");
         Label falseBranch = asm.newLabel("if-false");
 
@@ -25,15 +27,17 @@ public final class CoreIfExpression extends CoreExpression {
 
         // Since the target register is safe to overwrite, we borrow it
         // for evaluating the condition as well.
-        condition.assemble(asm, instructions, target, Linkage.NEXT);
+        instructions.append(condition.assemble(asm, target, Linkage.NEXT));
         instructions.jumpIfFalse(target, falseBranch);
 
-        consequent.assemble(asm, instructions, target, trueLinkage);
+        instructions.append(consequent.assemble(asm, target, trueLinkage));
         instructions.label(falseBranch);
-        alternative.assemble(asm, instructions, target, linkage);
+        instructions.append(alternative.assemble(asm, target, linkage));
         instructions.label(after);
 
         instructions.finishWithLinkage(linkage);
+        
+        return instructions;
     }
 
     @Override

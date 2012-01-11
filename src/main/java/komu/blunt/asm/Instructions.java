@@ -7,10 +7,23 @@ import komu.blunt.core.PatternPath;
 import java.util.*;
 
 public final class Instructions {
-    
+
     private final List<OpCode> instructions = new ArrayList<>();
     private final Map<Integer,Set<Label>> labelMap = new HashMap<>();
 
+    public void append(Instructions rhs) {
+        int relocationOffset = instructions.size();
+        
+        instructions.addAll(rhs.instructions);
+        
+        for (Set<Label> labels : rhs.labelMap.values()) {
+            for (Label label : labels) {
+                label.relocateBy(relocationOffset);
+                getLabels(label.getAddress()).add(label);
+            }
+        }
+    }    
+    
     public void jumpIfFalse(Register register, Label label) {
         instructions.add(new OpJumpIfFalse(register, label));
     }

@@ -18,13 +18,16 @@ public final class CoreApplicationExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
-        func.assemble(asm, instructions, Register.PROCEDURE, Linkage.NEXT);
+    public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
+        
+        Instructions instructions = new Instructions();
+        
+        instructions.append(func.assemble(asm, Register.PROCEDURE, Linkage.NEXT));
 
         // TODO: save the procedure register only if assembling arg will touch it
         instructions.pushRegister(Register.PROCEDURE);
 
-        arg.assemble(asm, instructions, Register.ARG, Linkage.NEXT);
+        instructions.append(arg.assemble(asm, Register.ARG, Linkage.NEXT));
 
         instructions.popRegister(Register.PROCEDURE);
 
@@ -40,6 +43,8 @@ public final class CoreApplicationExpression extends CoreExpression {
 
             instructions.finishWithLinkage(linkage);
         }
+
+        return instructions;
     }
 
     @Override

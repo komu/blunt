@@ -20,12 +20,16 @@ public final class CoreDefineExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
-        expression.assemble(asm, instructions, target, Linkage.NEXT);
+    public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
+        Instructions instructions = new Instructions();
+        
+        instructions.append(expression.assemble(asm, target, Linkage.NEXT));
 
         instructions.storeVariable(var, target);
 
         instructions.loadConstant(target, BasicValues.UNIT);
         instructions.finishWithLinkage(linkage);
+
+        return instructions;
     }
 }

@@ -19,10 +19,12 @@ public class CoreExtractTagExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+    public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
+        Instructions instructions = new Instructions();
         instructions.loadVariable(target, var);
         instructions.loadTag(target, target, path);
         instructions.finishWithLinkage(linkage);
+        return instructions;
     }
 
     @Override

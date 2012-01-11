@@ -18,16 +18,20 @@ public final class CoreSetExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+    public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
+        Instructions instructions = new Instructions();
+
         instructions.pushRegister(Register.VAL); // TODO: only save var if needed
 
-        exp.assemble(asm, instructions, Register.VAL, Linkage.NEXT);
+        instructions.append(exp.assemble(asm, Register.VAL, Linkage.NEXT));
         instructions.storeVariable(var, Register.VAL);
 
         instructions.popRegister(Register.VAL);
 
         instructions.loadConstant(target, BasicValues.UNIT);
         instructions.finishWithLinkage(linkage);
+
+        return instructions;
     }
 
     @Override

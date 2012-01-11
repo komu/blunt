@@ -23,11 +23,15 @@ public final class CoreSequenceExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
-        for (CoreExpression exp : allButLast())
-            exp.assemble(asm, instructions, target, Linkage.NEXT);
+    public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
+        Instructions instructions = new Instructions();
 
-        last().assemble(asm, instructions, target, linkage);
+        for (CoreExpression exp : allButLast())
+            instructions.append(exp.assemble(asm, target, Linkage.NEXT));
+
+        instructions.append(last().assemble(asm, target, linkage));
+
+        return instructions;
     }
 
     private CoreExpression last() {

@@ -18,7 +18,9 @@ public final class CoreLambdaExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+    public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
+        Instructions instructions = new Instructions();
+        
         // TODO: place the lambda in a new code section
         Label lambda = asm.newLabel("lambda");
         Label afterLambda = asm.newLabel("after-lambda");
@@ -32,7 +34,9 @@ public final class CoreLambdaExpression extends CoreExpression {
 
         instructions.label(lambda);
         instructions.createEnvironment(envSize);
-        body.assemble(asm, instructions, Register.VAL, Linkage.RETURN);
+        instructions.append(body.assemble(asm, Register.VAL, Linkage.RETURN));
         instructions.label(afterLambda);
+        
+        return instructions;
     }
 }

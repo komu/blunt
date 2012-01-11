@@ -88,7 +88,8 @@ public final class Evaluator {
 
     private Object run(CoreExpression expression, Environment env) {
         int pos = instructions.pos();
-        expression.assemble(new Assembler(), instructions, Register.VAL, Linkage.NEXT);
+
+        instructions.append(expression.assemble(new Assembler(), Register.VAL, Linkage.NEXT));
 
         VM vm = new VM(instructions, env, rootBindings.runtimeEnvironment);
         vm.set(Register.PC, pos);

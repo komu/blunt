@@ -19,10 +19,12 @@ public final class CoreExtractExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+    public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
+        Instructions instructions = new Instructions();
         instructions.loadVariable(target, var);
         instructions.loadExtracted(target, target, path);
         instructions.finishWithLinkage(linkage);
+        return instructions;
     }
 
     @Override
