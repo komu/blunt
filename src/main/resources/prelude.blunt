@@ -213,6 +213,9 @@ scanl1 f (x:xs)  = scanl f x xs
 scanr _ x []     = [x]
 scanr f x (y:ys) = foldr f x (y:ys) : scanr f x ys
 
+fromJust (Just x) = x
+fromJust Nothing  = error "Nothing"
+
 -- scanr1 :: (a -> a -> a) -> [a] -> [a]
 -- lines :: String -> [String]
 -- unlines :: [String] -> String
