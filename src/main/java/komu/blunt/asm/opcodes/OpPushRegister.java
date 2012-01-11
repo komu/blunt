@@ -19,6 +19,11 @@ public class OpPushRegister extends OpCode {
     }
 
     @Override
+    public boolean modifies(Register register) {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return String.format("(push %s)", register);
     }

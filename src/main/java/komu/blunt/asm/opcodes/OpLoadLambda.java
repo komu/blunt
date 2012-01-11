@@ -25,6 +25,11 @@ public final class OpLoadLambda extends OpCode {
     }
 
     @Override
+    public boolean modifies(Register register) {
+        return register == target;
+    }
+
+    @Override
     public String toString() {
         return String.format("(load %s (lambda %s ENV))", target, label);
     }

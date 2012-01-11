@@ -21,6 +21,11 @@ public class OpCopyRegister extends OpCode {
     }
 
     @Override
+    public boolean modifies(Register register) {
+        return register == target;
+    }
+
+    @Override
     public String toString() {
         return String.format("(copy %s %s)", target, source);
     }

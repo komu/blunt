@@ -27,6 +27,12 @@ public final class OpApply extends OpCode {
             executeCompound(vm, (CompoundProcedure) procedure);
     }
 
+    @Override
+    public boolean modifies(Register register) {
+        // Though the application itself will only modify PC, ENV or VAL, the called code could modify anything.
+        return true;
+    }
+
     private void executePrimitive(VM vm, PrimitiveProcedure procedure) {
         vm.val = procedure.apply(vm.arg);
         if (tail)

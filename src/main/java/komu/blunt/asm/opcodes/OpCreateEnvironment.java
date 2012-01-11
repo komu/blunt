@@ -2,7 +2,6 @@ package komu.blunt.asm.opcodes;
 
 import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
-import komu.blunt.eval.Environment;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -18,8 +17,12 @@ public final class OpCreateEnvironment extends OpCode {
 
     @Override
     public void execute(VM vm) {
-        Environment env = (Environment) vm.env;
-        vm.env = env.extend(envSize, vm.arg);
+        vm.env = vm.env.extend(envSize, vm.arg);
+    }
+
+    @Override
+    public boolean modifies(Register register) {
+        return register == Register.ENV;
     }
 
     @Override

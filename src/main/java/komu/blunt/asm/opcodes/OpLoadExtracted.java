@@ -29,6 +29,11 @@ public class OpLoadExtracted extends OpCode {
     }
 
     @Override
+    public boolean modifies(Register register) {
+        return register == target;
+    }
+
+    @Override
     public String toString() {
         return String.format("(load %s (extract %s %s))", target, source, path);
     }

@@ -20,9 +20,13 @@ public final class OpJumpIfFalse extends OpCode {
     @Override
     public void execute(VM vm) {
         Object value = vm.get(register);
-        if (isFalse(value)) {
-            vm.jump(label);
-        }
+        if (isFalse(value))
+            vm.pc = label.getAddress();
+    }
+
+    @Override
+    public boolean modifies(Register register) {
+        return register == Register.PC;
     }
 
     private boolean isFalse(Object value) {

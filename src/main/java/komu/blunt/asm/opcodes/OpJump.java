@@ -1,6 +1,7 @@
 package komu.blunt.asm.opcodes;
 
 import komu.blunt.asm.Label;
+import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -14,7 +15,12 @@ public final class OpJump extends OpCode {
 
     @Override
     public void execute(VM vm) {
-        vm.jump(label);
+        vm.pc = label.getAddress();
+    }
+
+    @Override
+    public boolean modifies(Register register) {
+        return register == Register.PC;
     }
 
     @Override

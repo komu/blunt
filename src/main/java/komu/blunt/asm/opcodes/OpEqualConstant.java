@@ -28,6 +28,11 @@ public class OpEqualConstant extends OpCode {
     }
 
     @Override
+    public boolean modifies(Register register) {
+        return register == target;
+    }
+
+    @Override
     public String toString() {
         return String.format("(load %s (= %s %s))", target, source, value);
     }

@@ -6,21 +6,26 @@ import komu.blunt.asm.VM;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class OpLoadConstant extends OpCode {
-    private final Register register;
+    private final Register target;
     private final Object value;
 
-    public OpLoadConstant(Register register, Object value) {
-        this.register = checkNotNull(register);
+    public OpLoadConstant(Register target, Object value) {
+        this.target = checkNotNull(target);
         this.value = value;
     }
 
     @Override
     public void execute(VM vm) {
-        vm.set(register, value);
+        vm.set(target, value);
+    }
+
+    @Override
+    public boolean modifies(Register register) {
+        return register == target;
     }
 
     @Override
     public String toString() {
-        return String.format("(load %s (constant %s))", register, value);
+        return String.format("(load %s (constant %s))", target, value);
     }
 }

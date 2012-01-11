@@ -24,6 +24,11 @@ public final class OpStoreVariable extends OpCode {
     }
 
     @Override
+    public boolean modifies(Register register) {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return String.format("(store (variable %d %d) %s) ; %s", variable.frame, variable.offset, register, variable.name);
     }

@@ -74,10 +74,6 @@ public final class VM {
         }
     }
     
-    public void jump(Label label) {
-        this.pc = label.getAddress();
-    }
-    
     public void push(Object object) {
         stack.add(object);
     }
