@@ -11,13 +11,20 @@ import komu.blunt.parser.SyntaxException;
 import static komu.blunt.objects.Symbol.symbol;
 
 public class Main {
-
+    
     public static void main(String[] args) throws Exception {
         Evaluator evaluator = new Evaluator();
-        Prompt prompt = new Prompt();
         
         evaluator.loadResource("prelude.blunt");
+        
+        for (String arg : args)
+            evaluator.loadResource(arg);
 
+        repl(evaluator);
+    }
+
+    private static void repl(Evaluator evaluator) {
+        Prompt prompt = new Prompt();
         while (true) {
             try {
                 ASTExpression exp = prompt.readExpression(">>> ");
