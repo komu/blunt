@@ -1,9 +1,13 @@
 package komu.blunt.asm.opcodes;
 
-import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
 
 public final class OpReturn extends OpCode {
+
+    public static final OpReturn INSTANCE = new OpReturn();
+
+    private OpReturn() { }
+
     @Override
     public String toString() {
         return "(return)";
@@ -11,6 +15,7 @@ public final class OpReturn extends OpCode {
 
     @Override
     public void execute(VM vm) {
-        vm.restore(Register.ENV, Register.PC, Register.PROCEDURE, Register.ARG);
+        vm.pc = (Integer) vm.pop();
+        vm.env = vm.pop();
     }
 }

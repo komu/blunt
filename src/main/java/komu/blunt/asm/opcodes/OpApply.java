@@ -27,7 +27,7 @@ public final class OpApply extends OpCode {
     }
 
     private void executeCompound(VM vm, CompoundProcedure procedure) {
-        vm.save(Register.ENV, Register.PC, Register.PROCEDURE, Register.ARG);
+        vm.save(Register.ENV, Register.PC);
 
         vm.env = procedure.env;
         vm.pc = procedure.address;

@@ -50,7 +50,7 @@ public final class Instructions {
         if (linkage == Linkage.NEXT) {
             // nada
         } else if (linkage == Linkage.RETURN) {
-            instructions.add(new OpReturn());
+            instructions.add(OpReturn.INSTANCE);
         } else {
             jump(linkage.label);
         }

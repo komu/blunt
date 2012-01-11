@@ -4,7 +4,8 @@ import komu.blunt.asm.opcodes.OpCode;
 import komu.blunt.eval.Environment;
 import komu.blunt.eval.RootEnvironment;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -16,7 +17,7 @@ public final class VM {
     public Object arg;
     public int pc = 0;
     private final Instructions instructions;
-    private final ArrayList<Object> stack = new ArrayList<>();
+    private final Deque<Object> stack = new ArrayDeque<>(4096);
     private final RootEnvironment globalEnvironment;
     public long steps = 0;
 
@@ -81,7 +82,7 @@ public final class VM {
     }
     
     public Object pop() {
-        return stack.remove(stack.size() - 1);
+        return stack.removeLast();
     }
 
     public void save(Register... registers) {
