@@ -5,7 +5,6 @@ import komu.blunt.asm.Assembler;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
-import komu.blunt.stdlib.BasicValues;
 
 public final class CoreSetExpression extends CoreExpression {
 
@@ -21,14 +20,9 @@ public final class CoreSetExpression extends CoreExpression {
     public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
         Instructions instructions = new Instructions();
 
-        instructions.pushRegister(Register.VAL); // TODO: only save var if needed
+        instructions.append(exp.assemble(asm, target, Linkage.NEXT));
+        instructions.storeVariable(var, target);
 
-        instructions.append(exp.assemble(asm, Register.VAL, Linkage.NEXT));
-        instructions.storeVariable(var, Register.VAL);
-
-        instructions.popRegister(Register.VAL);
-
-        instructions.loadConstant(target, BasicValues.UNIT);
         instructions.finishWithLinkage(linkage);
 
         return instructions;
