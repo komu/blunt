@@ -63,6 +63,9 @@ sum = foldl (+) 0
 
 product = foldl (*) 1
 
+foreach f []     = ()
+foreach f (x:xs) = f x; foreach f xs
+
 map _ []     = []
 map f (x:xs) = f x : map f xs
 
