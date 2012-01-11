@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import komu.blunt.ast.*;
 import komu.blunt.objects.Symbol;
 import komu.blunt.types.DataTypeDefinitions;
-import komu.blunt.types.patterns.ConstructorPattern;
 import komu.blunt.types.patterns.Pattern;
 import komu.blunt.types.patterns.VariablePattern;
 
@@ -128,70 +127,6 @@ public final class Parser {
 
     private boolean nextTokenIsIdentifier(Symbol name) {
         return lexer.nextTokenIs(IDENTIFIER) && lexer.peekTokenValue(IDENTIFIER).equals(name.toString());
-    }
-
-    private static class FunctionBuilder {
-        private final List<Symbol> symbols = new ArrayList<>();
-        private final List<ASTExpression> exps = new ArrayList<>();
-        private final ImmutableList.Builder<ASTAlternative> alternatives = ImmutableList.builder();
-        
-        void addAlternative(ImmutableList<Pattern> args, ASTExpression body) {
-            if (exps.isEmpty()) {
-                for (int i = 0; i < args.size(); i++) {
-                    Symbol var = symbol("$arg" + i); // TODO: fresh symbols
-                    symbols.add(var);
-                    exps.add(AST.variable(var));
-                }                            
-            } else if (args.size() != exps.size()) {
-                throw new SyntaxException("invalid amount of arguments");
-            }
-            
-            alternatives.add(AST.alternative(Pattern.tuple(args), body));
-        }
-        
-        ASTExpression build() {
-            ImmutableList<ASTAlternative> alts = alternatives.build();
-            
-            // optimization
-            List<Symbol> simpleVars = containsOnlyVariablePatterns(alts);
-            if (simpleVars != null)
-                return AST.lambda(simpleVars, alts.get(0).value);
-
-            return AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alts));
-        }
-
-        private List<Symbol> containsOnlyVariablePatterns(ImmutableList<ASTAlternative> alts) {
-            if (alts.size() == 1)
-                return variablePattern(alts.get(0).pattern);
-            return null;
-        }
-
-        private List<Symbol> variablePattern(Pattern pattern) {
-            if (pattern instanceof VariablePattern)
-                return singletonList(((VariablePattern) pattern).var);
-            
-            if (pattern instanceof ConstructorPattern) {
-                ConstructorPattern c = (ConstructorPattern) pattern;
-
-                if (c.name.equals("()"))
-                    return null;
-                if (!c.name.equals(DataTypeDefinitions.tupleName(c.args.size())))
-                    return null;
-                
-                List<Symbol> vars = new ArrayList<>(c.args.size());
-                
-                for (Pattern p : c.args)
-                    if (p instanceof VariablePattern) {
-                        vars.add(((VariablePattern) p).var);
-                    } else {
-                        return null;
-                    }
-
-                return vars;
-            }
-
-            return null;
-        }
     }
 
     public ASTExpression parseExpression() {
@@ -337,13 +272,16 @@ public final class Parser {
     private ASTExpression parseLambda() {
         lexer.expectToken(LAMBDA);
 
-        List<Symbol> args = new ArrayList<>();
-        
-        do {
-            args.add(parseIdentifier());
-        } while (!lexer.readMatchingToken(RIGHT_ARROW));
+        ImmutableList.Builder<Pattern> argsBuilder = ImmutableList.builder();
 
-        return AST.lambda(args, parseExpression());
+        do {
+            argsBuilder.add(patternParser.parseSimplePattern());
+        } while (!lexer.readMatchingToken(RIGHT_ARROW));
+        
+        FunctionBuilder builder = new FunctionBuilder();
+        ImmutableList<Pattern> patterns = argsBuilder.build();
+        builder.addAlternative(patterns, parseExpression());
+        return builder.build();
     }
 
     // () | (<op>) | ( <expr> )
@@ -434,4 +372,48 @@ public final class Parser {
         
         return AST.apply(exp, lhs, rhs);
     }
+    
+    private static class FunctionBuilder {
+        private final List<Symbol> symbols = new ArrayList<>();
+        private final List<ASTExpression> exps = new ArrayList<>();
+        private final ImmutableList.Builder<ASTAlternative> alternatives = ImmutableList.builder();
+        
+        void addAlternative(ImmutableList<Pattern> args, ASTExpression body) {
+            if (exps.isEmpty()) {
+                for (int i = 0; i < args.size(); i++) {
+                    Symbol var = symbol("$arg" + i); // TODO: fresh symbols
+                    symbols.add(var);
+                    exps.add(AST.variable(var));
+                }                            
+            } else if (args.size() != exps.size()) {
+                throw new SyntaxException("invalid amount of arguments");
+            }
+            
+            alternatives.add(AST.alternative(Pattern.tuple(args), body));
+        }
+        
+        ASTExpression build() {
+            ImmutableList<ASTAlternative> alts = alternatives.build();
+            
+            // optimization
+            List<Symbol> simpleVars = containsOnlyVariablePatterns(alts);
+            if (simpleVars != null)
+                return AST.lambda(simpleVars, alts.get(0).value);
+
+            return AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alts));
+        }
+
+        private List<Symbol> containsOnlyVariablePatterns(ImmutableList<ASTAlternative> alts) {
+            if (alts.size() == 1)
+                return variablePattern(alts.get(0).pattern);
+            return null;
+        }
+
+        private List<Symbol> variablePattern(Pattern pattern) {
+            if (pattern instanceof VariablePattern)
+                return singletonList(((VariablePattern) pattern).var);
+
+            return null;
+        }
+    }    
 }
