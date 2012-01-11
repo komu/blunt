@@ -6,13 +6,10 @@ import komu.blunt.core.PatternPath;
 
 import java.util.*;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public final class Instructions {
     
     private final List<OpCode> instructions = new ArrayList<>();
     private final Map<Integer,Set<Label>> labelMap = new HashMap<>();
-    private int labelCounter = 0;
 
     public void jumpIfFalse(Register register, Label label) {
         instructions.add(new OpJumpIfFalse(register, label));
@@ -40,10 +37,6 @@ public final class Instructions {
 
             System.out.println("    " + instruction);
         }
-    }
-
-    public Label newLabel(String prefix) {
-        return new Label(checkNotNull(prefix) + "-" + labelCounter++);
     }
 
     public void finishWithLinkage(Linkage linkage) {

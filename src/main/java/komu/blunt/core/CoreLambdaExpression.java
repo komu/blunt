@@ -1,9 +1,6 @@
 package komu.blunt.core;
 
-import komu.blunt.asm.Instructions;
-import komu.blunt.asm.Label;
-import komu.blunt.asm.Linkage;
-import komu.blunt.asm.Register;
+import komu.blunt.asm.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,10 +18,10 @@ public final class CoreLambdaExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Instructions instructions, Register target, Linkage linkage) {
+    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
         // TODO: place the lambda in a new code section
-        Label lambda = instructions.newLabel("lambda");
-        Label afterLambda = instructions.newLabel("after-lambda");
+        Label lambda = asm.newLabel("lambda");
+        Label afterLambda = asm.newLabel("after-lambda");
 
         instructions.loadLambda(target, lambda);
         if (linkage == Linkage.NEXT) {
@@ -35,7 +32,7 @@ public final class CoreLambdaExpression extends CoreExpression {
 
         instructions.label(lambda);
         instructions.createEnvironment(envSize);
-        body.assemble(instructions, Register.VAL, Linkage.RETURN);
+        body.assemble(asm, instructions, Register.VAL, Linkage.RETURN);
         instructions.label(afterLambda);
     }
 }

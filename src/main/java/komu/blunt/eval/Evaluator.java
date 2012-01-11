@@ -4,10 +4,7 @@ import com.google.common.io.Resources;
 import komu.blunt.analyzer.Analyzer;
 import komu.blunt.analyzer.StaticEnvironment;
 import komu.blunt.analyzer.VariableReference;
-import komu.blunt.asm.Instructions;
-import komu.blunt.asm.Linkage;
-import komu.blunt.asm.Register;
-import komu.blunt.asm.VM;
+import komu.blunt.asm.*;
 import komu.blunt.ast.*;
 import komu.blunt.core.CoreDefineExpression;
 import komu.blunt.core.CoreExpression;
@@ -91,7 +88,7 @@ public final class Evaluator {
 
     private Object run(CoreExpression expression, Environment env) {
         int pos = instructions.pos();
-        expression.assemble(instructions, Register.VAL, Linkage.NEXT);
+        expression.assemble(new Assembler(), instructions, Register.VAL, Linkage.NEXT);
 
         VM vm = new VM(instructions, env, rootBindings.runtimeEnvironment);
         vm.set(Register.PC, pos);

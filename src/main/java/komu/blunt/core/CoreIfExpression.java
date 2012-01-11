@@ -1,9 +1,6 @@
 package komu.blunt.core;
 
-import komu.blunt.asm.Instructions;
-import komu.blunt.asm.Label;
-import komu.blunt.asm.Linkage;
-import komu.blunt.asm.Register;
+import komu.blunt.asm.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,20 +17,20 @@ public final class CoreIfExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Instructions instructions, Register target, Linkage linkage) {
-        Label after = instructions.newLabel("if-after");
-        Label falseBranch = instructions.newLabel("if-false");
+    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+        Label after = asm.newLabel("if-after");
+        Label falseBranch = asm.newLabel("if-false");
 
         Linkage trueLinkage = (linkage == Linkage.NEXT) ? Linkage.jump(after) : linkage;
 
         // Since the target register is safe to overwrite, we borrow it
         // for evaluating the condition as well.
-        condition.assemble(instructions, target, Linkage.NEXT);
+        condition.assemble(asm, instructions, target, Linkage.NEXT);
         instructions.jumpIfFalse(target, falseBranch);
 
-        consequent.assemble(instructions, target, trueLinkage);
+        consequent.assemble(asm, instructions, target, trueLinkage);
         instructions.label(falseBranch);
-        alternative.assemble(instructions, target, linkage);
+        alternative.assemble(asm, instructions, target, linkage);
         instructions.label(after);
 
         instructions.finishWithLinkage(linkage);

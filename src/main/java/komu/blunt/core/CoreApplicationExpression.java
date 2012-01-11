@@ -1,5 +1,6 @@
 package komu.blunt.core;
 
+import komu.blunt.asm.Assembler;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
@@ -17,13 +18,13 @@ public final class CoreApplicationExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Instructions instructions, Register target, Linkage linkage) {
-        func.assemble(instructions, Register.PROCEDURE, Linkage.NEXT);
+    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+        func.assemble(asm, instructions, Register.PROCEDURE, Linkage.NEXT);
 
         // TODO: save the procedure register only if assembling arg will touch it
         instructions.pushRegister(Register.PROCEDURE);
 
-        arg.assemble(instructions, Register.ARG, Linkage.NEXT);
+        arg.assemble(asm, instructions, Register.ARG, Linkage.NEXT);
 
         instructions.popRegister(Register.PROCEDURE);
 

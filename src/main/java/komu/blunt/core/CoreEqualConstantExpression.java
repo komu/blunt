@@ -1,5 +1,6 @@
 package komu.blunt.core;
 
+import komu.blunt.asm.Assembler;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
@@ -16,8 +17,8 @@ public class CoreEqualConstantExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Instructions instructions, Register target, Linkage linkage) {
-        expression.assemble(instructions, target, Linkage.NEXT);
+    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+        expression.assemble(asm, instructions, target, Linkage.NEXT);
         instructions.equalConstant(target, target, value);
         instructions.finishWithLinkage(linkage);
     }

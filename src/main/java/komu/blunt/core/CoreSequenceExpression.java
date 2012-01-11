@@ -1,5 +1,6 @@
 package komu.blunt.core;
 
+import komu.blunt.asm.Assembler;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
@@ -22,11 +23,11 @@ public final class CoreSequenceExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Instructions instructions, Register target, Linkage linkage) {
+    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
         for (CoreExpression exp : allButLast())
-            exp.assemble(instructions, target, Linkage.NEXT);
+            exp.assemble(asm, instructions, target, Linkage.NEXT);
 
-        last().assemble(instructions, target, linkage);
+        last().assemble(asm, instructions, target, linkage);
     }
 
     private CoreExpression last() {

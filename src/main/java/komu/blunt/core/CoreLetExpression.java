@@ -1,6 +1,7 @@
 package komu.blunt.core;
 
 import komu.blunt.analyzer.VariableReference;
+import komu.blunt.asm.Assembler;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
@@ -20,12 +21,8 @@ public final class CoreLetExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Instructions instructions, Register target, Linkage linkage) {
-        // TODO: let is implemented as lambda, which is not quite optimal
-
-        new CoreSetExpression(var, value).assemble(instructions, target, Linkage.NEXT);
-        body.assemble(instructions, target, linkage);
-        //CoreExpression func = new CoreLambdaExpression(20, body);
-        //new CoreApplicationExpression(func, value).assemble(instructions, target, linkage);
+    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+        new CoreSetExpression(var, value).assemble(asm, instructions, target, Linkage.NEXT);
+        body.assemble(asm, instructions, target, linkage);
     }
 }

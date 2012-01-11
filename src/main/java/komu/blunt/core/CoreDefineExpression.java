@@ -1,6 +1,7 @@
 package komu.blunt.core;
 
 import komu.blunt.analyzer.VariableReference;
+import komu.blunt.asm.Assembler;
 import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
@@ -19,8 +20,8 @@ public final class CoreDefineExpression extends CoreExpression {
     }
 
     @Override
-    public void assemble(Instructions instructions, Register target, Linkage linkage) {
-        expression.assemble(instructions, target, Linkage.NEXT);
+    public void assemble(Assembler asm, Instructions instructions, Register target, Linkage linkage) {
+        expression.assemble(asm, instructions, target, Linkage.NEXT);
 
         instructions.storeVariable(var, target);
 
