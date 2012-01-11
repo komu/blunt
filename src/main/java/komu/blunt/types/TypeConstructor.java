@@ -73,7 +73,7 @@ public final class TypeConstructor extends Type {
         } else if (name.equals("[]") && arguments.size() == 1) {
             return "[" + arguments.get(0) + "]";
 
-        } else if (name.equals(",")) {
+        } else if (name.matches("\\(,+\\)")) {
             return tupleToString(arguments);
 
         } else {
