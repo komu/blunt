@@ -50,7 +50,8 @@ public final class Instructions {
         if (linkage == Linkage.NEXT) {
             // nada
         } else if (linkage == Linkage.RETURN) {
-            instructions.add(OpReturn.INSTANCE);
+            //popRegister(Register.ENV);
+            popRegister(Register.PC);
         } else {
             jump(linkage.label);
         }

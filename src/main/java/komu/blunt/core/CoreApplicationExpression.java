@@ -29,7 +29,9 @@ public final class CoreApplicationExpression extends CoreExpression {
 
         // TODO: tail calls
 
+        instructions.pushRegister(Register.ENV);
         instructions.apply();
+        instructions.popRegister(Register.ENV);
         if (target != Register.VAL)
             instructions.copy(target, Register.VAL);
 
