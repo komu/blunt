@@ -27,7 +27,8 @@ public class EvaluatorPerformanceTest {
     }
     
     @Test
-    @MaxSteps(1_364_902)
+    //@MaxSteps(1_364_902)
+    @MaxSteps(1_953_586)
     public void sorting() {
         evaluate("sort (range 0 500)");
     }

@@ -413,7 +413,29 @@ public final class Parser {
             if (pattern instanceof VariablePattern)
                 return singletonList(((VariablePattern) pattern).var);
 
+            /*
+            if (pattern instanceof ConstructorPattern) {
+                ConstructorPattern c = (ConstructorPattern) pattern;
+
+                if (c.name.equals("()"))
+                    return null;
+                if (!c.name.equals(DataTypeDefinitions.tupleName(c.args.size())))
+                    return null;
+
+                List<Symbol> vars = new ArrayList<>(c.args.size());
+
+                for (Pattern p : c.args)
+                    if (p instanceof VariablePattern) {
+                        vars.add(((VariablePattern) p).var);
+                    } else {
+                        return null;
+                    }
+
+                return vars;
+            }
+            */
+
             return null;
         }
-    }    
+    }
 }

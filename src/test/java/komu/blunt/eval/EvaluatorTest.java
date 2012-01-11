@@ -39,6 +39,11 @@ public class EvaluatorTest {
     }
 
     @Test
+    public void patternsInLambdas() {
+        assertThatEvaluating("(\\(a,b) -> a) (42, 24)", produces(42));
+    }
+
+    @Test
     public void ifExpression() {
         assertThatEvaluating("if True then 1 + 2 else 3 + 4", produces(3));
         assertThatEvaluating("if False then 1 + 2 else 3 + 4", produces(7));
