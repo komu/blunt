@@ -5,7 +5,7 @@ import komu.blunt.eval.Environment;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class CompoundProcedure {
+public final class CompoundProcedure implements Procedure {
     
     public final int address;
     public final Environment env;

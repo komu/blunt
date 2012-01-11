@@ -1,13 +1,13 @@
 package komu.blunt.eval;
 
 import com.google.common.collect.ImmutableList;
-import komu.blunt.objects.Function;
+import komu.blunt.objects.PrimitiveProcedure;
 import komu.blunt.objects.TypeConstructorValue;
 import komu.blunt.types.ConstructorDefinition;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-final class ConstructorArgumentCollector implements Function {
+final class ConstructorArgumentCollector implements PrimitiveProcedure {
     
     private final ConstructorDefinition ctor;
     private final ImmutableList<Object> args;

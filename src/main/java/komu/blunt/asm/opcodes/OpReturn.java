@@ -1,6 +1,7 @@
 package komu.blunt.asm.opcodes;
 
 import komu.blunt.asm.VM;
+import komu.blunt.eval.Environment;
 
 public final class OpReturn extends OpCode {
 
@@ -16,6 +17,6 @@ public final class OpReturn extends OpCode {
     @Override
     public void execute(VM vm) {
         vm.pc = (Integer) vm.pop();
-        vm.env = vm.pop();
+        vm.env = (Environment) vm.pop();
     }
 }

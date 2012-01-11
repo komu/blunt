@@ -3,7 +3,7 @@ package komu.blunt.asm.opcodes;
 import komu.blunt.asm.Register;
 import komu.blunt.asm.VM;
 import komu.blunt.objects.CompoundProcedure;
-import komu.blunt.objects.Function;
+import komu.blunt.objects.PrimitiveProcedure;
 
 public final class OpApply extends OpCode {
 
@@ -15,14 +15,14 @@ public final class OpApply extends OpCode {
     public void execute(VM vm) {
         Object procedure = vm.procedure;
 
-        if (procedure instanceof Function) {
-            executePrimitive(vm, (Function) procedure);
+        if (procedure instanceof PrimitiveProcedure) {
+            executePrimitive(vm, (PrimitiveProcedure) procedure);
         } else {
             executeCompound(vm, (CompoundProcedure) procedure);
         }
     }
 
-    private void executePrimitive(VM vm, Function procedure) {
+    private void executePrimitive(VM vm, PrimitiveProcedure procedure) {
         vm.val = procedure.apply(vm.arg);
     }
 

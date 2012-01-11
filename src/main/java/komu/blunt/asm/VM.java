@@ -3,6 +3,7 @@ package komu.blunt.asm;
 import komu.blunt.asm.opcodes.OpCode;
 import komu.blunt.eval.Environment;
 import komu.blunt.eval.RootEnvironment;
+import komu.blunt.objects.Procedure;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class VM {
     
     public Object val;
-    public Object env;
-    public Object procedure;
+    public Environment env;
+    public Procedure procedure;
     public Object arg;
     public int pc = 0;
     private final Instructions instructions;
@@ -60,13 +61,13 @@ public final class VM {
             arg = value;
             break;
         case ENV:
-            env = value;
+            env = (Environment) value;
             break;
         case PC:
             pc = (Integer) value;
             break;
         case PROCEDURE:
-            procedure = value;
+            procedure = (Procedure) value;
             break;
         default:
             throw new IllegalArgumentException("unknown register: " + register);

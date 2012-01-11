@@ -10,7 +10,7 @@ import java.util.Arrays;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Throwables.propagate;
 
-public final class PrimitiveFunction implements Function {
+public final class PrimitiveFunction implements PrimitiveProcedure {
 
     private final Method method;
     private final String name;
