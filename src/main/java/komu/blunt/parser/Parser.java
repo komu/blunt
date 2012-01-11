@@ -172,7 +172,9 @@ public final class Parser {
             
             if (pattern instanceof ConstructorPattern) {
                 ConstructorPattern c = (ConstructorPattern) pattern;
-               
+
+                if (c.name.equals("()"))
+                    return null;
                 if (!c.name.equals(DataTypeDefinitions.tupleName(c.args.size())))
                     return null;
                 
