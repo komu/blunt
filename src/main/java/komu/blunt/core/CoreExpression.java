@@ -9,6 +9,8 @@ import java.util.List;
 
 public abstract class CoreExpression {
 
+    public abstract CoreExpression simplify();
+
     public abstract Instructions assemble(Assembler asm, Register target, Linkage linkage);
 
     public static CoreExpression and(List<CoreExpression> exps) {

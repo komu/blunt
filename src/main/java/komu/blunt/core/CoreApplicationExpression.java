@@ -43,6 +43,12 @@ public final class CoreApplicationExpression extends CoreExpression {
     }
 
     @Override
+    public CoreExpression simplify() {
+        // TODO: simplify application of lambda
+        return new CoreApplicationExpression(func.simplify(), arg.simplify());
+    }
+
+    @Override
     public String toString() {
         return "(" + func + " " + arg + ")";
     }

@@ -9,7 +9,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class CoreConstantExpression extends CoreExpression {
 
-    private final Object value;
+    public final Object value;
 
     public CoreConstantExpression(Object value) {
         this.value = checkNotNull(value);
@@ -21,6 +21,11 @@ public final class CoreConstantExpression extends CoreExpression {
         instructions.loadConstant(target, value);
         instructions.finishWithLinkage(linkage);
         return instructions;
+    }
+
+    @Override
+    public CoreExpression simplify() {
+        return this;
     }
 
     @Override

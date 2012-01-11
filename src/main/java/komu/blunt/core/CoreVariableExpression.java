@@ -25,6 +25,11 @@ public final class CoreVariableExpression extends CoreExpression {
     }
 
     @Override
+    public CoreExpression simplify() {
+        return this;
+    }
+
+    @Override
     public String toString() {
         return var.name.toString();
     }

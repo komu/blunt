@@ -10,11 +10,16 @@ public final class CoreEmptyExpression extends CoreExpression {
     public static final CoreExpression INSTANCE = new CoreEmptyExpression();
 
     private CoreEmptyExpression() { }
-    
+
     @Override
     public Instructions assemble(Assembler asm, Register target, Linkage linkage) {
         Instructions instructions = new Instructions();
         instructions.finishWithLinkage(linkage);
         return instructions;
+    }
+
+    @Override
+    public CoreExpression simplify() {
+        return this;
     }
 }

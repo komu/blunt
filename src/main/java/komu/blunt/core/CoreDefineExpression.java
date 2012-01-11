@@ -32,4 +32,9 @@ public final class CoreDefineExpression extends CoreExpression {
 
         return instructions;
     }
+
+    @Override
+    public CoreExpression simplify() {
+        return new CoreDefineExpression(expression.simplify(), var);
+    }
 }

@@ -5,6 +5,8 @@ import komu.blunt.asm.Instructions;
 import komu.blunt.asm.Linkage;
 import komu.blunt.asm.Register;
 
+import java.util.Objects;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CoreEqualConstantExpression extends CoreExpression {
@@ -28,5 +30,15 @@ public class CoreEqualConstantExpression extends CoreExpression {
     @Override
     public String toString() {
         return "(= " + value + " " + expression + ")";
+    }
+
+    @Override
+    public CoreExpression simplify() {
+        CoreExpression simplified = expression.simplify();
+        if (simplified instanceof CoreConstantExpression) {
+            CoreConstantExpression constant = (CoreConstantExpression) simplified;
+            return new CoreConstantExpression(Objects.equals(value, constant.value));
+        }
+        return new CoreEqualConstantExpression(value, simplified);
     }
 }

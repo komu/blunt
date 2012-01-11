@@ -39,4 +39,9 @@ public final class CoreLambdaExpression extends CoreExpression {
         
         return instructions;
     }
+
+    @Override
+    public CoreExpression simplify() {
+        return new CoreLambdaExpression(envSize, body.simplify());
+    }
 }

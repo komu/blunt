@@ -28,6 +28,11 @@ public final class CoreExtractExpression extends CoreExpression {
     }
 
     @Override
+    public CoreExpression simplify() {
+        return this;
+    }
+
+    @Override
     public String toString() {
         return "(extract " + path + ")";
     }

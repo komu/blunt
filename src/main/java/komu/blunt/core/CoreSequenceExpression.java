@@ -50,4 +50,19 @@ public final class CoreSequenceExpression extends CoreExpression {
     public String toString() {
         return expressions.toString();
     }
+
+    @Override
+    public CoreExpression simplify() {
+        List<CoreExpression> exps = new ArrayList<>(expressions.size());
+        for (CoreExpression exp : expressions)
+            if (exp != CoreEmptyExpression.INSTANCE)
+                exps.add(exp.simplify());
+        
+        if (exps.isEmpty())
+            return CoreEmptyExpression.INSTANCE;
+        else if (exps.size() == 1)
+            return exps.get(0);
+        else
+            return new CoreSequenceExpression(exps);
+    }
 }

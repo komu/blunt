@@ -29,6 +29,11 @@ public final class CoreSetExpression extends CoreExpression {
     }
 
     @Override
+    public CoreExpression simplify() {
+        return new CoreSetExpression(var, exp.simplify());
+    }
+
+    @Override
     public String toString() {
         return "(set! " + var.name + " " + exp + ")";
     }

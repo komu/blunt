@@ -3,6 +3,7 @@ package komu.blunt.core;
 import komu.blunt.asm.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static komu.blunt.asm.opcodes.OpJumpIfFalse.isFalse;
 
 public final class CoreIfExpression extends CoreExpression {
 
@@ -38,6 +39,20 @@ public final class CoreIfExpression extends CoreExpression {
         instructions.finishWithLinkage(linkage);
         
         return instructions;
+    }
+
+    @Override
+    public CoreExpression simplify() {
+        CoreExpression simplifiedCondition = condition.simplify();
+        CoreExpression simplifiedConsequent = consequent.simplify();
+        CoreExpression simplifiedAlternative = alternative.simplify();
+
+        if (simplifiedCondition instanceof CoreConstantExpression) {
+            CoreConstantExpression constant = (CoreConstantExpression) simplifiedCondition;
+            return isFalse(constant) ? simplifiedAlternative : simplifiedConsequent;
+        } else {
+            return new CoreIfExpression(simplifiedCondition, simplifiedConsequent, simplifiedAlternative);
+        }
     }
 
     @Override

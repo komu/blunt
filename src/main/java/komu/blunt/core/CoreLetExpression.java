@@ -27,4 +27,10 @@ public final class CoreLetExpression extends CoreExpression {
         instructions.append(body.assemble(asm, target, linkage));
         return instructions;
     }
+
+    @Override
+    public CoreExpression simplify() {
+        // TODO: if value is constant, propagate it into body
+        return new CoreLetExpression(var, value.simplify(), body.simplify());
+    }
 }

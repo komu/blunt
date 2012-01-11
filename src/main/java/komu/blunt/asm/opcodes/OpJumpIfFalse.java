@@ -29,7 +29,7 @@ public final class OpJumpIfFalse extends OpCode {
         return register == Register.PC;
     }
 
-    private boolean isFalse(Object value) {
+    public static boolean isFalse(Object value) {
         return Boolean.FALSE.equals(value)
             || (value instanceof TypeConstructorValue && ((TypeConstructorValue) value).name.equals("False"));
     }
