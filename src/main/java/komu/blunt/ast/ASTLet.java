@@ -22,6 +22,7 @@ public final class ASTLet extends ASTExpression {
 
     @Override
     public ASTExpression simplify() {
+        // TODO: inline constants and side-effect free stuff that is referenced only once
         ImmutableList.Builder<ImplicitBinding> simplifiedBindings = ImmutableList.builder();
         for (ImplicitBinding binding : bindings)
             simplifiedBindings.add(binding.simplify());

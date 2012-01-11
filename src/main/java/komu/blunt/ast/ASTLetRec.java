@@ -22,6 +22,7 @@ public final class ASTLetRec extends ASTExpression {
 
     @Override
     public ASTExpression simplify() {
+        // TODO: convert letrecs to lets if variable is not referenced in binding
         ImmutableList.Builder<ImplicitBinding> simplifiedBindings = ImmutableList.builder();
         for (ImplicitBinding binding : bindings)
             simplifiedBindings.add(binding.simplify());
