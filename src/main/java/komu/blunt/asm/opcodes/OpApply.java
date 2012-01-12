@@ -35,14 +35,10 @@ public final class OpApply extends OpCode {
 
     private void executePrimitive(VM vm, PrimitiveProcedure procedure) {
         vm.val = procedure.apply(vm.arg);
-        if (tail)
-            vm.pc = (Integer) vm.pop();
+        vm.pc = (Integer) vm.pop();
     }
 
     private void executeCompound(VM vm, CompoundProcedure procedure) {
-        if (!tail)
-            vm.push(vm.pc);
-
         vm.env = procedure.env;
         vm.pc = procedure.address;
     }

@@ -1,9 +1,6 @@
 package komu.blunt.core;
 
-import komu.blunt.asm.Assembler;
-import komu.blunt.asm.Instructions;
-import komu.blunt.asm.Linkage;
-import komu.blunt.asm.Register;
+import komu.blunt.asm.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,8 +26,15 @@ public final class CoreApplicationExpression extends CoreExpression {
             instructions.applyTail();
 
         } else {
+            Label afterCall = asm.newLabel("afterCall");
+
+            // TODO: make pushing env the responsibility of called procedure
             if (linkage != Linkage.RETURN) instructions.pushRegister(Register.ENV);
+
+            // TODO: use label from linkage if possible (depends on callee saving env)
+            instructions.pushLabel(afterCall);
             instructions.apply();
+            instructions.label(afterCall);
             if (linkage != Linkage.RETURN) instructions.popRegister(Register.ENV);
 
             if (target != Register.VAL)
@@ -38,6 +42,7 @@ public final class CoreApplicationExpression extends CoreExpression {
 
             instructions.finishWithLinkage(linkage);
         }
+
 
         return instructions;
     }

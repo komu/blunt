@@ -121,6 +121,10 @@ public final class Instructions {
         instructions.add(new OpJump(label));
     }
 
+    public void pushLabel(Label label) {
+        instructions.add(new OpPushLabel(label));
+    }
+    
     public void pushRegister(Register register) {
         instructions.add(new OpPushRegister(register));
     }
