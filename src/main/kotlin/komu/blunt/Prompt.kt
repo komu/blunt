@@ -15,7 +15,7 @@ class Prompt {
         print(prompt)
         System.out?.flush()
 
-        return Parser.parseExpression(reader.readLine()).sure())
+        return Parser.parseExpression(reader.readLine().sure()).sure()
     }
 }
 

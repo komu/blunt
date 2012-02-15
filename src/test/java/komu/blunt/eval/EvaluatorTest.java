@@ -172,11 +172,11 @@ public class EvaluatorTest {
     }
 
     private static CoreExpression analyze(String expr) {
-        return new Evaluator().analyze(Parser.parseExpression(expr));
+        return new Evaluator().analyze(Parser.$classobj.parseExpression(expr));
     }
 
     private static Object evaluate(String expr) {
-        return evaluator.evaluate(Parser.parseExpression(expr));
+        return evaluator.evaluate(Parser.$classobj.parseExpression(expr));
     }
 
     private static Matcher<Object> produces(final int value) {

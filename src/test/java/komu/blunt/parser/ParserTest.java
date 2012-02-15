@@ -88,6 +88,6 @@ public class ParserTest {
     }
 
     private static ASTExpression parsing(String s) {
-        return Parser.parseExpression(s);
+        return Parser.$classobj.parseExpression(s);
     }
 }
