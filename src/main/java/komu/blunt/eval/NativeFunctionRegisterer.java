@@ -51,7 +51,7 @@ final class NativeFunctionRegisterer {
     private Scheme resolveType(Method m) {
         TypeScheme scheme = m.getAnnotation(TypeScheme.class);
         if (scheme != null)
-            return TypeParser.parseScheme(scheme.value());
+            return TypeParser.$classobj.parseScheme(scheme.value());
         else
             return NativeTypeConversions.createFunctionType(m);
 

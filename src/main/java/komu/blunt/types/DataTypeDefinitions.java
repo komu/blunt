@@ -2,12 +2,12 @@ package komu.blunt.types;
 
 import komu.blunt.analyzer.AnalyzationException;
 import komu.blunt.ast.ASTDataDefinition;
+import komu.blunt.parser.TypeParser;
 
 import java.util.*;
 
 import static com.google.common.base.Strings.repeat;
 import static java.util.Collections.unmodifiableCollection;
-import static komu.blunt.parser.TypeParser.parseScheme;
 import static komu.blunt.types.Qualified.quantifyAll;
 import static komu.blunt.types.Type.*;
 
@@ -31,7 +31,7 @@ public class DataTypeDefinitions {
     }
     
     private void register(int index, String name, String scheme, int arity) {
-        register(new ConstructorDefinition(0, name, parseScheme(scheme), arity));
+        register(new ConstructorDefinition(0, name, TypeParser.$classobj.parseScheme(scheme), arity));
     }
 
     public void register(ASTDataDefinition definition) {

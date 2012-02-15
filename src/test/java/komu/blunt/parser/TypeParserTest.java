@@ -75,10 +75,10 @@ public class TypeParserTest {
     }
 
     private static void verifyParsing(String s, Qualified<Type> type) {
-        Assert.assertThat(TypeParser.parseQualified(s), is(type));
+        Assert.assertThat(TypeParser.$classobj.parseQualified(s), is(type));
     }
 
     private static void verifyParsing(String s, Type type) {
-        Assert.assertThat(TypeParser.parseType(s), is(type));
+        Assert.assertThat(TypeParser.$classobj.parseType(s), is(type));
     }
 }
