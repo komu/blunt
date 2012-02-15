@@ -16,7 +16,7 @@ object Main {
 
         while (true) {
             try {
-                val exp = prompt.readExpression(">>> ").sure()
+                val exp = prompt.readExpression(">>> ")
 
                 if (isSymbol("exit", exp)) {
                     break;
