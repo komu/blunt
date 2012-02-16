@@ -94,17 +94,17 @@ class Evaluator() {
     }
 
     public fun evaluate(exp: ASTExpression): Any? =
-        evaluateWithType(exp).result
+        evaluateWithType(exp)._1
 
 
-    public fun evaluateWithType(exp: ASTExpression): ResultWithType {
+    public fun evaluateWithType(exp: ASTExpression): #(Any?,Qualified<Type?>) {
         val env = rootBindings.staticEnvironment?.extend().sure()
         val typ = typeCheck(exp)
         val expression = toCore(exp, env);
 
         val result = run(expression, rootBindings.runtimeEnvironment?.extend(env.size()).sure())
 
-        return ResultWithType(result, typ);
+        return #(result, typ);
     }
 
     private fun typeCheck(exp: ASTExpression): Qualified<Type?> {
