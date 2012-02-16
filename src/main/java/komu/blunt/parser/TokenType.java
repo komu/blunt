@@ -70,6 +70,10 @@ public class TokenType<T> {
         return keywords.get(name);
     }
 
+    public Token<T> make(T value, SourceLocation location) {
+        return new Token<T>(this, value, location);
+    }
+
     @Override
     public String toString() {
         return name;
