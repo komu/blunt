@@ -3,7 +3,6 @@ package komu.blunt.parser
 import java.math.BigInteger
 import java.util.Collection
 
-import java.lang.Character.*
 import komu.blunt.parser.TokenType.*
 import java.util.List
 
@@ -100,10 +99,10 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         }
 
         val ch = peek();
-        if (ch == -1)
+        if (ch == null)
             return Token.ofType(EOF, location).sure()
 
-        when (ch.chr) {
+        when (ch) {
             '"' ->   return readString();
             ',' ->   { read(); return Token.ofType(COMMA, location).sure() }
             '(' ->   { read(); return Token.ofType(LPAREN, location).sure() }
@@ -134,7 +133,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     }
 
     private fun skipToEndOfLine() {
-        while (reader.peek() != -1)
+        while (reader.peek() != null)
             if (read() == '\n')
                 break;
     }
@@ -156,20 +155,26 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
 
         if (keyword != null)
             return Token.ofType(keyword, location).sure()
-        else if (isUpperCase(name[0]))
+        else if (Character.isUpperCase(name[0]))
             return Token(TYPE_OR_CTOR_NAME, location)
         else
             return Token(IDENTIFIER, name, location)
     }
 
-    private fun isIdentifierStart(ch: Int) =
-        isJavaIdentifierStart(ch)
+    private fun isWhitespace(ch: Char?) =
+        ch != null && Character.isWhitespace(ch)
 
-    private fun isIdentifierPart(ch: Int) =
-        isJavaIdentifierPart(ch) || "?!'".lastIndexOf(ch.chr) != -1;
+    private fun isIdentifierStart(ch: Char?) =
+        ch != null && Character.isJavaIdentifierStart(ch)
 
-    private fun isOperatorCharacter(ch: Int) =
-        "=-+*/<>%?!|&$:.\\~".lastIndexOf(ch.chr) != -1;
+    private fun isIdentifierPart(ch: Char?) =
+        ch != null && (Character.isJavaIdentifierPart(ch) || "?!'".lastIndexOf(ch.chr) != -1)
+
+    private fun isOperatorCharacter(ch: Char?) =
+        ch != null && "=-+*/<>%?!|&$:.\\~".lastIndexOf(ch) != -1;
+
+    private fun isDigit(ch: Char?) =
+        ch != null && Character.isDigit(ch)
 
     private fun readOperator(): Token<Any> {
         val location = reader.getLocation()
@@ -232,15 +237,14 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
 
     private fun read(): Char {
         val ch = reader.read();
-        if (ch != -1)
-            return ch.chr
+        if (ch != null)
+            return ch
         else
             throw parseError("unexpected EOF");
     }
 
-    private fun peek(): Int {
-        return reader.peek();
-    }
+    private fun peek(): Char? =
+        reader.peek()
 
     private fun expect(expected: Char) {
         val ch = read()
