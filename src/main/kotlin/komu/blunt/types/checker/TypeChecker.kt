@@ -47,7 +47,7 @@ class TypeChecker(private val classEnv: ClassEnv, private val dataTypes: DataTyp
         exp.accept(expressionVisitor, ass).sure()
 
     fun typeCheckBindGroup(bindGroup: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions?> =
-        bindingTypeChecker.typeCheckBindGroup(bindGroup, ass)
+        bindingTypeChecker.typeCheckBindGroup(bindGroup, ass).sure()
 
     fun typeCheck(define: ASTValueDefinition, ass: Assumptions): TypeCheckResult<Type?> {
         val let = AST.letRec(define.name, define.value, AST.variable(define.name)).sure()
@@ -55,56 +55,50 @@ class TypeChecker(private val classEnv: ClassEnv, private val dataTypes: DataTyp
     }
 
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type?> =
-        pattern.accept(patternTypeChecker, null)
+        pattern.accept(patternTypeChecker, null).sure()
 
     fun freshInstance(scheme: Scheme): Qualified<Type?> {
-        val ts = ArrayList<TypeVariable?>(scheme.kinds.size().sure())
+        val ts = ArrayList<TypeVariable?>(scheme.kinds?.size().sure())
         for (val kind in scheme.kinds)
-            ts.add(newTVar(kind))
+            ts.add(newTVar(kind.sure()))
 
         return Qualified.instantiate(ts, scheme.`type`).sure()
     }
 
     fun newTVar(): TypeVariable =
-        newTVar(Kind.STAR)
-    }
+        newTVar(Kind.STAR.sure())
 
     fun newTVar(kind: Kind): TypeVariable =
-        typeVariable(typeName(typeSequence++), kind)
+        typeVariable(typeName(typeSequence++), kind).sure()
 
-//
-//    List<Type> newTVars(int size) {
-//        List<Type> types = new ArrayList<>(size);
-//        for (int i = 0; i < size; i++)
-//            types.add(newTVar());
-//        return types;
-//    }
-//
-//    private static String typeName(int index) {
-//        if (index < 5) {
-//            return String.valueOf((char) ('a' + index));
-//        } else {
-//            return "t" + (index-5);
-//        }
-//    }
-//
-//    void unify(Type t1, Type t2) {
-//        try {
-//            Substitution u = mgu(t1.apply(substitution), t2.apply(substitution));
-//            substitution = u.compose(substitution);
-//        } catch (UnificationException e) {
-//            throw new TypeCheckException(e);
-//        }
-//    }
-//
-//    <T extends Types<T>> T applySubstitution(T t) {
-//        return t.apply(substitution);
-//    }
-//
-//    <T extends Types<T>> List<T> applySubstitution(Collection<T> ts) {
-//        return TypeUtils.applySubstitution(substitution, ts);
-//    }
-//
+    fun newTVars(size: Int): List<Type?> {
+        val types = ArrayList<Type?>(size)
+        for (val i in 0..size-1)
+            types.add(newTVar())
+        return types
+    }
+
+    private fun typeName(index: Int): String =
+        if (index < 5)
+            String.valueOf(('a' + index).chr).sure()
+        else
+            "t" + (index-5)
+
+    fun unify(t1: Type, t2: Type) {
+        try {
+            val u = mgu(t1.apply(substitution), t2.apply(substitution)).sure()
+            substitution = u.compose(substitution).sure()
+        } catch (e: UnificationException) {
+            throw TypeCheckException(e)
+        }
+    }
+
+    fun applySubstitution<T : Types<T>>(t: T): T =
+      t.apply(substitution)
+
+    fun applySubstitution<T : Types<T>>(ts: Collection<T?>): List<T?> =
+        TypeUtils.applySubstitution(substitution, ts).sure()
+
     fun findConstructor(name: String): ConstructorDefinition =
-        dataTypes.findConstructor(name)
+        dataTypes.findConstructor(name).sure()
 }
