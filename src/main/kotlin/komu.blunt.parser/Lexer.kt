@@ -21,13 +21,13 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     public fun peekTokenType(): TokenType<out Any?> =
         peekToken().`type`.sure()
 
-    public fun expectIndentStartToken<T>(typ: TokenType<T>?) {
+    public fun expectIndentStartToken<T>(typ: TokenType<T?>?) {
         val token = readToken(typ)
-        indents.push(token.getLocation().sure().column)
+        indents.push(token.location.column)
     }
 
     public fun pushBlockStartAtNextToken() {
-        indents.push(peekToken().getLocation().sure().column);
+        indents.push(peekToken().location.column);
     }
 
     public fun nextTokenIs<T>(typ: TokenType<T>?): Boolean =
@@ -43,8 +43,8 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         return nextToken.sure()
     }
 
-    public fun peekTokenValue<T>(typ: TokenType<T>?): T =
-        peekToken().asType(typ).sure().value.sure()
+    public fun peekTokenValue<T>(typ: TokenType<T?>?): T =
+        peekToken().asType<T?>(typ.sure()).value.sure()
 
     private fun readToken(): Token<out Any?> {
         if (nextToken != null) {
@@ -56,18 +56,17 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         }
     }
 
-    private fun readToken<T>(typ: TokenType<T>?): Token<T> {
+    private fun readToken<T>(typ: TokenType<T?>?): Token<T?> {
         if (nextTokenIs(typ))
-            return readToken().asType(typ).sure()
+            return readToken().asType<T?>(typ.sure())
         else
             throw expectFailure("token of type $typ")
     }
 
-    public fun readTokenValue<T>(typ: TokenType<T>?): T {
-        return readToken(typ).value;
-    }
+    public fun readTokenValue<T>(typ: TokenType<T?>?): T? =
+        readToken(typ).value
 
-    public fun expectToken<T>(expected: TokenType<T>?) {
+    public fun expectToken<T>(expected: TokenType<T?>?) {
         readToken(expected)
     }
 
@@ -187,7 +186,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
           "|"  ->   Token.ofType(OR, location)
           "->" ->   Token.ofType(RIGHT_ARROW, location)
           "=>"  ->  Token.ofType(BIG_RIGHT_ARROW, location)
-          else ->   Token(OPERATOR, operatorSet.operator(op), location)
+          else ->   Token(OPERATOR, operatorSet.operator(op), location.sure())
         }.sure()
     }
 
@@ -217,7 +216,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
             }
         }
 
-        return Token(TokenType.LITERAL, sb.toString(), location)
+        return Token(TokenType.LITERAL, sb.toString(), location.sure())
     }
 
     private fun readNumber(): Token<out Any?> {
