@@ -36,7 +36,7 @@ final class PatternParser(val lexer: Lexer) {
     public fun parseSimplePattern(): Pattern {
         var pattern = parsePrimitivePattern();
 
-        if (lexer.nextTokenIs(OPERATOR) && lexer.peekTokenValue(OPERATOR).sure().isConstructor()) {
+        if (lexer.nextTokenIs(OPERATOR) && lexer.peekTokenValue(OPERATOR).isConstructor) {
             val op = lexer.readTokenValue(OPERATOR).sure()
 
             pattern = constructor(op.toString(), pattern, parsePattern()).sure()

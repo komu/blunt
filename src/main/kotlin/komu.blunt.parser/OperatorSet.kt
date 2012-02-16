@@ -33,7 +33,7 @@ class OperatorSet() {
 
         maxPrecedence = max(maxPrecedence, precedence);
         for (val name in names)
-            ops.put(name, Operator(name, associativity, precedence))
+            ops.put(name, Operator(name, associativity.sure(), precedence))
     }
 
     public fun operator(name: String): Operator {
@@ -41,7 +41,7 @@ class OperatorSet() {
         if (op != null)
             return op;
         else
-            return Operator(name, Associativity.LEFT, DEFAULT_PRECEDENCE);
+            return Operator(name, Associativity.LEFT.sure(), DEFAULT_PRECEDENCE);
     }
 
     public fun getMaxLevel(): Int =

@@ -288,7 +288,7 @@ class Parser(source: String) {
             val op = lexer.readTokenValue(OPERATOR).sure()
             lexer.expectToken(RPAREN)
 
-            return (if (op.isConstructor()) AST.constructor(op.toString()) else AST.variable(op.toString())).sure()
+            return (if (op.isConstructor) AST.constructor(op.toString()) else AST.variable(op.toString())).sure()
         }
 
         val exps = ArrayList<ASTExpression?>()
@@ -334,7 +334,7 @@ class Parser(source: String) {
             val op = lexer.readTokenValue(OPERATOR).sure()
             lexer.expectToken(RPAREN)
 
-            if (op.isConstructor())
+            if (op.isConstructor)
                 return AST.constructor(op.toString())
             else
                 return AST.variable(op.toString())
@@ -361,7 +361,7 @@ class Parser(source: String) {
         lexer.parseError(s).sure()
 
     private fun binary(op: Operator, lhs: ASTExpression?, rhs: ASTExpression?): ASTExpression? {
-        val exp = if (op.isConstructor()) AST.constructor(op.toString()) else AST.variable(op.toString())
+        val exp = if (op.isConstructor) AST.constructor(op.toString()) else AST.variable(op.toString())
 
         return AST.apply(exp, lhs, rhs).sure()
     }
