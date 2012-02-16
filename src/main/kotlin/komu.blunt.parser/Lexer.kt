@@ -12,16 +12,16 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     this(source: String): this(source, OperatorSet()) { }
 
     private val reader = SourceReader(source)
-    private var nextToken: Token<out Any?>? = null
+    private var nextToken: Token<Any>? = null
     private val indents = IndentStack()
 
     public fun hasMoreTokens(): Boolean =
         !nextTokenIs(EOF)
 
-    public fun peekTokenType(): TokenType<out Any?> =
+    public fun peekTokenType(): TokenType<Any> =
         peekToken().`type`.sure()
 
-    public fun expectIndentStartToken<T>(typ: TokenType<T?>?) {
+    public fun expectIndentStartToken<T>(typ: TokenType<T>) {
         val token = readToken(typ)
         indents.push(token.location.column)
     }
@@ -33,20 +33,20 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     public fun nextTokenIs<T>(typ: TokenType<T>?): Boolean =
         peekTokenType() == typ
 
-    public fun nextTokenIsOneOf(types: Collection<TokenType<out Any?>?>): Boolean =
+    public fun nextTokenIsOneOf(types: Collection<TokenType<Any>>): Boolean =
         types.contains(peekTokenType())
 
-    private fun peekToken(): Token<out Any?> {
+    private fun peekToken(): Token<Any> {
         if (nextToken == null)
             nextToken = readTokenInternal();
 
         return nextToken.sure()
     }
 
-    public fun peekTokenValue<T>(typ: TokenType<T?>?): T =
+    public fun peekTokenValue<T>(typ: TokenType<T>): T =
         peekToken().asType<T?>(typ.sure()).value.sure()
 
-    private fun readToken(): Token<out Any?> {
+    private fun readToken(): Token<Any> {
         if (nextToken != null) {
             val token = nextToken.sure();
             nextToken = null;
@@ -56,17 +56,17 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         }
     }
 
-    private fun readToken<T>(typ: TokenType<T?>?): Token<T?> {
+    private fun readToken<T>(typ: TokenType<T>): Token<T?> {
         if (nextTokenIs(typ))
             return readToken().asType<T?>(typ.sure())
         else
             throw expectFailure("token of type $typ")
     }
 
-    public fun readTokenValue<T>(typ: TokenType<T?>?): T? =
+    public fun readTokenValue<T>(typ: TokenType<T>): T? =
         readToken(typ).value
 
-    public fun expectToken<T>(expected: TokenType<T?>?) {
+    public fun expectToken<T>(expected: TokenType<T>) {
         readToken(expected)
     }
 
@@ -91,7 +91,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
 
         return null;
     }
-    private fun readTokenInternal(): Token<out Any?> {
+    private fun readTokenInternal(): Token<Any> {
         skipWhitespace();
 
         val location = reader.getLocation().sure()
@@ -139,7 +139,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
                 break;
     }
 
-    private fun readIdentifierOrKeyword(): Token<out Any?> {
+    private fun readIdentifierOrKeyword(): Token<Any> {
         val location = reader.getLocation().sure()
 
         val sb = StringBuilder()
@@ -171,7 +171,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     private fun isOperatorCharacter(ch: Int) =
         "=-+*/<>%?!|&$:.\\~".lastIndexOf(ch.chr) != -1;
 
-    private fun readOperator(): Token<out Any?> {
+    private fun readOperator(): Token<Any> {
         val location = reader.getLocation()
 
         val sb = StringBuilder()
@@ -190,7 +190,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         }.sure()
     }
 
-    private fun readString(): Token<out Any?> {
+    private fun readString(): Token<Any> {
         val location = reader.getLocation()
 
         val sb = StringBuilder()
@@ -219,7 +219,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         return Token(TokenType.LITERAL, sb.toString(), location.sure())
     }
 
-    private fun readNumber(): Token<out Any?> {
+    private fun readNumber(): Token<Any> {
         val location = reader.getLocation().sure()
 
         val sb = StringBuilder()
