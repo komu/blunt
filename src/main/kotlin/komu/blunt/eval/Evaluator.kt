@@ -56,7 +56,7 @@ class Evaluator() {
             rootBindings.defineVariableType(definition.name, typ);
             val v = rootBindings.staticEnvironment?.define(definition.name)
 
-            val exp = Analyzer.analyze(definition.value, rootBindings.dataTypes, rootBindings.staticEnvironment);
+            val exp = Analyzer.analyze(definition.value.sure(), rootBindings.dataTypes.sure(), rootBindings.staticEnvironment.sure());
 
             run(CoreDefineExpression(exp, v), rootBindings.runtimeEnvironment.sure());
         }
@@ -112,7 +112,7 @@ class Evaluator() {
     }
 
     private fun toCore(exp: ASTExpression, env: StaticEnvironment): CoreExpression =
-        Analyzer.analyze(exp, rootBindings.dataTypes, env).sure()
+        Analyzer.analyze(exp, rootBindings.dataTypes.sure(), env).sure()
 
     fun getSteps() = steps
 
