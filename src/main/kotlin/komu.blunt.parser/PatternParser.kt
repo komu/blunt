@@ -16,7 +16,7 @@ import java.util.Collections
 final class PatternParser(val lexer: Lexer) {
 
     private val PATTERN_START_TOKENS =
-        Arrays.asList(LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, UNDERSCORE)
+        Arrays.asList(LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, UNDERSCORE).sure()
 
     // <literal> | <variable> | ( <pattern> ) | <constructor> <pattern>* |
     public fun parsePattern(): Pattern {

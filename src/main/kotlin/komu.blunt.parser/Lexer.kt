@@ -5,6 +5,7 @@ import java.util.Collection
 
 import java.lang.Character.*
 import komu.blunt.parser.TokenType.*
+import java.util.List
 
 public class Lexer(source: String, private val operatorSet: OperatorSet) {
 
@@ -20,7 +21,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     public fun peekTokenType(): TokenType<out Any?> =
         peekToken().`type`.sure()
 
-    public fun expectIndentStartToken<T>(typ: TokenType<T>) {
+    public fun expectIndentStartToken<T>(typ: TokenType<T>?) {
         val token = readToken(typ)
         indents.push(token.getLocation().sure().column)
     }
