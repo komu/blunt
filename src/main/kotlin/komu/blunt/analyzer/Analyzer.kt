@@ -8,7 +8,7 @@ object Analyzer {
 
     fun analyze(exp: ASTExpression, dataTypes: DataTypeDefinitions, env: StaticEnvironment): CoreExpression {
         val visitor = AnalyzingVisitor(dataTypes)
-        val renamed = IdentifierRenamer.rename(exp)?.simplify()
+        val renamed = IdentifierRenamer.rename(exp).simplify()
         return visitor.analyze(renamed, env).sure()
     }
 }
