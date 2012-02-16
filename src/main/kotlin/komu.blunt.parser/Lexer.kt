@@ -180,7 +180,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         while (isOperatorCharacter(reader.peek()))
             sb.append(read())
 
-        val op = sb.toString();
+        val op = sb.toString().sure()
         return when (op) {
           "\\" ->   Token.ofType(LAMBDA, location)
           "="  ->   Token.ofType(ASSIGN, location)
