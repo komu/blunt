@@ -108,7 +108,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) : ASTVisitor<StaticEn
     }
 
     private fun analyze(alt: ASTAlternative, matchedObject: VariableReference, env: StaticEnvironment): CoreAlternative {
-        val extractor = patternAnalyzer.createExtractor(alt.pattern, matchedObject, env).sure()
+        val extractor = patternAnalyzer.createExtractor(alt.pattern.sure(), matchedObject, env).sure()
         val body = analyze(alt.value, env)
         return CoreAlternative(extractor.predicate, CoreSequenceExpression(extractor.extractor, body))
     }
