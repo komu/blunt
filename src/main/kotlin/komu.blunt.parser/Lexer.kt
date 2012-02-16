@@ -11,13 +11,13 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     this(source: String): this(source, OperatorSet()) { }
 
     private val reader = SourceReader(source)
-    private var nextToken: Token<in Void?>? = null
+    private var nextToken: Token<out Any?>? = null
     private val indents = IndentStack()
 
     public fun hasMoreTokens(): Boolean =
         !nextTokenIs(EOF)
 
-    public fun peekTokenType(): TokenType<in Void?> =
+    public fun peekTokenType(): TokenType<out Any?> =
         peekToken().`type`.sure()
 
     public fun expectIndentStartToken<T>(typ: TokenType<T>) {
@@ -32,10 +32,10 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     public fun nextTokenIs<T>(typ: TokenType<T>?): Boolean =
         peekTokenType() == typ
 
-    public fun nextTokenIsOneOf(types: Collection<TokenType<out Any>?>): Boolean =
+    public fun nextTokenIsOneOf(types: Collection<TokenType<out Any?>?>): Boolean =
         types.contains(peekTokenType())
 
-    private fun peekToken(): Token<in Void?> {
+    private fun peekToken(): Token<out Any?> {
         if (nextToken == null)
             nextToken = readTokenInternal();
 
@@ -45,7 +45,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     public fun peekTokenValue<T>(typ: TokenType<T>?): T =
         peekToken().asType(typ).sure().value.sure()
 
-    private fun readToken(): Token<in Void?> {
+    private fun readToken(): Token<out Any?> {
         if (nextToken != null) {
             val token = nextToken.sure();
             nextToken = null;
@@ -70,7 +70,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         readToken(expected)
     }
 
-    public fun readMatchingToken(t: TokenType<out Any>): Boolean {
+    public fun readMatchingToken(t: TokenType<out Any?>?): Boolean {
         if (peekTokenType() == t) {
             readToken();
             return true;
@@ -91,7 +91,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
 
         return null;
     }
-    private fun readTokenInternal(): Token<in Void?> {
+    private fun readTokenInternal(): Token<out Any?> {
         skipWhitespace();
 
         val location = reader.getLocation().sure()
@@ -139,7 +139,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
                 break;
     }
 
-    private fun readIdentifierOrKeyword(): Token<out Void?> {
+    private fun readIdentifierOrKeyword(): Token<out Any?> {
         val location = reader.getLocation().sure()
 
         val sb = StringBuilder()
@@ -157,7 +157,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         if (keyword != null)
             return Token.ofType(keyword, location).sure()
         else if (isUpperCase(name[0]))
-            return TYPE_OR_CTOR_NAME.make(name, location).sure()
+            return Token(TYPE_OR_CTOR_NAME, location)
         else
             return Token(IDENTIFIER, name, location)
     }
@@ -171,65 +171,65 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     private fun isOperatorCharacter(ch: Int) =
         "=-+*/<>%?!|&$:.\\~".lastIndexOf(ch.chr) != -1;
 
-//    private Token readOperator() {
-//        SourceLocation location = reader.getLocation();
-//
-//        StringBuilder sb = new StringBuilder();
-//
-//        while (isOperatorCharacter(reader.peek()))
-//            sb.append(read());
-//
-//        String op = sb.toString();
-//        switch (op) {
-//        case "\\":  return Token.ofType(LAMBDA, location);
-//        case "=":   return Token.ofType(ASSIGN, location);
-//        case "|":   return Token.ofType(OR, location);
-//        case "->":  return Token.ofType(RIGHT_ARROW, location);
-//        case "=>":  return Token.ofType(BIG_RIGHT_ARROW, location);
-//        default:    return new Token<>(OPERATOR, operatorSet.operator(op), location);
-//        }
-//    }
-//
-//    private Token readString() {
-//        SourceLocation location = reader.getLocation();
-//
-//        StringBuilder sb = new StringBuilder();
-//        expect('"');
-//
-//        boolean escaped = false;
-//        while (true) {
-//            char ch = read();
-//            if (escaped) {
-//                switch (ch) {
-//                case 'n': sb.append('\n'); break;
-//                case 't': sb.append('\t'); break;
-//                case 'r': sb.append('\r'); break;
-//                default: sb.append(ch);
-//                }
-//                escaped = false;
-//            } else if (ch == '\\') {
-//                escaped = true;
-//            } else if (ch == '"') {
-//                break;
-//            } else {
-//                sb.append(ch);
-//            }
-//        }
-//
-//        return new Token<>(TokenType.LITERAL, sb.toString(), location);
-//    }
-//
-//    private Token readNumber() {
-//        SourceLocation location = reader.getLocation();
-//
-//        StringBuilder sb = new StringBuilder();
-//
-//        while (isDigit(reader.peek()))
-//            sb.append(read());
-//
-//        return new Token<>(LITERAL, new BigInteger(sb.toString()), location);
-//    }
-//
+    private fun readOperator(): Token<out Any?> {
+        val location = reader.getLocation()
+
+        val sb = StringBuilder()
+
+        while (isOperatorCharacter(reader.peek()))
+            sb.append(read())
+
+        val op = sb.toString();
+        return when (op) {
+          "\\" ->   Token.ofType(LAMBDA, location)
+          "="  ->   Token.ofType(ASSIGN, location)
+          "|"  ->   Token.ofType(OR, location)
+          "->" ->   Token.ofType(RIGHT_ARROW, location)
+          "=>"  ->  Token.ofType(BIG_RIGHT_ARROW, location)
+          else ->   Token(OPERATOR, operatorSet.operator(op), location)
+        }.sure()
+    }
+
+    private fun readString(): Token<out Any?> {
+        val location = reader.getLocation()
+
+        val sb = StringBuilder()
+        expect('"')
+
+        var escaped = false;
+        while (true) {
+            val ch = read()
+            if (escaped) {
+                when (ch) {
+                  'n'   -> sb.append('\n');
+                  't'   -> sb.append('\t');
+                  'r'   -> sb.append('\r');
+                   else -> sb.append(ch);
+                }
+                escaped = false;
+            } else if (ch == '\\') {
+                escaped = true;
+            } else if (ch == '"') {
+                break;
+            } else {
+                sb.append(ch);
+            }
+        }
+
+        return Token(TokenType.LITERAL, sb.toString(), location)
+    }
+
+    private fun readNumber(): Token<out Any?> {
+        val location = reader.getLocation().sure()
+
+        val sb = StringBuilder()
+
+        while (isDigit(reader.peek()))
+            sb.append(read())
+
+        return Token(LITERAL, BigInteger(sb.toString()), location)
+    }
+
     private fun read(): Char {
         val ch = reader.read();
         if (ch != -1)
@@ -241,29 +241,25 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     private fun peek(): Int {
         return reader.peek();
     }
-//
-//    private void expect(char expected) {
-//        char ch = read();
-//        if (ch != expected)
-//            throw parseError("unexpected char: " + ch);
-//    }
-//
-//    public LexerState save() {
-//        return new LexerState(reader.getPosition(), indents.toList(), nextToken);
-//    }
-//
-//    public void restore(LexerState state) {
-//        reader.setPosition(state.position);
-//        indents.reset(state.indents);
-//        nextToken = state.nextToken;
-//    }
-//
-//    public SyntaxException parseError(String message) {
-//        return new SyntaxException("[" + reader.getLocation() + "] " + message);
-//    }
-//
-//    public SyntaxException expectFailure(String expected) {
-//        return parseError("expected " + expected + ", but got " + readToken());
-//    }
-}
 
+    private fun expect(expected: Char) {
+        val ch = read()
+        if (ch != expected)
+            throw parseError("unexpected char: " + ch)
+    }
+
+    public fun save(): LexerState =
+        LexerState(reader.getPosition(), indents.toList(), nextToken)
+
+    fun restore(state: LexerState) {
+        reader.setPosition(state.position)
+        indents.reset(state.indents)
+        nextToken = state.nextToken
+    }
+
+    fun parseError(message: String): SyntaxException =
+        SyntaxException("[${reader.getLocation()}] $message");
+
+    fun expectFailure(expected: String): SyntaxException =
+        parseError("expected $expected, but got ${readToken()}")
+}
