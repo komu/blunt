@@ -8,7 +8,6 @@ import komu.blunt.asm.*;
 import komu.blunt.ast.*;
 import komu.blunt.core.CoreDefineExpression;
 import komu.blunt.core.CoreExpression;
-import komu.blunt.parser.Parser;
 import komu.blunt.stdlib.BasicFunctions;
 import komu.blunt.types.*;
 import komu.blunt.types.checker.TypeChecker;
@@ -41,11 +40,14 @@ public final class Evaluator {
     }
     
     public void load(String source) {
+        throw new UnsupportedOperationException("porting");
+        /*
         Parser parser = new Parser(source);
 
         MyDefinitionVisitor visitor = new MyDefinitionVisitor();
         for (ASTDefinition define : parser.parseDefinitions())
             define.accept(visitor, null);
+        */
     }
 
     private final class MyDefinitionVisitor implements ASTDefinitionVisitor<Void,Void> {

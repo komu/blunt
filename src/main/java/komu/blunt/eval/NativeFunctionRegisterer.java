@@ -1,7 +1,6 @@
 package komu.blunt.eval;
 
 import komu.blunt.objects.PrimitiveFunction;
-import komu.blunt.parser.TypeParser;
 import komu.blunt.stdlib.LibraryFunction;
 import komu.blunt.stdlib.LibraryValue;
 import komu.blunt.stdlib.TypeScheme;
@@ -51,7 +50,8 @@ final class NativeFunctionRegisterer {
     private Scheme resolveType(Method m) {
         TypeScheme scheme = m.getAnnotation(TypeScheme.class);
         if (scheme != null)
-            return TypeParser.$classobj.parseScheme(scheme.value());
+            throw new UnsupportedOperationException("porting");
+            //return TypeParser.$classobj.parseScheme(scheme.value());
         else
             return NativeTypeConversions.createFunctionType(m);
 

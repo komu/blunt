@@ -2,7 +2,6 @@ package komu.blunt.types;
 
 import komu.blunt.analyzer.AnalyzationException;
 import komu.blunt.ast.ASTDataDefinition;
-import komu.blunt.parser.TypeParser;
 
 import java.util.*;
 
@@ -31,7 +30,8 @@ public class DataTypeDefinitions {
     }
     
     private void register(int index, String name, String scheme, int arity) {
-        register(new ConstructorDefinition(0, name, TypeParser.$classobj.parseScheme(scheme), arity));
+        throw new UnsupportedOperationException("porting");
+        //register(new ConstructorDefinition(0, name, TypeParser.$classobj.parseScheme(scheme), arity));
     }
 
     public void register(ASTDataDefinition definition) {
