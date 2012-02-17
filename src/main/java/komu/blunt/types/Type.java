@@ -17,7 +17,11 @@ public abstract class Type implements Types<Type> {
     public static Type fromClass(Class<?> type) {
         return basicType(mapName(type));
     }
-    
+
+    public static Type fromObject(Object o) {
+        return fromClass(o.getClass());
+    }
+
     private static String mapName(Class<?> type) {
         return (type == Void.class)                             ? "Unit"
              : (type == Boolean.class || type == boolean.class) ? "Boolean"
