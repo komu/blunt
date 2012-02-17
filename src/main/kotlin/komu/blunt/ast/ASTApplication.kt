@@ -11,7 +11,7 @@ class ASTApplication(val func: ASTExpression, val arg: ASTExpression) : ASTExpre
         val simplifiedArg = arg.simplify().sure()
 
         if (simplifiedFunc is ASTLambda) {
-            val bindings = ImmutableList.of<ImplicitBinding?>(ImplicitBinding(simplifiedFunc.argument, simplifiedArg))
+            val bindings = ImmutableList.of<ImplicitBinding?>(ImplicitBinding(simplifiedFunc.argument, simplifiedArg)).sure()
             return ASTLet(bindings, simplifiedFunc.body).simplify().sure()
         } else
             return ASTApplication(simplifiedFunc, simplifiedArg)

@@ -74,10 +74,10 @@ object AST {
     fun alternative(pattern: Pattern?, exp: ASTExpression?): ASTAlternative =
         ASTAlternative(pattern, exp);
 
-    fun letRec(name: Symbol?, value: ASTExpression?, body: ASTExpression?): ASTExpression =
-        ASTLetRec(ImmutableList.of(ImplicitBinding(name, value)), body)
+    fun letRec(name: Symbol?, value: ASTExpression?, body: ASTExpression): ASTExpression =
+        ASTLetRec(ImmutableList.of<ImplicitBinding?>(ImplicitBinding(name, value)).sure(), body)
 
-    fun let(recursive: Boolean, binding: ImplicitBinding?, body: ASTExpression?): ASTExpression {
+    fun let(recursive: Boolean, binding: ImplicitBinding?, body: ASTExpression): ASTExpression {
         val bindings = ImmutableList.of<ImplicitBinding?>(binding).sure()
         return if (recursive) ASTLetRec(bindings, body) else ASTLet(bindings, body)
     }
@@ -86,7 +86,7 @@ object AST {
         val lst = ArrayList<ASTExpression?>
         for (val exp in exps) lst.add(exp)
 
-        return ASTSequence(ImmutableList.copyOf(lst))
+        return ASTSequence(ImmutableList.copyOf(lst).sure())
     }
 
     fun tuple(exps: List<ASTExpression?>): ASTExpression  {
