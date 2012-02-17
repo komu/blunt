@@ -21,21 +21,21 @@ import java.util.LinkedHashSet
 final class BindingTypeChecker(private val tc: TypeChecker) {
 
 
-    fun typeCheckBindGroup(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions?> {
-        val result = TypeCheckResult.builder<Assumptions?>().sure()
+    fun typeCheckBindGroup(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions> {
+        val result = TypeCheckResult.builder<Assumptions>().sure()
 
         val explicitAssumptions = bindings.assumptionFromExplicitBindings()
 
         val res = typeCheckImplicits(bindings, ass.join(explicitAssumptions).sure())
-        val newAssumptions = res.value?.join(explicitAssumptions)
+        val newAssumptions = res.value.join(explicitAssumptions).sure()
         result.addPredicates(res.predicates)
         result.addPredicates(typeCheckExplicits(bindings, ass.join(newAssumptions).sure()))
 
         return result.build(newAssumptions).sure()
     }
 
-    private fun typeCheckImplicits(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions?>  {
-        val result = TypeCheckResult.builder<Assumptions?>().sure()
+    private fun typeCheckImplicits(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions>  {
+        val result = TypeCheckResult.builder<Assumptions>().sure()
         val assumptions = Assumptions.builder().sure()
 
         for (val bs in bindings.implicitBindings) {
@@ -44,7 +44,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
             assumptions.addAll(res.value)
         }
 
-        return result.build(assumptions.build()).sure()
+        return result.build(assumptions.build().sure()).sure()
     }
 
     private fun typeCheckExplicits(bindGroup: BindGroup, ass: Assumptions): List<Predicate?> {
@@ -60,7 +60,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         throw UnsupportedOperationException("explicit bindings are not implemented")
     }
 
-    private fun typeCheckImplicitGroup(bindings: List<ImplicitBinding?>, ass: Assumptions): TypeCheckResult<Assumptions?> {
+    private fun typeCheckImplicitGroup(bindings: List<ImplicitBinding?>, ass: Assumptions): TypeCheckResult<Assumptions> {
         val typeVariables = tc.newTVars(bindings.size())
         val predicates = typeCheckAndUnifyBindings(bindings, typeVariables, ass)
 
@@ -87,8 +87,8 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         for (val t in types)
             finalSchemes.add(quantify(genericVariables, Qualified(retainedPredicates, t)))
 
-        val finalAssumptions = Assumptions.from(bindingNames(bindings), finalSchemes);
-        return TypeCheckResult.of(finalAssumptions, deferredPredicates).sure()
+        val finalAssumptions = Assumptions.from(bindingNames(bindings), finalSchemes).sure()
+        return TypeCheckResult.of(finalAssumptions, deferredPredicates.sure())
     }
 
     private fun typeCheckAndUnifyBindings(bs: List<ImplicitBinding?>, ts: List<Type?>, ass: Assumptions): List<Predicate?> {

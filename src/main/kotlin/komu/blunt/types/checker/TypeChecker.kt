@@ -43,18 +43,18 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         return applySubstitution(Qualified(ps, result.value))
     }
 
-    fun typeCheck(exp: ASTExpression, ass: Assumptions): TypeCheckResult<Type?> =
+    fun typeCheck(exp: ASTExpression, ass: Assumptions): TypeCheckResult<Type> =
         exp.accept(expressionVisitor, ass).sure()
 
-    fun typeCheckBindGroup(bindGroup: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions?> =
+    fun typeCheckBindGroup(bindGroup: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions> =
         bindingTypeChecker.typeCheckBindGroup(bindGroup, ass)
 
-    fun typeCheck(define: ASTValueDefinition, ass: Assumptions): TypeCheckResult<Type?> {
+    fun typeCheck(define: ASTValueDefinition, ass: Assumptions): TypeCheckResult<Type> {
         val let = AST.letRec(define.name, define.value, AST.variable(define.name)).sure()
         return typeCheck(let, ass)
     }
 
-    fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type?> =
+    fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
         pattern.accept(patternTypeChecker, #())
 
     fun freshInstance(scheme: Scheme): Qualified<Type?> {
