@@ -32,7 +32,7 @@ class FunctionBuilder {
         alternatives.add(AST.alternative(Pattern.tuple(args), body).sure())
     }
 
-    fun build(): ASTExpression? {
+    fun build(): ASTExpression {
         val alts = ImmutableList.copyOf(alternatives).sure()
 
         // optimization

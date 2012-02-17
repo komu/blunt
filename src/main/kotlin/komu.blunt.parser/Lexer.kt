@@ -62,8 +62,8 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
             throw expectFailure("token of type $typ")
     }
 
-    public fun readTokenValue<T>(typ: TokenType<T>): T? =
-        readToken(typ).value
+    public fun readTokenValue<T>(typ: TokenType<T>): T =
+        readToken(typ).value.sure()
 
     public fun expectToken<T>(expected: TokenType<T>) {
         readToken(expected)
