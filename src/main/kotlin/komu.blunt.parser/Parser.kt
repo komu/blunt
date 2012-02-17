@@ -192,7 +192,7 @@ class Parser(source: String) {
             return parseList()
 
         if (typ == LITERAL)
-            return AST.constant(lexer.readTokenValue(LITERAL)).sure()
+            return AST.constant(lexer.readTokenValue(LITERAL))
 
         return parseVariableOrConstructor().sure()
     }

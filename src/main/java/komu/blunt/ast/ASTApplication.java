@@ -1,5 +1,7 @@
 package komu.blunt.ast;
 
+import com.google.common.collect.ImmutableList;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ASTApplication extends ASTExpression {
@@ -29,8 +31,8 @@ public final class ASTApplication extends ASTExpression {
      
         if (simplifiedFunc instanceof ASTLambda) {
             ASTLambda lambda = (ASTLambda) simplifiedFunc;
-            
-            return AST.let(false, new ImplicitBinding(lambda.argument, simplifiedArg), lambda.body).simplify();
+
+            return new ASTLet(ImmutableList.of(new ImplicitBinding(lambda.argument, simplifiedArg)), lambda.body).simplify();
         }
         return new ASTApplication(simplifiedFunc, simplifiedArg);
     }
