@@ -47,7 +47,7 @@ class TypeChecker(private val classEnv: ClassEnv, private val dataTypes: DataTyp
         exp.accept(expressionVisitor, ass).sure()
 
     fun typeCheckBindGroup(bindGroup: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions?> =
-        bindingTypeChecker.typeCheckBindGroup(bindGroup, ass).sure()
+        bindingTypeChecker.typeCheckBindGroup(bindGroup, ass)
 
     fun typeCheck(define: ASTValueDefinition, ass: Assumptions): TypeCheckResult<Type?> {
         val let = AST.letRec(define.name, define.value, AST.variable(define.name)).sure()
@@ -94,6 +94,10 @@ class TypeChecker(private val classEnv: ClassEnv, private val dataTypes: DataTyp
     }
 
     fun applySubstitution<T : Types<T?>>(t: T): T =
+      t.apply(substitution).sure()
+
+    // TODO
+    fun applySubstitution(t: Assumptions): Assumptions =
       t.apply(substitution).sure()
 
     fun applySubstitution<T : Types<T?>>(ts: Collection<T?>?): List<T?> {
