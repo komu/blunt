@@ -65,11 +65,11 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
         return CoreSequenceExpression(analyzeAll(sequence?.exps, env))
     }
 
-    private fun visit(set: ASTSet?, env: StaticEnvironment): CoreExpression =
-        CoreSetExpression(env.lookup(set?.`var`), analyze(set?.exp, env))
+    private fun visit(set: ASTSet, env: StaticEnvironment): CoreExpression =
+        CoreSetExpression(env.lookup(set.variable), analyze(set.exp, env))
 
-    private fun visit(constant: ASTConstant?, ctx: StaticEnvironment): CoreExpression =
-        CoreConstantExpression(constant?.value)
+    private fun visit(constant: ASTConstant, ctx: StaticEnvironment): CoreExpression =
+        CoreConstantExpression(constant.value)
 
     private fun visit(let: ASTLet?, env: StaticEnvironment): CoreExpression {
         if (let?.bindings?.size() != 1)

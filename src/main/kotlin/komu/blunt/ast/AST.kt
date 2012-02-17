@@ -105,7 +105,7 @@ object AST {
         return call
     }
 
-    fun set(name: Symbol?, exp: ASTExpression?): ASTExpression =
+    fun set(name: Symbol, exp: ASTExpression): ASTExpression =
         ASTSet(name, exp)
 
     fun define(name: Symbol?, value: ASTExpression?): ASTValueDefinition =
