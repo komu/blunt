@@ -16,7 +16,7 @@ import komu.blunt.types.Qualified.quantifyAll
 import komu.blunt.types.Type.typeVariable
 import komu.blunt.types.checker.Unifier.mgu
 
-class TypeChecker(private val classEnv: ClassEnv, private val dataTypes: DataTypeDefinitions) {
+class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinitions) {
 
     private var typeSequence = 0
     private val expressionVisitor = ExpressionTypeCheckVisitor(this)
