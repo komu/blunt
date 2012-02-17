@@ -21,12 +21,12 @@ class FunctionBuilder {
     fun addAlternative(args: ImmutableList<Pattern?>, body: ASTExpression?) {
         if (exps.isEmpty()) {
             for (val i in 0..args.size()-1) {
-                val v = symbol("%arg$i") // TODO: fresh symbols
+                val v = symbol("\$arg$i") // TODO: fresh symbols
                 symbols.add(v.sure())
-                exps.add(AST.variable(v).sure())
+                exps.add(AST.variable(v.sure()))
             }
         } else if (args.size() != exps.size()) {
-            throw SyntaxException("invalid amount of arguments");
+            throw SyntaxException("invalid amount of arguments")
         }
 
         alternatives.add(AST.alternative(Pattern.tuple(args), body).sure())
@@ -46,7 +46,7 @@ class FunctionBuilder {
     fun containsOnlyVariablePatterns(alts: ImmutableList<ASTAlternative?>): List<Symbol?>? {
         if (alts.size() == 1)
             return variablePattern(alts.get(0)?.pattern.sure())
-        return null;
+        return null
     }
 
     private fun variablePattern(pattern: Pattern): List<Symbol?>? {

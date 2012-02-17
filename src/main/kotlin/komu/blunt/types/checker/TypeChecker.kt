@@ -50,7 +50,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         bindingTypeChecker.typeCheckBindGroup(bindGroup, ass)
 
     fun typeCheck(define: ASTValueDefinition, ass: Assumptions): TypeCheckResult<Type> {
-        val let = AST.letRec(define.name, define.value, AST.variable(define.name)).sure()
+        val let = AST.letRec(define.name, define.value, AST.variable(define.name.sure()))
         return typeCheck(let, ass)
     }
 

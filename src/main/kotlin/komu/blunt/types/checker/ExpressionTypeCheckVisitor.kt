@@ -95,7 +95,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         TypeCheckResult.of(Type.UNIT.sure())
 
     private fun visit(variable: ASTVariable?, ass: Assumptions): TypeCheckResult<Type> {
-        val scheme = ass.find(variable?.`var`).sure()
+        val scheme = ass.find(variable?.name).sure()
         val inst = tc.freshInstance(scheme)
         return TypeCheckResult.of(inst.value.sure(), inst.predicates.sure())
     }

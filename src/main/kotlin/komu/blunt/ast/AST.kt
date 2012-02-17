@@ -24,8 +24,8 @@ object AST {
         ASTDataDefinition(name, typ, constructors, derivedClasses)
 
     fun constant(value: Any?): ASTExpression   = ASTConstant(value.sure())
-    fun variable(name: Symbol?): ASTExpression = ASTVariable(name)
-    fun variable(name: String?): ASTExpression = ASTVariable(symbol(name))
+    fun variable(name: Symbol): ASTExpression = ASTVariable(name)
+    fun variable(name: String): ASTExpression = ASTVariable(symbol(name).sure())
 
     fun apply(func: ASTExpression?, vararg args: ASTExpression?): ASTExpression =
         apply2(func, args)
@@ -39,7 +39,7 @@ object AST {
         return exp?.simplify().sure()
     }
 
-    fun constructor(name: String?, vararg args: ASTExpression?): ASTExpression =
+    fun constructor(name: String, vararg args: ASTExpression?): ASTExpression =
         apply2(ASTConstructor(name), args)
 
 

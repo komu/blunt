@@ -38,7 +38,7 @@ object Main {
     }
 
     private fun isSymbol(name: String, exp: ASTExpression) =
-        exp is ASTVariable && symbol(name) == exp.`var`
+        exp is ASTVariable && symbol(name) == exp.name
 }
 
 fun main(args : Array<String>) {

@@ -25,7 +25,7 @@ final class ASTMatchers {
             }
         };        
     }
-
+/*
     static Matcher<ASTExpression> producesVariable(final String name) {
         return new ASTMatcher<ASTVariable>(ASTVariable.class) {
             @Override
@@ -39,7 +39,7 @@ final class ASTMatchers {
             }
         };
     }
-    
+  */
     static Matcher<ASTExpression> producesConstant(final Object value) {
         return new ASTMatcher<ASTConstant>(ASTConstant.class) {
             @Override

@@ -282,7 +282,7 @@ class Parser(source: String) {
     private fun parseParens(): ASTExpression? {
         lexer.expectToken(LPAREN)
         if (lexer.readMatchingToken(RPAREN))
-            return AST.constructor(DataTypeDefinitions.UNIT).sure()
+            return AST.constructor(DataTypeDefinitions.UNIT.sure())
 
         if (lexer.nextTokenIs(OPERATOR)) {
             val op = lexer.readTokenValue(OPERATOR).sure()
@@ -307,28 +307,28 @@ class Parser(source: String) {
 
     // []
     // [<exp> (,<exp>)*]
-    private fun parseList(): ASTExpression? {
+    private fun parseList(): ASTExpression {
         val list = AST.listBuilder()
 
         lexer.expectToken(LBRACKET)
 
         if (!lexer.nextTokenIs(RBRACKET)) {
             do {
-                list?.add(parseExpression())
+                list.add(parseExpression())
             } while (lexer.readMatchingToken(COMMA))
         }
 
         lexer.expectToken(RBRACKET)
 
-        return list?.build().sure()
+        return list.build()
     }
 
-    private fun parseVariableOrConstructor(): ASTExpression? {
+    private fun parseVariableOrConstructor(): ASTExpression {
         if (lexer.nextTokenIs(IDENTIFIER))
-            return AST.variable(lexer.readTokenValue(IDENTIFIER))
+            return AST.variable(lexer.readTokenValue(IDENTIFIER).sure())
 
         if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
-            return AST.constructor(lexer.readTokenValue(TYPE_OR_CTOR_NAME))
+            return AST.constructor(lexer.readTokenValue(TYPE_OR_CTOR_NAME).sure())
 
         if (lexer.readMatchingToken(LPAREN)) {
             val op = lexer.readTokenValue(OPERATOR).sure()

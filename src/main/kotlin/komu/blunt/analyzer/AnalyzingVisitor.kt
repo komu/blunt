@@ -56,7 +56,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
         if (ctor.arity == 0)
             return analyze(AST.constant(TypeConstructorValue(ctor.index, ctor.name)), ctx)
         else
-            return analyze(AST.variable(ctor.name), ctx)
+            return analyze(AST.variable(ctor.name.sure()), ctx)
     }
 
     private fun visit(sequence: ASTSequence?, env: StaticEnvironment): CoreExpression {
@@ -97,7 +97,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
     }
 
     private fun visit(variable: ASTVariable?, env: StaticEnvironment): CoreExpression =
-        CoreVariableExpression(env.lookup(variable?.`var`))
+        CoreVariableExpression(env.lookup(variable?.name))
 
     private fun visit(astCase: ASTCase?, env: StaticEnvironment): CoreExpression {
         val exp = analyze(astCase?.exp, env)
