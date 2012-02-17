@@ -129,6 +129,6 @@ class IdentifierRenamer {
             alts.add(AST.alternative(pattern, renameIdentifiers(alt?.value, newCtx)))
         }
 
-        return AST.caseExp(renameIdentifiers(astCase?.exp, ctx), ImmutableList.copyOf(alts)).sure()
+        return AST.caseExp(renameIdentifiers(astCase?.exp, ctx), ImmutableList.copyOf(alts).sure()).sure()
     }
 }

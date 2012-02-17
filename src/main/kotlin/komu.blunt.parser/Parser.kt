@@ -121,7 +121,7 @@ class Parser(source: String) {
     private fun nextTokenIsIdentifier(name: Symbol) =
         lexer.nextTokenIs(IDENTIFIER) && lexer.peekTokenValue(IDENTIFIER) == name.toString()
 
-    public fun parseExpression(): ASTExpression? {
+    public fun parseExpression(): ASTExpression {
         var exp = parseExp(0)
 
         while (true) {
@@ -129,7 +129,7 @@ class Parser(source: String) {
                 val rhs = parseExp(0)
                 exp = AST.sequence(exp, rhs).sure()
             } else {
-                return exp
+                return exp.sure()
             }
         }
 
@@ -221,7 +221,7 @@ class Parser(source: String) {
         } while (!lexer.nextTokenIs(END))
         lexer.expectToken(END)
 
-        return AST.caseExp(exp, ImmutableList.copyOf(alts))
+        return AST.caseExp(exp.sure(), ImmutableList.copyOf(alts).sure())
     }
 
     private fun parseAlternative(): ASTAlternative? {

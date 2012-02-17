@@ -34,7 +34,7 @@ object AST {
         var exp = func
 
         for (val arg in args)
-            exp = ASTApplication(exp, arg)
+            exp = ASTApplication(exp.sure(), arg.sure())
 
         return exp?.simplify().sure()
     }
@@ -59,18 +59,18 @@ object AST {
             return lambda(head, lambda(tail, body))
     }
 
-    fun ifExp(test: ASTExpression?, cons: ASTExpression?, alt: ASTExpression?): ASTExpression =
+    fun ifExp(test: ASTExpression, cons: ASTExpression, alt: ASTExpression): ASTExpression =
         caseExp(test, alternative(Pattern.constructor(TRUE).sure(), cons),
                       alternative(Pattern.constructor(FALSE).sure(), alt))
 
-    fun caseExp(exp: ASTExpression?, alts: ImmutableList<ASTAlternative?>?): ASTExpression =
-        ASTCase(exp, alts)
+    fun caseExp(exp: ASTExpression, alts: ImmutableList<ASTAlternative?>): ASTExpression =
+        ASTCase(exp.sure(), alts.sure())
 
-    fun caseExp(exp: ASTExpression?, vararg alts: ASTAlternative?): ASTExpression {
+    fun caseExp(exp: ASTExpression, vararg alts: ASTAlternative?): ASTExpression {
         val lst = ArrayList<ASTAlternative?>
         for (val alt in alts) lst.add(alt)
 
-        return ASTCase(exp, ImmutableList.copyOf(lst).sure())
+        return ASTCase(exp.sure(), ImmutableList.copyOf(lst).sure())
     }
 
     fun alternative(pattern: Pattern?, exp: ASTExpression?): ASTAlternative =
@@ -100,7 +100,7 @@ object AST {
         var call =  constructor(tupleName(exps.size()).sure())
 
         for (val exp in exps)
-            call = ASTApplication(call, exp)
+            call = ASTApplication(call, exp.sure())
 
         return call
     }

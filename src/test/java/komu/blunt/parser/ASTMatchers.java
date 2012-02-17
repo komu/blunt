@@ -44,7 +44,8 @@ final class ASTMatchers {
         return new ASTMatcher<ASTConstant>(ASTConstant.class) {
             @Override
             public boolean matches(ASTConstant exp) {
-                return equal(value, exp.value);
+                //return equal(value, exp.value);
+                throw new UnsupportedOperationException();
             }
 
             @Override
