@@ -9,59 +9,56 @@ import java.util.List
 class PatternAnalyzer {
 
     fun createExtractor(pattern: Pattern, matchedObject: VariableReference, env: StaticEnvironment ): PatternExtractor {
-        val predicate = pattern.accept(PredicateCreator(matchedObject, env), PatternPath.EMPTY.sure())
-        val extractor = pattern.accept(ExtractorCreator(matchedObject, env), PatternPath.EMPTY.sure())
+        val predicate = makePredicate(pattern, PatternPath.EMPTY.sure(), matchedObject)
+        val extractor = makeExtractor(pattern, PatternPath.EMPTY.sure(), env, matchedObject)
         return PatternExtractor(predicate, extractor)
     }
 
-    class ExtractorCreator(val matchedObject: VariableReference, val env: StaticEnvironment) : PatternVisitor<PatternPath,CoreExpression> {
-
-        override fun visit(pattern: WildcardPattern?, path: PatternPath): CoreExpression =
-            CoreEmptyExpression.INSTANCE.sure()
-
-        override fun visit(pattern: VariablePattern?, path: PatternPath): CoreExpression {
-            val v = env.lookupInCurrentScopeOrDefine(pattern?.`var`)
-
-            return CoreSetExpression(v, CoreExtractExpression(matchedObject, path))
+    private fun makeExtractor(pattern: Pattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression =
+        when (pattern) {
+            is WildcardPattern    -> CoreEmptyExpression.INSTANCE.sure()
+            is LiteralPattern     -> CoreEmptyExpression.INSTANCE.sure()
+            is VariablePattern    -> variableExtractor(pattern, path, env, matchedObject)
+            is ConstructorPattern -> constructorExtractor(pattern, path, env, matchedObject)
+            else -> throw Exception()
         }
 
-        override fun visit(pattern: ConstructorPattern?, path: PatternPath): CoreExpression {
-            val exps = ArrayList<CoreExpression?>(1 + pattern?.args?.size().sure());
-
-            var i = 0
-            for (val p in pattern?.args)
-                exps.add(p.accept(this, path.extend(i++).sure()));
-
-            return CoreSequenceExpression(exps)
-        }
-
-        override fun visit(pattern: LiteralPattern?, path: PatternPath): CoreExpression =
-            CoreEmptyExpression.INSTANCE.sure()
+    private fun variableExtractor(pattern: VariablePattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression {
+        val v = env.lookupInCurrentScopeOrDefine(pattern.`var`)
+        return CoreSetExpression(v, CoreExtractExpression(matchedObject, path))
     }
 
-    class PredicateCreator(val matchedObject: VariableReference, val env: StaticEnvironment) : PatternVisitor<PatternPath,CoreExpression> {
-        override fun visit(pattern: WildcardPattern?, path: PatternPath): CoreExpression =
-            CoreConstantExpression(true)
+    private fun constructorExtractor(pattern: ConstructorPattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression {
+        val exps = ArrayList<CoreExpression?>(1 + pattern.args?.size().sure());
 
-        override fun visit(pattern: VariablePattern?, path: PatternPath): CoreExpression =
-            CoreConstantExpression(true)
+        var i = 0
+        for (val p in pattern.args)
+            exps.add(makeExtractor(p.sure(), path.extend(i++).sure(), env, matchedObject))
 
-        override fun visit(pattern: ConstructorPattern?, path: PatternPath): CoreExpression {
-            val exps = ArrayList<CoreExpression?>(1 + pattern?.args?.size().sure());
-            exps.add(matchesConstructor(path, pattern?.name.sure()));
+        return CoreSequenceExpression(exps)
+    }
 
-            var i = 0
-            for (val p in pattern?.args)
-                exps.add(p.accept(this, path.extend(i++).sure()))
-
-            return CoreExpression.and(exps).sure()
+    private fun makePredicate(pattern: Pattern, path: PatternPath, matchedObject: VariableReference): CoreExpression =
+        when (pattern) {
+            is WildcardPattern    -> CoreConstantExpression(true)
+            is VariablePattern    -> CoreConstantExpression(true)
+            is LiteralPattern     -> CoreEqualConstantExpression(pattern.value, CoreExtractExpression(matchedObject, path))
+            is ConstructorPattern -> constructorPredicate(pattern, path, matchedObject)
+            else -> throw Exception()
         }
 
-        private fun matchesConstructor(path: PatternPath, name: String): CoreExpression =
-            CoreEqualConstantExpression(name, CoreExtractTagExpression(matchedObject, path))
+    private fun constructorPredicate(pattern: ConstructorPattern?, path: PatternPath, matchedObject: VariableReference): CoreExpression {
+        val exps = ArrayList<CoreExpression?>(1 + pattern?.args?.size().sure());
+        exps.add(matchesConstructor(path, pattern?.name.sure(), matchedObject));
 
-        override fun visit(pattern: LiteralPattern?, path: PatternPath): CoreExpression =
-            CoreEqualConstantExpression(pattern?.value, CoreExtractExpression(matchedObject, path))
+        var i = 0
+        for (val p in pattern?.args)
+            exps.add(makePredicate(p.sure(), path.extend(i++).sure(), matchedObject))
+
+        return CoreExpression.and(exps).sure()
     }
+
+    private fun matchesConstructor(path: PatternPath, name: String, matchedObject: VariableReference): CoreExpression =
+        CoreEqualConstantExpression(name, CoreExtractTagExpression(matchedObject, path))
 }
 

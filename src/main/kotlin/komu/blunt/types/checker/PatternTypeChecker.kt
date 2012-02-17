@@ -9,26 +9,29 @@ import java.util.List
 
 import komu.blunt.types.Type.functionType
 
-class PatternTypeChecker(private val tc: TypeChecker) : PatternVisitor<Unit,PatternTypeCheckResult<Type>> {
+class PatternTypeChecker(private val tc: TypeChecker) {
 
-    override fun visit(pattern: VariablePattern?, ctx: Unit): PatternTypeCheckResult<Type> {
+    fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
+        when (pattern) {
+            is VariablePattern    -> typeCheckVariable(pattern)
+            is WildcardPattern    -> PatternTypeCheckResult(Assumptions.empty().sure(), tc.newTVar())
+            is LiteralPattern     -> PatternTypeCheckResult(Assumptions.empty().sure(), Type.fromObject(pattern.value).sure())
+            is ConstructorPattern -> typeCheckConstructor(pattern)
+            else                  -> throw Exception("invalid pattern $pattern")
+        }
+
+    private fun typeCheckVariable(pattern: VariablePattern): PatternTypeCheckResult<Type> {
         val tv = tc.newTVar()
-        return PatternTypeCheckResult(Assumptions.singleton(pattern?.`var`, tv.toScheme()).sure(), tv)
+        return PatternTypeCheckResult(Assumptions.singleton(pattern.`var`, tv.toScheme()).sure(), tv)
     }
 
-    override fun visit(pattern: WildcardPattern?, ctx: Unit): PatternTypeCheckResult<Type> =
-        PatternTypeCheckResult(Assumptions.empty().sure(), tc.newTVar())
+    private fun typeCheckConstructor(pattern: ConstructorPattern): PatternTypeCheckResult<Type> {
+        val constructor = tc.findConstructor(pattern.name.sure())
 
-    override fun visit(pattern: LiteralPattern?, ctx: Unit): PatternTypeCheckResult<Type> =
-        PatternTypeCheckResult(Assumptions.empty().sure(), Type.fromObject(pattern?.value).sure())
+        if (pattern.args?.size() != constructor.arity)
+            throw TypeCheckException("invalid amount of arguments for constructor '${pattern.name}'; expected ${constructor.arity}, but got ${pattern.args?.size()}")
 
-    override fun visit(pattern: ConstructorPattern?, ctx: Tuple0): PatternTypeCheckResult<Type> {
-        val constructor = tc.findConstructor(pattern?.name.sure())
-
-        if (pattern?.args?.size() != constructor.arity)
-            throw TypeCheckException("invalid amount of arguments for constructor '${pattern?.name}'; expected ${constructor.arity}, but got ${pattern?.args?.size()}")
-
-        val result = assumptionsFrom(pattern?.args.sure())
+        val result = assumptionsFrom(pattern.args.sure())
         val t = tc.newTVar()
 
         val q = tc.freshInstance(constructor.scheme.sure())

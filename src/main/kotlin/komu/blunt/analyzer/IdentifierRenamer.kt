@@ -10,7 +10,7 @@ import java.util.ArrayList
  * Walks the AST to rename all local variables so that they become unique. This makes
  * further optimizations simpler.
  */
-class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression>, PatternVisitor<IdentifierMapping, Pattern> {
+class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression> {
 
     private var sequence = 1
 
@@ -22,8 +22,29 @@ class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression>, PatternV
     fun renameIdentifiers(exp: ASTExpression?, ctx: IdentifierMapping) =
         exp.accept(this, ctx)
 
-    fun renameIdentifiers(exp: Pattern?, ctx: IdentifierMapping) =
-        exp.accept(this, ctx)
+    fun renameIdentifiers(pattern: Pattern?, ctx: IdentifierMapping) =
+        when (pattern) {
+            is WildcardPattern    -> pattern
+            is LiteralPattern     -> pattern
+            is VariablePattern    -> renamePattern(pattern, ctx)
+            is ConstructorPattern -> renamePattern(pattern, ctx)
+            else                  -> throw Exception("invalid pattern $pattern")
+        }
+
+    private fun renamePattern(pattern: ConstructorPattern, ctx: IdentifierMapping): Pattern {
+        val args = ArrayList<Pattern?>()
+
+        for (val arg in pattern.args)
+            args.add(renameIdentifiers(arg, ctx));
+
+        return Pattern.constructor(pattern.name, ImmutableList.copyOf(args)).sure()
+    }
+
+    private fun renamePattern(pattern: VariablePattern, ctx: IdentifierMapping): Pattern {
+        val v = freshVariable()
+        ctx.put(pattern.`var`, v)
+        return Pattern.variable(v).sure()
+    }
 
     private fun freshVariable() =
         Symbol.symbol("\$var${sequence++}")
@@ -99,26 +120,5 @@ class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression>, PatternV
         return AST.caseExp(renameIdentifiers(astCase?.exp, ctx), ImmutableList.copyOf(alts)).sure()
     }
 
-    override fun visit(pattern: ConstructorPattern?, ctx: IdentifierMapping): Pattern {
-        val args = ArrayList<Pattern?>()
-
-        for (val arg in pattern?.args)
-            args.add(renameIdentifiers(arg, ctx));
-
-        return Pattern.constructor(pattern?.name, ImmutableList.copyOf(args)).sure()
-    }
-
-    override fun visit(pattern: LiteralPattern?, ctx: IdentifierMapping): Pattern =
-        pattern.sure()
-
-    override fun visit(pattern: VariablePattern?, ctx: IdentifierMapping): Pattern {
-        val v = freshVariable()
-        ctx.put(pattern?.`var`, v)
-        return Pattern.variable(v).sure()
-    }
-
-    override fun visit(pattern: WildcardPattern?, ctx: IdentifierMapping): Pattern =
-        pattern.sure()
-}
 
 

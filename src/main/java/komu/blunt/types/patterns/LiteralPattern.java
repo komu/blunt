@@ -13,11 +13,6 @@ public final class LiteralPattern extends Pattern {
     }
 
     @Override
-    public <R, C> R accept(PatternVisitor<C, R> visitor, C ctx) {
-        return visitor.visit(this, ctx);
-    }
-
-    @Override
     public String toString() {
         return value.toString();
     }

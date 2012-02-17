@@ -55,7 +55,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     }
 
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
-        pattern.accept(patternTypeChecker, #())
+        patternTypeChecker.typeCheck(pattern)
 
     fun freshInstance(scheme: Scheme): Qualified<Type?> {
         val ts = ArrayList<TypeVariable?>(scheme.kinds?.size().sure())
