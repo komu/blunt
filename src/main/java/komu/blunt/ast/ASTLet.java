@@ -16,11 +16,6 @@ public final class ASTLet extends ASTExpression {
     }
 
     @Override
-    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
-        return visitor.visit(this, ctx);
-    }
-
-    @Override
     public ASTExpression simplify() {
         // TODO: inline constants and side-effect free stuff that is referenced only once
         ImmutableList.Builder<ImplicitBinding> simplifiedBindings = ImmutableList.builder();

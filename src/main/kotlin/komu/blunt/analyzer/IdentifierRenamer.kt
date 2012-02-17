@@ -10,7 +10,7 @@ import java.util.ArrayList
  * Walks the AST to rename all local variables so that they become unique. This makes
  * further optimizations simpler.
  */
-class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression> {
+class IdentifierRenamer {
 
     private var sequence = 1
 
@@ -20,7 +20,19 @@ class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression> {
     }
 
     fun renameIdentifiers(exp: ASTExpression?, ctx: IdentifierMapping) =
-        exp.accept(this, ctx)
+        when (exp) {
+            is ASTApplication -> visit(exp, ctx)
+            is ASTConstant    -> visit(exp, ctx)
+            is ASTLambda      -> visit(exp, ctx)
+            is ASTLet         -> visit(exp, ctx)
+            is ASTLetRec      -> visit(exp, ctx)
+            is ASTSequence    -> visit(exp, ctx)
+            is ASTSet         -> visit(exp, ctx)
+            is ASTVariable    -> visit(exp, ctx)
+            is ASTConstructor -> visit(exp, ctx)
+            is ASTCase        -> visit(exp, ctx)
+            else              -> throw Exception("unknown exp $exp")
+        }
 
     fun renameIdentifiers(pattern: Pattern?, ctx: IdentifierMapping) =
         when (pattern) {
@@ -49,7 +61,7 @@ class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression> {
     private fun freshVariable() =
         Symbol.symbol("\$var${sequence++}")
 
-    override fun visit(sequence: ASTSequence?, ctx: IdentifierMapping): ASTExpression {
+    private fun visit(sequence: ASTSequence?, ctx: IdentifierMapping): ASTExpression {
         val result = AST.sequenceBuilder().sure()
 
         for (val exp in sequence?.exps)
@@ -58,19 +70,19 @@ class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression> {
         return result.build().sure()
     }
 
-    override fun visit(application: ASTApplication?, ctx: IdentifierMapping): ASTExpression =
+    private fun visit(application: ASTApplication?, ctx: IdentifierMapping): ASTExpression =
         AST.apply(renameIdentifiers(application?.func, ctx), renameIdentifiers(application?.arg, ctx)).sure()
 
-    override fun visit(constant: ASTConstant?, ctx: IdentifierMapping): ASTExpression =
+    private fun visit(constant: ASTConstant?, ctx: IdentifierMapping): ASTExpression =
         constant.sure()
 
-    override fun visit(set: ASTSet?, ctx: IdentifierMapping): ASTExpression =
+    private fun visit(set: ASTSet?, ctx: IdentifierMapping): ASTExpression =
         AST.set(ctx.get(set?.`var`), renameIdentifiers(set?.exp, ctx)).sure()
 
-    override fun visit(variable: ASTVariable?, ctx: IdentifierMapping): ASTExpression =
+    private fun visit(variable: ASTVariable?, ctx: IdentifierMapping): ASTExpression =
         AST.variable(ctx.get(variable?.`var`)).sure()
 
-    override fun visit(lambda: ASTLambda?, ctx: IdentifierMapping): ASTExpression {
+    private fun visit(lambda: ASTLambda?, ctx: IdentifierMapping): ASTExpression {
         val newCtx = ctx.extend().sure()
 
         val v = freshVariable()
@@ -79,7 +91,7 @@ class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression> {
         return AST.lambda(v, renameIdentifiers(lambda?.body, newCtx)).sure()
     }
 
-    override fun visit(let: ASTLet?, ctx: IdentifierMapping): ASTExpression {
+    private fun visit(let: ASTLet?, ctx: IdentifierMapping): ASTExpression {
         if (let?.bindings?.size() != 1) throw UnsupportedOperationException()
 
         val newCtx = ctx.extend().sure()
@@ -92,7 +104,7 @@ class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression> {
         return AST.let(false, binding, renameIdentifiers(let?.body, newCtx)).sure()
     }
 
-    override fun visit(let: ASTLetRec?, ctx: IdentifierMapping): ASTExpression {
+    private fun visit(let: ASTLetRec?, ctx: IdentifierMapping): ASTExpression {
         if (let?.bindings?.size() != 1) throw UnsupportedOperationException();
 
         val newCtx = ctx.extend().sure()
@@ -105,10 +117,10 @@ class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression> {
         return AST.let(true, binding, renameIdentifiers(let?.body, newCtx)).sure()
     }
 
-    override fun visit(constructor: ASTConstructor?, ctx: IdentifierMapping): ASTExpression =
+    private fun visit(constructor: ASTConstructor?, ctx: IdentifierMapping): ASTExpression =
         constructor.sure()
 
-    override fun visit(astCase: ASTCase?, ctx: IdentifierMapping): ASTExpression {
+    private fun visit(astCase: ASTCase?, ctx: IdentifierMapping): ASTExpression {
         val alts = ArrayList<ASTAlternative?>()
 
         for (val alt in astCase?.alternatives) {
@@ -119,6 +131,4 @@ class IdentifierRenamer : ASTVisitor<IdentifierMapping, ASTExpression> {
 
         return AST.caseExp(renameIdentifiers(astCase?.exp, ctx), ImmutableList.copyOf(alts)).sure()
     }
-
-
-
+}

@@ -11,11 +11,6 @@ public final class ASTSequence extends ASTExpression {
         this.exps = checkNotNull(exps);
     }
 
-    @Override
-    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
-        return visitor.visit(this, ctx);
-    }
-
     public ASTExpression last() {
         return exps.get(exps.size()-1);
     }

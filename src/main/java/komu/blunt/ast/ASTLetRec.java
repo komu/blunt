@@ -16,11 +16,6 @@ public final class ASTLetRec extends ASTExpression {
     }
 
     @Override
-    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
-        return visitor.visit(this, ctx);
-    }
-
-    @Override
     public ASTExpression simplify() {
         // TODO: convert letrecs to lets if variable is not referenced in binding
         ImmutableList.Builder<ImplicitBinding> simplifiedBindings = ImmutableList.builder();

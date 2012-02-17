@@ -44,7 +44,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     }
 
     fun typeCheck(exp: ASTExpression, ass: Assumptions): TypeCheckResult<Type> =
-        exp.accept(expressionVisitor, ass).sure()
+        expressionVisitor.typeCheck(exp, ass)
 
     fun typeCheckBindGroup(bindGroup: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions> =
         bindingTypeChecker.typeCheckBindGroup(bindGroup, ass)

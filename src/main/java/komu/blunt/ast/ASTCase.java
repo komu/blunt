@@ -15,11 +15,6 @@ public final class ASTCase extends ASTExpression {
     }
 
     @Override
-    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
-        return visitor.visit(this, ctx);
-    }
-
-    @Override
     public ASTExpression simplify() {
         ImmutableList.Builder<ASTAlternative> alts = ImmutableList.builder();
         

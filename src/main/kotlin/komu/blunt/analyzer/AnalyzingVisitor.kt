@@ -12,13 +12,25 @@ import java.util.List
 
 import komu.blunt.objects.Symbol.symbol
 
-class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) : ASTVisitor<StaticEnvironment, CoreExpression> {
+class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
 
     private val patternAnalyzer = PatternAnalyzer()
     private var sequence = 1
 
-    fun analyze(exp: ASTExpression?, env: StaticEnvironment): CoreExpression =
-        exp.accept(this, env)
+    fun analyze(exp: ASTExpression?, ctx: StaticEnvironment): CoreExpression =
+      when (exp) {
+          is ASTApplication -> visit(exp, ctx)
+          is ASTConstant    -> visit(exp, ctx)
+          is ASTLambda      -> visit(exp, ctx)
+          is ASTLet         -> visit(exp, ctx)
+          is ASTLetRec      -> visit(exp, ctx)
+          is ASTSequence    -> visit(exp, ctx)
+          is ASTSet         -> visit(exp, ctx)
+          is ASTVariable    -> visit(exp, ctx)
+          is ASTConstructor -> visit(exp, ctx)
+          is ASTCase        -> visit(exp, ctx)
+          else              -> throw Exception("unknown exp $exp")
+      }
 
     private fun analyzeAll(exps: List<ASTExpression?>?, env: StaticEnvironment): List<CoreExpression?>  {
         val result = ArrayList<CoreExpression?>(exps?.size().sure())
@@ -29,37 +41,37 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) : ASTVisitor<StaticEn
         return result
     }
 
-    override fun visit(lambda: ASTLambda?, env: StaticEnvironment): CoreExpression {
+    private fun visit(lambda: ASTLambda?, env: StaticEnvironment): CoreExpression {
         val newEnv = env.extend(lambda?.argument).sure()
         val body = analyze(lambda?.body, newEnv)
         return CoreLambdaExpression(newEnv.size(), body)
     }
 
-    override fun visit(application: ASTApplication?, env: StaticEnvironment): CoreExpression =
+    private fun visit(application: ASTApplication?, env: StaticEnvironment): CoreExpression =
         CoreApplicationExpression(analyze(application?.func, env), analyze(application?.arg, env))
 
-    override fun visit(constructor: ASTConstructor?, ctx: StaticEnvironment): CoreExpression {
+    private fun visit(constructor: ASTConstructor?, ctx: StaticEnvironment): CoreExpression {
         val ctor = dataTypes.findConstructor(constructor?.name).sure()
 
         if (ctor.arity == 0)
-            return AST.constant(TypeConstructorValue(ctor.index, ctor.name)).accept(this, ctx).sure()
+            return analyze(AST.constant(TypeConstructorValue(ctor.index, ctor.name)), ctx)
         else
-            return AST.variable(ctor.name).accept(this, ctx).sure()
+            return analyze(AST.variable(ctor.name), ctx)
     }
 
-    override fun visit(sequence: ASTSequence?, env: StaticEnvironment): CoreExpression {
+    private fun visit(sequence: ASTSequence?, env: StaticEnvironment): CoreExpression {
         if (sequence?.exps.sure().isEmpty()) throw AnalyzationException("empty sequence")
 
         return CoreSequenceExpression(analyzeAll(sequence?.exps, env))
     }
 
-    override fun visit(set: ASTSet?, env: StaticEnvironment): CoreExpression =
+    private fun visit(set: ASTSet?, env: StaticEnvironment): CoreExpression =
         CoreSetExpression(env.lookup(set?.`var`), analyze(set?.exp, env))
 
-    override fun visit(constant: ASTConstant?, ctx: StaticEnvironment): CoreExpression =
+    private fun visit(constant: ASTConstant?, ctx: StaticEnvironment): CoreExpression =
         CoreConstantExpression(constant?.value)
 
-    override fun visit(let: ASTLet?, env: StaticEnvironment): CoreExpression {
+    private fun visit(let: ASTLet?, env: StaticEnvironment): CoreExpression {
         if (let?.bindings?.size() != 1)
             throw UnsupportedOperationException("multi-var let is not supported")
 
@@ -71,7 +83,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) : ASTVisitor<StaticEn
         return CoreLetExpression(v, expr, body)
     }
 
-    override fun visit(let: ASTLetRec?, env: StaticEnvironment): CoreExpression {
+    private fun visit(let: ASTLetRec?, env: StaticEnvironment): CoreExpression {
         if (let?.bindings?.size() != 1)
             throw UnsupportedOperationException("multi-var let is not supported")
 
@@ -84,10 +96,10 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) : ASTVisitor<StaticEn
         return CoreLetExpression(v, expr, body)
     }
 
-    override fun visit(variable: ASTVariable?, env: StaticEnvironment): CoreExpression =
+    private fun visit(variable: ASTVariable?, env: StaticEnvironment): CoreExpression =
         CoreVariableExpression(env.lookup(variable?.`var`))
 
-    override fun visit(astCase: ASTCase?, env: StaticEnvironment): CoreExpression {
+    private fun visit(astCase: ASTCase?, env: StaticEnvironment): CoreExpression {
         val exp = analyze(astCase?.exp, env)
 
         val v = symbol("\$match" + sequence++)

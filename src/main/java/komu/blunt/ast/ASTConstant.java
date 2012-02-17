@@ -10,11 +10,6 @@ public final class ASTConstant extends ASTExpression {
         this.value = value;
     }
 
-    @Override
-    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
-        return visitor.visit(this, ctx);
-    }
-
     public Type valueType() {
         return (value == null) ? Type.UNIT : Type.fromClass(value.getClass());
     }

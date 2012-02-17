@@ -14,11 +14,6 @@ public final class ASTSet extends ASTExpression {
     }
 
     @Override
-    public <R, C> R accept(ASTVisitor<C, R> visitor, C ctx) {
-        return visitor.visit(this, ctx);
-    }
-
-    @Override
     public String toString() {
         return "(set! " + var + " " + exp + ")";
     }
