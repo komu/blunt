@@ -43,12 +43,10 @@ object AST {
         apply2(ASTConstructor(name), args)
 
 
-    fun lambda(argument: Symbol?, body: ASTExpression?): ASTExpression =
+    fun lambda(argument: Symbol, body: ASTExpression): ASTExpression =
         ASTLambda(argument, body)
 
-
-    fun lambda(arguments0: List<Symbol?>?, body: ASTExpression?): ASTExpression {
-        val arguments = arguments0.sure()
+    fun lambda(arguments: List<Symbol?>, body: ASTExpression): ASTExpression {
         if (arguments.isEmpty()) throw IllegalArgumentException("no arguments for lambda")
 
         val head = arguments.get(0).sure()

@@ -59,7 +59,7 @@ class IdentifierRenamer {
     }
 
     private fun freshVariable() =
-        Symbol.symbol("\$var${sequence++}")
+        Symbol.symbol("\$var${sequence++}").sure()
 
     private fun visit(sequence: ASTSequence?, ctx: IdentifierMapping): ASTExpression {
         val result = AST.sequenceBuilder().sure()
@@ -82,13 +82,13 @@ class IdentifierRenamer {
     private fun visit(variable: ASTVariable, ctx: IdentifierMapping): ASTExpression =
         AST.variable(ctx.get(variable.name))
 
-    private fun visit(lambda: ASTLambda?, ctx: IdentifierMapping): ASTExpression {
+    private fun visit(lambda: ASTLambda, ctx: IdentifierMapping): ASTExpression {
         val newCtx = ctx.extend().sure()
 
         val v = freshVariable()
-        newCtx.put(lambda?.argument, v)
+        newCtx.put(lambda.argument, v)
 
-        return AST.lambda(v, renameIdentifiers(lambda?.body, newCtx)).sure()
+        return AST.lambda(v, renameIdentifiers(lambda.body, newCtx))
     }
 
     private fun visit(let: ASTLet?, ctx: IdentifierMapping): ASTExpression {

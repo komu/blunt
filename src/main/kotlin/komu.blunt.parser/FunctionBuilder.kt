@@ -38,7 +38,7 @@ class FunctionBuilder {
         // optimization
         val simpleVars = containsOnlyVariablePatterns(alts)
         if (simpleVars != null)
-            return AST.lambda(simpleVars, alts.get(0)?.value)
+            return AST.lambda(simpleVars, alts.get(0)?.value.sure())
 
         return AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alts));
     }
