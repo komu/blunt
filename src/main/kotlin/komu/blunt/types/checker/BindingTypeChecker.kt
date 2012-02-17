@@ -77,11 +77,11 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         }
 
         genericVariables.removeAll(fs)
-        val sharedVariables = intersection(vss)
+        val sharedVariables = intersection(vss).sure()
 
         val split = tc.classEnv.split(fs, sharedVariables, predicates)
-        val deferredPredicates = split?.first
-        val retainedPredicates = split?.second
+        val deferredPredicates = split.first
+        val retainedPredicates = split.second
 
         val finalSchemes = ArrayList<Scheme?>(types.size())
         for (val t in types)
