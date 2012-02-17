@@ -51,7 +51,7 @@ class Evaluator() {
     class MyDefinitionVisitor : ASTDefinitionVisitor<Unit,Unit> {
         override fun visit(d: ASTValueDefinition?, ctx: Unit) {
             val definition = d.sure()
-            val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions())
+            val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes.sure(), rootBindings.createAssumptions().sure())
 
             rootBindings.defineVariableType(definition.name, typ);
             val v = rootBindings.staticEnvironment?.define(definition.name)
@@ -108,7 +108,7 @@ class Evaluator() {
     }
 
     private fun typeCheck(exp: ASTExpression): Qualified<Type?> {
-        return TypeChecker.typeCheck(exp, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions()).sure()
+        return TypeChecker.typeCheck(exp, classEnv, rootBindings.dataTypes.sure(), rootBindings.createAssumptions().sure())
     }
 
     private fun toCore(exp: ASTExpression, env: StaticEnvironment): CoreExpression =

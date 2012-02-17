@@ -93,11 +93,17 @@ class TypeChecker(private val classEnv: ClassEnv, private val dataTypes: DataTyp
         }
     }
 
-    fun applySubstitution<T : Types<T>>(t: T): T =
-      t.apply(substitution)
+    fun applySubstitution<T : Types<T?>>(t: T): T =
+      t.apply(substitution).sure()
 
-    fun applySubstitution<T : Types<T>>(ts: Collection<T?>): List<T?> =
-        TypeUtils.applySubstitution(substitution, ts).sure()
+    fun applySubstitution<T : Types<T?>>(ts: Collection<T?>?): List<T?> {
+        val result = ArrayList<T?>(ts?.size() ?: 0)
+
+        for (val t in ts)
+            result.add(t?.apply(substitution))
+
+        return result
+    }
 
     fun findConstructor(name: String): ConstructorDefinition =
         dataTypes.findConstructor(name).sure()
