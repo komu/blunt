@@ -1,6 +1,7 @@
 package komu.blunt.objects;
 
 import komu.blunt.stdlib.BasicValues;
+import komu.blunt.types.ConstructorNames;
 import komu.blunt.types.DataTypeDefinitions;
 
 import java.lang.reflect.InvocationTargetException;
@@ -67,7 +68,7 @@ public final class PrimitiveFunction implements PrimitiveProcedure {
     private Object[] extract(Object arg) {
         if (arg instanceof TypeConstructorValue) {
             TypeConstructorValue ctor = (TypeConstructorValue) arg;
-            if (ctor.name.equals(DataTypeDefinitions.UNIT))
+            if (ctor.name.equals(ConstructorNames.UNIT))
                 return new Object[0];
             else if (ctor.isTuple())
                 return ctor.items;

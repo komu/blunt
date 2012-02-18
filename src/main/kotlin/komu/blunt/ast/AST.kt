@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList
 import com.google.common.collect.Lists
 import komu.blunt.objects.Symbol
 import komu.blunt.types.ConstructorDefinition
+import komu.blunt.types.ConstructorNames
 import komu.blunt.types.Type
 import komu.blunt.types.patterns.Pattern
 
@@ -58,8 +59,8 @@ object AST {
     }
 
     fun ifExp(test: ASTExpression, cons: ASTExpression, alt: ASTExpression): ASTExpression =
-        caseExp(test, alternative(Pattern.constructor(TRUE).sure(), cons),
-                      alternative(Pattern.constructor(FALSE).sure(), alt))
+        caseExp(test, alternative(Pattern.constructor(ConstructorNames.TRUE).sure(), cons),
+                      alternative(Pattern.constructor(ConstructorNames.FALSE).sure(), alt))
 
     fun caseExp(exp: ASTExpression, alts: ImmutableList<ASTAlternative?>): ASTExpression =
         ASTCase(exp.sure(), alts.sure())
@@ -91,11 +92,11 @@ object AST {
 
     fun tuple(exps: List<ASTExpression?>): ASTExpression  {
         if (exps.isEmpty())
-            return AST.constructor(UNIT.sure())
+            return AST.constructor(ConstructorNames.UNIT.sure())
         if (exps.size() == 1)
             return exps.get(0).sure()
 
-        var call =  constructor(tupleName(exps.size()).sure())
+        var call =  constructor(ConstructorNames.tupleName(exps.size()).sure())
 
         for (val exp in exps)
             call = ASTApplication(call, exp.sure())
@@ -119,10 +120,10 @@ object AST {
         }
 
         fun build(): ASTExpression {
-            var list = constructor(NIL.sure())
+            var list = constructor(ConstructorNames.NIL.sure())
 
             for (val exp in Lists.reverse(exps))
-                list = constructor(CONS.sure(), exp.sure(), list)
+                list = constructor(ConstructorNames.CONS.sure(), exp.sure(), list)
 
             return list
         }

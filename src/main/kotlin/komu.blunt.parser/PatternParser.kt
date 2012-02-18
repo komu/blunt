@@ -9,7 +9,7 @@ import java.util.Arrays
 import java.util.List
 
 import komu.blunt.parser.TokenType.*
-import komu.blunt.types.DataTypeDefinitions.*
+import komu.blunt.types.ConstructorNames.*
 import komu.blunt.types.patterns.Pattern.*
 import java.util.Collections
 

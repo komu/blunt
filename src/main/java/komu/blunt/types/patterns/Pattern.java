@@ -2,10 +2,9 @@ package komu.blunt.types.patterns;
 
 import com.google.common.collect.ImmutableList;
 import komu.blunt.objects.Symbol;
+import komu.blunt.types.ConstructorNames;
 
 import static komu.blunt.objects.Symbol.symbol;
-import static komu.blunt.types.DataTypeDefinitions.UNIT;
-import static komu.blunt.types.DataTypeDefinitions.tupleName;
 
 public abstract class Pattern {
 
@@ -38,10 +37,10 @@ public abstract class Pattern {
 
     public static Pattern tuple(ImmutableList<Pattern> args) {
         if (args.isEmpty())
-            return constructor(UNIT);
+            return constructor(ConstructorNames.UNIT);
         if (args.size() == 1)
             return args.get(0);
         else
-            return constructor(tupleName(args.size()), args);
+            return constructor(ConstructorNames.tupleName(args.size()), args);
     }
 }

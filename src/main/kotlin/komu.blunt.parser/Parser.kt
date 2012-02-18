@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList
 import komu.blunt.ast.*
 import komu.blunt.objects.Symbol
 import komu.blunt.types.DataTypeDefinitions
+import komu.blunt.types.ConstructorNames
 import komu.blunt.types.patterns.Pattern
 import komu.blunt.types.patterns.VariablePattern
 
@@ -282,7 +283,7 @@ class Parser(source: String) {
     private fun parseParens(): ASTExpression {
         lexer.expectToken(LPAREN)
         if (lexer.readMatchingToken(RPAREN))
-            return AST.constructor(DataTypeDefinitions.UNIT.sure())
+            return AST.constructor(ConstructorNames.UNIT.sure())
 
         if (lexer.nextTokenIs(OPERATOR)) {
             val op = lexer.readTokenValue(OPERATOR)

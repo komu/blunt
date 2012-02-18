@@ -5,7 +5,7 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static komu.blunt.types.DataTypeDefinitions.*;
+import static komu.blunt.types.ConstructorNames.*;
 import static komu.blunt.types.patterns.Pattern.*;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;

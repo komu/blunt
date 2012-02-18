@@ -66,7 +66,7 @@ public abstract class Type implements Types<Type> {
     }
 
     public static Type tupleType(List<Type> types) {
-        return genericType(DataTypeDefinitions.tupleName(types.size()), types);
+        return genericType(ConstructorNames.tupleName(types.size()), types);
     }
     
     public static Type genericType(Class<?> cl, List<? extends Type> params) {
