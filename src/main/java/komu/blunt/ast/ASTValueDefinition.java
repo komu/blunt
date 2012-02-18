@@ -15,11 +15,6 @@ public final class ASTValueDefinition extends ASTDefinition {
     }
 
     @Override
-    public <C, R> R accept(ASTDefinitionVisitor<C, R> visitor, C ctx) {
-        return visitor.visit(this, ctx);
-    }
-
-    @Override
     public String toString() {
         return "(define " + name + " " + value + ")";
     }

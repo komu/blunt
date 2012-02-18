@@ -43,27 +43,23 @@ class Evaluator() {
     fun load(source: String) {
         val parser = Parser(source)
 
-        val visitor = MyDefinitionVisitor()
         for (val define in parser.parseDefinitions())
-            define.accept(visitor, #())
+            when (define) {
+                is ASTValueDefinition -> processDefinition(define)
+                is ASTDataDefinition  -> register(define)
+                else -> throw Exception("invalid definition $define)
+            }
     }
 
-    class MyDefinitionVisitor : ASTDefinitionVisitor<Unit,Unit> {
-        override fun visit(d: ASTValueDefinition?, ctx: Unit) {
-            val definition = d.sure()
-            val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes.sure(), rootBindings.createAssumptions().sure())
+    private fun processDefinition(definition: ASTValueDefinition) {
+        val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes.sure(), rootBindings.createAssumptions().sure())
 
-            rootBindings.defineVariableType(definition.name, typ);
-            val v = rootBindings.staticEnvironment?.define(definition.name)
+        rootBindings.defineVariableType(definition.name, typ);
+        val v = rootBindings.staticEnvironment?.define(definition.name)
 
-            val exp = Analyzer.analyze(definition.value.sure(), rootBindings.dataTypes.sure(), rootBindings.staticEnvironment.sure());
+        val exp = Analyzer.analyze(definition.value.sure(), rootBindings.dataTypes.sure(), rootBindings.staticEnvironment.sure());
 
-            run(CoreDefineExpression(exp, v), rootBindings.runtimeEnvironment.sure());
-        }
-
-        override fun visit(definition: ASTDataDefinition?, ctx: Unit) {
-            register(definition.sure())
-        }
+        run(CoreDefineExpression(exp, v), rootBindings.runtimeEnvironment.sure());
     }
 
     private fun register(definition: ASTDataDefinition) {

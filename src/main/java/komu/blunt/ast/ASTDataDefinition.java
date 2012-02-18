@@ -21,11 +21,6 @@ public final class ASTDataDefinition extends ASTDefinition {
     }
 
     @Override
-    public <C, R> R accept(ASTDefinitionVisitor<C, R> visitor, C ctx) {
-        return visitor.visit(this, ctx);
-    }
-
-    @Override
     public String toString() {
         return "data " + name + " = " + constructors;
     }
