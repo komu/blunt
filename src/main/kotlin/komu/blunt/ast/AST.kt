@@ -74,7 +74,7 @@ object AST {
     fun alternative(pattern: Pattern?, exp: ASTExpression?): ASTAlternative =
         ASTAlternative(pattern, exp);
 
-    fun letRec(name: Symbol?, value: ASTExpression?, body: ASTExpression): ASTExpression =
+    fun letRec(name: Symbol, value: ASTExpression, body: ASTExpression): ASTExpression =
         ASTLetRec(ImmutableList.of<ImplicitBinding?>(ImplicitBinding(name, value)).sure(), body)
 
     fun let(recursive: Boolean, binding: ImplicitBinding?, body: ASTExpression): ASTExpression {
