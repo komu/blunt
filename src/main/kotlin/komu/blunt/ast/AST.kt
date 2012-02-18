@@ -71,7 +71,7 @@ object AST {
         return ASTCase(exp.sure(), ImmutableList.copyOf(lst).sure())
     }
 
-    fun alternative(pattern: Pattern?, exp: ASTExpression?): ASTAlternative =
+    fun alternative(pattern: Pattern, exp: ASTExpression): ASTAlternative =
         ASTAlternative(pattern, exp);
 
     fun letRec(name: Symbol, value: ASTExpression, body: ASTExpression): ASTExpression =

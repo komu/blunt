@@ -34,7 +34,7 @@ class IdentifierRenamer {
             else              -> throw Exception("unknown exp $exp")
         }
 
-    fun renameIdentifiers(pattern: Pattern?, ctx: IdentifierMapping) =
+    fun renameIdentifiers(pattern: Pattern, ctx: IdentifierMapping) =
         when (pattern) {
             is WildcardPattern    -> pattern
             is LiteralPattern     -> pattern
@@ -47,7 +47,7 @@ class IdentifierRenamer {
         val args = ArrayList<Pattern?>()
 
         for (val arg in pattern.args)
-            args.add(renameIdentifiers(arg, ctx));
+            args.add(renameIdentifiers(arg.sure(), ctx));
 
         return Pattern.constructor(pattern.name, ImmutableList.copyOf(args)).sure()
     }
@@ -125,7 +125,7 @@ class IdentifierRenamer {
 
         for (val alt in astCase?.alternatives) {
             val newCtx = ctx.extend().sure()
-            val pattern = renameIdentifiers(alt?.pattern, newCtx);
+            val pattern = renameIdentifiers(alt.sure().pattern, newCtx)
             alts.add(AST.alternative(pattern, renameIdentifiers(alt?.value, newCtx)))
         }
 
