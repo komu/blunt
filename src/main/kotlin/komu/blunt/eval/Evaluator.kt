@@ -37,7 +37,7 @@ class Evaluator() {
 
     fun analyze(expr: ASTExpression): CoreExpression {
         typeCheck(expr)
-        return toCore(expr, rootBindings.staticEnvironment?.extend().sure())
+        return toCore(expr, rootBindings.staticEnvironment.extend().sure())
     }
 
     fun load(source: String) {
@@ -55,7 +55,7 @@ class Evaluator() {
         val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes.sure(), rootBindings.createAssumptions().sure())
 
         rootBindings.defineVariableType(definition.name, typ);
-        val v = rootBindings.staticEnvironment?.define(definition.name)
+        val v = rootBindings.staticEnvironment.define(definition.name)
 
         val exp = Analyzer.analyze(definition.value.sure(), rootBindings.dataTypes.sure(), rootBindings.staticEnvironment.sure());
 
@@ -63,7 +63,7 @@ class Evaluator() {
     }
 
     private fun register(definition: ASTDataDefinition) {
-        rootBindings.dataTypes?.register(definition)
+        rootBindings.dataTypes.register(definition)
 
         for (val ctor in definition.constructors)
             createConstructorFunction(ctor.sure())
@@ -94,11 +94,11 @@ class Evaluator() {
 
 
     public fun evaluateWithType(exp: ASTExpression): #(Any?,Qualified<Type?>) {
-        val env = rootBindings.staticEnvironment?.extend().sure()
+        val env = rootBindings.staticEnvironment.extend().sure()
         val typ = typeCheck(exp)
         val expression = toCore(exp, env);
 
-        val result = run(expression, rootBindings.runtimeEnvironment?.extend(env.size()).sure())
+        val result = run(expression, rootBindings.runtimeEnvironment.extend(env.size()).sure())
 
 //        return #(result, typ);
         throw UnsupportedOperationException("compiler has problems with tuples")
