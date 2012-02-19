@@ -22,7 +22,7 @@ class RootBindings {
     fun bind(name: Symbol?, scheme: Scheme?, value: Any?) {
         val ref = staticEnvironment.define(name)
         defineVariableType(name, scheme)
-        runtimeEnvironment.define(ref.sure(), value)
+        runtimeEnvironment.define(ref, value)
     }
 
     fun defineVariableType(name: Symbol?, scheme: Scheme?) {
