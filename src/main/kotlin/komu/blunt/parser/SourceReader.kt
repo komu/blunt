@@ -2,19 +2,19 @@ package komu.blunt.parser
 
 class SourceReader(private val source: String) {
 
-    private var line = 1
-    private var column = 1
-    private var position = 0
+    private var _line = 1
+    private var _column = 1
+    private var _position = 0
 
     fun read(): Char? {
         if (!hasMore()) return null
 
-        val ch = source[position++]
+        val ch = source[_position++]
         if (ch == '\n') {
-            line++;
-            column = 1;
+            _line++
+            _column = 1
         } else {
-            column++;
+            _column++
         }
 
         return ch
@@ -26,32 +26,33 @@ class SourceReader(private val source: String) {
         if (!hasMore()) return false;
 
         //return source.regionMatches(position, s, 0, s.length())
-        return source.substring(position, position+s.length()) == s
+        return source.substring(_position, _position+s.length()) == s
     }
-
-    fun getLine() = line
-    fun getColumn() = column
 
     fun peek(): Char? =
         if (hasMore())
-            source[position]
+            source[_position]
         else
             null
 
     fun hasMore(): Boolean =
-        position < source.length()
+        _position < source.length()
 
+    val line: Int
+        get() = _line
 
-    fun getLocation(): SourceLocation =
-        SourceLocation(line, column)
+    val column: Int
+        get() = _column
 
-    fun getPosition() = position
+    val location: SourceLocation
+        get() = SourceLocation(_line, _column)
 
-    fun setPosition(position: Int) {
-        if (position < 0 || position >= source.length)
-            throw IllegalArgumentException("invalid position: $position")
+    var position: Int
+        get() = _position
+        set(position) {
+            if (position < 0 || position >= source.length)
+                throw IllegalArgumentException("invalid position: $position")
 
-        this.position = position;
-    }
+            this._position = position
+        }
 }
-
