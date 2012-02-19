@@ -16,7 +16,6 @@ import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
 
-import komu.blunt.eval.ConstructorArgumentCollector.createConstructor
 import komu.blunt.types.Predicate.isIn
 import komu.blunt.parser.Parser
 
@@ -74,7 +73,7 @@ class Evaluator() {
 
     private fun createConstructorFunction(ctor: ConstructorDefinition) {
         if (ctor.arity != 0)
-            rootBindings.bind(ctor.name, ctor.scheme, createConstructor(ctor));
+            rootBindings.bind(ctor.name, ctor.scheme, ConstructorArgumentCollector.createConstructor(ctor));
     }
 
     private fun run(expression: CoreExpression, env: Environment): Any? {
