@@ -76,7 +76,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
             throw UnsupportedOperationException("multi-var let is not supported")
 
         val binding = let?.bindings?.get(0)
-        val v = env.define(binding?.name)
+        val v = env.define(binding?.name).sure()
 
         val expr = analyze(binding?.expr, env)
         val body = analyze(let?.body, env)
@@ -88,7 +88,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
             throw UnsupportedOperationException("multi-var let is not supported")
 
         val binding = let?.bindings?.get(0)
-        val v = env.define(binding?.name)
+        val v = env.define(binding?.name).sure()
 
         val expr = analyze(binding?.expr, env)
         val body = analyze(let?.body, env)
@@ -97,7 +97,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
     }
 
     private fun visit(variable: ASTVariable?, env: StaticEnvironment): CoreExpression =
-        CoreVariableExpression(env.lookup(variable?.name))
+        CoreVariableExpression(env.lookup(variable?.name).sure())
 
     private fun visit(astCase: ASTCase?, env: StaticEnvironment): CoreExpression {
         val exp = analyze(astCase?.exp, env)
