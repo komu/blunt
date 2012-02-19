@@ -12,7 +12,6 @@ import java.util.List
 
 import com.google.common.collect.Lists.newArrayList
 import komu.blunt.objects.Symbol.symbol
-import komu.blunt.types.DataTypeDefinitions.*
 import java.util.Arrays
 import java.util.ArrayList
 

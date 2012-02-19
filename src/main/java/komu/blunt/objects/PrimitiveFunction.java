@@ -2,7 +2,6 @@ package komu.blunt.objects;
 
 import komu.blunt.stdlib.BasicValues;
 import komu.blunt.types.ConstructorNames;
-import komu.blunt.types.DataTypeDefinitions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

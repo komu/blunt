@@ -47,11 +47,11 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
         return CoreLambdaExpression(newEnv.size(), body)
     }
 
-    private fun visit(application: ASTApplication?, env: StaticEnvironment): CoreExpression =
-        CoreApplicationExpression(analyze(application?.func, env), analyze(application?.arg, env))
+    private fun visit(application: ASTApplication, env: StaticEnvironment): CoreExpression =
+        CoreApplicationExpression(analyze(application.func, env), analyze(application.arg, env))
 
-    private fun visit(constructor: ASTConstructor?, ctx: StaticEnvironment): CoreExpression {
-        val ctor = dataTypes.findConstructor(constructor?.name).sure()
+    private fun visit(constructor: ASTConstructor, ctx: StaticEnvironment): CoreExpression {
+        val ctor = dataTypes.findConstructor(constructor.name).sure()
 
         if (ctor.arity == 0)
             return analyze(AST.constant(TypeConstructorValue(ctor.index, ctor.name)), ctx)
@@ -59,10 +59,10 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
             return analyze(AST.variable(ctor.name.sure()), ctx)
     }
 
-    private fun visit(sequence: ASTSequence?, env: StaticEnvironment): CoreExpression {
-        if (sequence?.exps.sure().isEmpty()) throw AnalyzationException("empty sequence")
+    private fun visit(sequence: ASTSequence, env: StaticEnvironment): CoreExpression {
+        if (sequence.exps.sure().isEmpty()) throw AnalyzationException("empty sequence")
 
-        return CoreSequenceExpression(analyzeAll(sequence?.exps, env))
+        return CoreSequenceExpression(analyzeAll(sequence.exps, env))
     }
 
     private fun visit(set: ASTSet, env: StaticEnvironment): CoreExpression =
@@ -71,27 +71,27 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
     private fun visit(constant: ASTConstant, ctx: StaticEnvironment): CoreExpression =
         CoreConstantExpression(constant.value)
 
-    private fun visit(let: ASTLet?, env: StaticEnvironment): CoreExpression {
-        if (let?.bindings?.size() != 1)
+    private fun visit(let: ASTLet, env: StaticEnvironment): CoreExpression {
+        if (let.bindings.size() != 1)
             throw UnsupportedOperationException("multi-var let is not supported")
 
-        val binding = let?.bindings?.get(0)
-        val v = env.define(binding?.name.sure())
-
-        val expr = analyze(binding?.expr, env)
-        val body = analyze(let?.body, env)
-        return CoreLetExpression(v, expr, body)
-    }
-
-    private fun visit(let: ASTLetRec?, env: StaticEnvironment): CoreExpression {
-        if (let?.bindings?.size() != 1)
-            throw UnsupportedOperationException("multi-var let is not supported")
-
-        val binding = let?.bindings?.get(0).sure()
+        val binding = let.bindings.get(0).sure()
         val v = env.define(binding.name)
 
         val expr = analyze(binding.expr, env)
-        val body = analyze(let?.body, env)
+        val body = analyze(let.body, env)
+        return CoreLetExpression(v, expr, body)
+    }
+
+    private fun visit(let: ASTLetRec, env: StaticEnvironment): CoreExpression {
+        if (let.bindings.size() != 1)
+            throw UnsupportedOperationException("multi-var let is not supported")
+
+        val binding = let.bindings.get(0).sure()
+        val v = env.define(binding.name)
+
+        val expr = analyze(binding.expr, env)
+        val body = analyze(let.body, env)
 
         return CoreLetExpression(v, expr, body)
     }
@@ -125,4 +125,3 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
         return CoreAlternative(extractor.predicate, CoreSequenceExpression(extractor.extractor, body))
     }
 }
-

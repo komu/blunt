@@ -2,7 +2,6 @@ package komu.blunt.stdlib;
 
 import komu.blunt.objects.TypeConstructorValue;
 import komu.blunt.types.ConstructorNames;
-import komu.blunt.types.DataTypeDefinitions;
 
 @SuppressWarnings("unused")
 public class BasicValues {
