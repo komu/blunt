@@ -54,7 +54,7 @@ class Evaluator() {
         val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes.sure(), rootBindings.createAssumptions().sure())
 
         rootBindings.defineVariableType(definition.name, typ);
-        val v = rootBindings.staticEnvironment.define(definition.name)
+        val v = rootBindings.staticEnvironment.define(definition.name.sure())
 
         val exp = Analyzer.analyze(definition.value.sure(), rootBindings.dataTypes.sure(), rootBindings.staticEnvironment.sure());
 

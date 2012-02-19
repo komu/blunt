@@ -41,9 +41,9 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
         return result
     }
 
-    private fun visit(lambda: ASTLambda?, env: StaticEnvironment): CoreExpression {
-        val newEnv = env.extend(lambda?.argument).sure()
-        val body = analyze(lambda?.body, newEnv)
+    private fun visit(lambda: ASTLambda, env: StaticEnvironment): CoreExpression {
+        val newEnv = env.extend(lambda.argument)
+        val body = analyze(lambda.body, newEnv)
         return CoreLambdaExpression(newEnv.size(), body)
     }
 
@@ -76,7 +76,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
             throw UnsupportedOperationException("multi-var let is not supported")
 
         val binding = let?.bindings?.get(0)
-        val v = env.define(binding?.name).sure()
+        val v = env.define(binding?.name.sure())
 
         val expr = analyze(binding?.expr, env)
         val body = analyze(let?.body, env)
@@ -87,24 +87,24 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
         if (let?.bindings?.size() != 1)
             throw UnsupportedOperationException("multi-var let is not supported")
 
-        val binding = let?.bindings?.get(0)
-        val v = env.define(binding?.name).sure()
+        val binding = let?.bindings?.get(0).sure()
+        val v = env.define(binding.name)
 
-        val expr = analyze(binding?.expr, env)
+        val expr = analyze(binding.expr, env)
         val body = analyze(let?.body, env)
 
         return CoreLetExpression(v, expr, body)
     }
 
-    private fun visit(variable: ASTVariable?, env: StaticEnvironment): CoreExpression =
-        CoreVariableExpression(env.lookup(variable?.name).sure())
+    private fun visit(variable: ASTVariable, env: StaticEnvironment): CoreExpression =
+        CoreVariableExpression(env.lookup(variable.name))
 
-    private fun visit(astCase: ASTCase?, env: StaticEnvironment): CoreExpression {
-        val exp = analyze(astCase?.exp, env)
+    private fun visit(astCase: ASTCase, env: StaticEnvironment): CoreExpression {
+        val exp = analyze(astCase.exp, env)
 
-        val v = symbol("\$match" + sequence++)
+        val v = symbol("\$match" + sequence++).sure()
         val matchedObject = env.define(v).sure()
-        val body = createAlts(matchedObject, astCase?.alternatives.sure(), env)
+        val body = createAlts(matchedObject, astCase.alternatives, env)
         return CoreLetExpression(matchedObject, exp, body)
     }
 
