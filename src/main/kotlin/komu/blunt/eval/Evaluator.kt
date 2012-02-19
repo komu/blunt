@@ -29,10 +29,10 @@ class Evaluator() {
 
     {
         throw UnsupportedOperationException("registering basic functions")
-        NativeFunctionRegisterer(rootBindings).register(Class.forName("komu.blunt.stdlib.BasicFunctions"))
+        ///NativeFunctionRegisterer(rootBindings).register(Class.forName("komu.blunt.stdlib.BasicFunctions"))
 
-        for (val constructor in rootBindings.dataTypes?.getDeclaredConstructors())
-            createConstructorFunction(constructor.sure())
+//        for (val constructor in rootBindings.dataTypes?.getDeclaredConstructors())
+//            createConstructorFunction(constructor.sure())
     }
 
     fun analyze(expr: ASTExpression): CoreExpression {
@@ -47,7 +47,7 @@ class Evaluator() {
             when (define) {
                 is ASTValueDefinition -> processDefinition(define)
                 is ASTDataDefinition  -> register(define)
-                else -> throw Exception("invalid definition $define)
+                else -> throw Exception("invalid definition $define")
             }
     }
 
@@ -100,7 +100,8 @@ class Evaluator() {
 
         val result = run(expression, rootBindings.runtimeEnvironment?.extend(env.size()).sure())
 
-        return #(result, typ);
+//        return #(result, typ);
+        throw UnsupportedOperationException("compiler has problems with tuples")
     }
 
     private fun typeCheck(exp: ASTExpression): Qualified<Type?> {

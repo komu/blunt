@@ -1,20 +1,7 @@
 package komu.blunt.eval;
 
-import komu.blunt.objects.PrimitiveFunction;
-import komu.blunt.stdlib.LibraryFunction;
-import komu.blunt.stdlib.LibraryValue;
-import komu.blunt.stdlib.TypeScheme;
-import komu.blunt.types.NativeTypeConversions;
-import komu.blunt.types.Scheme;
-import komu.blunt.types.Type;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.lang.reflect.Modifier.isStatic;
-
 final class NativeFunctionRegisterer {
+    /*
     private final RootBindings bindings;
 
     public NativeFunctionRegisterer(RootBindings bindings) {
@@ -56,4 +43,5 @@ final class NativeFunctionRegisterer {
             return NativeTypeConversions.createFunctionType(m);
 
     }
+    */
 }
