@@ -38,7 +38,7 @@ class CoreSequenceExpression(expressions: List<CoreExpression?>?) : CoreExpressi
     private fun allButLast(): List<CoreExpression?> =
         expressions.subList(0, expressions.size()-1).sure()
 
-    override fun toString() = expressions.toString()
+    override fun toString() = expressions.toString().sure()
 
     override fun simplify(): CoreExpression {
         val exps = ArrayList<CoreExpression?>(expressions.size());
