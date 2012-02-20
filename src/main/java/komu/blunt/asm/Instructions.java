@@ -1,8 +1,6 @@
 package komu.blunt.asm;
 
-import komu.blunt.analyzer.VariableReference;
 import komu.blunt.asm.opcodes.*;
-import komu.blunt.core.PatternPath;
 
 import java.util.*;
 
@@ -24,26 +22,7 @@ public final class Instructions {
         }
     }
 
-    /**
-     * Returns an instruction stream identical to this one, but which guarantees
-     * that given register will not be modified.
-     * <p>
-     * If the instructions in the stream will never modify given register, then
-     * it is safe to return the stream as it is.
-     */
-    public Instructions preserving(Register register) {
-        if (modifies(register)) {
-            Instructions instructions = new Instructions();
-            instructions.pushRegister(register);
-            instructions.append(this);
-            instructions.popRegister(register);
-            return instructions;
-        } else {
-            return this;
-        }
-    }
-
-    private boolean modifies(Register register) {
+    public boolean modifies(Register register) {
         for (OpCode op : instructions)
             if (op.modifies(register))
                 return true;
@@ -79,74 +58,8 @@ public final class Instructions {
         }
     }
 
-    public void finishWithLinkage(Linkage linkage) {
-        if (linkage == Linkage.NEXT) {
-            // nada
-        } else if (linkage == Linkage.RETURN) {
-            popRegister(Register.PC);
-        } else {
-            jump(linkage.label);
-        }
-    }
-
-    public void loadConstant(Register target, Object value) {
-        instructions.add(new OpLoadConstant(target, value));
-    }
-
-    public void loadVariable(Register target, VariableReference variable) {
-        instructions.add(new OpLoadVariable(target, variable));
-    }
-    
-    public void storeVariable(VariableReference var, Register val) {
-        instructions.add(new OpStoreVariable(var, val));
-    }
-    
-    public void loadLambda(Register target, Label label) {
-        instructions.add(new OpLoadLambda(target, label));
-    }
-
-    public void createEnvironment(int envSize) {
-        instructions.add(new OpCreateEnvironment(envSize));
-    }
-
-    public void loadExtracted(Register target, Register source, PatternPath path) {
-        instructions.add(new OpLoadExtracted(target, source, path));
-    }
-
-    public void loadTag(Register target, Register source, PatternPath path) {
-        instructions.add(new OpLoadTag(target, source, path));
-    }
-
-    public void jump(Label label) {
-        instructions.add(new OpJump(label));
-    }
-
-    public void pushLabel(Label label) {
-        instructions.add(new OpPushLabel(label));
-    }
-    
-    public void pushRegister(Register register) {
-        instructions.add(new OpPushRegister(register));
-    }
-
-    public void popRegister(Register register) {
-        instructions.add(new OpPopRegister(register));
-    }
-
-    public void apply() {
-        instructions.add(OpApply.NORMAL);
-    }
-
-    public void applyTail() {
-        instructions.add(OpApply.TAIL);
-    }
-    
-    public void copy(Register target, Register source) {
-        instructions.add(new OpCopyRegister(target, source));
-    }
-    
-    public void equalConstant(Register target, Register source, Object value) {
-        instructions.add(new OpEqualConstant(target, source, value));
+    public void add(OpCode op) {
+        instructions.add(op);
     }
 
     public int count() {

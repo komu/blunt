@@ -40,7 +40,7 @@ class Assumptions private(private val mappings: Map<Symbol?,Scheme?>) : Types<As
         val builder = builder()
 
         for (val entry in mappings.entrySet())
-            builder.add(entry.getKey(), entry.getValue()?.apply(substitution))
+            builder.add(entry.sure().getKey(), entry.sure().getValue()?.apply(substitution))
 
         return builder.build()
     }

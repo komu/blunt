@@ -1,9 +1,6 @@
 package komu.blunt.core
 
-import komu.blunt.asm.Assembler
-import komu.blunt.asm.Instructions
-import komu.blunt.asm.Linkage
-import komu.blunt.asm.Register
+import komu.blunt.asm.*
 
 class CoreEqualConstantExpression(private val value: Any?, private val expression: CoreExpression?) : CoreExpression() {
 

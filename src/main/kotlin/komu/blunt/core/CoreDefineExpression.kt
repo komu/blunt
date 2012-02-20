@@ -1,10 +1,7 @@
 package komu.blunt.core
 
 import komu.blunt.analyzer.VariableReference
-import komu.blunt.asm.Assembler
-import komu.blunt.asm.Instructions
-import komu.blunt.asm.Linkage
-import komu.blunt.asm.Register
+import komu.blunt.asm.*
 import komu.blunt.stdlib.BasicValues
 
 class CoreDefineExpression(private val variable: VariableReference?, private val expression: CoreExpression?) : CoreExpression() {
