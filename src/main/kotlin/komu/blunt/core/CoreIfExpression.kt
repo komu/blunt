@@ -37,7 +37,7 @@ class CoreIfExpression(private val condition: CoreExpression?,
         val simplifiedAlternative = alternative?.simplify().sure()
 
         return if (simplifiedCondition is CoreConstantExpression)
-            if (isFalse(simplifiedCondition)) simplifiedAlternative else simplifiedConsequent
+            if (isFalse(simplifiedCondition.value)) simplifiedAlternative else simplifiedConsequent
         else
             CoreIfExpression(simplifiedCondition, simplifiedConsequent, simplifiedAlternative)
     }
