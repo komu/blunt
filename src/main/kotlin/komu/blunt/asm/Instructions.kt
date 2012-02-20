@@ -62,7 +62,7 @@ fun Instructions.loadTag(target: Register?, source: Register?, path: PatternPath
 }
 
 fun Instructions.jump(label: Label?) {
-    this.add(OpJump(label))
+    this.add(OpJump(label.sure()))
 }
 
 fun Instructions.pushLabel(label: Label?) {
