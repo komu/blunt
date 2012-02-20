@@ -5,8 +5,6 @@ import komu.blunt.asm.Instructions
 import komu.blunt.asm.Linkage
 import komu.blunt.asm.Register
 
-import java.util.Objects
-
 class CoreEqualConstantExpression(private val value: Any?, private val expression: CoreExpression?) : CoreExpression() {
 
     override fun assemble(asm: Assembler?, target: Register?, linkage: Linkage?): Instructions {
@@ -21,9 +19,9 @@ class CoreEqualConstantExpression(private val value: Any?, private val expressio
 
     override fun simplify(): CoreExpression {
         val simplified = expression?.simplify()
-        if (simplified is CoreConstantExpression) {
-            return CoreConstantExpression(Objects.equals(value, simplified.value))
-        }
-        return CoreEqualConstantExpression(value, simplified)
+        return if (simplified is CoreConstantExpression)
+            CoreConstantExpression(value == simplified.value)
+        else
+            CoreEqualConstantExpression(value, simplified)
     }
 }
