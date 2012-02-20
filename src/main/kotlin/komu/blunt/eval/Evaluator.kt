@@ -58,7 +58,7 @@ class Evaluator() {
 
         val exp = Analyzer.analyze(definition.value.sure(), rootBindings.dataTypes.sure(), rootBindings.staticEnvironment.sure());
 
-        run(CoreDefineExpression(exp, v), rootBindings.runtimeEnvironment.sure());
+        run(CoreDefineExpression(v, exp), rootBindings.runtimeEnvironment.sure());
     }
 
     private fun register(definition: ASTDataDefinition) {
