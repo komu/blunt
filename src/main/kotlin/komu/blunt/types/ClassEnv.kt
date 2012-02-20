@@ -132,8 +132,8 @@ class ClassEnv() {
         for (val it2 in getInstances(predicate.className.sure())) {
             val it = it2.sure()
             try {
-                val s = Unifier.matchPredicate(it.getPredicate(), predicate)
-                return TypeUtils.applySubstitution(s, it.getPredicates())
+                val s = Unifier.matchPredicate(it.predicate, predicate)
+                return TypeUtils.applySubstitution(s, it.predicates)
             } catch (e: UnificationException) {
                 // skip
             }
