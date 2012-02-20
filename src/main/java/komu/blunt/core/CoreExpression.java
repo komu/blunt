@@ -14,11 +14,15 @@ public abstract class CoreExpression {
     public abstract Instructions assemble(Assembler asm, Register target, Linkage linkage);
 
     public static CoreExpression and(List<CoreExpression> exps) {
+
+        throw new UnsupportedOperationException();
+        /*
         if (exps.isEmpty())
             return new CoreConstantExpression(true);
         else if (exps.size() == 1)
             return exps.get(0);
         else
             return new CoreIfExpression(exps.get(0), and(exps.subList(1, exps.size())), new CoreConstantExpression(false));
+            */
     }
 }
