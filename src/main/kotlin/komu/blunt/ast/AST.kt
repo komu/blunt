@@ -21,7 +21,7 @@ import java.util.ArrayList
 object AST {
 
     fun data(name: String?, typ: Type?, constructors: ImmutableList<ConstructorDefinition?>?, derivedClasses: ImmutableList<String?>?) =
-        ASTDataDefinition(name, typ, constructors, derivedClasses)
+        ASTDataDefinition(name.sure(), typ.sure(), constructors.sure(), derivedClasses.sure())
 
     fun constant(value: Any?): ASTExpression   = ASTConstant(value.sure())
     fun variable(name: Symbol): ASTExpression = ASTVariable(name)
@@ -107,7 +107,7 @@ object AST {
         ASTSet(name, exp)
 
     fun define(name: Symbol?, value: ASTExpression?): ASTValueDefinition =
-        ASTValueDefinition(name, value)
+        ASTValueDefinition(name.sure(), value.sure())
 
     fun listBuilder() = ListBuilder()
 

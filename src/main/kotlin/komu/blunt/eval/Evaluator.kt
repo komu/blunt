@@ -68,7 +68,7 @@ class Evaluator() {
             createConstructorFunction(ctor.sure())
 
         for (val className in definition.derivedClasses)
-            classEnv.addInstance(isIn(className, definition.`type`))
+            classEnv.addInstance(isIn(className, definition.typ))
     }
 
     private fun createConstructorFunction(ctor: ConstructorDefinition) {
