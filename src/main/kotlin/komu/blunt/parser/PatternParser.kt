@@ -29,20 +29,20 @@ final class PatternParser(val lexer: Lexer) {
 
             return constructor(name, ImmutableList.copyOf(args)).sure()
         } else {
-            return parseSimplePattern();
+            return parseSimplePattern()
         }
     }
 
     public fun parseSimplePattern(): Pattern {
-        var pattern = parsePrimitivePattern();
+        var pattern = parsePrimitivePattern()
 
         if (lexer.nextTokenIs(OPERATOR) && lexer.peekTokenValue(OPERATOR).isConstructor) {
-            val op = lexer.readTokenValue(OPERATOR).sure()
+            val op = lexer.readTokenValue(OPERATOR)
 
             pattern = constructor(op.toString(), pattern, parsePattern()).sure()
         }
 
-        return pattern;
+        return pattern
     }
 
     private fun parsePrimitivePattern(): Pattern {
@@ -56,44 +56,44 @@ final class PatternParser(val lexer: Lexer) {
             return variable(lexer.readTokenValue(IDENTIFIER)).sure()
 
         } else if (lexer.readMatchingToken(LPAREN)) {
-            return parseParens();
+            return parseParens()
 
         } else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME)) {
             return constructor(lexer.readTokenValue(TYPE_OR_CTOR_NAME)).sure()
 
         } else if (lexer.nextTokenIs(LBRACKET)) {
-            return parseBrackets();
+            return parseBrackets()
 
 
         } else {
-            throw lexer.expectFailure("pattern");
+            throw lexer.expectFailure("pattern")
         }
     }
 
     private fun parseBrackets(): Pattern {
-        lexer.expectToken(LBRACKET);
+        lexer.expectToken(LBRACKET)
 
         if (lexer.readMatchingToken(RBRACKET))
             return constructor(NIL).sure()
 
-        val patterns = ArrayList<Pattern?>();
+        val patterns = ArrayList<Pattern?>()
 
-        patterns.add(parsePattern());
+        patterns.add(parsePattern())
         while (lexer.readMatchingToken(COMMA))
-            patterns.add(parsePattern());
+            patterns.add(parsePattern())
 
-        lexer.expectToken(RBRACKET);
+        lexer.expectToken(RBRACKET)
 
-        return createList(patterns);
+        return createList(patterns)
     }
 
     private fun createList(patterns: List<Pattern?>): Pattern {
         var result = constructor(NIL).sure()
 
         for (val pattern in Lists.reverse(patterns))
-            result = constructor(CONS, pattern, result).sure();
+            result = constructor(CONS, pattern, result).sure()
 
-        return result;
+        return result
     }
 
     private fun parseParens(): Pattern {
@@ -106,12 +106,11 @@ final class PatternParser(val lexer: Lexer) {
             patterns.add(parsePattern())
         } while (lexer.readMatchingToken(COMMA))
 
-        lexer.expectToken(RPAREN);
+        lexer.expectToken(RPAREN)
 
         if (patterns.size() == 1)
             return patterns.get(0).sure()
         else
-            return constructor(tupleName(patterns.size()), ImmutableList.copyOf(patterns)).sure();
+            return constructor(tupleName(patterns.size()), ImmutableList.copyOf(patterns)).sure()
     }
 }
-

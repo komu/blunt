@@ -16,6 +16,7 @@ import java.util.Collections.singletonList
 import komu.blunt.objects.Symbol.symbol
 import komu.blunt.parser.Associativity.LEFT
 import komu.blunt.parser.TokenType.*
+import java.util.Arrays
 
 class Parser(source: String) {
 
@@ -25,10 +26,8 @@ class Parser(source: String) {
     private val patternParser = PatternParser(lexer)
     private val dataTypeParser = DataTypeParser(lexer, typeParser)
 
-    fun isExpressionStartToken(token: TokenType<out Any?>?) =
-        (token == IF || token == LET || token == LAMBDA
-          || token == LPAREN || token == LBRACKET || token == LITERAL
-          || token == IDENTIFIER || token == TYPE_OR_CTOR_NAME ||token == CASE)
+    private val EXPRESSION_START_TOKENS =
+        Arrays.asList(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, CASE).sure()
 
     class object {
         fun parseExpression(source: String) =
@@ -162,7 +161,7 @@ class Parser(source: String) {
     private fun parseApplicative(): ASTExpression {
         var exp = parsePrimitive()
 
-        while (isExpressionStartToken(lexer.peekTokenType()))
+        while (lexer.nextTokenIsOneOf(EXPRESSION_START_TOKENS))
             exp = AST.apply(exp, parsePrimitive())
 
         return exp
@@ -251,7 +250,7 @@ class Parser(source: String) {
             lexer.expectToken(ASSIGN)
         } else {
             while (!lexer.readMatchingToken(ASSIGN))
-                args.add(parseIdentifier());
+                args.add(parseIdentifier())
         }
 
         var value = parseExpression()
@@ -341,7 +340,7 @@ class Parser(source: String) {
                 return AST.variable(op.toString())
         }
 
-        throw lexer.expectFailure("identifier or type constructor");
+        throw lexer.expectFailure("identifier or type constructor")
     }
 
     private fun parseIdentifier(): Symbol {
@@ -352,10 +351,10 @@ class Parser(source: String) {
         if (lexer.readMatchingToken(LPAREN)) {
             val op = lexer.readTokenValue(OPERATOR)
             lexer.expectToken(RPAREN)
-            return op.toSymbol().sure()
+            return op.toSymbol()
         }
 
-        throw lexer.expectFailure("identifier");
+        throw lexer.expectFailure("identifier")
     }
 
     private fun parseError(s: String): SyntaxException =

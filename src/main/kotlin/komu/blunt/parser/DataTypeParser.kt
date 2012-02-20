@@ -18,12 +18,12 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 
     // data <type> <var>* = <constructor>+
     fun parseDataDefinition(): ASTDataDefinition  {
-        lexer.expectIndentStartToken(DATA);
+        lexer.expectIndentStartToken(DATA)
 
-        val builder = DataTypeBuilder(lexer.readTokenValue(TYPE_OR_CTOR_NAME).sure())
+        val builder = DataTypeBuilder(lexer.readTokenValue(TYPE_OR_CTOR_NAME))
 
         while (!lexer.readMatchingToken(ASSIGN))
-            builder.addVariable(typeParser.parseTypeVariable().sure())
+            builder.addVariable(typeParser.parseTypeVariable())
 
         do {
             parseConstructor(builder)
@@ -32,7 +32,7 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
         if (lexer.readMatchingToken(DERIVING)) {
             lexer.expectToken(LPAREN)
             do {
-                builder.addAutomaticallyDerivedClass(lexer.readTokenValue(TYPE_OR_CTOR_NAME).sure())
+                builder.addAutomaticallyDerivedClass(lexer.readTokenValue(TYPE_OR_CTOR_NAME))
             } while (lexer.readMatchingToken(COMMA))
             lexer.expectToken(RPAREN)
         }
@@ -43,7 +43,7 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
     }
 
     private fun parseConstructor(builder: DataTypeBuilder): Unit {
-        val constructorName = lexer.readTokenValue(TYPE_OR_CTOR_NAME).sure()
+        val constructorName = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
 
         val args = ArrayList<Type?>()
         while (!lexer.nextTokenIs(OR) && !lexer.nextTokenIs(END) && !lexer.nextTokenIs(DERIVING))
@@ -54,7 +54,7 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 
     private class DataTypeBuilder(val typeName: String) {
 
-        private val vars = ArrayList<TypeVariable?>();
+        private val vars = ArrayList<TypeVariable?>()
         private val constructors = ArrayList<ConstructorDefinition?>()
         private val derivedClasses = ArrayList<String?>()
         private var constructorIndex = 0
@@ -65,7 +65,7 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 
         public fun addConstructor(constructorName: String, args: List<Type?>) {
             val scheme = quantify(vars, Qualified<Type?>(functionType(args, getType())))
-            constructors.add(ConstructorDefinition(constructorIndex++, constructorName, scheme, args.size()));
+            constructors.add(ConstructorDefinition(constructorIndex++, constructorName, scheme, args.size()))
         }
 
         private fun getType() =
@@ -79,4 +79,3 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
             AST.data(typeName, getType(), ImmutableList.copyOf(constructors), ImmutableList.copyOf(derivedClasses)).sure()
     }
 }
-

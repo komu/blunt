@@ -1,15 +1,14 @@
-package komu.blunt.parser;
+package komu.blunt.parser
 
-import komu.blunt.types.*;
+import komu.blunt.types.*
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.ArrayList
+import java.util.Arrays
+import java.util.Collections
+import java.util.List
 
-import com.google.common.base.Preconditions.checkNotNull;
-import komu.blunt.parser.TokenType.*;
-import komu.blunt.types.Type.*;
+import komu.blunt.parser.TokenType.*
+import komu.blunt.types.Type.*
 
 class TypeParser(val lexer: Lexer) {
 
@@ -76,25 +75,25 @@ class TypeParser(val lexer: Lexer) {
 
     public fun parseTypePrimitive(): Type {
         if (lexer.nextTokenIs(LPAREN))
-            return parseParens();
+            return parseParens()
         else if (lexer.nextTokenIs(LBRACKET))
-            return parseBrackets();
+            return parseBrackets()
         else if (lexer.nextTokenIs(IDENTIFIER))
-            return parseTypeVariable();
+            return parseTypeVariable()
         else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
             return genericType(lexer.readTokenValue(TYPE_OR_CTOR_NAME)).sure()
         else
-            throw lexer.expectFailure("type");
+            throw lexer.expectFailure("type")
     }
 
     public fun parseTypeConcrete(): Type {
-        val name = lexer.readTokenValue(TYPE_OR_CTOR_NAME);
+        val name = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
 
-        val args = ArrayList<Type?>();
+        val args = ArrayList<Type?>()
         while (lexer.nextTokenIsOneOf(START_TOKENS))
-            args.add(parseTypePrimitive());
+            args.add(parseTypePrimitive())
 
-        return genericType(name, args).sure();
+        return genericType(name, args).sure()
     }
 
     private fun parseParens(): Type {
