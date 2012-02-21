@@ -48,14 +48,14 @@ class PatternAnalyzer {
         }
 
     private fun constructorPredicate(pattern: ConstructorPattern?, path: PatternPath, matchedObject: VariableReference): CoreExpression {
-        val exps = ArrayList<CoreExpression?>(1 + pattern?.args?.size().sure());
-        exps.add(matchesConstructor(path, pattern?.name.sure(), matchedObject));
+        val exps = ArrayList<CoreExpression>(1 + pattern?.args?.size().sure())
+        exps.add(matchesConstructor(path, pattern?.name.sure(), matchedObject))
 
         var i = 0
         for (val p in pattern?.args)
             exps.add(makePredicate(p.sure(), path.extend(i++).sure(), matchedObject))
 
-        return CoreExpression.and(exps).sure()
+        return CoreExpression.and(exps)
     }
 
     private fun matchesConstructor(path: PatternPath, name: String, matchedObject: VariableReference): CoreExpression =
