@@ -90,5 +90,5 @@ fun Instructions.copy(target: Register?, source: Register?) {
 }
 
 fun Instructions.equalConstant(target: Register?, source: Register?, value: Any?) {
-    this.add(OpEqualConstant(target, source, value))
+    this.add(OpEqualConstant(target.sure(), source.sure(), value))
 }

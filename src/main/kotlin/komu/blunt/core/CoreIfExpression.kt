@@ -2,7 +2,7 @@ package komu.blunt.core
 
 import komu.blunt.asm.*
 
-import komu.blunt.asm.opcodes.OpJumpIfFalse.isFalse
+import komu.blunt.asm.opcodes.OpJumpIfFalse
 
 class CoreIfExpression(private val condition: CoreExpression?,
                        private val consequent: CoreExpression?,
@@ -37,7 +37,7 @@ class CoreIfExpression(private val condition: CoreExpression?,
         val simplifiedAlternative = alternative?.simplify().sure()
 
         return if (simplifiedCondition is CoreConstantExpression)
-            if (isFalse(simplifiedCondition.value)) simplifiedAlternative else simplifiedConsequent
+            if (OpJumpIfFalse.isFalse(simplifiedCondition.value)) simplifiedAlternative else simplifiedConsequent
         else
             CoreIfExpression(simplifiedCondition, simplifiedConsequent, simplifiedAlternative)
     }
