@@ -19,17 +19,17 @@ class IdentifierRenamer {
             IdentifierRenamer().renameIdentifiers(exp, IdentifierMapping())
     }
 
-    fun renameIdentifiers(exp: ASTExpression?, ctx: IdentifierMapping) =
+    fun renameIdentifiers(exp: ASTExpression, ctx: IdentifierMapping) =
         when (exp) {
+            is ASTConstant    -> exp
+            is ASTConstructor -> exp
             is ASTApplication -> visit(exp, ctx)
-            is ASTConstant    -> visit(exp, ctx)
             is ASTLambda      -> visit(exp, ctx)
             is ASTLet         -> visit(exp, ctx)
             is ASTLetRec      -> visit(exp, ctx)
             is ASTSequence    -> visit(exp, ctx)
             is ASTSet         -> visit(exp, ctx)
             is ASTVariable    -> visit(exp, ctx)
-            is ASTConstructor -> visit(exp, ctx)
             is ASTCase        -> visit(exp, ctx)
             else              -> throw Exception("unknown exp $exp")
         }
@@ -61,20 +61,17 @@ class IdentifierRenamer {
     private fun freshVariable() =
         Symbol("\$var${sequence++}")
 
-    private fun visit(sequence: ASTSequence?, ctx: IdentifierMapping): ASTExpression {
+    private fun visit(sequence: ASTSequence, ctx: IdentifierMapping): ASTExpression {
         val result = AST.sequenceBuilder().sure()
 
-        for (val exp in sequence?.exps)
-            result.add(renameIdentifiers(exp, ctx))
+        for (val exp in sequence.exps)
+            result.add(renameIdentifiers(exp.sure(), ctx))
 
         return result.build().sure()
     }
 
-    private fun visit(application: ASTApplication?, ctx: IdentifierMapping): ASTExpression =
-        AST.apply(renameIdentifiers(application?.func, ctx), renameIdentifiers(application?.arg, ctx)).sure()
-
-    private fun visit(constant: ASTConstant?, ctx: IdentifierMapping): ASTExpression =
-        constant.sure()
+    private fun visit(application: ASTApplication, ctx: IdentifierMapping): ASTExpression =
+        AST.apply(renameIdentifiers(application.func, ctx), renameIdentifiers(application.arg, ctx)).sure()
 
     private fun visit(set: ASTSet, ctx: IdentifierMapping): ASTExpression =
         AST.set(ctx.get(set.variable), renameIdentifiers(set.exp, ctx))
@@ -94,12 +91,12 @@ class IdentifierRenamer {
     private fun visit(let: ASTLet, ctx: IdentifierMapping): ASTExpression {
         if (let.bindings.size() != 1) throw UnsupportedOperationException()
 
-        val newCtx = ctx.extend().sure()
+        val newCtx = ctx.extend()
 
         val v = freshVariable()
         newCtx.put(let.bindings.get(0).sure().name, v)
 
-        val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.get(0)?.expr, ctx))
+        val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.get(0).sure().expr, ctx))
 
         return AST.let(false, binding, renameIdentifiers(let.body, newCtx)).sure()
     }
@@ -112,23 +109,20 @@ class IdentifierRenamer {
         val v = freshVariable()
         newCtx.put(let.bindings.get(0).sure().name, v)
 
-        val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.get(0)?.expr, newCtx))
+        val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.get(0).sure().expr, newCtx))
 
-        return AST.let(true, binding, renameIdentifiers(let.body, newCtx)).sure()
+        return AST.let(true, binding, renameIdentifiers(let.body, newCtx))
     }
 
-    private fun visit(constructor: ASTConstructor, ctx: IdentifierMapping): ASTExpression =
-        constructor
-
-    private fun visit(astCase: ASTCase?, ctx: IdentifierMapping): ASTExpression {
+    private fun visit(astCase: ASTCase, ctx: IdentifierMapping): ASTExpression {
         val alts = ArrayList<ASTAlternative?>()
 
-        for (val alt in astCase?.alternatives) {
-            val newCtx = ctx.extend().sure()
+        for (val alt in astCase.alternatives) {
+            val newCtx = ctx.extend()
             val pattern = renameIdentifiers(alt.sure().pattern, newCtx)
-            alts.add(AST.alternative(pattern, renameIdentifiers(alt?.value, newCtx)))
+            alts.add(AST.alternative(pattern, renameIdentifiers(alt.sure().value, newCtx)))
         }
 
-        return AST.caseExp(renameIdentifiers(astCase?.exp, ctx), ImmutableList.copyOf(alts).sure()).sure()
+        return AST.caseExp(renameIdentifiers(astCase.exp, ctx), ImmutableList.copyOf(alts).sure())
     }
 }
