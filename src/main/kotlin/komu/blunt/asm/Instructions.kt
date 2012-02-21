@@ -3,6 +3,71 @@ package komu.blunt.asm
 import opcodes.*
 import komu.blunt.analyzer.VariableReference
 import komu.blunt.core.PatternPath
+import java.util.Set
+import java.util.ArrayList
+import java.util.HashMap
+import java.util.HashSet
+
+class Instructions {
+    private val instructions = ArrayList<OpCode?>()
+    private val labelMap = HashMap<Int?,Set<Label?>?>()
+
+    fun append(rhs: Instructions?) {
+        val relocationOffset = instructions.size()
+
+        instructions.addAll(rhs.sure().instructions)
+
+        for (val labels in rhs?.labelMap?.values()) {
+            for (val label in labels) {
+                label?.relocateBy(relocationOffset)
+                getLabels(label.sure().getAddress()).add(label)
+            }
+        }
+    }
+
+    fun modifies(register: Register?): Boolean {
+        for (val op in instructions)
+            if (op.sure().modifies(register))
+                return true
+
+        return false
+    }
+
+
+    fun label(label: Label?) {
+        label?.setAddress(instructions.size())
+        getLabels(label.sure().getAddress()).add(label)
+    }
+
+    private fun getLabels(address: Int): Set<Label?> {
+        var labels = labelMap.get(address)
+        if (labels == null) {
+            labels = HashSet()
+            labelMap.put(address, labels)
+        }
+        return labels.sure()
+    }
+
+    fun dump() {
+        var address = 0;
+        for (val instruction in instructions) {
+            for (val label in getLabels(address++))
+                println("$label:")
+
+            println("    $instruction")
+        }
+    }
+
+    fun add(op: OpCode) {
+        instructions.add(op)
+    }
+
+    fun count() = instructions.size()
+
+    fun get(pc: Int): OpCode = instructions.get(pc).sure()
+
+    fun pos(): Int = instructions.size()
+}
 
 /**
 * Returns an instruction stream identical to this one, but which guarantees
@@ -31,6 +96,10 @@ fun Instructions.finishWithLinkage(linkage: Linkage?) {
     } else {
         jump(linkage?.label)
     }
+}
+
+fun Instructions.jumpIfFalse(register: Register?, label: Label?) {
+    this.add(OpJumpIfFalse(register.sure(), label.sure()))
 }
 
 fun Instructions.loadConstant(target: Register?, value: Any?) {

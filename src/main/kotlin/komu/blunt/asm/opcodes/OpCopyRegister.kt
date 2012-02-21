@@ -5,7 +5,7 @@ import komu.blunt.asm.*
 class OpCopyRegister(private val target: Register?, private val source: Register?) : OpCode() {
 
     override fun execute(vm: VM?) {
-        vm?.set(target, vm?.get(source))
+        vm?.set(target.sure(), vm?.get(source))
     }
 
     override fun modifies(register: Register?) = register == target
