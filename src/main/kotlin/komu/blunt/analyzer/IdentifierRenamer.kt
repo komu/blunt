@@ -91,34 +91,34 @@ class IdentifierRenamer {
         return AST.lambda(v, renameIdentifiers(lambda.body, newCtx))
     }
 
-    private fun visit(let: ASTLet?, ctx: IdentifierMapping): ASTExpression {
-        if (let?.bindings?.size() != 1) throw UnsupportedOperationException()
+    private fun visit(let: ASTLet, ctx: IdentifierMapping): ASTExpression {
+        if (let.bindings.size() != 1) throw UnsupportedOperationException()
 
         val newCtx = ctx.extend().sure()
 
         val v = freshVariable()
-        newCtx.put(let?.bindings?.get(0)?.name, v)
+        newCtx.put(let.bindings.get(0).sure().name, v)
 
-        val binding = ImplicitBinding(v, renameIdentifiers(let?.bindings?.get(0)?.expr, ctx))
+        val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.get(0)?.expr, ctx))
 
-        return AST.let(false, binding, renameIdentifiers(let?.body, newCtx)).sure()
+        return AST.let(false, binding, renameIdentifiers(let.body, newCtx)).sure()
     }
 
-    private fun visit(let: ASTLetRec?, ctx: IdentifierMapping): ASTExpression {
-        if (let?.bindings?.size() != 1) throw UnsupportedOperationException();
+    private fun visit(let: ASTLetRec, ctx: IdentifierMapping): ASTExpression {
+        if (let.bindings.size() != 1) throw UnsupportedOperationException();
 
         val newCtx = ctx.extend().sure()
 
         val v = freshVariable()
-        newCtx.put(let?.bindings?.get(0)?.name, v)
+        newCtx.put(let.bindings.get(0).sure().name, v)
 
-        val binding = ImplicitBinding(v, renameIdentifiers(let?.bindings?.get(0)?.expr, newCtx))
+        val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.get(0)?.expr, newCtx))
 
-        return AST.let(true, binding, renameIdentifiers(let?.body, newCtx)).sure()
+        return AST.let(true, binding, renameIdentifiers(let.body, newCtx)).sure()
     }
 
-    private fun visit(constructor: ASTConstructor?, ctx: IdentifierMapping): ASTExpression =
-        constructor.sure()
+    private fun visit(constructor: ASTConstructor, ctx: IdentifierMapping): ASTExpression =
+        constructor
 
     private fun visit(astCase: ASTCase?, ctx: IdentifierMapping): ASTExpression {
         val alts = ArrayList<ASTAlternative?>()

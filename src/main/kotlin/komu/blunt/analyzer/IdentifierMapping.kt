@@ -10,7 +10,7 @@ private class IdentifierMapping(val parent: IdentifierMapping?) {
 
     this(): this(null) { }
 
-    public fun get(v: Symbol?): Symbol {
+    fun get(v: Symbol): Symbol {
         var mapping = this
         while (true) {
             val sym = mapping.mappings.get(v)
@@ -24,15 +24,15 @@ private class IdentifierMapping(val parent: IdentifierMapping?) {
                 mapping = parent
         }
 
-        return v.sure()
+        return v
     }
 
-    public fun put(oldName: Symbol?, newName: Symbol?) {
-        val old = mappings.put(oldName.sure(), newName.sure())
+    fun put(oldName: Symbol, newName: Symbol) {
+        val old = mappings.put(oldName, newName)
         if (old != null)
             throw IllegalArgumentException("duplicate mapping for '$oldName'");
     }
 
-    public fun extend(): IdentifierMapping =
+    fun extend(): IdentifierMapping =
         IdentifierMapping(this)
 }
