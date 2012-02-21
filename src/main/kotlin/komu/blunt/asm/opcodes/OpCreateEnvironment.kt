@@ -11,7 +11,7 @@ class OpCreateEnvironment(private val envSize: Int) : OpCode() {
 
     override fun execute(vm0: VM?) {
         val vm = vm0.sure()
-        vm.env = vm.env?.extend(envSize, vm.arg)
+        vm.env = vm.env.extend(envSize, vm.arg).sure()
     }
 
     override fun modifies(register: Register?) = register == Register.ENV

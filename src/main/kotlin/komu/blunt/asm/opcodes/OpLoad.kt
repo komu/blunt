@@ -61,8 +61,8 @@ class OpLoadTag(target: Register, private val source: Register, private val path
 class OpLoadVariable(target: Register, private val variable: VariableReference) : OpLoad(target) {
 
     override fun load(vm: VM): Any? {
-        val env = if (variable.isGlobal()) vm.getGlobalEnvironment() else vm.env
-        return env?.lookup(variable)
+        val env = if (variable.isGlobal()) vm.globalEnvironment else vm.env
+        return env.lookup(variable)
     }
 
     override fun description() = "(variable ${variable.frame} ${variable.offset} [${variable.name}])"
@@ -71,7 +71,7 @@ class OpLoadVariable(target: Register, private val variable: VariableReference) 
 class OpLoadLambda(target: Register, private val label: Label) : OpLoad(target) {
 
     override fun load(vm: VM): CompoundProcedure {
-        val env = vm.get(Register.ENV) as Environment
+        val env = vm.get(Register.ENV.sure()) as Environment
         return CompoundProcedure(label.getAddress(), env)
     }
 

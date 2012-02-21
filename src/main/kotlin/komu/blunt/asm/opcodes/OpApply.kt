@@ -26,12 +26,12 @@ class OpApply private(private val tail: Boolean) : OpCode() {
     }
 
     private fun executePrimitive(vm: VM, procedure: PrimitiveProcedure) {
-        vm.`val` = procedure.apply(vm.arg)
+        vm.value = procedure.apply(vm.arg)
         vm.pc = vm.pop() as Int
     }
 
     private fun executeCompound(vm: VM, procedure: CompoundProcedure) {
-        vm.env = procedure.env
+        vm.env = procedure.env.sure()
         vm.pc = procedure.address
     }
 

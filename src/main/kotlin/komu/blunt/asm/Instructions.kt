@@ -111,7 +111,7 @@ fun Instructions.loadVariable(target: Register?, v: VariableReference?) {
 }
 
 fun Instructions.storeVariable(v: VariableReference?, value: Register?) {
-    this.add(OpStoreVariable(v, value))
+    this.add(OpStoreVariable(v.sure(), value.sure()))
 }
 
 fun Instructions.loadLambda(target: Register?, label: Label?) {
@@ -139,7 +139,7 @@ fun Instructions.pushLabel(label: Label?) {
 }
 
 fun Instructions.pushRegister(register: Register?) {
-    this.add(OpPushRegister(register))
+    this.add(OpPushRegister(register.sure()))
 }
 
 fun Instructions.popRegister(register: Register?) {
@@ -155,7 +155,7 @@ fun Instructions.applyTail() {
 }
 
 fun Instructions.copy(target: Register?, source: Register?) {
-    this.add(OpCopyRegister(target, source))
+    this.add(OpCopyRegister(target.sure(), source.sure()))
 }
 
 fun Instructions.equalConstant(target: Register?, source: Register?, value: Any?) {

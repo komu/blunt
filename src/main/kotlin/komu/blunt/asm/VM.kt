@@ -8,9 +8,9 @@ import komu.blunt.objects.Procedure
 import java.util.ArrayList
 import java.util.List
 
-class VM(private val instructions: Instructions, var env: Environment?, private val globalEnvironment: RootEnvironment?) {
+class VM(private val instructions: Instructions, var env: Environment, val globalEnvironment: RootEnvironment) {
 
-    var `val`: Any? = null
+    var value: Any? = null
     var procedure: Procedure? = null
     var arg: Any? = null
     var pc = 0
@@ -26,12 +26,12 @@ class VM(private val instructions: Instructions, var env: Environment?, private 
             op.execute(this)
         }
 
-        return `val`
+        return value
     }
 
-    fun get(register: Register?): Any? =
+    fun get(register: Register): Any? =
         when (register) {
-            Register.VAL       -> `val`
+            Register.VAL       -> value
             Register.ARG       -> arg
             Register.ENV       -> env
             Register.PC        -> pc
@@ -39,11 +39,11 @@ class VM(private val instructions: Instructions, var env: Environment?, private 
             else               -> throw IllegalArgumentException("unknown register: $register")
         }
 
-    fun set(register: Register?, value: Any?) {
+    fun set(register: Register, value: Any?) {
         when (register) {
-            Register.VAL       -> `val` = value
+            Register.VAL       -> this.value = value
             Register.ARG       -> arg = value
-            Register.ENV       -> env = value as Environment?
+            Register.ENV       -> env = value as Environment
             Register.PC        -> pc = value as Int
             Register.PROCEDURE -> procedure = value as Procedure?
             else               -> throw IllegalArgumentException("unknown register: $register")
@@ -55,6 +55,4 @@ class VM(private val instructions: Instructions, var env: Environment?, private 
     }
 
     fun pop(): Any? = stack.remove(stack.size() - 1)
-
-    fun getGlobalEnvironment() = globalEnvironment
 }
