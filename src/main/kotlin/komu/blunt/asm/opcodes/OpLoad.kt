@@ -8,6 +8,7 @@ import komu.blunt.analyzer.VariableReference
 import komu.blunt.asm.Label
 import komu.blunt.objects.CompoundProcedure
 import komu.blunt.eval.Environment
+import komu.blunt.objects.Procedure
 
 abstract class OpLoad(private val target: Register) : OpCode() {
 
@@ -26,6 +27,15 @@ abstract class OpLoad(private val target: Register) : OpCode() {
 class OpLoadConstant(target: Register, private val value: Any?) : OpLoad(target) {
 
     {
+        // TODO: move to register
+        fun Register.isValidValue(value: Any?): Boolean =
+            when (this) {
+                Register.PROCEDURE -> value is Procedure
+                Register.PC        -> value is Int
+                Register.ENV       -> value is Environment
+                else               -> true
+            }
+
         if (!target.isValidValue(value))
             throw IllegalArgumentException("invalid value for register $target: $value")
     }
