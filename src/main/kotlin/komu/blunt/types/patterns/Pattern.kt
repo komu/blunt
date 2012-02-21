@@ -6,25 +6,29 @@ import com.google.common.collect.ImmutableList
 import komu.blunt.types.ConstructorNames;
 
 abstract class Pattern {
-
     abstract fun toString(): String
 
     class object {
-        fun constructor(name: String, vararg args: Pattern?) =
+        fun constructor(name: String?, vararg args: Pattern?): Pattern =
             throw UnsupportedOperationException() //return new ConstructorPattern(name, ImmutableList.copyOf(args));
 
-        fun constructor(name: String, args: ImmutableList<Pattern?>) =
-            ConstructorPattern(name, args)
+        fun constructor(name: String?, args: ImmutableList<Pattern?>?): Pattern =
+            ConstructorPattern(name.sure(), args.sure())
 
-        fun variable(name: String) = variable(Symbol.symbol(name).sure())
+        fun variable(name: String): Pattern =
+            variable(Symbol.symbol(name).sure())
 
-        fun variable(name: Symbol) = VariablePattern(name)
+        fun variable(name: Symbol): Pattern =
+            VariablePattern(name)
 
-        fun literal(value: Any?) = LiteralPattern(value)
+        fun literal(value: Any?): Pattern =
+            LiteralPattern(value)
 
-        fun wildcard() = WildcardPattern.INSTANCE
+        fun wildcard(): Pattern =
+            WildcardPattern.INSTANCE
 
-        fun tuple(args: ImmutableList<Pattern?>): Pattern  {
+        fun tuple(args0: ImmutableList<Pattern?>?): Pattern  {
+            val args = args0.sure()
             if (args.isEmpty())
                 return constructor(ConstructorNames.UNIT.sure())
             if (args.size() == 1)
@@ -34,7 +38,6 @@ abstract class Pattern {
         }
     }
 }
-
 
 class ConstructorPattern(val name: String, val args: ImmutableList<Pattern?>) : Pattern() {
 

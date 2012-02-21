@@ -11,7 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public class PatternParserTest {
-
+/*
     @Test
     public void variablePatterns() {
         assertParse("a", variable("a"));
@@ -81,4 +81,5 @@ public class PatternParserTest {
         Pattern pattern = parser.parsePattern();
         assertThat(pattern, is(expected));
     }
+    */
 }
