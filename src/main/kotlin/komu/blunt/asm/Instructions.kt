@@ -34,11 +34,11 @@ fun Instructions.finishWithLinkage(linkage: Linkage?) {
 }
 
 fun Instructions.loadConstant(target: Register?, value: Any?) {
-    this.add(OpLoadConstant(target, value))
+    this.add(OpLoadConstant(target.sure(), value))
 }
 
 fun Instructions.loadVariable(target: Register?, v: VariableReference?) {
-    this.add(OpLoadVariable(target, v))
+    this.add(OpLoadVariable(target.sure(), v.sure()))
 }
 
 fun Instructions.storeVariable(v: VariableReference?, value: Register?) {
@@ -46,7 +46,7 @@ fun Instructions.storeVariable(v: VariableReference?, value: Register?) {
 }
 
 fun Instructions.loadLambda(target: Register?, label: Label?) {
-    this.add(OpLoadLambda(target, label))
+    this.add(OpLoadLambda(target.sure(), label.sure()))
 }
 
 fun Instructions.createEnvironment(envSize: Int) {
@@ -54,11 +54,11 @@ fun Instructions.createEnvironment(envSize: Int) {
 }
 
 fun Instructions.loadExtracted(target: Register?, source: Register?, path: PatternPath?) {
-    this.add(OpLoadExtracted(target, source, path))
+    this.add(OpLoadExtracted(target.sure(), source.sure(), path.sure()))
 }
 
 fun Instructions.loadTag(target: Register?, source: Register?, path: PatternPath?) {
-    this.add(OpLoadTag(target, source, path))
+    this.add(OpLoadTag(target.sure(), source.sure(), path.sure()))
 }
 
 fun Instructions.jump(label: Label?) {
