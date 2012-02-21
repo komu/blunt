@@ -13,5 +13,5 @@ class CoreVariableExpression(private val variable: VariableReference) : CoreExpr
     }
 
     override fun simplify() = this
-    override fun toString() = variable.name.toString()
+    override fun toString() = variable.name.toString().sure()
 }
