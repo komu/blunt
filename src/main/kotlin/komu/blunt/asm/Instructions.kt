@@ -20,7 +20,7 @@ class Instructions {
         for (val labels in rhs?.labelMap?.values()) {
             for (val label in labels) {
                 label?.relocateBy(relocationOffset)
-                getLabels(label.sure().getAddress()).add(label)
+                getLabels(label.sure().address).add(label)
             }
         }
     }
@@ -34,9 +34,10 @@ class Instructions {
     }
 
 
-    fun label(label: Label?) {
-        label?.setAddress(instructions.size())
-        getLabels(label.sure().getAddress()).add(label)
+    fun label(label0: Label?) {
+        val label = label0.sure()
+        label.address = instructions.size()
+        getLabels(label.address).add(label)
     }
 
     private fun getLabels(address: Int): Set<Label?> {
@@ -135,7 +136,7 @@ fun Instructions.jump(label: Label?) {
 }
 
 fun Instructions.pushLabel(label: Label?) {
-    this.add(OpPushLabel(label))
+    this.add(OpPushLabel(label.sure()))
 }
 
 fun Instructions.pushRegister(register: Register?) {

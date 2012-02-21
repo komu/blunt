@@ -2,10 +2,10 @@ package komu.blunt.asm.opcodes
 
 import komu.blunt.asm.*
 
-class OpPushLabel(private val label: Label?) : OpCode() {
+class OpPushLabel(private val label: Label) : OpCode() {
 
     override fun execute(vm: VM?) {
-        vm?.push(label?.getAddress())
+        vm?.push(label.address)
     }
 
     override fun modifies(register: Register?) = false

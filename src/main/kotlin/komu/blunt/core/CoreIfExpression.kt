@@ -8,11 +8,12 @@ class CoreIfExpression(private val condition: CoreExpression?,
                        private val consequent: CoreExpression?,
                        private val alternative: CoreExpression?) : CoreExpression() {
 
-    override fun assemble(asm: Assembler?, target: Register?, linkage: Linkage?): Instructions {
+    override fun assemble(asm0: Assembler?, target: Register?, linkage: Linkage?): Instructions {
+        val asm = asm0.sure()
         val instructions = Instructions()
 
-        val after = asm?.newLabel("if-after")
-        val falseBranch = asm?.newLabel("if-false")
+        val after = asm.newLabel("if-after")
+        val falseBranch = asm.newLabel("if-false")
 
         val trueLinkage = if (linkage == Linkage.NEXT) Linkage.jump(after) else linkage
 

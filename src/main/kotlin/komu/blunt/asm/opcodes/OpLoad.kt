@@ -72,7 +72,7 @@ class OpLoadLambda(target: Register, private val label: Label) : OpLoad(target) 
 
     override fun load(vm: VM): CompoundProcedure {
         val env = vm.get(Register.ENV.sure()) as Environment
-        return CompoundProcedure(label.getAddress(), env)
+        return CompoundProcedure(label.address, env)
     }
 
     override fun description() = "(lambda $label ${Register.ENV})"

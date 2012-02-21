@@ -5,7 +5,7 @@ import komu.blunt.asm.*
 class OpJump(private val label: Label) : OpCode() {
 
     override fun execute(vm: VM?) {
-        vm.sure().pc = label.getAddress()
+        vm.sure().pc = label.address
     }
 
     override fun modifies(register: Register?) = register == Register.PC
