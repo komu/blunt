@@ -24,7 +24,7 @@ class PatternAnalyzer {
         }
 
     private fun variableExtractor(pattern: VariablePattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression {
-        val v = env.lookupInCurrentScopeOrDefine(pattern.`var`.sure())
+        val v = env.lookupInCurrentScopeOrDefine(pattern.variable.sure())
         return CoreSetExpression(v, CoreExtractExpression(matchedObject, path))
     }
 

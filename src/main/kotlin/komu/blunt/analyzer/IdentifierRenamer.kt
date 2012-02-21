@@ -54,7 +54,7 @@ class IdentifierRenamer {
 
     private fun renamePattern(pattern: VariablePattern, ctx: IdentifierMapping): Pattern {
         val v = freshVariable()
-        ctx.put(pattern.`var`, v)
+        ctx.put(pattern.variable, v)
         return Pattern.variable(v).sure()
     }
 

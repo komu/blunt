@@ -51,7 +51,7 @@ class FunctionBuilder {
 
     private fun variablePattern(pattern: Pattern): List<Symbol?>? {
         if (pattern is VariablePattern)
-            return singletonList<Symbol?>(pattern.`var`.sure())
+            return singletonList<Symbol?>(pattern.variable.sure())
 
         /*
         if (pattern instanceof ConstructorPattern) {
