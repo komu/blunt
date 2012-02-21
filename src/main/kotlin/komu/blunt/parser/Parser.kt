@@ -13,9 +13,8 @@ import java.util.List
 
 import java.util.Arrays.asList
 import java.util.Collections.singletonList
-import komu.blunt.objects.Symbol.symbol
-import komu.blunt.parser.Associativity.LEFT
 import komu.blunt.parser.TokenType.*
+import komu.blunt.parser.Associativity.LEFT
 import java.util.Arrays
 
 class Parser(source: String) {
@@ -245,7 +244,7 @@ class Parser(source: String) {
             val op = lexer.readTokenValue(OPERATOR)
             args.add(name)
             args.add(parseIdentifier())
-            name = symbol(op.toString()).sure()
+            name = op.toSymbol()
 
             lexer.expectToken(ASSIGN)
         } else {
@@ -345,7 +344,7 @@ class Parser(source: String) {
 
     private fun parseIdentifier(): Symbol {
         if (lexer.nextTokenIs(IDENTIFIER)) {
-            return symbol(lexer.readTokenValue(IDENTIFIER)).sure()
+            return Symbol(lexer.readTokenValue(IDENTIFIER))
         }
 
         if (lexer.readMatchingToken(LPAREN)) {

@@ -55,11 +55,11 @@ class IdentifierRenamer {
     private fun renamePattern(pattern: VariablePattern, ctx: IdentifierMapping): Pattern {
         val v = freshVariable()
         ctx.put(pattern.variable, v)
-        return Pattern.variable(v).sure()
+        return Pattern.variable(v)
     }
 
     private fun freshVariable() =
-        Symbol.symbol("\$var${sequence++}").sure()
+        Symbol("\$var${sequence++}")
 
     private fun visit(sequence: ASTSequence?, ctx: IdentifierMapping): ASTExpression {
         val result = AST.sequenceBuilder().sure()

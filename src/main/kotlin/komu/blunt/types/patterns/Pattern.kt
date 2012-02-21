@@ -16,7 +16,7 @@ abstract class Pattern {
             ConstructorPattern(name.sure(), args.sure())
 
         fun variable(name: String): Pattern =
-            variable(Symbol.symbol(name).sure())
+            variable(Symbol(name))
 
         fun variable(name: Symbol): Pattern =
             VariablePattern(name)

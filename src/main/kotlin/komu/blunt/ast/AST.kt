@@ -11,7 +11,6 @@ import komu.blunt.types.patterns.Pattern
 import java.util.List
 
 import com.google.common.collect.Lists.newArrayList
-import komu.blunt.objects.Symbol.symbol
 import java.util.Arrays
 import java.util.ArrayList
 
@@ -25,7 +24,7 @@ object AST {
 
     fun constant(value: Any?): ASTExpression   = ASTConstant(value.sure())
     fun variable(name: Symbol): ASTExpression = ASTVariable(name)
-    fun variable(name: String): ASTExpression = ASTVariable(symbol(name).sure())
+    fun variable(name: String): ASTExpression = ASTVariable(Symbol(name))
 
     fun apply(func: ASTExpression?, vararg args: ASTExpression?): ASTExpression =
         apply2(func, args)

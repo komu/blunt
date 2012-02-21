@@ -7,8 +7,6 @@ import komu.blunt.types.DataTypeDefinitions
 import komu.blunt.types.Scheme
 import komu.blunt.types.checker.Assumptions
 
-import komu.blunt.objects.Symbol.symbol
-
 class RootBindings {
     val staticEnvironment = StaticEnvironment()
     val runtimeEnvironment = RootEnvironment()
@@ -16,7 +14,7 @@ class RootBindings {
     val dataTypes = DataTypeDefinitions()
 
     fun bind(name: String?, scheme: Scheme?, value: Any?) {
-        bind(symbol(name).sure(), scheme, value)
+        bind(Symbol(name.sure()), scheme, value)
     }
 
     fun bind(name: Symbol?, scheme: Scheme?, value: Any?) {

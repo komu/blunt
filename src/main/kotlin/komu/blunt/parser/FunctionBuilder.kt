@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList
 import komu.blunt.types.patterns.Pattern
 import komu.blunt.ast.AST
 
-import komu.blunt.objects.Symbol.symbol
 import java.util.List
 import komu.blunt.types.patterns.VariablePattern
 import java.util.Collections.singletonList
@@ -21,7 +20,7 @@ class FunctionBuilder {
     fun addAlternative(args: ImmutableList<Pattern?>, body: ASTExpression) {
         if (exps.isEmpty()) {
             for (val i in 0..args.size()-1) {
-                val v = symbol("\$arg$i") // TODO: fresh symbols
+                val v = Symbol("\$arg$i") // TODO: fresh symbols
                 symbols.add(v.sure())
                 exps.add(AST.variable(v.sure()))
             }

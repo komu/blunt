@@ -10,8 +10,6 @@ import komu.blunt.types.DataTypeDefinitions
 import java.util.ArrayList
 import java.util.List
 
-import komu.blunt.objects.Symbol.symbol
-
 class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
 
     private val patternAnalyzer = PatternAnalyzer()
@@ -102,7 +100,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
     private fun visit(astCase: ASTCase, env: StaticEnvironment): CoreExpression {
         val exp = analyze(astCase.exp, env)
 
-        val v = symbol("\$match" + sequence++).sure()
+        val v = Symbol("\$match" + sequence++)
         val matchedObject = env.define(v).sure()
         val body = createAlts(matchedObject, astCase.alternatives, env)
         return CoreLetExpression(matchedObject, exp, body)
