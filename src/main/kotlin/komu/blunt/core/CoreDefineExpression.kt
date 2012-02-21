@@ -9,7 +9,7 @@ class CoreDefineExpression(private val variable: VariableReference?, private val
     override fun assemble(asm: Assembler?, target: Register?, linkage: Linkage?): Instructions {
         val instructions = Instructions()
 
-        instructions.append(expression?.assemble(asm, target, Linkage.NEXT))
+        instructions.append(expression?.assemble(asm, target, Linkage.NEXT).sure())
 
         instructions.storeVariable(variable, target)
 

@@ -8,7 +8,7 @@ class CoreSetExpression(private val variable: VariableReference?, private val ex
     override fun assemble(asm: Assembler?, target: Register?, linkage: Linkage?): Instructions {
         val instructions = Instructions()
 
-        instructions.append(exp?.assemble(asm, Register.VAL, Linkage.NEXT))
+        instructions.append(exp?.assemble(asm, Register.VAL, Linkage.NEXT).sure())
         instructions.storeVariable(variable, Register.VAL)
         instructions.finishWithLinkage(linkage)
 

@@ -9,42 +9,40 @@ import java.util.HashMap
 import java.util.HashSet
 
 class Instructions {
-    private val instructions = ArrayList<OpCode?>()
-    private val labelMap = HashMap<Int?,Set<Label?>?>()
+    private val instructions = ArrayList<OpCode>()
+    private val labelMap = HashMap<Int,Set<Label>>()
 
-    fun append(rhs: Instructions?) {
+    fun append(rhs: Instructions) {
         val relocationOffset = instructions.size()
 
-        instructions.addAll(rhs.sure().instructions)
+        instructions.addAll(rhs.instructions)
 
-        for (val labels in rhs?.labelMap?.values()) {
+        for (val labels in rhs.labelMap.values()) {
             for (val label in labels) {
-                label?.relocateBy(relocationOffset)
-                getLabels(label.sure().address).add(label)
+                label.relocateBy(relocationOffset)
+                getLabels(label.address).add(label)
             }
         }
     }
 
     fun modifies(register: Register): Boolean {
         for (val op in instructions)
-            if (op.sure().modifies(register))
+            if (op.modifies(register))
                 return true
 
         return false
     }
 
-
-    fun label(label0: Label?) {
-        val label = label0.sure()
+    fun label(label: Label) {
         label.address = instructions.size()
         getLabels(label.address).add(label)
     }
 
-    private fun getLabels(address: Int): Set<Label?> {
+    private fun getLabels(address: Int): Set<Label> {
         var labels = labelMap.get(address)
-        if (labels == null) {
+        if (labels != null) {
             labels = HashSet()
-            labelMap.put(address, labels)
+            labelMap.put(address, labels.sure())
         }
         return labels.sure()
     }
@@ -65,7 +63,7 @@ class Instructions {
 
     fun count() = instructions.size()
 
-    fun get(pc: Int): OpCode = instructions.get(pc).sure()
+    fun get(pc: Int): OpCode = instructions[pc]
 
     fun pos(): Int = instructions.size()
 }

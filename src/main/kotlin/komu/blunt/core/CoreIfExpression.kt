@@ -19,12 +19,12 @@ class CoreIfExpression(private val condition: CoreExpression?,
 
         // Since the target register is safe to overwrite, we borrow it
         // for evaluating the condition as well.
-        instructions.append(condition?.assemble(asm, target, Linkage.NEXT))
+        instructions.append(condition?.assemble(asm, target, Linkage.NEXT).sure())
         instructions.jumpIfFalse(target, falseBranch)
 
-        instructions.append(consequent?.assemble(asm, target, trueLinkage))
+        instructions.append(consequent?.assemble(asm, target, trueLinkage).sure())
         instructions.label(falseBranch)
-        instructions.append(alternative?.assemble(asm, target, linkage))
+        instructions.append(alternative?.assemble(asm, target, linkage).sure())
         instructions.label(after)
 
         instructions.finishWithLinkage(linkage)
