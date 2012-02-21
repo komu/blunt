@@ -4,12 +4,11 @@ import komu.blunt.asm.*
 
 import komu.blunt.asm.opcodes.OpJumpIfFalse
 
-class CoreIfExpression(private val condition: CoreExpression?,
-                       private val consequent: CoreExpression?,
-                       private val alternative: CoreExpression?) : CoreExpression() {
+class CoreIfExpression(private val condition: CoreExpression,
+                       private val consequent: CoreExpression,
+                       private val alternative: CoreExpression) : CoreExpression() {
 
-    override fun assemble(asm0: Assembler, target: Register, linkage: Linkage): Instructions {
-        val asm = asm0.sure()
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
         val instructions = Instructions()
 
         val after = asm.newLabel("if-after")
@@ -19,12 +18,12 @@ class CoreIfExpression(private val condition: CoreExpression?,
 
         // Since the target register is safe to overwrite, we borrow it
         // for evaluating the condition as well.
-        instructions.append(condition?.assemble(asm, target, Linkage.NEXT).sure())
+        instructions.append(condition.assemble(asm, target, Linkage.NEXT))
         instructions.jumpIfFalse(target, falseBranch)
 
-        instructions.append(consequent?.assemble(asm, target, trueLinkage).sure())
+        instructions.append(consequent.assemble(asm, target, trueLinkage))
         instructions.label(falseBranch)
-        instructions.append(alternative?.assemble(asm, target, linkage).sure())
+        instructions.append(alternative.assemble(asm, target, linkage))
         instructions.label(after)
 
         instructions.finishWithLinkage(linkage)
@@ -33,9 +32,9 @@ class CoreIfExpression(private val condition: CoreExpression?,
     }
 
     override fun simplify(): CoreExpression {
-        val simplifiedCondition = condition?.simplify()
-        val simplifiedConsequent = consequent?.simplify().sure()
-        val simplifiedAlternative = alternative?.simplify().sure()
+        val simplifiedCondition = condition.simplify()
+        val simplifiedConsequent = consequent.simplify()
+        val simplifiedAlternative = alternative.simplify()
 
         return if (simplifiedCondition is CoreConstantExpression)
             if (OpJumpIfFalse.isFalse(simplifiedCondition.value)) simplifiedAlternative else simplifiedConsequent

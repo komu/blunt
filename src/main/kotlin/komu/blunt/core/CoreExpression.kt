@@ -21,7 +21,7 @@ abstract class CoreExpression {
             else if (exps.size() == 1)
                 exps.get(0).sure()
             else
-                CoreIfExpression(exps.get(0), and(exps.subList(1, exps.size()).sure()), CoreConstantExpression(false))
+                CoreIfExpression(exps.get(0).sure(), and(exps.subList(1, exps.size()).sure()), CoreConstantExpression(false))
         }
     }
 }

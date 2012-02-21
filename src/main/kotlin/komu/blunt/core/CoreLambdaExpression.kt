@@ -4,7 +4,7 @@ import komu.blunt.asm.*
 
 import com.google.common.base.Preconditions.checkArgument
 
-class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpression?) : CoreExpression() {
+class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpression) : CoreExpression() {
 
     {
         checkArgument(envSize >= 0)
@@ -25,11 +25,11 @@ class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpre
 
         instructions.label(lambda)
         instructions.createEnvironment(envSize)
-        instructions.append(body?.assemble(asm, Register.VAL.sure(), Linkage.RETURN).sure())
+        instructions.append(body.assemble(asm, Register.VAL.sure(), Linkage.RETURN))
         instructions.label(afterLambda)
 
         return instructions
     }
 
-    override fun simplify() = CoreLambdaExpression(envSize, body?.simplify())
+    override fun simplify() = CoreLambdaExpression(envSize, body.simplify())
 }
