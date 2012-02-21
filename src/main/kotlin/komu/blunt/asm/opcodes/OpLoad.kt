@@ -12,14 +12,14 @@ import komu.blunt.objects.Procedure
 
 abstract class OpLoad(private val target: Register) : OpCode() {
 
-    override fun execute(vm: VM?) {
-        vm?.set(target, load(vm.sure()))
+    override fun execute(vm: VM) {
+        vm.set(target, load(vm))
     }
 
     abstract fun load(vm: VM): Any?
     abstract fun description(): String
 
-    override fun modifies(register: Register?) = register == target
+    override fun modifies(register: Register) = register == target
 
     override fun toString() = "(load $target ${description()})"
 }

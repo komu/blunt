@@ -25,7 +25,7 @@ class Instructions {
         }
     }
 
-    fun modifies(register: Register?): Boolean {
+    fun modifies(register: Register): Boolean {
         for (val op in instructions)
             if (op.sure().modifies(register))
                 return true
@@ -77,7 +77,7 @@ class Instructions {
 * If the instructions in the stream will never modify given register, then
 * it is safe to return the stream as it is.
 */
-fun Instructions.preserving(register: Register?): Instructions {
+fun Instructions.preserving(register: Register): Instructions {
     if (modifies(register)) {
         val instructions = Instructions()
         instructions.pushRegister(register)
@@ -144,7 +144,7 @@ fun Instructions.pushRegister(register: Register?) {
 }
 
 fun Instructions.popRegister(register: Register?) {
-    this.add(OpPopRegister(register))
+    this.add(OpPopRegister(register.sure()))
 }
 
 fun Instructions.apply() {

@@ -7,12 +7,12 @@ import komu.blunt.stdlib.BasicValues.booleanToConstructor
 
 class OpEqualConstant(private val target: Register, private val source: Register, private val value: Any?) : OpCode() {
 
-    override fun execute(vm: VM?) {
-        val v = vm?.get(source)
-        vm?.set(target, booleanToConstructor(v == value))
+    override fun execute(vm: VM) {
+        val v = vm.get(source)
+        vm.set(target, booleanToConstructor(v == value))
     }
 
-    override fun modifies(register: Register?) = register == target
+    override fun modifies(register: Register) = register == target
 
     override fun toString() = "(load $target (= $source $value))"
 }

@@ -14,14 +14,13 @@ class OpJumpIfFalse(private val register: Register, private val label: Label) : 
             false == value || (value is TypeConstructorValue && value.name == ConstructorNames.FALSE)
     }
 
-    override fun execute(vm0: VM?) {
-        val vm = vm0.sure()
+    override fun execute(vm: VM) {
         val value = vm.get(register)
         if (isFalse(value))
             vm.pc = label.address
     }
 
-    override fun modifies(register: Register?) = register == Register.PC
+    override fun modifies(register: Register) = register == Register.PC
 
     override fun toString() = "(jump-if-false $register $label)"
 }

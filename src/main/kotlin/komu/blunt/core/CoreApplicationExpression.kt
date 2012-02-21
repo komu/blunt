@@ -11,7 +11,7 @@ class CoreApplicationExpression(private val func: CoreExpression,
         val instructions = Instructions()
 
         instructions.append(func.assemble(asm, Register.PROCEDURE, Linkage.NEXT))
-        instructions.append(arg.assemble(asm, Register.ARG, Linkage.NEXT)?.preserving(Register.PROCEDURE))
+        instructions.append(arg.assemble(asm, Register.ARG, Linkage.NEXT).preserving(Register.PROCEDURE.sure()))
 
         if (linkage == Linkage.RETURN && target == Register.VAL) {
             instructions.applyTail();

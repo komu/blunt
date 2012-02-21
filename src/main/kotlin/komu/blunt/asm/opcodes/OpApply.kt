@@ -14,8 +14,7 @@ class OpApply private(private val tail: Boolean) : OpCode() {
         val TAIL   = OpApply(true)
     }
 
-    override fun execute(vm0: VM?) {
-        val vm = vm0.sure()
+    override fun execute(vm: VM) {
         val procedure = vm.procedure
 
         when (procedure) {
@@ -36,7 +35,7 @@ class OpApply private(private val tail: Boolean) : OpCode() {
     }
 
     // Though the application itself will only modify PC, ENV or VAL, the called code could modify anything.
-    override fun modifies(register: Register?) = true
+    override fun modifies(register: Register) = true
 
     override fun toString() = "(${if (tail) "tail-call" else "call"} ${Register.PROCEDURE} ${Register.ARG}"
 }

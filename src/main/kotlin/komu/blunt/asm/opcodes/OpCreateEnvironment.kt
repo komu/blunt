@@ -9,12 +9,11 @@ class OpCreateEnvironment(private val envSize: Int) : OpCode() {
         if (envSize < 0) throw IllegalArgumentException("negative envSize: $envSize")
     }
 
-    override fun execute(vm0: VM?) {
-        val vm = vm0.sure()
-        vm.env = vm.env.extend(envSize, vm.arg).sure()
+    override fun execute(vm: VM) {
+        vm.env = vm.env.extend(envSize, vm.arg)
     }
 
-    override fun modifies(register: Register?) = register == Register.ENV
+    override fun modifies(register: Register) = register == Register.ENV
 
     override fun toString() = "(load ${Register.ENV} (create-env ${Register.ENV} ${Register.ENV} $envSize))"
 }
