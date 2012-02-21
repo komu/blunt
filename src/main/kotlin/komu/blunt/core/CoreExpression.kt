@@ -10,7 +10,7 @@ import java.util.List
 abstract class CoreExpression {
 
     abstract fun simplify(): CoreExpression
-    abstract fun assemble(asm: Assembler?, target: Register?, linkage: Linkage?): Instructions
+    abstract fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions
     open fun toString(): String = "<core-expression>"
 
     class object {

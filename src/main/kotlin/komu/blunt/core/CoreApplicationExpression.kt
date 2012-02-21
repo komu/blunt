@@ -5,13 +5,11 @@ import komu.blunt.asm.*
 class CoreApplicationExpression(private val func: CoreExpression,
                                 private val arg: CoreExpression) : CoreExpression() {
 
-    override fun assemble(asm0: Assembler?, target: Register?, linkage: Linkage?): Instructions {
-        val asm = asm0.sure()
-
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
         val instructions = Instructions()
 
-        instructions.append(func.assemble(asm, Register.PROCEDURE, Linkage.NEXT))
-        instructions.append(arg.assemble(asm, Register.ARG, Linkage.NEXT).preserving(Register.PROCEDURE.sure()))
+        instructions.append(func.assemble(asm, Register.PROCEDURE.sure(), Linkage.NEXT))
+        instructions.append(arg.assemble(asm, Register.ARG.sure(), Linkage.NEXT).preserving(Register.PROCEDURE.sure()))
 
         if (linkage == Linkage.RETURN && target == Register.VAL) {
             instructions.applyTail();

@@ -15,7 +15,7 @@ class CoreSequenceExpression(expressions: List<CoreExpression?>?) : CoreExpressi
         throw UnsupportedOperationException("construct list from varargs") // TODO
     }
 
-    override fun assemble(asm: Assembler?, target: Register?, linkage: Linkage?): Instructions {
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
         val instructions = Instructions()
 
         if (!expressions.isEmpty()) {

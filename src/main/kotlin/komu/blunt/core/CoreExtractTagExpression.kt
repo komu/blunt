@@ -5,7 +5,7 @@ import komu.blunt.asm.*
 
 class CoreExtractTagExpression(private val variable: VariableReference?, private val path: PatternPath?) : CoreExpression() {
 
-    override fun assemble(asm: Assembler?, target: Register?, linkage: Linkage?): Instructions {
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
         val instructions = Instructions()
         instructions.loadVariable(target, variable)
         instructions.loadTag(target, target, path)

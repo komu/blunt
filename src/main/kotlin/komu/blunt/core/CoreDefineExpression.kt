@@ -6,7 +6,7 @@ import komu.blunt.stdlib.BasicValues
 
 class CoreDefineExpression(private val variable: VariableReference?, private val expression: CoreExpression?) : CoreExpression() {
 
-    override fun assemble(asm: Assembler?, target: Register?, linkage: Linkage?): Instructions {
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
         val instructions = Instructions()
 
         instructions.append(expression?.assemble(asm, target, Linkage.NEXT).sure())

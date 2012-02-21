@@ -8,7 +8,7 @@ class CoreIfExpression(private val condition: CoreExpression?,
                        private val consequent: CoreExpression?,
                        private val alternative: CoreExpression?) : CoreExpression() {
 
-    override fun assemble(asm0: Assembler?, target: Register?, linkage: Linkage?): Instructions {
+    override fun assemble(asm0: Assembler, target: Register, linkage: Linkage): Instructions {
         val asm = asm0.sure()
         val instructions = Instructions()
 

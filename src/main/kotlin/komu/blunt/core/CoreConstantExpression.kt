@@ -4,7 +4,7 @@ import komu.blunt.asm.*
 
 class CoreConstantExpression(val value: Any?) : CoreExpression() {
 
-    override fun assemble(asm: Assembler?, target: Register?, linkage: Linkage?): Instructions {
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
         val instructions = Instructions()
         instructions.loadConstant(target, value)
         instructions.finishWithLinkage(linkage)

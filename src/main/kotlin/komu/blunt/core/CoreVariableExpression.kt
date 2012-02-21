@@ -5,7 +5,7 @@ import komu.blunt.asm.*
 
 class CoreVariableExpression(private val variable: VariableReference) : CoreExpression() {
 
-    override fun assemble(asm: Assembler?, target: Register?, linkage: Linkage?): Instructions {
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
         val instructions = Instructions()
         instructions.loadVariable(target, variable)
         instructions.finishWithLinkage(linkage)
