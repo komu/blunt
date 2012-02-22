@@ -13,7 +13,7 @@ import static komu.blunt.types.Qualified.quantifyAll;
 import static komu.blunt.types.Type.*;
 
 public final class NativeTypeConversions {
-
+/*
     private final Map<java.lang.reflect.TypeVariable<?>,TypeVariable> typeVariableMap = new HashMap<>();
 
     private NativeTypeConversions() { }
@@ -96,4 +96,5 @@ public final class NativeTypeConversions {
 
         return result;
     }
+    */
 }
