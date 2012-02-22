@@ -100,8 +100,8 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     fun applySubstitution(t: Assumptions): Assumptions =
       t.apply(substitution).sure()
 
-    fun applySubstitution<T : Types<T?>>(ts: Collection<T?>?): List<T?> {
-        val result = ArrayList<T?>(ts?.size() ?: 0)
+    fun applySubstitution<T : Types<T?>>(ts: Collection<T?>): List<T?> {
+        val result = ArrayList<T?>(ts.size())
 
         for (val t in ts)
             result.add(t?.apply(substitution))
