@@ -7,6 +7,7 @@ import java.util.Set
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
+import std.util.*
 
 class Instructions {
     private val instructions = ArrayList<OpCode>()
@@ -25,13 +26,8 @@ class Instructions {
         }
     }
 
-    fun modifies(register: Register): Boolean {
-        for (val op in instructions)
-            if (op.modifies(register))
-                return true
-
-        return false
-    }
+    fun modifies(register: Register): Boolean =
+        instructions any { it.modifies(register) }
 
     fun label(label: Label) {
         label.address = instructions.size()
@@ -87,62 +83,62 @@ fun Instructions.preserving(register: Register): Instructions {
     }
 }
 
-fun Instructions.finishWithLinkage(linkage: Linkage?) {
+fun Instructions.finishWithLinkage(linkage: Linkage) {
     if (linkage == Linkage.NEXT) {
         // nada
     } else if (linkage == Linkage.RETURN) {
         popRegister(Register.PC)
     } else {
-        jump(linkage?.label)
+        jump(linkage.label.sure())
     }
 }
 
-fun Instructions.jumpIfFalse(register: Register?, label: Label?) {
-    this.add(OpJumpIfFalse(register.sure(), label.sure()))
+fun Instructions.jumpIfFalse(register: Register, label: Label) {
+    this.add(OpJumpIfFalse(register, label))
 }
 
-fun Instructions.loadConstant(target: Register?, value: Any?) {
-    this.add(OpLoadConstant(target.sure(), value))
+fun Instructions.loadConstant(target: Register, value: Any?) {
+    this.add(OpLoadConstant(target, value))
 }
 
-fun Instructions.loadVariable(target: Register?, v: VariableReference?) {
-    this.add(OpLoadVariable(target.sure(), v.sure()))
+fun Instructions.loadVariable(target: Register, v: VariableReference) {
+    this.add(OpLoadVariable(target, v))
 }
 
-fun Instructions.storeVariable(v: VariableReference?, value: Register?) {
-    this.add(OpStoreVariable(v.sure(), value.sure()))
+fun Instructions.storeVariable(v: VariableReference, value: Register) {
+    this.add(OpStoreVariable(v, value))
 }
 
-fun Instructions.loadLambda(target: Register?, label: Label?) {
-    this.add(OpLoadLambda(target.sure(), label.sure()))
+fun Instructions.loadLambda(target: Register, label: Label) {
+    this.add(OpLoadLambda(target, label))
 }
 
 fun Instructions.createEnvironment(envSize: Int) {
     this.add(OpCreateEnvironment(envSize))
 }
 
-fun Instructions.loadExtracted(target: Register?, source: Register?, path: PatternPath?) {
-    this.add(OpLoadExtracted(target.sure(), source.sure(), path.sure()))
+fun Instructions.loadExtracted(target: Register, source: Register, path: PatternPath) {
+    this.add(OpLoadExtracted(target, source, path))
 }
 
-fun Instructions.loadTag(target: Register?, source: Register?, path: PatternPath?) {
-    this.add(OpLoadTag(target.sure(), source.sure(), path.sure()))
+fun Instructions.loadTag(target: Register, source: Register, path: PatternPath) {
+    this.add(OpLoadTag(target, source, path))
 }
 
-fun Instructions.jump(label: Label?) {
-    this.add(OpJump(label.sure()))
+fun Instructions.jump(label: Label) {
+    this.add(OpJump(label))
 }
 
-fun Instructions.pushLabel(label: Label?) {
-    this.add(OpPushLabel(label.sure()))
+fun Instructions.pushLabel(label: Label) {
+    this.add(OpPushLabel(label))
 }
 
-fun Instructions.pushRegister(register: Register?) {
-    this.add(OpPushRegister(register.sure()))
+fun Instructions.pushRegister(register: Register) {
+    this.add(OpPushRegister(register))
 }
 
-fun Instructions.popRegister(register: Register?) {
-    this.add(OpPopRegister(register.sure()))
+fun Instructions.popRegister(register: Register) {
+    this.add(OpPopRegister(register))
 }
 
 fun Instructions.apply() {
@@ -153,10 +149,10 @@ fun Instructions.applyTail() {
     this.add(OpApply.TAIL)
 }
 
-fun Instructions.copy(target: Register?, source: Register?) {
-    this.add(OpCopyRegister(target.sure(), source.sure()))
+fun Instructions.copy(target: Register, source: Register) {
+    this.add(OpCopyRegister(target, source))
 }
 
-fun Instructions.equalConstant(target: Register?, source: Register?, value: Any?) {
-    this.add(OpEqualConstant(target.sure(), source.sure(), value))
+fun Instructions.equalConstant(target: Register, source: Register, value: Any?) {
+    this.add(OpEqualConstant(target, source, value))
 }
