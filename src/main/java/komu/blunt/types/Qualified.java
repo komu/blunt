@@ -37,31 +37,6 @@ public final class Qualified<T extends Types<T>> implements Types<Qualified<T>> 
         return new Qualified<>(TypeUtils.applySubstitution(substitution, predicates), value.apply(substitution));
     }
 
-    public static Scheme quantifyAll(Qualified<Type> qt) {
-        return quantify(TypeUtils.getTypeVariables(qt), qt);
-    }
-
-    public static Scheme quantify(Collection<TypeVariable> vs, Qualified<Type> qt) {
-        List<Kind> kinds = new ArrayList<>();
-        List<TypeVariable> vars = new ArrayList<>();
-
-        for (TypeVariable v : getTypeVariables(qt))
-            if (vs.contains(v)) {
-                vars.add(v);
-                kinds.add(v.getKind());
-            }
-
-        return new Scheme(kinds, qt.apply(Substitution.fromTypeVariables(vars)));
-    }
-
-    public static Qualified<Type> instantiate(List<TypeVariable> ts, Qualified<Type> t) {
-        List<Predicate> ps = new ArrayList<>(t.predicates.size());
-        for (Predicate p : t.predicates)
-            ps.add(p.instantiate(ts));
-       
-        return new Qualified<>(ps, t.value.instantiate(ts));
-    }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

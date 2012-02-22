@@ -12,7 +12,7 @@ import java.util.HashSet
 import java.util.List
 import java.util.Set
 
-import komu.blunt.types.Qualified.quantify
+import komu.blunt.types.quantify
 import komu.blunt.types.Type.toSchemes
 import komu.blunt.utils.CollectionUtils.intersection
 import java.util.LinkedHashSet

@@ -7,7 +7,7 @@ import java.util.*
 
 import com.google.common.base.Strings.repeat
 import java.util.Collections.unmodifiableCollection
-import komu.blunt.types.Qualified.quantifyAll
+import komu.blunt.types.quantifyAll
 import komu.blunt.types.Type.*
 import komu.blunt.parser.TypeParser
 

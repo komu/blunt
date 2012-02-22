@@ -12,7 +12,8 @@ import java.util.ArrayList
 import java.util.Collection
 import java.util.List
 
-import komu.blunt.types.Qualified.quantifyAll
+import komu.blunt.types.quantifyAll
+import komu.blunt.types.instantiate
 import komu.blunt.types.Type.typeVariable
 import komu.blunt.types.checker.Unifier.mgu
 
@@ -62,7 +63,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         for (val kind in scheme.kinds)
             ts.add(newTVar(kind.sure()))
 
-        return Qualified.instantiate(ts, scheme.`type`).sure()
+        return instantiate(ts, scheme.`type`.sure())
     }
 
     fun newTVar(): TypeVariable =

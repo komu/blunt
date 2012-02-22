@@ -9,6 +9,7 @@ import java.util.List
 
 import komu.blunt.parser.TokenType.*
 import komu.blunt.types.Type.*
+import komu.blunt.types.quantifyAll
 
 class TypeParser(val lexer: Lexer) {
 
@@ -20,7 +21,7 @@ class TypeParser(val lexer: Lexer) {
             TypeParser(Lexer(s)).parseType()
 
         fun parseScheme(s: String): Scheme =
-            Qualified.quantifyAll(parseQualified(s)).sure()
+            quantifyAll(parseQualified(s))
 
         fun parseQualified(s: String): Qualified<Type?> =
             TypeParser(Lexer(s)).parseQualified()
