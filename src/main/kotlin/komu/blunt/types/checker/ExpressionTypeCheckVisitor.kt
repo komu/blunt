@@ -73,12 +73,12 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         return result.build(bodyResult.value).sure()
     }
 
-    private fun visit(letRec: ASTLetRec?, ass: Assumptions): TypeCheckResult<Type> {
-        val bindGroup = BindGroup(ArrayList<ExplicitBinding?>(), letRec?.bindings)
+    private fun visit(letRec: ASTLetRec, ass: Assumptions): TypeCheckResult<Type> {
+        val bindGroup = BindGroup(ArrayList<ExplicitBinding>(), letRec.bindings)
 
         val rs = tc.typeCheckBindGroup(bindGroup, ass)
 
-        return typeCheck(letRec?.body, ass.join(rs.value).sure())
+        return typeCheck(letRec.body, ass.join(rs.value))
     }
 
     private fun visit(sequence: ASTSequence?, ass: Assumptions): TypeCheckResult<Type> {

@@ -2,17 +2,15 @@ package komu.blunt.ast
 
 import com.google.common.collect.ImmutableList
 
-import java.util.Iterator
 import java.util.ArrayList
 
-
-class ASTLetRec(val bindings: ImmutableList<ImplicitBinding?>, val body: ASTExpression) : ASTExpression() {
+class ASTLetRec(val bindings: ImmutableList<ImplicitBinding>, val body: ASTExpression) : ASTExpression() {
 
     override fun simplify(): ASTExpression {
         // TODO: convert letrecs to lets if variable is not referenced in binding
-        val simplifiedBindings = ArrayList<ImplicitBinding?>()
+        val simplifiedBindings = ArrayList<ImplicitBinding>()
         for (val binding in bindings)
-            simplifiedBindings.add(binding?.simplify())
+            simplifiedBindings.add(binding.simplify())
         return ASTLetRec(ImmutableList.copyOf(simplifiedBindings).sure(), body.simplify().sure())
     }
 

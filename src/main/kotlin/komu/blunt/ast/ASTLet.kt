@@ -2,16 +2,15 @@ package komu.blunt.ast
 
 import com.google.common.collect.ImmutableList
 
-import java.util.Iterator
 import java.util.ArrayList
 
-class ASTLet(val bindings: ImmutableList<ImplicitBinding?>, val body: ASTExpression) : ASTExpression() {
+class ASTLet(val bindings: ImmutableList<ImplicitBinding>, val body: ASTExpression) : ASTExpression() {
 
     override fun simplify(): ASTExpression {
-        val simplifiedBindings = ArrayList<ImplicitBinding?>()
+        val simplifiedBindings = ArrayList<ImplicitBinding>()
         for (val binding in bindings)
-            simplifiedBindings.add(binding?.simplify())
-        return ASTLet(ImmutableList.copyOf(simplifiedBindings).sure(), body.simplify().sure())
+            simplifiedBindings.add(binding.simplify())
+        return ASTLet(ImmutableList.copyOf(simplifiedBindings).sure(), body.simplify())
     }
 
     override fun toString(): String {

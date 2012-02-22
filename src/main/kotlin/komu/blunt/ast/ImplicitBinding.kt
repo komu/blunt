@@ -8,13 +8,13 @@ import java.util.List;
 class ImplicitBinding(val name: Symbol, val expr: ASTExpression) {
 
     fun toString() = "[$name $expr]"
-    fun simplify() = ImplicitBinding(name, expr.simplify().sure())
+    fun simplify() = ImplicitBinding(name, expr.simplify())
 
     class object {
-        fun bindingNames(bs: List<ImplicitBinding?>): List<Symbol?> {
-            val names = ArrayList<Symbol?>(bs.sure().size())
+        fun bindingNames(bs: List<ImplicitBinding>): List<Symbol> {
+            val names = ArrayList<Symbol>(bs.size())
             for (val b in bs)
-                names.add(b?.name)
+                names.add(b.name)
             return names
         }
     }

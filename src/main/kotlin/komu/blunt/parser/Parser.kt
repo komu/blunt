@@ -114,7 +114,7 @@ class Parser(source: String) {
             functionBuilder.addAlternative(ImmutableList.copyOf(args).sure(), value)
         }
 
-        return AST.define(name, functionBuilder.build())
+        return AST.define(name.sure(), functionBuilder.build())
     }
 
     private fun nextTokenIsIdentifier(name: Symbol) =

@@ -30,8 +30,8 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
           else              -> throw Exception("unknown exp $exp")
       }
 
-    private fun analyzeAll(exps: List<ASTExpression?>?, env: StaticEnvironment): List<CoreExpression?>  {
-        val result = ArrayList<CoreExpression?>(exps?.size().sure())
+    private fun analyzeAll(exps: List<ASTExpression>, env: StaticEnvironment): List<CoreExpression>  {
+        val result = ArrayList<CoreExpression>(exps.size())
 
         for (val exp in exps)
             result.add(analyze(exp, env))

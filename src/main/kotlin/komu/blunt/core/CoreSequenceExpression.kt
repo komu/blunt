@@ -6,12 +6,13 @@ import java.util.ArrayList
 import java.util.List
 
 import java.util.Arrays
+import java.util.Collections
 
-class CoreSequenceExpression(expressions: List<CoreExpression?>?) : CoreExpression() {
+class CoreSequenceExpression(expressions: List<CoreExpression>) : CoreExpression() {
 
-    private val expressions = ArrayList<CoreExpression?>(expressions.sure())
+    private val expressions = ArrayList<CoreExpression>(expressions)
 
-    this(vararg expressions: CoreExpression): this(null) {
+    this(vararg expressions: CoreExpression): this(Collections.emptyList<CoreExpression>().sure()) {
         throw UnsupportedOperationException("construct list from varargs") // TODO
     }
 
@@ -30,25 +31,24 @@ class CoreSequenceExpression(expressions: List<CoreExpression?>?) : CoreExpressi
     }
 
     private fun last(): CoreExpression =
-        expressions.get(expressions.size()-1).sure()
+        expressions[expressions.size()-1]
 
-    private fun allButLast(): List<CoreExpression?> =
+    private fun allButLast(): List<CoreExpression> =
         expressions.subList(0, expressions.size()-1).sure()
 
     override fun toString() = expressions.toString().sure()
 
     override fun simplify(): CoreExpression {
-        val exps = ArrayList<CoreExpression?>(expressions.size());
+        val exps = ArrayList<CoreExpression>(expressions.size());
         for (val exp in expressions)
             if (exp != CoreEmptyExpression.INSTANCE)
-                exps.add(exp?.simplify())
+                exps.add(exp.simplify())
 
         if (exps.isEmpty())
-            return CoreEmptyExpression.INSTANCE.sure()
+            return CoreEmptyExpression.INSTANCE
         else if (exps.size() == 1)
-            return exps.get(0).sure()
+            return exps[0]
         else
             return CoreSequenceExpression(exps)
     }
 }
-

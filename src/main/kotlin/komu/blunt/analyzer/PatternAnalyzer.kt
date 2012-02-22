@@ -29,11 +29,11 @@ class PatternAnalyzer {
     }
 
     private fun constructorExtractor(pattern: ConstructorPattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression {
-        val exps = ArrayList<CoreExpression?>(1 + pattern.args.size().sure());
+        val exps = ArrayList<CoreExpression>(1 + pattern.args.size())
 
         var i = 0
         for (val p in pattern.args)
-            exps.add(makeExtractor(p.sure(), path.extend(i++).sure(), env, matchedObject))
+            exps.add(makeExtractor(p, path.extend(i++), env, matchedObject))
 
         return CoreSequenceExpression(exps)
     }

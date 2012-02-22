@@ -51,13 +51,13 @@ class Assumptions private(private val mappings: Map<Symbol?,Scheme?>) : Types<As
         fun empty() = Assumptions()
         fun singleton(arg: Symbol?, scheme: Scheme?) = builder().add(arg, scheme).build()
 
-        fun from(names: List<Symbol?>?, schemes: List<Scheme?>?): Assumptions {
-            if (names?.size() != schemes?.size())
-                throw IllegalArgumentException("${names?.size()} != ${schemes?.size()}")
+        fun from(names: List<Symbol>, schemes: List<Scheme?>?): Assumptions {
+            if (names.size() != schemes?.size())
+                throw IllegalArgumentException("${names.size()} != ${schemes?.size()}")
 
             val builder = Builder()
-            for (val i in 0..names.sure().size()-1)
-                builder.add(names?.get(i), schemes?.get(i))
+            for (val i in 0..names.size()-1)
+                builder.add(names[i], schemes?.get(i))
 
             return builder.build()
         }

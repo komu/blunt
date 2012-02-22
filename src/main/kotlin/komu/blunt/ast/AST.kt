@@ -47,7 +47,7 @@ object AST {
     fun lambda(arguments: List<Symbol>, body: ASTExpression): ASTExpression {
         if (arguments.isEmpty()) throw IllegalArgumentException("no arguments for lambda")
 
-        val head = arguments.get(0).sure()
+        val head = arguments[0]
         val tail = arguments.subList(1, arguments.size()).sure()
         if (arguments.size() == 1)
             return lambda(head, body)
@@ -73,15 +73,15 @@ object AST {
         ASTAlternative(pattern, exp);
 
     fun letRec(name: Symbol, value: ASTExpression, body: ASTExpression): ASTExpression =
-        ASTLetRec(ImmutableList.of<ImplicitBinding?>(ImplicitBinding(name, value)).sure(), body)
+        ASTLetRec(ImmutableList.of(ImplicitBinding(name, value)).sure(), body)
 
-    fun let(recursive: Boolean, binding: ImplicitBinding?, body: ASTExpression): ASTExpression {
-        val bindings = ImmutableList.of<ImplicitBinding?>(binding).sure()
+    fun let(recursive: Boolean, binding: ImplicitBinding, body: ASTExpression): ASTExpression {
+        val bindings = ImmutableList.of(binding).sure()
         return if (recursive) ASTLetRec(bindings, body) else ASTLet(bindings, body)
     }
 
-    fun sequence(vararg exps: ASTExpression?): ASTSequence {
-        val lst = ArrayList<ASTExpression?>
+    fun sequence(vararg exps: ASTExpression): ASTSequence {
+        val lst = ArrayList<ASTExpression>
         for (val exp in exps) lst.add(exp)
 
         return ASTSequence(ImmutableList.copyOf(lst).sure())
@@ -104,15 +104,15 @@ object AST {
     fun set(name: Symbol, exp: ASTExpression): ASTExpression =
         ASTSet(name, exp)
 
-    fun define(name: Symbol?, value: ASTExpression?): ASTValueDefinition =
-        ASTValueDefinition(name.sure(), value.sure())
+    fun define(name: Symbol, value: ASTExpression): ASTValueDefinition =
+        ASTValueDefinition(name, value)
 
     fun listBuilder() = ListBuilder()
 
     class ListBuilder {
-        private val exps = ArrayList<ASTExpression?>()
+        private val exps = ArrayList<ASTExpression>()
 
-        fun add(exp: ASTExpression?) {
+        fun add(exp: ASTExpression) {
             exps.add(exp)
         }
 
@@ -120,7 +120,7 @@ object AST {
             var list = constructor(ConstructorNames.NIL.sure())
 
             for (val exp in Lists.reverse(exps))
-                list = constructor(ConstructorNames.CONS.sure(), exp.sure(), list)
+                list = constructor(ConstructorNames.CONS.sure(), exp, list)
 
             return list
         }
@@ -129,9 +129,9 @@ object AST {
     fun sequenceBuilder() = SequenceBuilder()
 
     class SequenceBuilder {
-        private val exps = ArrayList<ASTExpression?>()
+        private val exps = ArrayList<ASTExpression>()
 
-        fun add(exp: ASTExpression?) {
+        fun add(exp: ASTExpression) {
             exps.add(exp)
         }
 

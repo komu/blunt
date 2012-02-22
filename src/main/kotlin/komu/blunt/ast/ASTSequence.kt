@@ -3,22 +3,22 @@ package komu.blunt.ast
 import com.google.common.collect.ImmutableList
 import java.util.ArrayList
 
-class ASTSequence(val exps: ImmutableList<ASTExpression?>) : ASTExpression() {
+class ASTSequence(val exps: ImmutableList<ASTExpression>) : ASTExpression() {
 
     fun last(): ASTExpression =
-        exps.get(exps.size()-1).sure()
+        exps.get(exps.size()-1)
 
-    fun allButLast(): ImmutableList<ASTExpression?> =
+    fun allButLast(): ImmutableList<ASTExpression> =
         exps.subList(0, exps.size()-1).sure()
 
     override fun simplify(): ASTExpression {
-        val result = ArrayList<ASTExpression?>()
+        val result = ArrayList<ASTExpression>()
 
         for (val exp in exps)
-            result.add(exp?.simplify())
+            result.add(exp.simplify())
 
         if (result.size() == 1)
-            return result.get(0).sure()
+            return result[0]
         else
             return ASTSequence(ImmutableList.copyOf(result).sure())
     }
