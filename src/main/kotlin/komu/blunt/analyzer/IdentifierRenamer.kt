@@ -115,7 +115,7 @@ class IdentifierRenamer {
     }
 
     private fun visit(astCase: ASTCase, ctx: IdentifierMapping): ASTExpression {
-        val alts = ArrayList<ASTAlternative?>()
+        val alts = ArrayList<ASTAlternative>()
 
         for (val alt in astCase.alternatives) {
             val newCtx = ctx.extend()

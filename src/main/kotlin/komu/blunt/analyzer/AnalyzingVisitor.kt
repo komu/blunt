@@ -106,11 +106,11 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
         return CoreLetExpression(matchedObject, exp, body)
     }
 
-    private fun createAlts(matchedObject: VariableReference, alts: List<ASTAlternative?>, env: StaticEnvironment): CoreExpression {
+    private fun createAlts(matchedObject: VariableReference, alts: List<ASTAlternative>, env: StaticEnvironment): CoreExpression {
         if (alts.isEmpty())
             return analyze(AST.apply(AST.variable("error"), AST.constant("match failure")), env)
 
-        val head = alts.get(0).sure()
+        val head = alts.get(0)
         val tail = alts.subList(1, alts.size()).sure()
 
         val alt = analyze(head, matchedObject, env)

@@ -55,8 +55,8 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
     private class DataTypeBuilder(val typeName: String) {
 
         private val vars = ArrayList<TypeVariable?>()
-        private val constructors = ArrayList<ConstructorDefinition?>()
-        private val derivedClasses = ArrayList<String?>()
+        private val constructors = ArrayList<ConstructorDefinition>()
+        private val derivedClasses = ArrayList<String>()
         private var constructorIndex = 0
 
         public fun addVariable(variable: TypeVariable) {
@@ -69,13 +69,13 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
         }
 
         private fun getType() =
-            genericType(typeName, vars)
+            genericType(typeName, vars).sure()
 
         public fun addAutomaticallyDerivedClass(className: String) {
             derivedClasses.add(className)
         }
 
         public fun build(): ASTDataDefinition =
-            AST.data(typeName, getType(), ImmutableList.copyOf(constructors), ImmutableList.copyOf(derivedClasses)).sure()
+            AST.data(typeName, getType(), ImmutableList.copyOf(constructors).sure(), ImmutableList.copyOf(derivedClasses).sure())
     }
 }

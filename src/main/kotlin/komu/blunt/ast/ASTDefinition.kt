@@ -13,8 +13,8 @@ class ASTValueDefinition(val name: Symbol, val value: ASTExpression) : ASTDefini
 
 class ASTDataDefinition(val name: String,
                         val typ: Type,
-                        val constructors: ImmutableList<ConstructorDefinition?>,
-                        val derivedClasses: ImmutableList<String?>) : ASTDefinition() {
+                        val constructors: ImmutableList<ConstructorDefinition>,
+                        val derivedClasses: ImmutableList<String>) : ASTDefinition() {
 
     fun toString() = "data $name = $constructors"
 }

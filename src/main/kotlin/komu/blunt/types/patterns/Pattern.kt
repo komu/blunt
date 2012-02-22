@@ -9,7 +9,7 @@ abstract class Pattern {
     abstract fun toString(): String
 
     class object {
-        fun constructor(name: String, vararg args: Pattern?): Pattern =
+        fun constructor(name: String, vararg args: Pattern): Pattern =
             throw UnsupportedOperationException() //return new ConstructorPattern(name, ImmutableList.copyOf(args));
 
         fun constructor(name: String, args: ImmutableList<Pattern>): Pattern =

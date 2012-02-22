@@ -214,7 +214,7 @@ class Parser(source: String) {
         val exp = parseExpression()
         lexer.expectToken(OF)
 
-        val alts = ArrayList<ASTAlternative?>()
+        val alts = ArrayList<ASTAlternative>()
         do {
             alts.add(parseAlternative())
         } while (!lexer.nextTokenIs(END))
@@ -238,7 +238,7 @@ class Parser(source: String) {
 
         var name = parseIdentifier()
 
-        val args = ArrayList<Symbol?>()
+        val args = ArrayList<Symbol>()
 
         if (lexer.nextTokenIs(OPERATOR)) {
             val op = lexer.readTokenValue(OPERATOR)
@@ -290,7 +290,7 @@ class Parser(source: String) {
             return (if (op.isConstructor) AST.constructor(op.toString()) else AST.variable(op.toString())).sure()
         }
 
-        val exps = ArrayList<ASTExpression?>()
+        val exps = ArrayList<ASTExpression>()
 
         do {
             exps.add(parseExpression())
@@ -299,7 +299,7 @@ class Parser(source: String) {
         lexer.expectToken(RPAREN)
 
         if (exps.size() == 1)
-            return exps.get(0).sure()
+            return exps.get(0)
         else
             return AST.tuple(exps)
     }

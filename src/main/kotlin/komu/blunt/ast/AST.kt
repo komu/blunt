@@ -19,33 +19,32 @@ import java.util.ArrayList
  */
 object AST {
 
-    fun data(name: String?, typ: Type?, constructors: ImmutableList<ConstructorDefinition?>?, derivedClasses: ImmutableList<String?>?) =
-        ASTDataDefinition(name.sure(), typ.sure(), constructors.sure(), derivedClasses.sure())
+    fun data(name: String, typ: Type, constructors: ImmutableList<ConstructorDefinition>, derivedClasses: ImmutableList<String>) =
+        ASTDataDefinition(name, typ, constructors, derivedClasses)
 
-    fun constant(value: Any?): ASTExpression   = ASTConstant(value.sure())
+    fun constant(value: Any): ASTExpression   = ASTConstant(value)
     fun variable(name: Symbol): ASTExpression = ASTVariable(name)
     fun variable(name: String): ASTExpression = ASTVariable(Symbol(name))
 
-    fun apply(func: ASTExpression?, vararg args: ASTExpression?): ASTExpression =
+    fun apply(func: ASTExpression, vararg args: ASTExpression): ASTExpression =
         apply2(func, args)
 
-    private fun apply2(func: ASTExpression?, args: Array<ASTExpression?>): ASTExpression {
+    private fun apply2(func: ASTExpression, args: Array<ASTExpression>): ASTExpression {
         var exp = func
 
         for (val arg in args)
-            exp = ASTApplication(exp.sure(), arg.sure())
+            exp = ASTApplication(exp, arg)
 
-        return exp?.simplify().sure()
+        return exp.simplify()
     }
 
-    fun constructor(name: String, vararg args: ASTExpression?): ASTExpression =
+    fun constructor(name: String, vararg args: ASTExpression): ASTExpression =
         apply2(ASTConstructor(name), args)
-
 
     fun lambda(argument: Symbol, body: ASTExpression): ASTExpression =
         ASTLambda(argument, body)
 
-    fun lambda(arguments: List<Symbol?>, body: ASTExpression): ASTExpression {
+    fun lambda(arguments: List<Symbol>, body: ASTExpression): ASTExpression {
         if (arguments.isEmpty()) throw IllegalArgumentException("no arguments for lambda")
 
         val head = arguments.get(0).sure()
@@ -60,14 +59,14 @@ object AST {
         caseExp(test, alternative(Pattern.constructor(ConstructorNames.TRUE.sure()), cons),
                       alternative(Pattern.constructor(ConstructorNames.FALSE.sure()), alt))
 
-    fun caseExp(exp: ASTExpression, alts: ImmutableList<ASTAlternative?>): ASTExpression =
-        ASTCase(exp.sure(), alts.sure())
+    fun caseExp(exp: ASTExpression, alts: ImmutableList<ASTAlternative>): ASTExpression =
+        ASTCase(exp, alts)
 
-    fun caseExp(exp: ASTExpression, vararg alts: ASTAlternative?): ASTExpression {
-        val lst = ArrayList<ASTAlternative?>
+    fun caseExp(exp: ASTExpression, vararg alts: ASTAlternative): ASTExpression {
+        val lst = ArrayList<ASTAlternative>
         for (val alt in alts) lst.add(alt)
 
-        return ASTCase(exp.sure(), ImmutableList.copyOf(lst).sure())
+        return ASTCase(exp, ImmutableList.copyOf(lst).sure())
     }
 
     fun alternative(pattern: Pattern, exp: ASTExpression): ASTAlternative =
@@ -88,16 +87,16 @@ object AST {
         return ASTSequence(ImmutableList.copyOf(lst).sure())
     }
 
-    fun tuple(exps: List<ASTExpression?>): ASTExpression  {
+    fun tuple(exps: List<ASTExpression>): ASTExpression  {
         if (exps.isEmpty())
             return AST.constructor(ConstructorNames.UNIT.sure())
         if (exps.size() == 1)
-            return exps.get(0).sure()
+            return exps.get(0)
 
-        var call =  constructor(ConstructorNames.tupleName(exps.size()).sure())
+        var call = constructor(ConstructorNames.tupleName(exps.size()).sure())
 
         for (val exp in exps)
-            call = ASTApplication(call, exp.sure())
+            call = ASTApplication(call, exp)
 
         return call
     }
