@@ -90,7 +90,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
     }
 
     private fun typeCheckAndUnifyBindings(bs: List<ImplicitBinding>, ts: List<Type?>, ass: Assumptions): List<Predicate?> {
-        val as2 = Assumptions.from(ImplicitBinding.bindingNames(bs), toSchemes(ts)).join(ass)
+        val as2 = Assumptions.from(ImplicitBinding.bindingNames(bs), toSchemes(ts).sure()).join(ass)
 
         val predicates = ArrayList<Predicate?>();
 

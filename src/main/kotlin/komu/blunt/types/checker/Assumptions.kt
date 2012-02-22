@@ -13,15 +13,16 @@ import java.util.Set
 
 import java.util.Collections.emptyMap
 import java.util.Collections.unmodifiableMap
+import std.util.*
 
 class Assumptions private(private val mappings: Map<Symbol?,Scheme?>) : Types<Assumptions> {
 
     private this(): this(emptyMap<Symbol?,Scheme?>().sure()) { }
 
-    fun join(ass: Assumptions?) =
+    fun join(ass: Assumptions) =
         builder().addAll(ass).addAll(this).build()
 
-    fun find(name: Symbol?): Scheme {
+    fun find(name: Symbol): Scheme {
         val scheme = mappings.get(name)
         if (scheme != null)
             return scheme
@@ -40,7 +41,7 @@ class Assumptions private(private val mappings: Map<Symbol?,Scheme?>) : Types<As
         val builder = builder()
 
         for (val entry in mappings.entrySet())
-            builder.add(entry.sure().getKey(), entry.sure().getValue()?.apply(substitution))
+            builder.add(entry?.getKey().sure(), entry?.getValue()?.apply(substitution).sure())
 
         return builder.build()
     }
@@ -49,15 +50,15 @@ class Assumptions private(private val mappings: Map<Symbol?,Scheme?>) : Types<As
 
         fun builder() = Builder()
         fun empty() = Assumptions()
-        fun singleton(arg: Symbol?, scheme: Scheme?) = builder().add(arg, scheme).build()
+        fun singleton(arg: Symbol, scheme: Scheme) = builder().add(arg, scheme).build()
 
-        fun from(names: List<Symbol>, schemes: List<Scheme?>?): Assumptions {
-            if (names.size() != schemes?.size())
-                throw IllegalArgumentException("${names.size()} != ${schemes?.size()}")
+        fun from(names: List<Symbol>, schemes: List<Scheme?>): Assumptions {
+            if (names.size != schemes.size)
+                throw IllegalArgumentException("${names.size} != ${schemes.size}")
 
             val builder = Builder()
-            for (val i in 0..names.size()-1)
-                builder.add(names[i], schemes?.get(i))
+            for (val i in names.indices)
+                builder.add(names[i], schemes[i].sure())
 
             return builder.build()
         }
@@ -67,15 +68,15 @@ class Assumptions private(private val mappings: Map<Symbol?,Scheme?>) : Types<As
             private var mappings = HashMap<Symbol?,Scheme?>()
             private var built = false
 
-            fun add(name: Symbol?, scheme: Scheme?): Builder {
+            fun add(name: Symbol, scheme: Scheme): Builder {
                 ensurePrivateCopy()
                 mappings.put(name, scheme)
                 return this
             }
 
-            fun addAll(ass: Assumptions?): Builder {
+            fun addAll(ass: Assumptions): Builder {
                 ensurePrivateCopy()
-                mappings.putAll(ass?.mappings.sure())
+                mappings.putAll(ass.mappings)
                 return this
             }
 
@@ -84,7 +85,7 @@ class Assumptions private(private val mappings: Map<Symbol?,Scheme?>) : Types<As
                 return Assumptions(unmodifiableMap(mappings).sure())
             }
 
-            fun build(ass: Assumptions?) = build().join(ass)
+            fun build(ass: Assumptions) = build().join(ass)
 
             private fun ensurePrivateCopy() {
                 if (built) {

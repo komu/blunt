@@ -10,20 +10,20 @@ import komu.blunt.types.checker.Assumptions
 class RootBindings {
     val staticEnvironment = StaticEnvironment()
     val runtimeEnvironment = RootEnvironment()
-    private val assumptions = Assumptions.builder().sure()
+    private val assumptions = Assumptions.builder()
     val dataTypes = DataTypeDefinitions()
 
-    fun bind(name: String?, scheme: Scheme?, value: Any?) {
-        bind(Symbol(name.sure()), scheme, value)
+    fun bind(name: String, scheme: Scheme, value: Any?) {
+        bind(Symbol(name), scheme, value)
     }
 
-    fun bind(name: Symbol?, scheme: Scheme?, value: Any?) {
-        val ref = staticEnvironment.define(name.sure())
+    fun bind(name: Symbol, scheme: Scheme, value: Any?) {
+        val ref = staticEnvironment.define(name)
         defineVariableType(name, scheme)
         runtimeEnvironment.define(ref, value)
     }
 
-    fun defineVariableType(name: Symbol?, scheme: Scheme?) {
+    fun defineVariableType(name: Symbol, scheme: Scheme) {
         assumptions.add(name, scheme)
     }
 
