@@ -13,7 +13,6 @@ import java.util.List
 import java.util.Set
 
 import komu.blunt.types.quantify
-import komu.blunt.types.Type.toSchemes
 import komu.blunt.utils.CollectionUtils.intersection
 import java.util.LinkedHashSet
 
@@ -90,7 +89,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
     }
 
     private fun typeCheckAndUnifyBindings(bs: List<ImplicitBinding>, ts: List<Type?>, ass: Assumptions): List<Predicate?> {
-        val as2 = Assumptions.from(ImplicitBinding.bindingNames(bs), toSchemes(ts).sure()).join(ass)
+        val as2 = Assumptions.from(ImplicitBinding.bindingNames(bs), Scheme.fromTypes(ts).sure()).join(ass)
 
         val predicates = ArrayList<Predicate?>();
 

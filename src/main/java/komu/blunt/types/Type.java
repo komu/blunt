@@ -105,17 +105,6 @@ public abstract class Type implements Types<Type> {
         return toString(0);
     }
     
-    public Scheme toScheme() {
-        return new Scheme(Collections.<Kind>emptyList(), new Qualified<>(this));
-    }
-    
-    public static List<Scheme> toSchemes(List<? extends Type> ts) {
-        List<Scheme> schemes = new ArrayList<>(ts.size());
-        for (Type t : ts)
-            schemes.add(t.toScheme());
-        return schemes;
-    }    
-    
     protected abstract String toString(int precedence);
 
     public abstract boolean hnf();

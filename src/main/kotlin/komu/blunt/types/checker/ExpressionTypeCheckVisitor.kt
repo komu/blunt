@@ -48,7 +48,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
     private fun visit(lambda: ASTLambda, ass: Assumptions): TypeCheckResult<Type> {
         val argumentType = tc.newTVar()
 
-        val as2 = Assumptions.singleton(lambda.argument, argumentType.toScheme().sure())
+        val as2 = Assumptions.singleton(lambda.argument, Scheme.fromType(argumentType).sure())
 
         val result = typeCheck(lambda.body, ass.join(as2))
 
@@ -67,7 +67,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         val expResult = typeCheck(exp, ass)
         result.addPredicates(expResult.predicates)
 
-        val as2 = Assumptions.singleton(arg, expResult.value.toScheme().sure())
+        val as2 = Assumptions.singleton(arg, Scheme.fromType(expResult.value).sure())
 
         val bodyResult = typeCheck(let.body, ass.join(as2))
         result.addPredicates(bodyResult.predicates)

@@ -3,6 +3,7 @@ package komu.blunt.types;
 import komu.blunt.types.checker.Substitution;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -45,6 +46,17 @@ public final class Scheme implements Types<Scheme> {
         }
 
         return false;
+    }
+
+    public static Scheme fromType(Type type) {
+        return new Scheme(Collections.<Kind>emptyList(), new Qualified<>(type));
+    }
+
+    public static List<Scheme> fromTypes(List<? extends Type> ts) {
+        List<Scheme> schemes = new ArrayList<>(ts.size());
+        for (Type t : ts)
+            schemes.add(Scheme.fromType(t));
+        return schemes;
     }
 
     @Override
