@@ -17,7 +17,7 @@ class FunctionBuilder {
     private val exps = ArrayList<ASTExpression?>()
     private val alternatives = ArrayList<ASTAlternative?>()
 
-    fun addAlternative(args: ImmutableList<Pattern?>, body: ASTExpression) {
+    fun addAlternative(args: ImmutableList<Pattern>, body: ASTExpression) {
         if (exps.isEmpty()) {
             for (val i in 0..args.size()-1) {
                 val v = Symbol("\$arg$i") // TODO: fresh symbols
@@ -28,7 +28,7 @@ class FunctionBuilder {
             throw SyntaxException("invalid amount of arguments")
         }
 
-        alternatives.add(AST.alternative(Pattern.tuple(args).sure(), body).sure())
+        alternatives.add(AST.alternative(Pattern.tuple(args), body))
     }
 
     fun build(): ASTExpression {

@@ -22,12 +22,12 @@ final class PatternParser(val lexer: Lexer) {
     public fun parsePattern(): Pattern {
         if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME)) {
             val name = lexer.readTokenValue(TYPE_OR_CTOR_NAME).sure()
-            val args = ArrayList<Pattern?>()
+            val args = ArrayList<Pattern>()
 
             while (lexer.nextTokenIsOneOf(PATTERN_START_TOKENS))
                 args.add(parseSimplePattern())
 
-            return constructor(name, ImmutableList.copyOf(args)).sure()
+            return constructor(name, ImmutableList.copyOf(args).sure())
         } else {
             return parseSimplePattern()
         }
@@ -74,7 +74,7 @@ final class PatternParser(val lexer: Lexer) {
         lexer.expectToken(LBRACKET)
 
         if (lexer.readMatchingToken(RBRACKET))
-            return constructor(NIL).sure()
+            return constructor(NIL.sure())
 
         val patterns = ArrayList<Pattern?>()
 
@@ -88,19 +88,19 @@ final class PatternParser(val lexer: Lexer) {
     }
 
     private fun createList(patterns: List<Pattern?>): Pattern {
-        var result = constructor(NIL).sure()
+        var result = constructor(NIL.sure())
 
         for (val pattern in Lists.reverse(patterns))
-            result = constructor(CONS, pattern, result).sure()
+            result = constructor(CONS.sure(), pattern, result).sure()
 
         return result
     }
 
     private fun parseParens(): Pattern {
         if (lexer.readMatchingToken(RPAREN))
-            return constructor(UNIT).sure()
+            return constructor(UNIT.sure())
 
-        val patterns = ArrayList<Pattern?>()
+        val patterns = ArrayList<Pattern>()
 
         do {
             patterns.add(parsePattern())
@@ -111,6 +111,6 @@ final class PatternParser(val lexer: Lexer) {
         if (patterns.size() == 1)
             return patterns.get(0).sure()
         else
-            return constructor(tupleName(patterns.size()), ImmutableList.copyOf(patterns)).sure()
+            return constructor(tupleName(patterns.size()).sure(), ImmutableList.copyOf(patterns).sure())
     }
 }

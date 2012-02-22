@@ -9,11 +9,11 @@ abstract class Pattern {
     abstract fun toString(): String
 
     class object {
-        fun constructor(name: String?, vararg args: Pattern?): Pattern =
+        fun constructor(name: String, vararg args: Pattern?): Pattern =
             throw UnsupportedOperationException() //return new ConstructorPattern(name, ImmutableList.copyOf(args));
 
-        fun constructor(name: String?, args: ImmutableList<Pattern?>?): Pattern =
-            ConstructorPattern(name.sure(), args.sure())
+        fun constructor(name: String, args: ImmutableList<Pattern>): Pattern =
+            ConstructorPattern(name, args)
 
         fun variable(name: String): Pattern =
             variable(Symbol(name))
@@ -27,19 +27,18 @@ abstract class Pattern {
         fun wildcard(): Pattern =
             WildcardPattern.INSTANCE
 
-        fun tuple(args0: ImmutableList<Pattern?>?): Pattern  {
-            val args = args0.sure()
+        fun tuple(args: ImmutableList<Pattern>): Pattern  {
             if (args.isEmpty())
                 return constructor(ConstructorNames.UNIT.sure())
             if (args.size() == 1)
-                return args.get(0).sure()
+                return args.get(0)
             else
-                return constructor(ConstructorNames.tupleName(args.size()), args);
+                return constructor(ConstructorNames.tupleName(args.size()).sure(), args);
         }
     }
 }
 
-class ConstructorPattern(val name: String, val args: ImmutableList<Pattern?>) : Pattern() {
+class ConstructorPattern(val name: String, val args: ImmutableList<Pattern>) : Pattern() {
 
     override fun toString(): String {
         if (args.isEmpty())
@@ -70,13 +69,13 @@ class WildcardPattern private () : Pattern() {
 }
 
 class VariablePattern(val variable: Symbol) : Pattern() {
-    override fun toString() = variable.toString().sure()
+    override fun toString() = variable.toString()
     fun equals(obj: Any?) = obj is VariablePattern && variable == obj.variable
     fun hashCode(): Int = variable.hashCode()
 }
 
 class LiteralPattern(val value: Any?) : Pattern() {
-    override fun toString() = value.toString().sure()
+    override fun toString(): String = value.toString()
     fun equals(obj: Any?) = obj is LiteralPattern && value == obj.value
     fun hashCode(): Int = Objects.hashCode(value)
 }

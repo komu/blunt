@@ -44,12 +44,12 @@ class IdentifierRenamer {
         }
 
     private fun renamePattern(pattern: ConstructorPattern, ctx: IdentifierMapping): Pattern {
-        val args = ArrayList<Pattern?>()
+        val args = ArrayList<Pattern>()
 
         for (val arg in pattern.args)
             args.add(renameIdentifiers(arg.sure(), ctx));
 
-        return Pattern.constructor(pattern.name, ImmutableList.copyOf(args)).sure()
+        return Pattern.constructor(pattern.name, ImmutableList.copyOf(args).sure())
     }
 
     private fun renamePattern(pattern: VariablePattern, ctx: IdentifierMapping): Pattern {

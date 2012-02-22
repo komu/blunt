@@ -89,7 +89,7 @@ class Parser(source: String) {
         lexer.expectToken(END)
 
         val functionBuilder = FunctionBuilder()
-        functionBuilder.addAlternative(ImmutableList.of<Pattern?>(left, right).sure(), value)
+        functionBuilder.addAlternative(ImmutableList.of<Pattern>(left, right).sure(), value)
         return AST.define(op.toSymbol(), functionBuilder.build())
     }
 
@@ -102,7 +102,7 @@ class Parser(source: String) {
             lexer.pushBlockStartAtNextToken()
             name = parseIdentifier()
 
-            val args = ArrayList<Pattern?>()
+            val args = ArrayList<Pattern>()
 
             while (!lexer.nextTokenIs(ASSIGN))
                 args.add(patternParser.parseSimplePattern())
@@ -266,7 +266,7 @@ class Parser(source: String) {
     private fun parseLambda(): ASTExpression {
         lexer.expectToken(LAMBDA)
 
-        val args = ArrayList<Pattern?>()
+        val args = ArrayList<Pattern>()
 
         do {
             args.add(patternParser.parseSimplePattern())
