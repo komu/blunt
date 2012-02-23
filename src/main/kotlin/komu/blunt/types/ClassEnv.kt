@@ -2,7 +2,6 @@ package komu.blunt.types
 
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.checker.Substitution
-import komu.blunt.types.checker.TypeUtils
 import komu.blunt.types.checker.UnificationException
 import komu.blunt.types.checker.Unifier
 import komu.blunt.utils.Pair
@@ -129,7 +128,7 @@ class ClassEnv() {
     }
 
     private fun byInstance(predicate: Predicate): List<Predicate?>? {
-        for (val it2 in getInstances(predicate.className.sure())) {
+        for (val it2 in getInstances(predicate.className)) {
             val it = it2.sure()
             try {
                 val s = Unifier.matchPredicate(it.predicate, predicate)

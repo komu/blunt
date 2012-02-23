@@ -1,7 +1,6 @@
 package komu.blunt.types
 
 import std.util.*
-import komu.blunt.types.checker.TypeUtils
 import java.util.Collection
 import java.util.Collections.emptyList
 import java.util.Collections.unmodifiableList
@@ -57,7 +56,7 @@ class Qualified<out T : Types<T?>>(predicates: List<Predicate?>, value: T?) : Ty
     }
 
     override fun apply(substitution: Substitution?): Qualified<T> =
-        Qualified(TypeUtils.applySubstitution(substitution, predicates).sure(), value.apply(substitution))
+        Qualified(TypeUtils.applySubstitution(substitution.sure(), predicates), value.apply(substitution))
 
     override fun toString(): String {
         val sb = StringBuilder()

@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 
-import static komu.blunt.types.Predicate.isIn;
 import static komu.blunt.types.Type.*;
 import static org.hamcrest.CoreMatchers.is;
 
