@@ -77,12 +77,12 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val sharedVariables = intersection(vss).sure()
 
         val split = tc.classEnv.split(fs, sharedVariables, predicates)
-        val deferredPredicates = split.first
-        val retainedPredicates = split.second
+        val deferredPredicates = split.first.sure()
+        val retainedPredicates = split.second.sure()
 
         val finalSchemes = ArrayList<Scheme?>(types.size())
         for (val t in types)
-            finalSchemes.add(quantify(genericVariables, Qualified(retainedPredicates, t)))
+            finalSchemes.add(quantify(genericVariables, Qualified(retainedPredicates, t.sure())))
 
         val finalAssumptions = Assumptions.from(ImplicitBinding.bindingNames(bindings), finalSchemes).sure()
         return TypeCheckResult.of(finalAssumptions, deferredPredicates.sure())

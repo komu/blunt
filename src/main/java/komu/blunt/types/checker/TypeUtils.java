@@ -7,7 +7,7 @@ import java.util.*;
 
 public final class TypeUtils {
 
-    public static void addTypeVariables(Set<TypeVariable> variables, Iterable<? extends Types<?>> ts) {
+    public static void addTypeVariables(Set<TypeVariable> variables, Collection<? extends Types<?>> ts) {
         for (Types<?> t : ts)
             t.addTypeVariables(variables);
     }

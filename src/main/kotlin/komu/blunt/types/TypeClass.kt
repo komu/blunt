@@ -8,7 +8,7 @@ class TypeClass(val superClasses: List<String?>) {
 
     val instances = ArrayList<ClassInstance?>()
 
-    fun addInstance(qual: Qualified<Predicate?>) {
+    fun addInstance(qual: Qualified<Predicate>) {
         instances.add(ClassInstance(qual))
     }
 

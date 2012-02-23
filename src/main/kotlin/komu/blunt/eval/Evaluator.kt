@@ -92,7 +92,7 @@ class Evaluator() {
         evaluateWithType(exp)._1
 
 
-    public fun evaluateWithType(exp: ASTExpression): #(Any?,Qualified<Type?>) {
+    public fun evaluateWithType(exp: ASTExpression): #(Any?,Qualified<Type>) {
         val env = rootBindings.staticEnvironment.extend().sure()
         val typ = typeCheck(exp)
         val expression = toCore(exp, env);
@@ -103,7 +103,7 @@ class Evaluator() {
         throw UnsupportedOperationException("compiler has problems with tuples")
     }
 
-    private fun typeCheck(exp: ASTExpression): Qualified<Type?> {
+    private fun typeCheck(exp: ASTExpression): Qualified<Type> {
         return TypeChecker.typeCheck(exp, classEnv, rootBindings.dataTypes.sure(), rootBindings.createAssumptions().sure())
     }
 

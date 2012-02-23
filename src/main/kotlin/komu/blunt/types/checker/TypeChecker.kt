@@ -27,7 +27,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
 
     class object {
 
-        fun typeCheck(exp: ASTExpression, classEnv: ClassEnv, dataTypes: DataTypeDefinitions, ass: Assumptions): Qualified<Type?> {
+        fun typeCheck(exp: ASTExpression, classEnv: ClassEnv, dataTypes: DataTypeDefinitions, ass: Assumptions): Qualified<Type> {
             val checker = TypeChecker(classEnv, dataTypes)
             return checker.normalize(checker.typeCheck(exp, ass))
         }
@@ -39,7 +39,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         }
     }
 
-    private fun normalize(result: TypeCheckResult<Type?>): Qualified<Type?> {
+    private fun normalize(result: TypeCheckResult<Type?>): Qualified<Type> {
         val ps = classEnv.reduce(applySubstitution(result.predicates))
         return applySubstitution(Qualified(ps, result.value))
     }
@@ -58,7 +58,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
         patternTypeChecker.typeCheck(pattern)
 
-    fun freshInstance(scheme: Scheme): Qualified<Type?> {
+    fun freshInstance(scheme: Scheme): Qualified<Type> {
         val ts = ArrayList<TypeVariable?>(scheme.kinds?.size().sure())
         for (val kind in scheme.kinds)
             ts.add(newTVar(kind.sure()))
@@ -95,6 +95,9 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     }
 
     fun applySubstitution<T : Types<T?>>(t: T): T =
+      t.apply(substitution).sure()
+
+    fun applySubstitution<T : Types<T?>>(t: Qualified<T>): Qualified<T> =
       t.apply(substitution).sure()
 
     // TODO

@@ -96,7 +96,7 @@ class ClassEnv() {
         if (predicate.overlapsAny(cl.instancePredicates()))
             throw RuntimeException("overlapping instances")
 
-        cl.addInstance(Qualified(predicates, predicate))
+        cl.addInstance(Qualified(predicates.sure(), predicate))
     }
 
     public fun addClass(name: String, vararg superClasses: String) {

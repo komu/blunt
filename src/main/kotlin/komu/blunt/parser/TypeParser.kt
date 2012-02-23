@@ -23,14 +23,14 @@ class TypeParser(val lexer: Lexer) {
         fun parseScheme(s: String): Scheme =
             quantifyAll(parseQualified(s))
 
-        fun parseQualified(s: String): Qualified<Type?> =
+        fun parseQualified(s: String): Qualified<Type> =
             TypeParser(Lexer(s)).parseQualified()
     }
 
-    private fun parseQualified(): Qualified<Type?> {
+    private fun parseQualified(): Qualified<Type> {
         val predicates = parseOptionalPredicates()
         val typ = parseType()
-        return Qualified<Type?>(predicates, typ)
+        return Qualified(predicates, typ)
     }
 
     private fun parseOptionalPredicates(): List<Predicate?> {
