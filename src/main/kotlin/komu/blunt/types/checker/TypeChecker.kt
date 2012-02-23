@@ -1,5 +1,6 @@
 package komu.blunt.types.checker
 
+import std.util.*
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.ASTValueDefinition
@@ -14,7 +15,6 @@ import java.util.List
 
 import komu.blunt.types.quantifyAll
 import komu.blunt.types.instantiate
-import komu.blunt.types.Type.typeVariable
 
 class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinitions) {
 
@@ -58,7 +58,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         patternTypeChecker.typeCheck(pattern)
 
     fun freshInstance(scheme: Scheme): Qualified<Type> {
-        val ts = ArrayList<TypeVariable?>(scheme.kinds?.size().sure())
+        val ts = ArrayList<TypeVariable>(scheme.kinds.size)
         for (val kind in scheme.kinds)
             ts.add(newTVar(kind.sure()))
 
@@ -69,7 +69,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         newTVar(Kind.STAR.sure())
 
     fun newTVar(kind: Kind): TypeVariable =
-        typeVariable(typeName(typeSequence++), kind).sure()
+        Type.variable(typeName(typeSequence++), kind)
 
     fun newTVars(size: Int): List<Type> {
         val types = ArrayList<Type>(size)
@@ -93,17 +93,17 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         }
     }
 
-    fun applySubstitution<T : Types<T?>>(t: T): T =
+    fun applySubstitution<T : Types<T>>(t: T): T =
       t.apply(substitution).sure()
 
-    fun applySubstitution<T : Types<T?>>(t: Qualified<T>): Qualified<T> =
+    fun applySubstitution<T : Types<T>>(t: Qualified<T>): Qualified<T> =
       t.apply(substitution).sure()
 
     // TODO
     fun applySubstitution(t: Assumptions): Assumptions =
       t.apply(substitution).sure()
 
-    fun applySubstitution<T : Types<T?>>(ts: Collection<T>): List<T> {
+    fun applySubstitution<T : Types<T>>(ts: Collection<T>): List<T> {
         val result = ArrayList<T>(ts.size())
 
         for (val t in ts)

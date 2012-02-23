@@ -1,0 +1,9 @@
+package komu.blunt.types
+
+import komu.blunt.types.checker.Substitution
+import java.util.Set
+
+trait Types<T : Types<T>> {
+    fun addTypeVariables(variables: Set<TypeVariable>)
+    fun apply(substitution: Substitution): T
+}

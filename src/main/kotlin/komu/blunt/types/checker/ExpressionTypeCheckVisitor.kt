@@ -9,8 +9,6 @@ import komu.blunt.types.*
 import java.util.ArrayList
 import java.util.List
 
-import komu.blunt.types.Type.functionType
-
 class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
     private fun typeCheck(exp: ASTExpression?, ctx: Assumptions): TypeCheckResult<Type> =
@@ -34,7 +32,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
         val t = tc.newTVar()
 
-        tc.unify(functionType(tf.value, t).sure(), te.value.sure());
+        tc.unify(Type.function(tf.value, t).sure(), te.value.sure());
 
         val result = TypeCheckResult.builder<Type>().sure()
         result.addPredicates(te.predicates)
@@ -52,7 +50,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
         val result = typeCheck(lambda.body, ass.join(as2))
 
-        return TypeCheckResult.of(functionType(argumentType, result.value).sure(), result.predicates)
+        return TypeCheckResult.of(Type.function(argumentType, result.value), result.predicates)
     }
 
     private fun visit(let: ASTLet, ass: Assumptions): TypeCheckResult<Type> {

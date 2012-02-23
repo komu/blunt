@@ -13,13 +13,13 @@ class ClassInstance(val qual: Qualified<Predicate>) : Types<ClassInstance> {
     val predicate: Predicate
         get() = qual.value
 
-    override fun addTypeVariables(variables: Set<TypeVariable?>?) {
+    override fun addTypeVariables(variables: Set<TypeVariable>) {
         qual.addTypeVariables(variables)
     }
 
-    override fun apply(substitution: Substitution?): ClassInstance =
-        ClassInstance(qual.apply(substitution).sure())
+    override fun apply(substitution: Substitution): ClassInstance =
+        ClassInstance(qual.apply(substitution))
 
-    override fun toString() =
+    fun toString() =
         qual.toString()
 }

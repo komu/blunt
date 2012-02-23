@@ -7,8 +7,6 @@ import komu.blunt.types.patterns.*
 import java.util.ArrayList
 import java.util.List
 
-import komu.blunt.types.Type.functionType
-
 class PatternTypeChecker(private val tc: TypeChecker) {
 
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
@@ -36,7 +34,7 @@ class PatternTypeChecker(private val tc: TypeChecker) {
 
         val q = tc.freshInstance(constructor.scheme)
 
-        tc.unify(q.value.sure(), functionType(result.value, t).sure())
+        tc.unify(q.value.sure(), Type.function(result.value, t))
 
         val predicates = ArrayList<Predicate>()
 
@@ -46,10 +44,10 @@ class PatternTypeChecker(private val tc: TypeChecker) {
         return PatternTypeCheckResult(predicates, result.ass, t)
     }
 
-    private fun assumptionsFrom(patterns: List<Pattern>): PatternTypeCheckResult<List<Type?>> {
+    private fun assumptionsFrom(patterns: List<Pattern>): PatternTypeCheckResult<List<Type>> {
         val predicates = ArrayList<Predicate>()
         var ass = Assumptions.empty()
-        val types = ArrayList<Type?>(patterns.size())
+        val types = ArrayList<Type>(patterns.size())
 
         for (val pattern in patterns) {
             val result = tc.typeCheck(pattern)
