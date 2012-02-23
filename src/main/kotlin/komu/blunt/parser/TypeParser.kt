@@ -34,10 +34,10 @@ class TypeParser(val lexer: Lexer) {
         return Qualified(predicates, typ)
     }
 
-    private fun parseOptionalPredicates(): List<Predicate?> {
+    private fun parseOptionalPredicates(): List<Predicate> {
         val lexerState = lexer.save()
         try {
-            val predicates = ArrayList<Predicate?>()
+            val predicates = ArrayList<Predicate>()
             if (lexer.readMatchingToken(LPAREN)) {
                 do {
                     predicates.add(parsePredicate())
@@ -50,7 +50,7 @@ class TypeParser(val lexer: Lexer) {
             return predicates
         } catch (e: SyntaxException) {
             lexer.restore(lexerState)
-            return Collections.emptyList<Predicate?>().sure()
+            return Collections.emptyList<Predicate>().sure()
         }
     }
 

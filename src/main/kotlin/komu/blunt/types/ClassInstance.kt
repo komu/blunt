@@ -7,7 +7,7 @@ import java.util.Set
 
 class ClassInstance(val qual: Qualified<Predicate>) : Types<ClassInstance> {
 
-    val predicates: List<Predicate?>
+    val predicates: List<Predicate>
         get() = qual.predicates
 
     val predicate: Predicate

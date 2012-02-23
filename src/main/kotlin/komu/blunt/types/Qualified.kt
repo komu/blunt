@@ -34,29 +34,29 @@ fun quantify(vs: Collection<TypeVariable?>, qt: Qualified<Type>): Scheme {
 }
 
 fun instantiate(ts: List<TypeVariable?>, t: Qualified<Type>): Qualified<Type> {
-    val ps = ArrayList<Predicate?>(t.predicates.size())
+    val ps = ArrayList<Predicate>(t.predicates.size())
     for (val p in t.predicates)
-        ps.add(p?.instantiate(ts))
+        ps.add(p.instantiate(ts))
 
     return Qualified(ps, t.value.instantiate(ts))
 }
 
-class Qualified<out T : Types<T?>>(predicates: List<Predicate?>, value: T?) : Types<Qualified<T>> {
+class Qualified<out T : Types<T?>>(predicates: List<Predicate>, value: T?) : Types<Qualified<T>> {
 
     val value = value.sure()
-    val predicates = unmodifiableList(ArrayList<Predicate?>(predicates)).sure()
+    val predicates = unmodifiableList(ArrayList<Predicate>(predicates)).sure()
 
-    this(value: T?): this(emptyList<Predicate?>().sure(), value)
+    this(value: T?): this(emptyList<Predicate>().sure(), value)
 
     override fun addTypeVariables(variables: Set<TypeVariable?>?) {
         for (val p in predicates)
-            p?.addTypeVariables(variables)
+            p.addTypeVariables(variables)
 
         value.addTypeVariables(variables)
     }
 
     override fun apply(substitution: Substitution?): Qualified<T> =
-        Qualified(TypeUtils.applySubstitution(substitution.sure(), predicates), value.apply(substitution))
+        Qualified(TypeUtils.applySubstitution<Predicate>(substitution.sure(), predicates), value.apply(substitution))
 
     override fun toString(): String {
         val sb = StringBuilder()

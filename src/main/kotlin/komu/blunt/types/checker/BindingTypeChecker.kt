@@ -1,5 +1,6 @@
 package komu.blunt.types.checker
 
+import std.util.*
 import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.BindGroup
 import komu.blunt.ast.ExplicitBinding
@@ -44,8 +45,8 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         return result.build(assumptions.build().sure()).sure()
     }
 
-    private fun typeCheckExplicits(bindGroup: BindGroup, ass: Assumptions): List<Predicate?> {
-        val predicates = ArrayList<Predicate?>()
+    private fun typeCheckExplicits(bindGroup: BindGroup, ass: Assumptions): List<Predicate> {
+        val predicates = ArrayList<Predicate>()
 
         for (val b in bindGroup.explicitBindings)
             predicates.addAll(typeCheck(b.sure(), ass))
@@ -53,7 +54,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         return predicates
     }
 
-    private fun typeCheck(binding: ExplicitBinding, ass: Assumptions): List<Predicate?> {
+    private fun typeCheck(binding: ExplicitBinding, ass: Assumptions): List<Predicate> {
         throw UnsupportedOperationException("explicit bindings are not implemented")
     }
 
@@ -88,14 +89,14 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         return TypeCheckResult.of(finalAssumptions, deferredPredicates.sure())
     }
 
-    private fun typeCheckAndUnifyBindings(bs: List<ImplicitBinding>, ts: List<Type?>, ass: Assumptions): List<Predicate?> {
+    private fun typeCheckAndUnifyBindings(bs: List<ImplicitBinding>, ts: List<Type>, ass: Assumptions): List<Predicate> {
         val as2 = Assumptions.from(ImplicitBinding.bindingNames(bs), Scheme.fromTypes(ts).sure()).join(ass)
 
-        val predicates = ArrayList<Predicate?>();
+        val predicates = ArrayList<Predicate>()
 
-        for (val i in 0..ts.size()-1) {
+        for (val i in ts.indices) {
             val exp = bs[i].expr
-            val typ = ts[i].sure()
+            val typ = ts[i]
 
             val res = tc.typeCheck(exp, as2)
             tc.unify(res.value.sure(), typ)

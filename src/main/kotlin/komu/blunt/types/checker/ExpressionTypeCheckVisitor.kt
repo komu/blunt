@@ -84,10 +84,10 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
     }
 
     private fun visit(sequence: ASTSequence, ass: Assumptions): TypeCheckResult<Type> {
-        val predicates = ArrayList<Predicate?>()
+        val predicates = ArrayList<Predicate>()
 
         for (val exp in sequence.allButLast())
-            predicates.addAll(typeCheck(exp, ass).predicates.sure())
+            predicates.addAll(typeCheck(exp, ass).predicates)
 
         return typeCheck(sequence.last(), ass).withAddedPredicates(predicates).sure()
     }

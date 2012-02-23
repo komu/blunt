@@ -10,11 +10,11 @@ object TypeUtils {
             t?.addTypeVariables(variables)
     }
 
-    fun <T : Types<T?>> applySubstitution(substitution: Substitution, ts: Collection<T?>): List<T?> {
-        val result = ArrayList<T?>(ts.size())
+    fun <T : Types<T?>> applySubstitution(substitution: Substitution, ts: Collection<T>): List<T> {
+        val result = ArrayList<T>(ts.size())
 
         for (val t in ts)
-            result.add(t?.apply(substitution))
+            result.add(t.apply(substitution).sure())
 
         return result
     }

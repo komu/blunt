@@ -71,9 +71,9 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     fun newTVar(kind: Kind): TypeVariable =
         typeVariable(typeName(typeSequence++), kind).sure()
 
-    fun newTVars(size: Int): List<Type?> {
-        val types = ArrayList<Type?>(size)
-        for (val i in 0..size-1)
+    fun newTVars(size: Int): List<Type> {
+        val types = ArrayList<Type>(size)
+        for (val i in 1..size)
             types.add(newTVar())
         return types
     }
@@ -103,11 +103,11 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     fun applySubstitution(t: Assumptions): Assumptions =
       t.apply(substitution).sure()
 
-    fun applySubstitution<T : Types<T?>>(ts: Collection<T?>): List<T?> {
-        val result = ArrayList<T?>(ts.size())
+    fun applySubstitution<T : Types<T?>>(ts: Collection<T>): List<T> {
+        val result = ArrayList<T>(ts.size())
 
         for (val t in ts)
-            result.add(t?.apply(substitution))
+            result.add(t.apply(substitution).sure())
 
         return result
     }

@@ -5,9 +5,9 @@ import java.util.Collection
 import java.util.List
 import std.util.*
 
-class TypeClass(val superClasses: List<String?>) {
+class TypeClass(val superClasses: List<String>) {
 
-    val instances = ArrayList<ClassInstance?>()
+    val instances = ArrayList<ClassInstance>()
 
     fun addInstance(qual: Qualified<Predicate>) {
         instances.add(ClassInstance(qual))

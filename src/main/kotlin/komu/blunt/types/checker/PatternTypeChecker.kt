@@ -38,25 +38,23 @@ class PatternTypeChecker(private val tc: TypeChecker) {
 
         tc.unify(q.value.sure(), functionType(result.value, t).sure())
 
-        val predicates = ArrayList<Predicate?>()
-        for (val p in result.predicates)
-            predicates.add(p)
-        for (val p in q.predicates)
-            predicates.add(p)
+        val predicates = ArrayList<Predicate>()
+
+        predicates.addAll(result.predicates)
+        predicates.addAll(q.predicates)
 
         return PatternTypeCheckResult(predicates, result.ass, t)
     }
 
     private fun assumptionsFrom(patterns: List<Pattern>): PatternTypeCheckResult<List<Type?>> {
-        val predicates = ArrayList<Predicate?>()
+        val predicates = ArrayList<Predicate>()
         var ass = Assumptions.empty()
         val types = ArrayList<Type?>(patterns.size())
 
         for (val pattern in patterns) {
             val result = tc.typeCheck(pattern)
 
-            for (val p in result.predicates)
-                predicates.add(p)
+            predicates.addAll(result.predicates)
             ass = ass.join(result.ass)
             types.add(result.value)
         }
