@@ -3,7 +3,6 @@ package komu.blunt.types.checker;
 import com.google.common.collect.ImmutableMap;
 import komu.blunt.eval.TypeCheckException;
 import komu.blunt.types.Type;
-import komu.blunt.types.TypeGen;
 import komu.blunt.types.TypeVariable;
 
 import java.util.ArrayList;
