@@ -191,7 +191,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
           "|"  ->   Token.ofType(OR, location)
           "->" ->   Token.ofType(RIGHT_ARROW, location)
           "=>" ->   Token.ofType(BIG_RIGHT_ARROW, location)
-          else ->   Token(OPERATOR, operatorSet.operator(op), location)
+          else ->   Token(OPERATOR, operatorSet[op], location)
         }
     }
 

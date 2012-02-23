@@ -1,5 +1,5 @@
-package komu.blunt.analyzer;
+package komu.blunt.analyzer
 
-import komu.blunt.core.CoreExpression;
+import komu.blunt.core.CoreExpression
 
 class PatternExtractor(val predicate: CoreExpression, val extractor: CoreExpression)

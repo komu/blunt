@@ -97,7 +97,7 @@ class Evaluator() {
         val typ = typeCheck(exp)
         val expression = toCore(exp, env);
 
-        val result = run(expression, rootBindings.runtimeEnvironment.extend(env.size()).sure())
+        val result = run(expression, rootBindings.runtimeEnvironment.extend(env.size))
 
 //        return #(result, typ);
         throw UnsupportedOperationException("compiler has problems with tuples")

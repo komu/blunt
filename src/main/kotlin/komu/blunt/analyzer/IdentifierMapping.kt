@@ -13,7 +13,7 @@ private class IdentifierMapping(val parent: IdentifierMapping?) {
     fun get(v: Symbol): Symbol {
         var mapping = this
         while (true) {
-            val sym = mapping.mappings.get(v)
+            val sym = mapping.mappings[v]
             if (sym != null)
                 return sym
 
@@ -33,6 +33,5 @@ private class IdentifierMapping(val parent: IdentifierMapping?) {
             throw IllegalArgumentException("duplicate mapping for '$oldName'");
     }
 
-    fun extend(): IdentifierMapping =
-        IdentifierMapping(this)
+    fun extend() = IdentifierMapping(this)
 }

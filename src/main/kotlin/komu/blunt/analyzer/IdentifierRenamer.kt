@@ -5,6 +5,7 @@ import komu.blunt.ast.*
 import komu.blunt.objects.Symbol
 import komu.blunt.types.patterns.*
 import java.util.ArrayList
+import std.util.*
 
 /**
  * Walks the AST to rename all local variables so that they become unique. This makes
@@ -31,7 +32,7 @@ class IdentifierRenamer {
             is ASTSet         -> visit(exp, ctx)
             is ASTVariable    -> visit(exp, ctx)
             is ASTCase        -> visit(exp, ctx)
-            else              -> throw Exception("unknown exp $exp")
+            else              -> throw AnalyzationException("unknown exp $exp")
         }
 
     fun renameIdentifiers(pattern: Pattern, ctx: IdentifierMapping) =
@@ -40,14 +41,15 @@ class IdentifierRenamer {
             is LiteralPattern     -> pattern
             is VariablePattern    -> renamePattern(pattern, ctx)
             is ConstructorPattern -> renamePattern(pattern, ctx)
-            else                  -> throw Exception("invalid pattern $pattern")
+            else                  -> throw AnalyzationException("invalid pattern $pattern")
         }
 
     private fun renamePattern(pattern: ConstructorPattern, ctx: IdentifierMapping): Pattern {
         val args = ArrayList<Pattern>()
 
-        for (val arg in pattern.args)
-            args.add(renameIdentifiers(arg.sure(), ctx));
+        pattern.args.map(args) {
+            renameIdentifiers(it, ctx)
+        }
 
         return Pattern.constructor(pattern.name, ImmutableList.copyOf(args).sure())
     }
@@ -62,16 +64,16 @@ class IdentifierRenamer {
         Symbol("\$var${sequence++}")
 
     private fun visit(sequence: ASTSequence, ctx: IdentifierMapping): ASTExpression {
-        val result = AST.sequenceBuilder().sure()
+        val result = AST.sequenceBuilder()
 
         for (val exp in sequence.exps)
-            result.add(renameIdentifiers(exp.sure(), ctx))
+            result.add(renameIdentifiers(exp, ctx))
 
-        return result.build().sure()
+        return result.build()
     }
 
     private fun visit(application: ASTApplication, ctx: IdentifierMapping): ASTExpression =
-        AST.apply(renameIdentifiers(application.func, ctx), renameIdentifiers(application.arg, ctx)).sure()
+        AST.apply(renameIdentifiers(application.func, ctx), renameIdentifiers(application.arg, ctx))
 
     private fun visit(set: ASTSet, ctx: IdentifierMapping): ASTExpression =
         AST.set(ctx.get(set.variable), renameIdentifiers(set.exp, ctx))
@@ -80,7 +82,7 @@ class IdentifierRenamer {
         AST.variable(ctx.get(variable.name))
 
     private fun visit(lambda: ASTLambda, ctx: IdentifierMapping): ASTExpression {
-        val newCtx = ctx.extend().sure()
+        val newCtx = ctx.extend()
 
         val v = freshVariable()
         newCtx.put(lambda.argument, v)
@@ -89,38 +91,37 @@ class IdentifierRenamer {
     }
 
     private fun visit(let: ASTLet, ctx: IdentifierMapping): ASTExpression {
-        if (let.bindings.size() != 1) throw UnsupportedOperationException()
+        if (let.bindings.size != 1) throw UnsupportedOperationException()
 
         val newCtx = ctx.extend()
 
         val v = freshVariable()
-        newCtx.put(let.bindings.get(0).sure().name, v)
+        newCtx.put(let.bindings.first().name, v)
 
-        val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.get(0).sure().expr, ctx))
+        val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.first().expr, ctx))
 
-        return AST.let(false, binding, renameIdentifiers(let.body, newCtx)).sure()
+        return AST.let(false, binding, renameIdentifiers(let.body, newCtx))
     }
 
     private fun visit(let: ASTLetRec, ctx: IdentifierMapping): ASTExpression {
-        if (let.bindings.size() != 1) throw UnsupportedOperationException();
+        if (let.bindings.size != 1) throw UnsupportedOperationException()
 
-        val newCtx = ctx.extend().sure()
+        val newCtx = ctx.extend()
 
         val v = freshVariable()
-        newCtx.put(let.bindings.get(0).sure().name, v)
+        newCtx.put(let.bindings.first().name, v)
 
-        val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.get(0).sure().expr, newCtx))
+        val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.first().expr, newCtx))
 
         return AST.let(true, binding, renameIdentifiers(let.body, newCtx))
     }
 
     private fun visit(astCase: ASTCase, ctx: IdentifierMapping): ASTExpression {
-        val alts = ArrayList<ASTAlternative>()
+        val alts = ArrayList<ASTAlternative>(astCase.alternatives.size)
 
-        for (val alt in astCase.alternatives) {
+        astCase.alternatives.map(alts) {
             val newCtx = ctx.extend()
-            val pattern = renameIdentifiers(alt.sure().pattern, newCtx)
-            alts.add(AST.alternative(pattern, renameIdentifiers(alt.sure().value, newCtx)))
+            AST.alternative(renameIdentifiers(it.pattern, newCtx), renameIdentifiers(it.value, newCtx))
         }
 
         return AST.caseExp(renameIdentifiers(astCase.exp, ctx), ImmutableList.copyOf(alts).sure())

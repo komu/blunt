@@ -11,11 +11,11 @@ import komu.blunt.types.patterns.VariablePattern
 import java.util.ArrayList
 import java.util.List
 
-import java.util.Arrays.asList
 import java.util.Collections.singletonList
 import komu.blunt.parser.TokenType.*
 import komu.blunt.parser.Associativity.LEFT
 import java.util.Arrays
+import std.util.*
 
 class Parser(source: String) {
 
@@ -26,15 +26,15 @@ class Parser(source: String) {
     private val dataTypeParser = DataTypeParser(lexer, typeParser)
 
     private val EXPRESSION_START_TOKENS =
-        Arrays.asList(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, CASE).sure()
+        arrayList(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, CASE)
 
     class object {
         fun parseExpression(source: String) =
             Parser(source).parseExpression()
     }
 
-    fun parseDefinitions(): List<ASTDefinition?> {
-        val result = ArrayList<ASTDefinition?>()
+    fun parseDefinitions(): List<ASTDefinition> {
+        val result = ArrayList<ASTDefinition>()
 
         while (lexer.hasMoreTokens())
             result.add(parseDefinition())
@@ -136,7 +136,7 @@ class Parser(source: String) {
     }
 
     private fun parseExp(level: Int): ASTExpression =
-        if (level <= operators.getMaxLevel())
+        if (level <= operators.maxLevel)
             parseExpN(level)
         else
             parseApplicative()
@@ -287,7 +287,7 @@ class Parser(source: String) {
             val op = lexer.readTokenValue(OPERATOR)
             lexer.expectToken(RPAREN)
 
-            return (if (op.isConstructor) AST.constructor(op.toString()) else AST.variable(op.toString())).sure()
+            return operatorExp(op)
         }
 
         val exps = ArrayList<ASTExpression>()
@@ -298,8 +298,8 @@ class Parser(source: String) {
 
         lexer.expectToken(RPAREN)
 
-        if (exps.size() == 1)
-            return exps.get(0)
+        if (exps.size == 1)
+            return exps.first()
         else
             return AST.tuple(exps)
     }
@@ -333,19 +333,15 @@ class Parser(source: String) {
             val op = lexer.readTokenValue(OPERATOR)
             lexer.expectToken(RPAREN)
 
-            if (op.isConstructor)
-                return AST.constructor(op.toString())
-            else
-                return AST.variable(op.toString())
+            return operatorExp(op)
         }
 
         throw lexer.expectFailure("identifier or type constructor")
     }
 
     private fun parseIdentifier(): Symbol {
-        if (lexer.nextTokenIs(IDENTIFIER)) {
+        if (lexer.nextTokenIs(IDENTIFIER))
             return Symbol(lexer.readTokenValue(IDENTIFIER))
-        }
 
         if (lexer.readMatchingToken(LPAREN)) {
             val op = lexer.readTokenValue(OPERATOR)
@@ -360,8 +356,9 @@ class Parser(source: String) {
         lexer.parseError(s)
 
     private fun binary(op: Operator, lhs: ASTExpression, rhs: ASTExpression): ASTExpression {
-        val exp = if (op.isConstructor) AST.constructor(op.toString()) else AST.variable(op.toString())
-
-        return AST.apply(exp, lhs, rhs)
+        return AST.apply(operatorExp(op), lhs, rhs)
     }
+
+    private fun operatorExp(op: Operator): ASTExpression =
+        if (op.isConstructor) AST.constructor(op.toString()) else AST.variable(op.toSymbol())
 }
