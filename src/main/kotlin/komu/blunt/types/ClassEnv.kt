@@ -11,7 +11,7 @@ import javax.annotation.Nullable
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.Arrays.asList
-import komu.blunt.types.Predicate.isIn
+import komu.blunt.types.isIn
 import komu.blunt.types.Type.*
 import java.util.Collection
 import java.util.Collections
@@ -123,7 +123,7 @@ class ClassEnv() {
         result.add(predicate)
 
         for (val superName in getSuperClasses(predicate.className.sure()))
-            result.addAll(bySuper(Predicate.isIn(superName, predicate.`type`).sure()))
+            result.addAll(bySuper(isIn(superName, predicate.`type`).sure()))
 
         return result
     }

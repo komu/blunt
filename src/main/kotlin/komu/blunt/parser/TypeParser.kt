@@ -10,6 +10,7 @@ import java.util.List
 import komu.blunt.parser.TokenType.*
 import komu.blunt.types.Type.*
 import komu.blunt.types.quantifyAll
+import komu.blunt.types.isIn
 
 class TypeParser(val lexer: Lexer) {
 
@@ -56,7 +57,7 @@ class TypeParser(val lexer: Lexer) {
     private fun parsePredicate(): Predicate {
         val className = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
         val typ = parseType()
-        return Predicate.isIn(className, typ).sure()
+        return isIn(className, typ)
     }
 
     public fun parseType(): Type {

@@ -16,7 +16,7 @@ import java.io.IOException
 import java.net.URL
 import java.nio.charset.Charset
 
-import komu.blunt.types.Predicate.isIn
+import komu.blunt.types.isIn
 import komu.blunt.parser.Parser
 
 class Evaluator() {
