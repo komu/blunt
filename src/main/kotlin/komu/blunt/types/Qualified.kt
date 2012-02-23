@@ -10,6 +10,7 @@ import java.util.List
 import java.util.LinkedHashSet
 import java.util.Objects.hash
 import java.util.Set
+import komu.blunt.types.checker.Substitutions
 
 fun quantifyAll(qt: Qualified<Type>): Scheme {
     val types = LinkedHashSet<TypeVariable?>()
@@ -30,7 +31,7 @@ fun quantify(vs: Collection<TypeVariable?>, qt: Qualified<Type>): Scheme {
             kinds.add(v?.getKind())
         }
 
-    return Scheme(kinds, qt.apply(Substitution.fromTypeVariables(vars)))
+    return Scheme(kinds, qt.apply(Substitutions.fromTypeVariables(vars)))
 }
 
 fun instantiate(ts: List<TypeVariable?>, t: Qualified<Type>): Qualified<Type> {

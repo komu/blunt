@@ -16,30 +16,10 @@ public final class Substitution {
     
     private final ImmutableMap<TypeVariable,Type> mapping;
 
-    private Substitution(ImmutableMap<TypeVariable,Type> mapping) {
+    Substitution(ImmutableMap<TypeVariable,Type> mapping) {
         this.mapping = checkNotNull(mapping);
     }
     
-    public static Substitution empty() {
-        return new Substitution(ImmutableMap.<TypeVariable,Type>of());
-    }
-
-    public static Substitution singleton(TypeVariable var, Type type) {
-        assert var.getKind().equals(type.getKind());
-
-        return new Substitution(ImmutableMap.of(var, type));
-    }
-
-    public static Substitution fromTypeVariables(List<TypeVariable> variables) {
-        ImmutableMap.Builder<TypeVariable,Type> builder = ImmutableMap.builder();
-
-        int index = 0;
-        for (TypeVariable var : variables)
-            builder.put(var, new TypeGen(index++));
-        
-        return new Substitution(builder.build());
-    }
-
     // @@
     public Substitution compose(Substitution s2) {
         ImmutableMap.Builder<TypeVariable,Type> builder = ImmutableMap.builder();
@@ -51,7 +31,7 @@ public final class Substitution {
 
         return new Substitution(builder.build());
     }
-    
+
     public Substitution merge(Substitution s2) {
         if (agree(s2)) {
             ImmutableMap.Builder<TypeVariable,Type> builder = ImmutableMap.builder();

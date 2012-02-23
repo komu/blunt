@@ -15,7 +15,7 @@ object Unifier {
             return varBind(rhs, lhs)
 
         if (lhs is TypeConstructor && rhs is TypeConstructor && lhs == rhs)
-            return Substitution.empty().sure()
+            return Substitutions.empty().sure()
 
         throw unificationFailure("types do not unify", lhs, rhs)
     }
@@ -25,10 +25,10 @@ object Unifier {
             return matchApplication(lhs, rhs)
 
         if (lhs is TypeVariable && (lhs as Type).getKind() == rhs?.getKind())
-            return Substitution.singleton(lhs, rhs).sure()
+            return Substitutions.singleton(lhs, rhs.sure())
 
         if (lhs is TypeConstructor && rhs is TypeConstructor && lhs == rhs)
-            return Substitution.empty().sure()
+            return Substitutions.empty()
 
         throw unificationFailure("types do not match", lhs, rhs)
     }
@@ -63,7 +63,7 @@ object Unifier {
     private fun varBind(u: TypeVariable, t0: Type?): Substitution {
         val t = t0.sure()
         if (t == u)
-            return Substitution.empty().sure()
+            return Substitutions.empty()
 
         if (t.containsVariable(u))
             throw unificationFailure("occurs check fails", u, t)
@@ -71,7 +71,7 @@ object Unifier {
         if (u.getKind() != t.getKind())
             throw unificationFailure("kinds do not match", u, t)
 
-        return Substitution.singleton(u, t).sure()
+        return Substitutions.singleton(u, t)
     }
 
     private fun unificationFailure(message: String, u: Any?, t: Any?) =
