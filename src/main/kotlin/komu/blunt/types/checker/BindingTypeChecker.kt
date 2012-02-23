@@ -14,7 +14,7 @@ import java.util.List
 import java.util.Set
 
 import komu.blunt.types.quantify
-import komu.blunt.utils.CollectionUtils.intersection
+import komu.blunt.utils.intersection
 import java.util.LinkedHashSet
 
 final class BindingTypeChecker(private val tc: TypeChecker) {
@@ -65,9 +65,9 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val types = tc.applySubstitution(typeVariables)
         val fs = getTypeVariables(tc.applySubstitution(ass))
 
-        val vss = ArrayList<Set<TypeVariable?>?>(types.size)
+        val vss = ArrayList<Set<TypeVariable?>>(types.size)
 
-        val genericVariables = HashSet<TypeVariable?>();
+        val genericVariables = HashSet<TypeVariable?>()
         for (val t in types) {
             val vars = getTypeVariables(t)
             vss.add(vars)
@@ -75,7 +75,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         }
 
         genericVariables.removeAll(fs)
-        val sharedVariables = intersection(vss).sure()
+        val sharedVariables = intersection(vss)
 
         val split = tc.classEnv.split(fs, sharedVariables, predicates)
         val deferredPredicates = split.first.sure()
