@@ -22,7 +22,7 @@ class PatternTypeChecker(private val tc: TypeChecker) {
 
     private fun typeCheckVariable(pattern: VariablePattern): PatternTypeCheckResult<Type> {
         val tv = tc.newTVar()
-        return PatternTypeCheckResult(Assumptions.singleton(pattern.variable, Scheme.fromType(tv).sure()), tv)
+        return PatternTypeCheckResult(Assumptions.singleton(pattern.variable, Scheme.fromType(tv)), tv)
     }
 
     private fun typeCheckConstructor(pattern: ConstructorPattern): PatternTypeCheckResult<Type> {

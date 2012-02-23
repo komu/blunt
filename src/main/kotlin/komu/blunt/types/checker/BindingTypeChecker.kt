@@ -20,11 +20,11 @@ import java.util.LinkedHashSet
 final class BindingTypeChecker(private val tc: TypeChecker) {
 
     fun typeCheckBindGroup(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions> {
-        val result = TypeCheckResult.builder<Assumptions>().sure()
+        val result = TypeCheckResult.builder<Assumptions>()
 
         val explicitAssumptions = bindings.assumptionFromExplicitBindings()
 
-        val res = typeCheckImplicits(bindings, ass.join(explicitAssumptions).sure())
+        val res = typeCheckImplicits(bindings, ass.join(explicitAssumptions))
         val newAssumptions = res.value.join(explicitAssumptions).sure()
         result.addPredicates(res.predicates)
         result.addPredicates(typeCheckExplicits(bindings, ass.join(newAssumptions).sure()))
@@ -59,17 +59,17 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
     }
 
     private fun typeCheckImplicitGroup(bindings: List<ImplicitBinding>, ass: Assumptions): TypeCheckResult<Assumptions> {
-        val typeVariables = tc.newTVars(bindings.size())
+        val typeVariables = tc.newTVars(bindings.size)
         val predicates = typeCheckAndUnifyBindings(bindings, typeVariables, ass)
 
         val types = tc.applySubstitution(typeVariables)
         val fs = getTypeVariables(tc.applySubstitution(ass))
 
-        val vss = ArrayList<Set<TypeVariable?>?>(types.size())
+        val vss = ArrayList<Set<TypeVariable?>?>(types.size)
 
         val genericVariables = HashSet<TypeVariable?>();
         for (val t in types) {
-            val vars = getTypeVariables(t.sure())
+            val vars = getTypeVariables(t)
             vss.add(vars)
             genericVariables.addAll(vars)
         }
@@ -81,16 +81,16 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val deferredPredicates = split.first.sure()
         val retainedPredicates = split.second.sure()
 
-        val finalSchemes = ArrayList<Scheme?>(types.size())
+        val finalSchemes = ArrayList<Scheme>(types.size)
         for (val t in types)
-            finalSchemes.add(quantify(genericVariables, Qualified(retainedPredicates, t.sure())))
+            finalSchemes.add(quantify(genericVariables, Qualified(retainedPredicates, t)))
 
         val finalAssumptions = Assumptions.from(ImplicitBinding.bindingNames(bindings), finalSchemes).sure()
         return TypeCheckResult.of(finalAssumptions, deferredPredicates.sure())
     }
 
     private fun typeCheckAndUnifyBindings(bs: List<ImplicitBinding>, ts: List<Type>, ass: Assumptions): List<Predicate> {
-        val as2 = Assumptions.from(ImplicitBinding.bindingNames(bs), Scheme.fromTypes(ts).sure()).join(ass)
+        val as2 = Assumptions.from(ImplicitBinding.bindingNames(bs), Scheme.fromTypes(ts)).join(ass)
 
         val predicates = ArrayList<Predicate>()
 
@@ -100,7 +100,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
 
             val res = tc.typeCheck(exp, as2)
             tc.unify(res.value.sure(), typ)
-            predicates.addAll(res.predicates.sure())
+            predicates.addAll(res.predicates)
         }
 
         return tc.applySubstitution(predicates)

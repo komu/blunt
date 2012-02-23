@@ -15,9 +15,9 @@ import java.util.Collections.emptyMap
 import java.util.Collections.unmodifiableMap
 import std.util.*
 
-class Assumptions private(private val mappings: Map<Symbol?,Scheme?>) : Types<Assumptions> {
+class Assumptions private(private val mappings: Map<Symbol,Scheme>) : Types<Assumptions> {
 
-    private this(): this(emptyMap<Symbol?,Scheme?>().sure()) { }
+    private this(): this(emptyMap<Symbol,Scheme>().sure()) { }
 
     fun join(ass: Assumptions) =
         builder().addAll(ass).addAll(this).build()
@@ -34,7 +34,7 @@ class Assumptions private(private val mappings: Map<Symbol?,Scheme?>) : Types<As
 
     override fun addTypeVariables(variables: Set<TypeVariable?>?) {
         for (val scheme in mappings.values())
-            scheme?.addTypeVariables(variables)
+            scheme.addTypeVariables(variables)
     }
 
     override fun apply(substitution: Substitution?): Assumptions {
@@ -52,20 +52,20 @@ class Assumptions private(private val mappings: Map<Symbol?,Scheme?>) : Types<As
         fun empty() = Assumptions()
         fun singleton(arg: Symbol, scheme: Scheme) = builder().add(arg, scheme).build()
 
-        fun from(names: List<Symbol>, schemes: List<Scheme?>): Assumptions {
+        fun from(names: List<Symbol>, schemes: List<Scheme>): Assumptions {
             if (names.size != schemes.size)
                 throw IllegalArgumentException("${names.size} != ${schemes.size}")
 
             val builder = Builder()
             for (val i in names.indices)
-                builder.add(names[i], schemes[i].sure())
+                builder.add(names[i], schemes[i])
 
             return builder.build()
         }
 
         class Builder {
 
-            private var mappings = HashMap<Symbol?,Scheme?>()
+            private var mappings = HashMap<Symbol,Scheme>()
             private var built = false
 
             fun add(name: Symbol, scheme: Scheme): Builder {
