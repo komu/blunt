@@ -19,13 +19,13 @@ class Scheme(val kinds: List<Kind?>?, val `type`: Qualified<Type?>?) : Types<Sch
     override fun toString() = `type`.toString()
 
     override fun equals(obj: Any?) = obj is Scheme && kinds == obj.kinds && `type` == obj.`type`
-    override fun hashCode() = kinds.hashCode() * 79 + `type`.hashCode()
+    override fun hashCode() = kinds.sure().hashCode() * 79 + `type`.sure().hashCode()
 
     class object {
         fun fromType(t: Type?) = Scheme(Collections.emptyList<Kind?>, Qualified(t))
 
         fun fromTypes(ts: List<out Type?>?): List<Scheme?> {
-            val schemes = ArrayList<Scheme?>(ts.size())
+            val schemes = ArrayList<Scheme?>(ts.sure().size())
             for (val t in ts)
                 schemes.add(Scheme.fromType(t))
             return schemes
