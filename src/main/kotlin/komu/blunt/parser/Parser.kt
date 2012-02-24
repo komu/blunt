@@ -13,7 +13,6 @@ import java.util.List
 
 import java.util.Collections.singletonList
 import komu.blunt.parser.TokenType.*
-import komu.blunt.parser.Associativity.LEFT
 import java.util.Arrays
 import std.util.*
 
@@ -147,7 +146,7 @@ class Parser(source: String) {
         while (true) {
             val op = lexer.readOperatorMatchingLevel(level)
             if (op != null) {
-                val rhs = parseExp(if (op.associativity == LEFT) level+1 else level)
+                val rhs = parseExp(if (op.associativity == Associativity.LEFT) level+1 else level)
                 exp = binary(op, exp, rhs)
             } else {
                 return exp

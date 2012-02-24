@@ -191,7 +191,7 @@ class ClassEnv() {
 
     fun split(fixedVariables: Set<TypeVariable?>,
               quantifyVariables: Set<TypeVariable?>,
-              originalPredicates: List<Predicate>): Pair<List<Predicate>?, List<Predicate>?> {
+              originalPredicates: List<Predicate>): Pair<List<Predicate>, List<Predicate>> {
         val deferredPredicates = ArrayList<Predicate>()
         val retainedPredicates = ArrayList<Predicate>()
 
