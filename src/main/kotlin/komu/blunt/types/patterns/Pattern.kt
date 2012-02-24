@@ -21,7 +21,7 @@ abstract class Pattern {
         fun variable(name: Symbol): Pattern =
             VariablePattern(name)
 
-        fun literal(value: Any?): Pattern =
+        fun literal(value: Any): Pattern =
             LiteralPattern(value)
 
         fun wildcard(): Pattern =
@@ -74,7 +74,7 @@ class VariablePattern(val variable: Symbol) : Pattern() {
     fun hashCode(): Int = variable.hashCode()
 }
 
-class LiteralPattern(val value: Any?) : Pattern() {
+class LiteralPattern(val value: Any) : Pattern() {
     override fun toString(): String = value.toString()
     fun equals(obj: Any?) = obj is LiteralPattern && value == obj.value
     fun hashCode(): Int = Objects.hashCode(value)

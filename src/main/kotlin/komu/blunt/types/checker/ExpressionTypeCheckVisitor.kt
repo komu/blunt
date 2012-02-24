@@ -9,8 +9,6 @@ import komu.blunt.types.*
 import java.util.ArrayList
 import java.util.List
 
-import komu.blunt.types.Type.functionType
-
 class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
     private fun typeCheck(exp: ASTExpression?, ctx: Assumptions): TypeCheckResult<Type> =

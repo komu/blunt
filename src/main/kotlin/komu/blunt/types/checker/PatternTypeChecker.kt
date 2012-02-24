@@ -7,7 +7,7 @@ import komu.blunt.types.patterns.*
 import java.util.ArrayList
 import java.util.List
 
-import komu.blunt.types.Type.functionType
+import komu.blunt.types.functionType
 
 class PatternTypeChecker(private val tc: TypeChecker) {
 
@@ -15,7 +15,7 @@ class PatternTypeChecker(private val tc: TypeChecker) {
         when (pattern) {
             is VariablePattern    -> typeCheckVariable(pattern)
             is WildcardPattern    -> PatternTypeCheckResult(Assumptions.empty(), tc.newTVar())
-            is LiteralPattern     -> PatternTypeCheckResult(Assumptions.empty(), Type.fromObject(pattern.value).sure())
+            is LiteralPattern     -> PatternTypeCheckResult(Assumptions.empty(), typeFromObject(pattern.value))
             is ConstructorPattern -> typeCheckConstructor(pattern)
             else                  -> throw Exception("invalid pattern $pattern")
         }

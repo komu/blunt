@@ -11,8 +11,6 @@ import java.util.List
 import com.google.common.base.Preconditions.checkNotNull
 import komu.blunt.parser.TokenType.*
 import komu.blunt.types.quantify
-import komu.blunt.types.Type.functionType
-import komu.blunt.types.Type.genericType
 
 private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 

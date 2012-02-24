@@ -14,14 +14,6 @@ public abstract class Type implements Types<Type> {
     public static final Type INTEGER = basicType("Integer");
     public static final Type STRING = basicType("String");
 
-    public static Type fromClass(Class<?> type) {
-        return basicType(mapName(type));
-    }
-
-    public static Type fromObject(Object o) {
-        return fromClass(o.getClass());
-    }
-
     private static String mapName(Class<?> type) {
         return (type == Void.class)                             ? "Unit"
              : (type == Boolean.class || type == boolean.class) ? "Boolean"
@@ -30,60 +22,8 @@ public abstract class Type implements Types<Type> {
              : type.getSimpleName();
     }
 
-    public static TypeVariable typeVariable(String name) {
-        return typeVariable(name, Kind.STAR);
-    }
-
-    public static TypeVariable typeVariable(String name, Kind kind) {
-        return new TypeVariable(name, kind);
-    }
-
-    public static Type listType(Type type) {
-        return arrayOf(type);
-    }
-
     private static Type basicType(String name) {
         return new TypeConstructor(name, Kind.STAR);
-    }
-
-    public static Type arrayOf(Type type) {
-        return new TypeApplication(new TypeConstructor("[]", Kind.ofParams(1)), type);
-    }
-    
-    public static Type functionType(Type argumentType, Type returnType) {
-        return genericType("->", argumentType, returnType);
-    }
-    
-    public static Type functionType(List<Type> args, Type resultType) {
-        if (args.isEmpty())
-            return resultType;
-        else
-            return functionType(args.get(0), functionType(args.subList(1, args.size()), resultType));
-    }
-
-    public static Type tupleType(Type... types) {
-        return tupleType(asList(types));
-    }
-
-    public static Type tupleType(List<Type> types) {
-        return genericType(ConstructorNames.tupleName(types.size()), types);
-    }
-    
-    public static Type genericType(Class<?> cl, List<? extends Type> params) {
-        return genericType(mapName(cl), params);
-    }
-
-    public static Type genericType(String name, Type... params) {
-        return genericType(name, asList(params));
-    }
-    
-    public static Type genericType(String name, List<? extends Type> params) {
-        Type type = new TypeConstructor(name, Kind.ofParams(params.size()));
-
-        for (Type param : params)
-            type = new TypeApplication(type, param);
-
-        return type;
     }
 
     protected abstract Type instantiate(List<TypeVariable> vars);

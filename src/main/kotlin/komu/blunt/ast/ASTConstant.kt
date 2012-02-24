@@ -1,9 +1,9 @@
 package komu.blunt.ast
 
-import komu.blunt.types.Type
+import komu.blunt.types.*
 
 class ASTConstant(val value: Any) : ASTExpression() {
-    fun valueType() = Type.fromObject(value).sure()
+    fun valueType() = typeFromObject(value)
     override fun toString() = value.toString()
     override fun simplify() = this
 }

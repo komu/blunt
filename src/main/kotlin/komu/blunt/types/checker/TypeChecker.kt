@@ -1,5 +1,6 @@
 package komu.blunt.types.checker
 
+import std.util.*
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.ASTValueDefinition
@@ -14,7 +15,7 @@ import java.util.List
 
 import komu.blunt.types.quantifyAll
 import komu.blunt.types.instantiate
-import komu.blunt.types.Type.typeVariable
+import komu.blunt.types.typeVariable
 
 class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinitions) {
 
@@ -34,7 +35,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         fun typeCheck(exp: ASTValueDefinition, classEnv: ClassEnv, dataTypes: DataTypeDefinitions, ass: Assumptions): Scheme {
             val checker = TypeChecker(classEnv, dataTypes)
 
-            return quantifyAll(checker.normalize(checker.typeCheck(exp, ass))).sure()
+            return quantifyAll(checker.normalize(checker.typeCheck(exp, ass)))
         }
     }
 
@@ -50,7 +51,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         bindingTypeChecker.typeCheckBindGroup(bindGroup, ass)
 
     fun typeCheck(define: ASTValueDefinition, ass: Assumptions): TypeCheckResult<Type> {
-        val let = AST.letRec(define.name.sure(), define.value.sure(), AST.variable(define.name.sure()))
+        val let = AST.letRec(define.name, define.value, AST.variable(define.name))
         return typeCheck(let, ass)
     }
 
@@ -58,18 +59,18 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         patternTypeChecker.typeCheck(pattern)
 
     fun freshInstance(scheme: Scheme): Qualified<Type> {
-        val ts = ArrayList<TypeVariable?>(scheme.kinds?.size().sure())
+        val ts = ArrayList<TypeVariable?>(scheme.kinds.size)
         for (val kind in scheme.kinds)
             ts.add(newTVar(kind.sure()))
 
-        return instantiate(ts, scheme.`type`.sure())
+        return instantiate(ts, scheme.`type`)
     }
 
     fun newTVar(): TypeVariable =
         newTVar(Kind.STAR.sure())
 
     fun newTVar(kind: Kind): TypeVariable =
-        typeVariable(typeName(typeSequence++), kind).sure()
+        typeVariable(typeName(typeSequence++), kind)
 
     fun newTVars(size: Int): List<Type> {
         val types = ArrayList<Type>(size)
@@ -104,7 +105,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
       t.apply(substitution).sure()
 
     fun applySubstitution<T : Types<T?>>(ts: Collection<T>): List<T> {
-        val result = ArrayList<T>(ts.size())
+        val result = ArrayList<T>(ts.size)
 
         for (val t in ts)
             result.add(t.apply(substitution).sure())
@@ -113,5 +114,5 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     }
 
     fun findConstructor(name: String): ConstructorDefinition =
-        dataTypes.findConstructor(name).sure()
+        dataTypes.findConstructor(name)
 }
