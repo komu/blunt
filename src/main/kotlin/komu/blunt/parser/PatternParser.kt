@@ -9,7 +9,7 @@ import java.util.Arrays
 import java.util.List
 
 import komu.blunt.parser.TokenType.*
-import komu.blunt.types.ConstructorNames.*
+import komu.blunt.types.ConstructorNames
 import komu.blunt.types.patterns.Pattern.*
 import java.util.Collections
 
@@ -65,7 +65,7 @@ final class PatternParser(val lexer: Lexer) {
         lexer.expectToken(LBRACKET)
 
         if (lexer.readMatchingToken(RBRACKET))
-            return constructor(NIL.sure())
+            return constructor(ConstructorNames.NIL.sure())
 
         val patterns = ArrayList<Pattern>()
 
@@ -79,17 +79,17 @@ final class PatternParser(val lexer: Lexer) {
     }
 
     private fun createList(patterns: List<Pattern>): Pattern {
-        var result = constructor(NIL.sure())
+        var result = constructor(ConstructorNames.NIL.sure())
 
         for (val pattern in Lists.reverse(patterns))
-            result = constructor(CONS.sure(), pattern, result)
+            result = constructor(ConstructorNames.CONS.sure(), pattern, result)
 
         return result
     }
 
     private fun parseParens(): Pattern {
         if (lexer.readMatchingToken(RPAREN))
-            return constructor(UNIT.sure())
+            return constructor(ConstructorNames.UNIT.sure())
 
         val patterns = ArrayList<Pattern>()
 
@@ -102,6 +102,6 @@ final class PatternParser(val lexer: Lexer) {
         if (patterns.size() == 1)
             return patterns.get(0)
         else
-            return constructor(tupleName(patterns.size()).sure(), ImmutableList.copyOf(patterns).sure())
+            return constructor(ConstructorNames.tupleName(patterns.size()).sure(), ImmutableList.copyOf(patterns).sure())
     }
 }
