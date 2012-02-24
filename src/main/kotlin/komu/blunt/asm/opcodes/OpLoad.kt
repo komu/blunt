@@ -24,18 +24,9 @@ abstract class OpLoad(private val target: Register) : OpCode() {
     override fun toString() = "(load $target ${description()})"
 }
 
-class OpLoadConstant(target: Register, private val value: Any?) : OpLoad(target) {
+class OpLoadConstant(target: Register, private val value: Any) : OpLoad(target) {
 
     {
-        // TODO: move to register
-        fun Register.isValidValue(value: Any?): Boolean =
-            when (this) {
-                Register.PROCEDURE -> value is Procedure
-                Register.PC        -> value is Int
-                Register.ENV       -> value is Environment
-                else               -> true
-            }
-
         if (!target.isValidValue(value))
             throw IllegalArgumentException("invalid value for register $target: $value")
     }

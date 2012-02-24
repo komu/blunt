@@ -2,7 +2,7 @@ package komu.blunt.core
 
 import komu.blunt.asm.*
 
-class CoreConstantExpression(val value: Any?) : CoreExpression() {
+class CoreConstantExpression(val value: Any) : CoreExpression() {
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
         val instructions = Instructions()

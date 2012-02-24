@@ -14,7 +14,7 @@ class Instructions {
     private val labelMap = HashMap<Int,Set<Label>>()
 
     fun append(rhs: Instructions) {
-        val relocationOffset = instructions.size()
+        val relocationOffset = instructions.size
 
         instructions.addAll(rhs.instructions)
 
@@ -30,7 +30,7 @@ class Instructions {
         instructions any { it.modifies(register) }
 
     fun label(label: Label) {
-        label.address = instructions.size()
+        label.address = instructions.size
         getLabels(label.address).add(label)
     }
 
@@ -57,11 +57,11 @@ class Instructions {
         instructions.add(op)
     }
 
-    fun count() = instructions.size()
+    fun count() = instructions.size
 
     fun get(pc: Int): OpCode = instructions[pc]
 
-    fun pos(): Int = instructions.size()
+    fun pos(): Int = instructions.size
 }
 
 /**
@@ -97,7 +97,7 @@ fun Instructions.jumpIfFalse(register: Register, label: Label) {
     this.add(OpJumpIfFalse(register, label))
 }
 
-fun Instructions.loadConstant(target: Register, value: Any?) {
+fun Instructions.loadConstant(target: Register, value: Any) {
     this.add(OpLoadConstant(target, value))
 }
 

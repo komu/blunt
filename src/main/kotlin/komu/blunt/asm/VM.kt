@@ -1,5 +1,6 @@
 package komu.blunt.asm
 
+import std.util.*
 import komu.blunt.asm.opcodes.OpCode
 import komu.blunt.eval.Environment
 import komu.blunt.eval.RootEnvironment
@@ -21,7 +22,7 @@ class VM(private val instructions: Instructions, var env: Environment, val globa
     fun run(): Any? {
         while (true) {
             if (pc >= instructions.count()) break
-            val op = instructions.get(pc++)
+            val op = instructions[pc++]
             steps++
             op.execute(this)
         }
@@ -54,5 +55,6 @@ class VM(private val instructions: Instructions, var env: Environment, val globa
         stack.add(value)
     }
 
-    fun pop(): Any? = stack.remove(stack.size() - 1)
+    fun pop(): Any? =
+        stack.remove(stack.size - 1)
 }

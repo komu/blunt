@@ -7,7 +7,7 @@ import komu.blunt.eval.Environment
 class OpStoreVariable(private val variable: VariableReference, private val register: Register) : OpCode() {
 
     override fun execute(vm: VM) {
-        val env = if (variable.sure().isGlobal()) vm.globalEnvironment else vm.get(Register.ENV.sure()) as Environment
+        val env = if (variable.isGlobal()) vm.globalEnvironment else vm.get(Register.ENV) as Environment
         val value = vm.get(register)
         env.set(variable, value)
     }
