@@ -3,6 +3,15 @@ package komu.blunt.types
 import std.util.*
 import java.util.List
 
+object BasicType {
+    val UNIT = basicType("Unit");
+    val INTEGER = basicType("Integer");
+    val STRING = basicType("String");
+
+    private fun basicType(name: String): Type =
+        TypeConstructor(name, Kind.STAR.sure())
+}
+
 fun typeFromObject(o: Any): Type =
     throw UnsupportedOperationException()
 
@@ -49,7 +58,7 @@ fun genericType(name: String, params: List<out Type?>): Type {
     var t: Type = TypeConstructor(name, Kind.ofParams(params.size).sure())
 
     for (val param in params)
-        t = TypeApplication(t, param)
+        t = TypeApplication(t, param.sure())
 
     return t
 }

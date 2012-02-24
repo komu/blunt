@@ -102,7 +102,7 @@ class TypeParser(val lexer: Lexer) {
         lexer.expectToken(LPAREN)
 
         if (lexer.readMatchingToken(RPAREN))
-            return Type.UNIT.sure()
+            return BasicType.UNIT
 
         val types = ArrayList<Type?>()
         types.add(parseType())

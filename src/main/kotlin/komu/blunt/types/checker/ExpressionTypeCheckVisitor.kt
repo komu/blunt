@@ -92,7 +92,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
     private fun visit(set: ASTSet, ass: Assumptions): TypeCheckResult<Type> =
         //// TODO: assume sets is always correct since it's auto-generated
-        TypeCheckResult.of(Type.UNIT.sure())
+        TypeCheckResult.of(BasicType.UNIT)
 
     private fun visit(variable: ASTVariable, ass: Assumptions): TypeCheckResult<Type> {
         val scheme = ass.find(variable.name)

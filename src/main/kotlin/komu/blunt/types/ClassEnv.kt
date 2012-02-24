@@ -28,7 +28,7 @@ class ClassEnv() {
     private val defaults = ArrayList<Type>();
 
     {
-        defaults.add(Type.INTEGER.sure())
+        defaults.add(BasicType.INTEGER)
         addCoreClasses();
         addNumClasses();
         addDefaultInstances();
@@ -41,53 +41,53 @@ class ClassEnv() {
         getClass(name).instances
 
     private fun addCoreClasses() {
-        addClass("Eq");
-        addClass("Ord", "Eq");
-        addClass("Show");
-        addClass("Read");
-        addClass("Bounded");
-        addClass("Enum");
-        addClass("Functor");
-        addClass("Monad");
+        addClass("Eq")
+        addClass("Ord", "Eq")
+        addClass("Show")
+        addClass("Read")
+        addClass("Bounded")
+        addClass("Enum")
+        addClass("Functor")
+        addClass("Monad")
     }
 
     private fun addNumClasses() {
-        addClass("Num", "Eq", "Show");
-        addClass("Real", "Num", "Ord");
-        addClass("Fractional", "Num");
-        addClass("Integral", "Real", "Enum");
-        addClass("RealFrac", "Real", "Fractional");
-        addClass("Floating", "Fractional");
-        addClass("RealFloat", "RealFrac", "Floating");
+        addClass("Num", "Eq", "Show")
+        addClass("Real", "Num", "Ord")
+        addClass("Fractional", "Num")
+        addClass("Integral", "Real", "Enum")
+        addClass("RealFrac", "Real", "Fractional")
+        addClass("Floating", "Fractional")
+        addClass("RealFloat", "RealFrac", "Floating")
     }
 
     private fun addDefaultInstances() {
-        addInstance(isIn("Num", Type.INTEGER));
-        addInstance(isIn("Eq", Type.INTEGER));
-        addInstance(isIn("Eq", Type.STRING));
-        addInstance(isIn("Eq", Type.UNIT));
+        addInstance(isIn("Num", BasicType.INTEGER))
+        addInstance(isIn("Eq", BasicType.INTEGER))
+        addInstance(isIn("Eq", BasicType.STRING))
+        addInstance(isIn("Eq", BasicType.UNIT))
 
-        addInstance(isIn("Ord", Type.UNIT));
-        addInstance(isIn("Ord", Type.INTEGER));
-        addInstance(isIn("Ord", Type.STRING));
+        addInstance(isIn("Ord", BasicType.UNIT))
+        addInstance(isIn("Ord", BasicType.INTEGER))
+        addInstance(isIn("Ord", BasicType.STRING))
 
         addInstance(asList(isIn("Ord", typeVariable("a")),
-        isIn("Ord", typeVariable("b"))),
-        isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))));
+                           isIn("Ord", typeVariable("b"))),
+                           isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))))
 
         addInstance(asList(isIn("Eq", typeVariable("a")),
-        isIn("Eq", typeVariable("b"))),
-        isIn("Eq", tupleType(typeVariable("a"), typeVariable("b"))));
+                           isIn("Eq", typeVariable("b"))),
+                           isIn("Eq", tupleType(typeVariable("a"), typeVariable("b"))))
 
         addInstance(asList(isIn("Eq", typeVariable("a"))),
-        isIn("Eq", listType(typeVariable("a"))));
+                           isIn("Eq", listType(typeVariable("a"))))
 
         addInstance(asList(isIn("Eq", typeVariable("a"))),
-        isIn("Eq", genericType("Maybe", typeVariable("a"))));
+                           isIn("Eq", genericType("Maybe", typeVariable("a"))))
     }
 
     public fun addInstance(predicate: Predicate) {
-        addInstance(Collections.emptyList<Predicate>().sure(), predicate);
+        addInstance(Collections.emptyList<Predicate>().sure(), predicate)
     }
 
     public fun addInstance(predicates: List<Predicate>?, predicate0: Predicate) {

@@ -14,3 +14,4 @@ class TypeGen(private val index: Int) : Type() {
     override fun hnf() = throw RuntimeException("should not call hnf for TypeGen")
     override fun toString(precedence: Int) = "TypeGen[$index]"
 }
+
