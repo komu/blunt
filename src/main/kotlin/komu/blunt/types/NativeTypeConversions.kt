@@ -1,7 +1,7 @@
-package komu.blunt.types;
+package komu.blunt.types
 
-public final class NativeTypeConversions {
-/*
+class NativeTypeConversions {
+    /*
     private final Map<java.lang.reflect.TypeVariable<?>,TypeVariable> typeVariableMap = new HashMap<>();
 
     private NativeTypeConversions() { }
@@ -9,7 +9,7 @@ public final class NativeTypeConversions {
     public static Scheme createFunctionType(Method m) {
         return new NativeTypeConversions().resolveFunctionType(m);
     }
-    
+
     private Scheme resolveFunctionType(Method m) {
         if (m.isVarArgs())
             throw new IllegalArgumentException("varargs are not supported by type-system.");
@@ -53,7 +53,7 @@ public final class NativeTypeConversions {
 
             Class<?> ownerType = (Class<?>) pt.getRawType();
             List<Type> params = resolveAll(pt.getActualTypeArguments());
-            
+
             return Type.genericType(ownerType, params);
         } else {
             throw new IllegalArgumentException("unsupported type: " + type.getClass());

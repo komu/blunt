@@ -1,6 +1,6 @@
-package komu.blunt.eval;
+package komu.blunt.eval
 
-final class NativeFunctionRegisterer {
+object NativeFunctionRegisterer {
     /*
     private final RootBindings bindings;
 
@@ -45,3 +45,4 @@ final class NativeFunctionRegisterer {
     }
     */
 }
+
