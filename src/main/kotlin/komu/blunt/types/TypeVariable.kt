@@ -21,8 +21,8 @@ class TypeVariable(private val name: String, private val kind: Kind) : Type() {
     }
 
     fun equals(obj: Any?) =
-        obj is TypeVariableImpl && name == obj.name && kind == obj.kind
+        obj is TypeVariable && name == obj.name && kind == obj.kind
 
     fun hashCode() =
-         hash(name, kind)
+        hash(name, kind)
 }
