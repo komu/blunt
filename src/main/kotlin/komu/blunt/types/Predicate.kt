@@ -42,12 +42,12 @@ class Predicate(className: String?, typ: Type?) : Types<Predicate?> {
         }
     }
 
-    override fun equals(rhs: Any?) =
+    fun equals(rhs: Any?) =
         rhs is Predicate && className == rhs.className && `type` == rhs.`type`
 
-    override fun hashCode() =
+    fun hashCode() =
         hash(className, `type`)
 
-    override fun toString() =
+    fun toString() =
         "$className ${`type`}"
 }

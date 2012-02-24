@@ -13,7 +13,6 @@ import java.util.ArrayList
 import java.util.HashMap
 import java.util.Arrays.asList
 import komu.blunt.types.isIn
-import komu.blunt.types.Type.*
 import java.util.Collection
 import java.util.Collections
 import java.util.List

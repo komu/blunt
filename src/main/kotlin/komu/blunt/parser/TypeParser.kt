@@ -8,7 +8,6 @@ import java.util.Collections
 import java.util.List
 
 import komu.blunt.parser.TokenType.*
-import komu.blunt.types.Type.*
 import komu.blunt.types.quantifyAll
 import komu.blunt.types.isIn
 

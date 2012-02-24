@@ -30,7 +30,7 @@ class Assumptions private(private val mappings: Map<Symbol,Scheme>) : Types<Assu
             throw TypeCheckException("unbound identifier: '$name'")
     }
 
-    override fun toString() = mappings.toString()
+    fun toString() = mappings.toString()
 
     override fun addTypeVariables(variables: Set<TypeVariable?>?) {
         for (val scheme in mappings.values())

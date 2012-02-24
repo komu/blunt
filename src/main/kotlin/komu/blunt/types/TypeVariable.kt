@@ -6,7 +6,7 @@ import java.util.List
 import java.util.Set
 import java.util.Objects.hash
 
-class TypeVariableImpl(private val name: String, private val kind: Kind) : TypeVariable() {
+class TypeVariable(private val name: String, private val kind: Kind) : Type() {
 
     override fun hnf() = true
     override fun toString(precedence: Int) = name
@@ -20,9 +20,9 @@ class TypeVariableImpl(private val name: String, private val kind: Kind) : TypeV
         variables?.add(this)
     }
 
-    override fun equals(obj: Any?) =
+    fun equals(obj: Any?) =
         obj is TypeVariableImpl && name == obj.name && kind == obj.kind
 
-    override fun hashCode() =
+    fun hashCode() =
          hash(name, kind)
 }

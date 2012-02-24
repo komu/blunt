@@ -59,7 +59,7 @@ class Qualified<out T : Types<T?>>(predicates: List<Predicate>, value: T?) : Typ
     override fun apply(substitution: Substitution?): Qualified<T> =
         Qualified(TypeUtils.applySubstitution<Predicate>(substitution.sure(), predicates), value.apply(substitution))
 
-    override fun toString(): String {
+    fun toString(): String {
         val sb = StringBuilder()
 
         if (!predicates.isEmpty()) {
@@ -80,8 +80,8 @@ class Qualified<out T : Types<T?>>(predicates: List<Predicate>, value: T?) : Typ
         return sb.toString().sure()
     }
 
-    override fun equals(rhs: Any?) =
+    fun equals(rhs: Any?) =
         rhs is Qualified<T> && value == rhs.value && predicates == rhs.predicates
 
-    override fun hashCode() = hash(predicates, value)
+    fun hashCode() = hash(predicates, value)
 }

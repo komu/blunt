@@ -43,9 +43,9 @@ class TypeApplication(val left: Type, val right: Type) : Type() {
         }
     }
 
-    override fun equals(rhs: Any?) =
+    fun equals(rhs: Any?) =
         rhs is TypeApplication && left == rhs.left && right == rhs.right
 
-    override fun hashCode() =
+    fun hashCode() =
         hash(left, right)
 }

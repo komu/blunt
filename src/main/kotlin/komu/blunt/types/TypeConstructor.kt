@@ -21,21 +21,21 @@ class TypeConstructor(private val name: String, private val kind: Kind) : Type()
     override fun getKind() = kind
     override fun toString(precedence: Int) = name
 
-    override fun equals(rhs: Any?) =
+    fun equals(rhs: Any?) =
         rhs is TypeConstructor && name == rhs.name && kind == rhs.kind
 
-    override fun hashCode() =
+    fun hashCode() =
         hash(name, kind)
 
     internal fun toString(arguments: List<Type?>, precedence: Int): String =
         if (name == "->" && arguments.size == 2)
             functionToString(arguments, precedence);
-        else if (name.equals("[]") && arguments.size() == 1)
+        else if (name.equals("[]") && arguments.size == 1)
             "[" + arguments.first() + "]"
         else if (tuplePattern.matcher(name).sure().matches())
             tupleToString(arguments)
         else
-            defaultToString(arguments, precedence);
+            defaultToString(arguments, precedence)
 
     private fun defaultToString(arguments: List<Type?>, precedence: Int): String {
         val sb = StringBuilder()

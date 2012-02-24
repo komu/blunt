@@ -27,7 +27,7 @@ fun typeVariable(name: String): TypeVariable =
     typeVariable(name, Kind.STAR.sure())
 
 fun typeVariable(name: String, kind: Kind): TypeVariable =
-    TypeVariableImpl(name, kind)
+    TypeVariable(name, kind)
 
 fun listType(t: Type) =
     TypeApplication(TypeConstructor("[]", Kind.ofParams(1).sure()), t)
