@@ -11,65 +11,12 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class Substitution {
-    
-    private final ImmutableMap<TypeVariable,Type> mapping;
-
-    Substitution(ImmutableMap<TypeVariable,Type> mapping) {
-        this.mapping = checkNotNull(mapping);
-    }
+public abstract class Substitution {
     
     // @@
-    public Substitution compose(Substitution s2) {
-        ImmutableMap.Builder<TypeVariable,Type> builder = ImmutableMap.builder();
-
-        for (Map.Entry<TypeVariable,Type> entry : s2.mapping.entrySet())
-            builder.put(entry.getKey(), entry.getValue().apply(this));
-
-        builder.putAll(mapping);
-
-        return new Substitution(builder.build());
-    }
-
-    public Substitution merge(Substitution s2) {
-        if (agree(s2)) {
-            ImmutableMap.Builder<TypeVariable,Type> builder = ImmutableMap.builder();
-            builder.putAll(mapping);
-            builder.putAll(s2.mapping);
-            
-            return new Substitution(builder.build());
-        } else
-            throw new TypeCheckException("merge failed");
-    }
-
-    private boolean agree(Substitution s2) {
-        for (TypeVariable var : mapping.keySet())
-            if (s2.mapping.containsKey(var))
-                if (!var.apply(this).equals(var.apply(s2)))
-                    return false;
-
-        return true;
-    }
-
-    public Substitution apply(Substitution subst) {
-        ImmutableMap.Builder<TypeVariable,Type> builder = ImmutableMap.builder();
-
-        for (Map.Entry<TypeVariable,Type> entry : mapping.entrySet())
-            builder.put(entry.getKey(), entry.getValue().apply(subst));
-
-        return new Substitution(builder.build());
-    }
-
-    public Type lookup(TypeVariable variable) {
-        return mapping.get(variable);
-    }
-    
-    public List<Type> apply(List<Type> types) {
-        List<Type> result = new ArrayList<>(types.size());
-        
-        for (Type type : types)
-            result.add(type.apply(this));
-        
-        return result;
-    }
+    public abstract Substitution compose(Substitution s2);
+    public abstract Substitution merge(Substitution s2);
+    public abstract Substitution apply(Substitution subst);
+    public abstract Type lookup(TypeVariable variable);
+    public abstract List<Type> apply(List<Type> types);
 }
