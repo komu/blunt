@@ -65,9 +65,9 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val types = tc.applySubstitution(typeVariables)
         val fs = getTypeVariables(tc.applySubstitution(ass))
 
-        val vss = ArrayList<Set<TypeVariable>>(types.size)
+        val vss = ArrayList<Set<TypeVariable?>>(types.size)
 
-        val genericVariables = HashSet<TypeVariable>()
+        val genericVariables = HashSet<TypeVariable?>()
         for (val t in types) {
             val vars = getTypeVariables(t)
             vss.add(vars)
@@ -107,14 +107,14 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
     }
 
     // TODO: duplication
-    private fun getTypeVariables(t: Type): Set<TypeVariable> {
-        val types = LinkedHashSet<TypeVariable>()
+    private fun getTypeVariables(t: Type): Set<TypeVariable?> {
+        val types = LinkedHashSet<TypeVariable?>()
         t.addTypeVariables(types)
         return types
     }
 
-    private fun getTypeVariables(t: Assumptions): Set<TypeVariable> {
-        val types = LinkedHashSet<TypeVariable>()
+    private fun getTypeVariables(t: Assumptions): Set<TypeVariable?> {
+        val types = LinkedHashSet<TypeVariable?>()
         t.addTypeVariables(types)
         return types
     }

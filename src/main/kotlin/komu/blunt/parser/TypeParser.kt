@@ -64,7 +64,7 @@ class TypeParser(val lexer: Lexer) {
         var typ = parseBasic()
 
         while (lexer.readMatchingToken(RIGHT_ARROW))
-            typ = Type.function(typ, parseType())
+            typ = functionType(typ, parseType()).sure()
 
         return typ
     }
@@ -83,7 +83,7 @@ class TypeParser(val lexer: Lexer) {
         else if (lexer.nextTokenIs(IDENTIFIER))
             return parseTypeVariable()
         else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
-            return Type.generic(lexer.readTokenValue(TYPE_OR_CTOR_NAME))
+            return genericType(lexer.readTokenValue(TYPE_OR_CTOR_NAME)).sure()
         else
             throw lexer.expectFailure("type")
     }
@@ -91,11 +91,11 @@ class TypeParser(val lexer: Lexer) {
     public fun parseTypeConcrete(): Type {
         val name = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
 
-        val args = ArrayList<Type>()
+        val args = ArrayList<Type?>()
         while (lexer.nextTokenIsOneOf(START_TOKENS))
             args.add(parseTypePrimitive())
 
-        return Type.generic(name, args)
+        return genericType(name, args).sure()
     }
 
     private fun parseParens(): Type {
@@ -104,7 +104,7 @@ class TypeParser(val lexer: Lexer) {
         if (lexer.readMatchingToken(RPAREN))
             return Type.UNIT.sure()
 
-        val types = ArrayList<Type>()
+        val types = ArrayList<Type?>()
         types.add(parseType())
 
         while (lexer.readMatchingToken(COMMA))
@@ -115,7 +115,7 @@ class TypeParser(val lexer: Lexer) {
         if (types.size() == 1)
             return types.get(0).sure()
         else
-            return Type.tuple(types)
+            return tupleType(types).sure()
     }
 
     private fun parseBrackets(): Type {
@@ -123,12 +123,12 @@ class TypeParser(val lexer: Lexer) {
         val elementType = parseType()
         lexer.expectToken(RBRACKET)
 
-        return Type.list(elementType)
+        return listType(elementType).sure()
     }
 
     public fun parseTypeVariable(): TypeVariable {
         val name = lexer.readTokenValue(IDENTIFIER)
-        return Type.variable(name)
+        return typeVariable(name).sure()
     }
 }
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.lang.reflect.Modifier.isStatic;
+import static komu.blunt.types.Type.*;
 
 public final class NativeTypeConversions {
 /*

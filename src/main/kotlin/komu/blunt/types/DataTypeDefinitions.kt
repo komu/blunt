@@ -50,11 +50,11 @@ public class DataTypeDefinitions() {
     }
 
     private fun tupleConstructorScheme(arity: Int): Scheme {
-        val types = ArrayList<Type>(arity)
+        val types = ArrayList<Type?>(arity)
         for (val i in 0..arity+1)
-            types.add(Type.variable("t$i"))
+            types.add(typeVariable("t" + i))
 
-        return quantifyAll(Qualified(Type.function(types, Type.tuple(types))))
+        return quantifyAll(Qualified(functionType(types, tupleType(types)))).sure()
     }
 
     fun getDeclaredConstructors(): Collection<ConstructorDefinition> =

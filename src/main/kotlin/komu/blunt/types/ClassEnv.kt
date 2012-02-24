@@ -71,19 +71,19 @@ class ClassEnv() {
         addInstance(isIn("Ord", Type.INTEGER));
         addInstance(isIn("Ord", Type.STRING));
 
-        addInstance(asList(isIn("Ord", Type.variable("a")),
-        isIn("Ord", Type.variable("b"))),
-        isIn("Ord", Type.tuple(Type.variable("a"), Type.variable("b"))));
+        addInstance(asList(isIn("Ord", typeVariable("a")),
+        isIn("Ord", typeVariable("b"))),
+        isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))));
 
-        addInstance(asList(isIn("Eq", Type.variable("a")),
-        isIn("Eq", Type.variable("b"))),
-        isIn("Eq", Type.tuple(Type.variable("a"), Type.variable("b"))));
+        addInstance(asList(isIn("Eq", typeVariable("a")),
+        isIn("Eq", typeVariable("b"))),
+        isIn("Eq", tupleType(typeVariable("a"), typeVariable("b"))));
 
-        addInstance(asList(isIn("Eq", Type.variable("a"))),
-        isIn("Eq", Type.list(Type.variable("a"))));
+        addInstance(asList(isIn("Eq", typeVariable("a"))),
+        isIn("Eq", listType(typeVariable("a"))));
 
-        addInstance(asList(isIn("Eq", Type.variable("a"))),
-        isIn("Eq", Type.generic("Maybe", Type.variable("a"))));
+        addInstance(asList(isIn("Eq", typeVariable("a"))),
+        isIn("Eq", genericType("Maybe", typeVariable("a"))));
     }
 
     public fun addInstance(predicate: Predicate) {
@@ -190,14 +190,14 @@ class ClassEnv() {
     fun reduce(ps: List<Predicate>): List<Predicate> =
         simplify(toHfns(ps))
 
-    fun split(fixedVariables: Set<TypeVariable>,
-              quantifyVariables: Set<TypeVariable>,
+    fun split(fixedVariables: Set<TypeVariable?>,
+              quantifyVariables: Set<TypeVariable?>,
               originalPredicates: List<Predicate>): Pair<List<Predicate>?, List<Predicate>?> {
         val deferredPredicates = ArrayList<Predicate>()
         val retainedPredicates = ArrayList<Predicate>()
 
         for (val predicate in reduce(originalPredicates))
-            if (fixedVariables.containsAll(getTypeVariables(predicate)))
+            if (fixedVariables.containsAll(getTypeVariables(predicate.sure())))
                 deferredPredicates.add(predicate)
             else
                 retainedPredicates.add(predicate)
@@ -207,8 +207,8 @@ class ClassEnv() {
     }
 
     // TODO: duplication
-    private fun getTypeVariables(p: Predicate): Set<TypeVariable> {
-        val types = LinkedHashSet<TypeVariable>()
+    private fun getTypeVariables(p: Predicate): Set<TypeVariable?> {
+        val types = LinkedHashSet<TypeVariable?>()
         p.addTypeVariables(types)
         return types
     }

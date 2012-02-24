@@ -13,28 +13,28 @@ import java.util.Set
 import komu.blunt.types.checker.Substitutions
 
 fun quantifyAll(qt: Qualified<Type>): Scheme {
-    val types = LinkedHashSet<TypeVariable>()
+    val types = LinkedHashSet<TypeVariable?>()
     qt.addTypeVariables(types)
     return quantify(types, qt)
 }
 
-fun quantify(vs: Collection<TypeVariable>, qt: Qualified<Type>): Scheme {
+fun quantify(vs: Collection<TypeVariable?>, qt: Qualified<Type>): Scheme {
     val kinds = ArrayList<Kind?>()
     val vars = ArrayList<TypeVariable?>()
 
-    val types = LinkedHashSet<TypeVariable>()
+    val types = LinkedHashSet<TypeVariable?>()
     qt.addTypeVariables(types)
 
     for (val v in types)
         if (vs.contains(v)) {
             vars.add(v)
-            kinds.add(v.getKind())
+            kinds.add(v?.getKind())
         }
 
     return Scheme(kinds, qt.apply(Substitutions.fromTypeVariables(vars)))
 }
 
-fun instantiate(ts: List<TypeVariable>, t: Qualified<Type>): Qualified<Type> {
+fun instantiate(ts: List<TypeVariable?>, t: Qualified<Type>): Qualified<Type> {
     val ps = ArrayList<Predicate>(t.predicates.size())
     for (val p in t.predicates)
         ps.add(p.instantiate(ts))
@@ -42,24 +42,24 @@ fun instantiate(ts: List<TypeVariable>, t: Qualified<Type>): Qualified<Type> {
     return Qualified(ps, t.value.instantiate(ts))
 }
 
-class Qualified<out T : Types<T>>(predicates: List<Predicate>, value: T?) : Types<Qualified<T>> {
+class Qualified<out T : Types<T?>>(predicates: List<Predicate>, value: T?) : Types<Qualified<T>> {
 
     val value = value.sure()
     val predicates = unmodifiableList(ArrayList<Predicate>(predicates)).sure()
 
     this(value: T?): this(emptyList<Predicate>().sure(), value)
 
-    override fun addTypeVariables(variables: Set<TypeVariable>) {
+    override fun addTypeVariables(variables: Set<TypeVariable?>?) {
         for (val p in predicates)
             p.addTypeVariables(variables)
 
         value.addTypeVariables(variables)
     }
 
-    override fun apply(substitution: Substitution): Qualified<T> =
+    override fun apply(substitution: Substitution?): Qualified<T> =
         Qualified(TypeUtils.applySubstitution<Predicate>(substitution.sure(), predicates), value.apply(substitution))
 
-    fun toString(): String {
+    override fun toString(): String {
         val sb = StringBuilder()
 
         if (!predicates.isEmpty()) {
@@ -80,8 +80,8 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, value: T?) : Type
         return sb.toString().sure()
     }
 
-    fun equals(rhs: Any?) =
+    override fun equals(rhs: Any?) =
         rhs is Qualified<T> && value == rhs.value && predicates == rhs.predicates
 
-    fun hashCode() = hash(predicates, value)
+    override fun hashCode() = hash(predicates, value)
 }
