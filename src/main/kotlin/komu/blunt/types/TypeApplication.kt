@@ -23,13 +23,14 @@ class TypeApplication(val left: Type, val right: Type) : Type() {
         right.addTypeVariables(variables)
     }
 
-    override fun getKind(): Kind {
-        val kind = left.getKind()
-        if (kind is ArrowKind)
-            return kind.right.sure()
-        else
-            throw TypeCheckException("invalid kind: $left")
-    }
+    override val kind: Kind
+        get() {
+            val kind = left.kind
+            if (kind is ArrowKind)
+                return kind.right
+            else
+                throw TypeCheckException("invalid kind: $left")
+        }
 
     override fun toString(precedence: Int): String =
         toString(LinkedList<Type?>, precedence)

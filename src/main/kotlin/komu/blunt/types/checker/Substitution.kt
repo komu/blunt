@@ -13,22 +13,22 @@ import java.util.ArrayList
 class Substitution(private val mapping: ImmutableMap<TypeVariable,Type>) {
 
     // @@
-    fun compose(s2: Substitution?): Substitution {
+    fun compose(s2: Substitution): Substitution {
         val builder = ImmutableMap.builder<TypeVariable,Type>().sure()
 
-        for (val entry in s2.sure().mapping.entrySet())
-            builder.put(entry?.getKey().sure(), entry?.getValue()?.apply(this).sure())
+        for (val entry in s2.mapping.entrySet())
+            builder.put(entry.sure().getKey(), entry.sure().getValue().apply(this).sure())
 
         builder.putAll(mapping)
 
         return Substitution(builder.build().sure())
     }
 
-    fun merge(s2: Substitution?): Substitution {
-        if (agree(s2.sure())) {
+    fun merge(s2: Substitution): Substitution {
+        if (agree(s2)) {
             val builder = ImmutableMap.builder<TypeVariable,Type>().sure()
             builder.putAll(mapping)
-            builder.putAll(s2.sure().mapping)
+            builder.putAll(s2.mapping)
 
             return Substitution(builder.build().sure())
         } else
@@ -53,7 +53,7 @@ class Substitution(private val mapping: ImmutableMap<TypeVariable,Type>) {
         return result
     }
 
-    fun apply(subst: Substitution?): Substitution {
+    fun apply(subst: Substitution): Substitution {
         val builder = ImmutableMap.builder<TypeVariable,Type>().sure()
 
         for (val entry in mapping.entrySet())
@@ -62,8 +62,8 @@ class Substitution(private val mapping: ImmutableMap<TypeVariable,Type>) {
         return Substitution(builder.build().sure())
     }
 
-    fun lookup(variable: TypeVariable?): Type? =
-        mapping.get(variable.sure())
+    fun lookup(variable: TypeVariable): Type? =
+        mapping.get(variable)
 }
 
 object Substitutions {
@@ -71,18 +71,18 @@ object Substitutions {
     fun empty() = Substitution(ImmutableMap.of<TypeVariable,Type>().sure())
 
     fun singleton(v: TypeVariable, t: Type): Substitution {
-        if (v.getKind() != t.getKind())
+        if (v.kind != t.kind)
             throw IllegalArgumentException()
 
         return Substitution(ImmutableMap.of<TypeVariable,Type>(v, t).sure())
     }
 
-    fun fromTypeVariables(variables: List<TypeVariable?>): Substitution {
+    fun fromTypeVariables(variables: List<TypeVariable>): Substitution {
         val builder = ImmutableMap.builder<TypeVariable,Type>().sure()
 
         var index = 0
         for (val v in variables)
-            builder.put(v.sure(), TypeGen(index++))
+            builder.put(v, TypeGen(index++))
 
         return Substitution(builder.build().sure())
     }

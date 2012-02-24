@@ -6,11 +6,11 @@ import java.util.List
 import java.util.Set
 import java.util.Objects.hash
 
-class TypeVariable(private val name: String, private val kind: Kind) : Type() {
+class TypeVariable(private val name: String, private val _kind: Kind) : Type() {
 
     override fun hnf() = true
     override fun toString(precedence: Int) = name
-    override fun getKind() = kind
+    override val kind = _kind
     override fun instantiate(vars: List<TypeVariable?>?) = this
 
     override fun apply(substitution: Substitution?): Type =

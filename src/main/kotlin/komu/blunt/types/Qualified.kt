@@ -20,15 +20,15 @@ fun quantifyAll(qt: Qualified<Type>): Scheme {
 
 fun quantify(vs: Collection<TypeVariable?>, qt: Qualified<Type>): Scheme {
     val kinds = ArrayList<Kind?>()
-    val vars = ArrayList<TypeVariable?>()
+    val vars = ArrayList<TypeVariable>()
 
     val types = LinkedHashSet<TypeVariable?>()
     qt.addTypeVariables(types)
 
     for (val v in types)
         if (vs.contains(v)) {
-            vars.add(v)
-            kinds.add(v?.getKind())
+            vars.add(v.sure())
+            kinds.add(v?.kind)
         }
 
     return Scheme(kinds, qt.apply(Substitutions.fromTypeVariables(vars)))

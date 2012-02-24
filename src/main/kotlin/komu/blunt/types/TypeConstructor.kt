@@ -8,7 +8,7 @@ import java.util.List
 import java.util.Set
 import java.util.Objects.hash
 
-class TypeConstructor(private val name: String, private val kind: Kind) : Type() {
+class TypeConstructor(private val name: String, private val _kind: Kind) : Type() {
 
     class object {
         private val tuplePattern = java.util.regex.Pattern.compile("\\(,+\\)").sure()
@@ -18,7 +18,7 @@ class TypeConstructor(private val name: String, private val kind: Kind) : Type()
     override fun hnf() = false
     override fun instantiate(vars: List<TypeVariable?>?) = this
     override fun addTypeVariables(variables: Set<TypeVariable?>?) { }
-    override fun getKind() = kind
+    override val kind = _kind
     override fun toString(precedence: Int) = name
 
     fun equals(rhs: Any?) =
