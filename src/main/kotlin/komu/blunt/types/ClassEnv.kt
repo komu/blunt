@@ -189,8 +189,8 @@ class ClassEnv() {
     fun reduce(ps: List<Predicate>): List<Predicate> =
         simplify(toHfns(ps))
 
-    fun split(fixedVariables: Set<TypeVariable?>,
-              quantifyVariables: Set<TypeVariable?>,
+    fun split(fixedVariables: Set<TypeVariable>,
+              quantifyVariables: Set<TypeVariable>,
               originalPredicates: List<Predicate>): Pair<List<Predicate>, List<Predicate>> {
         val deferredPredicates = ArrayList<Predicate>()
         val retainedPredicates = ArrayList<Predicate>()
@@ -206,8 +206,8 @@ class ClassEnv() {
     }
 
     // TODO: duplication
-    private fun getTypeVariables(p: Predicate): Set<TypeVariable?> {
-        val types = LinkedHashSet<TypeVariable?>()
+    private fun getTypeVariables(p: Predicate): Set<TypeVariable> {
+        val types = LinkedHashSet<TypeVariable>()
         p.addTypeVariables(types)
         return types
     }

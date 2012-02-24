@@ -9,7 +9,7 @@ class TypeGen(private val index: Int) : Type() {
 
     override fun apply(s: Substitution?) = this
     override fun instantiate(vars: List<TypeVariable?>?) = vars?.get(index).sure()
-    override fun addTypeVariables(result: Set<TypeVariable?>?) { }
+    override fun addTypeVariables(result: Set<TypeVariable>) { }
     override val kind: Kind
         get() = throw RuntimeException("can't access kind of TypeGen")
     override fun hnf() = throw RuntimeException("should not call hnf for TypeGen")

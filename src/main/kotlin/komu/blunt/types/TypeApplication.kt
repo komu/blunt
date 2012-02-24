@@ -18,7 +18,7 @@ class TypeApplication(val left: Type, val right: Type) : Type() {
 
     override fun hnf() = left.hnf()
 
-    override fun addTypeVariables(variables: Set<TypeVariable?>?) {
+    override fun addTypeVariables(variables: Set<TypeVariable>) {
         left.addTypeVariables(variables)
         right.addTypeVariables(variables)
     }

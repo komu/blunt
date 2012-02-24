@@ -16,8 +16,8 @@ class TypeVariable(private val name: String, private val _kind: Kind) : Type() {
     override fun apply(substitution: Substitution?): Type =
         substitution?.lookup(this) ?: this
 
-    override fun addTypeVariables(variables: Set<TypeVariable?>?) {
-        variables?.add(this)
+    override fun addTypeVariables(variables: Set<TypeVariable>) {
+        variables.add(this)
     }
 
     fun equals(obj: Any?) =

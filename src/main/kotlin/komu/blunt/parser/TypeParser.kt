@@ -1,5 +1,6 @@
 package komu.blunt.parser
 
+import std.util.*
 import komu.blunt.types.*
 
 import java.util.ArrayList
@@ -90,11 +91,11 @@ class TypeParser(val lexer: Lexer) {
     public fun parseTypeConcrete(): Type {
         val name = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
 
-        val args = ArrayList<Type?>()
+        val args = ArrayList<Type>()
         while (lexer.nextTokenIsOneOf(START_TOKENS))
             args.add(parseTypePrimitive())
 
-        return genericType(name, args).sure()
+        return genericType(name, args)
     }
 
     private fun parseParens(): Type {
@@ -103,7 +104,7 @@ class TypeParser(val lexer: Lexer) {
         if (lexer.readMatchingToken(RPAREN))
             return BasicType.UNIT
 
-        val types = ArrayList<Type?>()
+        val types = ArrayList<Type>()
         types.add(parseType())
 
         while (lexer.readMatchingToken(COMMA))
@@ -111,10 +112,10 @@ class TypeParser(val lexer: Lexer) {
 
         lexer.expectToken(RPAREN)
 
-        if (types.size() == 1)
-            return types.get(0).sure()
+        if (types.size == 1)
+            return types.first()
         else
-            return tupleType(types).sure()
+            return tupleType(types)
     }
 
     private fun parseBrackets(): Type {
@@ -122,12 +123,12 @@ class TypeParser(val lexer: Lexer) {
         val elementType = parseType()
         lexer.expectToken(RBRACKET)
 
-        return listType(elementType).sure()
+        return listType(elementType)
     }
 
     public fun parseTypeVariable(): TypeVariable {
         val name = lexer.readTokenValue(IDENTIFIER)
-        return typeVariable(name).sure()
+        return typeVariable(name)
     }
 }
 

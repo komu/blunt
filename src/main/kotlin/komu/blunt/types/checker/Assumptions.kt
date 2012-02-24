@@ -32,7 +32,7 @@ class Assumptions private(private val mappings: Map<Symbol,Scheme>) : Types<Assu
 
     fun toString() = mappings.toString()
 
-    override fun addTypeVariables(variables: Set<TypeVariable?>?) {
+    override fun addTypeVariables(variables: Set<TypeVariable>) {
         for (val scheme in mappings.values())
             scheme.addTypeVariables(variables)
     }

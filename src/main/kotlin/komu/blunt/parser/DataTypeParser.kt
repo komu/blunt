@@ -1,5 +1,6 @@
 package komu.blunt.parser
 
+import std.util.*
 import com.google.common.collect.ImmutableList
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTDataDefinition
@@ -43,7 +44,7 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
     private fun parseConstructor(builder: DataTypeBuilder): Unit {
         val constructorName = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
 
-        val args = ArrayList<Type?>()
+        val args = ArrayList<Type>()
         while (!lexer.nextTokenIs(OR) && !lexer.nextTokenIs(END) && !lexer.nextTokenIs(DERIVING))
             args.add(typeParser.parseTypePrimitive())
 
@@ -52,7 +53,7 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 
     private class DataTypeBuilder(val typeName: String) {
 
-        private val vars = ArrayList<TypeVariable?>()
+        private val vars = ArrayList<TypeVariable>()
         private val constructors = ArrayList<ConstructorDefinition>()
         private val derivedClasses = ArrayList<String>()
         private var constructorIndex = 0
@@ -61,13 +62,13 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
             vars.add(variable)
         }
 
-        public fun addConstructor(constructorName: String, args: List<Type?>) {
-            val scheme = quantify(vars, Qualified<Type>(functionType(args, getType()).sure()))
-            constructors.add(ConstructorDefinition(constructorIndex++, constructorName, scheme, args.size()))
+        public fun addConstructor(constructorName: String, args: List<Type>) {
+            val scheme = quantify(vars, Qualified<Type>(functionType(args, getType())))
+            constructors.add(ConstructorDefinition(constructorIndex++, constructorName, scheme, args.size))
         }
 
         private fun getType() =
-            genericType(typeName, vars).sure()
+            genericType(typeName, vars)
 
         public fun addAutomaticallyDerivedClass(className: String) {
             derivedClasses.add(className)

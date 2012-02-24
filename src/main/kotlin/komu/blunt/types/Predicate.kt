@@ -20,7 +20,7 @@ class Predicate(className: String?, typ: Type?) : Types<Predicate?> {
 
     fun inHnf() = `type`.hnf()
 
-    override fun addTypeVariables(variables: Set<TypeVariable?>?) {
+    override fun addTypeVariables(variables: Set<TypeVariable>) {
         `type`.addTypeVariables(variables)
     }
 

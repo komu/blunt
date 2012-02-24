@@ -13,22 +13,22 @@ import java.util.Set
 import komu.blunt.types.checker.Substitutions
 
 fun quantifyAll(qt: Qualified<Type>): Scheme {
-    val types = LinkedHashSet<TypeVariable?>()
+    val types = LinkedHashSet<TypeVariable>()
     qt.addTypeVariables(types)
     return quantify(types, qt)
 }
 
-fun quantify(vs: Collection<TypeVariable?>, qt: Qualified<Type>): Scheme {
+fun quantify(vs: Collection<TypeVariable>, qt: Qualified<Type>): Scheme {
     val kinds = ArrayList<Kind?>()
     val vars = ArrayList<TypeVariable>()
 
-    val types = LinkedHashSet<TypeVariable?>()
+    val types = LinkedHashSet<TypeVariable>()
     qt.addTypeVariables(types)
 
     for (val v in types)
         if (vs.contains(v)) {
-            vars.add(v.sure())
-            kinds.add(v?.kind)
+            vars.add(v)
+            kinds.add(v.kind)
         }
 
     return Scheme(kinds, qt.apply(Substitutions.fromTypeVariables(vars)))
@@ -49,7 +49,7 @@ class Qualified<out T : Types<T?>>(predicates: List<Predicate>, value: T?) : Typ
 
     this(value: T?): this(emptyList<Predicate>().sure(), value)
 
-    override fun addTypeVariables(variables: Set<TypeVariable?>?) {
+    override fun addTypeVariables(variables: Set<TypeVariable>) {
         for (val p in predicates)
             p.addTypeVariables(variables)
 

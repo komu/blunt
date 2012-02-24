@@ -15,8 +15,8 @@ abstract class Type : Types<Type?> {
 }
 
 
-fun Type.getTypeVariables(): Set<TypeVariable?> {
-    val vars = LinkedHashSet<TypeVariable?>()
+fun Type.getTypeVariables(): Set<TypeVariable> {
+    val vars = LinkedHashSet<TypeVariable>()
     addTypeVariables(vars)
     return vars
 

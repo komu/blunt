@@ -5,7 +5,7 @@ import komu.blunt.types.checker.Substitution
 
 object TypeUtils {
 
-    fun addTypeVariables<T : Types<T?>>(variables: Set<TypeVariable?>, ts: Collection<T?>) {
+    fun addTypeVariables<T : Types<T?>>(variables: Set<TypeVariable>, ts: Collection<T?>) {
         for (val t in ts)
             t?.addTypeVariables(variables)
     }
