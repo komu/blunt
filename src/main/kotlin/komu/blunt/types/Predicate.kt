@@ -11,12 +11,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.Objects.hash
 
-fun isIn(className: String?, typ: Type?) = Predicate(className, typ)
+fun isIn(className: String, typ: Type) = Predicate(className, typ)
 
-class Predicate(className: String?, typ: Type?) : Types<Predicate?> {
-
-    val className = className.sure()
-    val `type` = typ.sure()
+class Predicate(val className: String, val `type`: Type) : Types<Predicate?> {
 
     fun inHnf() = `type`.hnf()
 
@@ -25,7 +22,7 @@ class Predicate(className: String?, typ: Type?) : Types<Predicate?> {
     }
 
     override fun apply(substitution: Substitution): Predicate =
-        Predicate(className, `type`.apply(substitution))
+        Predicate(className, `type`.apply(substitution).sure())
 
     fun instantiate(ts: List<TypeVariable>) =
         Predicate(className, `type`.instantiate(ts))
