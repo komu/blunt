@@ -21,28 +21,23 @@ class OperatorSet() {
     }
 
     fun add(precedence: Int, vararg names: String) {
-        addInternal(precedence, Associativity.LEFT, names);
+        addInternal(precedence, Associativity.LEFT, names)
     }
 
-    fun add(precedence: Int, associativity: Associativity?, vararg names: String) {
+    fun add(precedence: Int, associativity: Associativity, vararg names: String) {
         addInternal(precedence, associativity, names)
     }
 
-    fun addInternal(precedence: Int, associativity: Associativity?, names: Array<String>) {
-        checkArgument(precedence >= 0);
+    fun addInternal(precedence: Int, associativity: Associativity, names: Array<String>) {
+        checkArgument(precedence >= 0)
 
-        maxPrecedence = max(maxPrecedence, precedence);
+        maxPrecedence = max(maxPrecedence, precedence)
         for (val name in names)
-            ops.put(name, Operator(name, associativity.sure(), precedence))
+            ops.put(name, Operator(name, associativity, precedence))
     }
 
-    fun get(name: String): Operator {
-        val op = ops.get(name)
-        if (op != null)
-            return op;
-        else
-            return Operator(name, Associativity.LEFT.sure(), DEFAULT_PRECEDENCE);
-    }
+    fun get(name: String): Operator =
+        ops[name] ?: Operator(name, Associativity.LEFT, DEFAULT_PRECEDENCE)
 
     val maxLevel: Int
         get() = maxPrecedence

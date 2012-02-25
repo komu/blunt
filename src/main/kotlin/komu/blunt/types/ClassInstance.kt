@@ -17,7 +17,7 @@ class ClassInstance(val qual: Qualified<Predicate>) : Types<ClassInstance> {
         qual.addTypeVariables(variables)
     }
 
-    override fun apply(substitution: Substitution?): ClassInstance =
+    override fun apply(substitution: Substitution): ClassInstance =
         ClassInstance(qual.apply(substitution).sure())
 
     fun toString() =

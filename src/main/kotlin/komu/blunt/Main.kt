@@ -26,13 +26,13 @@ object Main {
                     println(result)
                 }
             } catch (e: SyntaxException) {
-                println(e);
+                println(e)
             } catch (e: AnalyzationException) {
-                println(e);
+                println(e)
             } catch (e: EvaluationException) {
-                println(e);
+                println(e)
             } catch (e: Exception) {
-                e.printStackTrace();
+                e.printStackTrace()
             }
         }
     }
@@ -47,9 +47,7 @@ fun main(args : Array<String>) {
     evaluator.loadResource("prelude.blunt")
 
     for (val arg in args)
-        evaluator.loadResource(arg);
+        evaluator.loadResource(arg)
 
-    Main.repl(evaluator);
+    Main.repl(evaluator)
 }
-
-

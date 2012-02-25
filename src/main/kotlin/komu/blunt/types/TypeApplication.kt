@@ -10,11 +10,11 @@ import java.util.Objects.hash
 
 class TypeApplication(val left: Type, val right: Type) : Type() {
 
-    override fun apply(substitution: Substitution?) =
+    override fun apply(substitution: Substitution) =
         TypeApplication(left.apply(substitution).sure(), right.apply(substitution).sure())
 
-    override fun instantiate(vars: List<TypeVariable?>?) =
-        TypeApplication(left.instantiate(vars).sure(), right.instantiate(vars).sure());
+    override fun instantiate(vars: List<TypeVariable>) =
+        TypeApplication(left.instantiate(vars), right.instantiate(vars))
 
     override fun hnf() = left.hnf()
 

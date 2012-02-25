@@ -11,7 +11,7 @@ import java.util.Set
 
 class Scheme(val kinds: List<Kind?>, val `type`: Qualified<Type>) : Types<Scheme> {
 
-    override fun apply(substitution: Substitution?): Scheme =
+    override fun apply(substitution: Substitution): Scheme =
         Scheme(kinds, `type`.apply(substitution))
 
     override fun addTypeVariables(variables: Set<TypeVariable>) {

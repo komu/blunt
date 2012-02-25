@@ -39,7 +39,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         }
     }
 
-    private fun normalize(result: TypeCheckResult<Type?>): Qualified<Type> {
+    private fun normalize(result: TypeCheckResult<Type>): Qualified<Type> {
         val ps = classEnv.reduce(applySubstitution(result.predicates))
         return applySubstitution(Qualified(ps, result.value))
     }
@@ -59,7 +59,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         patternTypeChecker.typeCheck(pattern)
 
     fun freshInstance(scheme: Scheme): Qualified<Type> {
-        val ts = ArrayList<TypeVariable?>(scheme.kinds.size)
+        val ts = ArrayList<TypeVariable>(scheme.kinds.size)
         for (val kind in scheme.kinds)
             ts.add(newTVar(kind.sure()))
 

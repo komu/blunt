@@ -14,9 +14,9 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
         private val tuplePattern = java.util.regex.Pattern.compile("\\(,+\\)").sure()
     }
 
-    override fun apply(substitution: Substitution?) = this
+    override fun apply(substitution: Substitution) = this
     override fun hnf() = false
-    override fun instantiate(vars: List<TypeVariable?>?) = this
+    override fun instantiate(vars: List<TypeVariable>) = this
     override fun addTypeVariables(variables: Set<TypeVariable>) { }
     override val kind = _kind
     override fun toString(precedence: Int) = name

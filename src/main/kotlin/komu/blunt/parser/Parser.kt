@@ -165,35 +165,18 @@ class Parser(source: String) {
         return exp
     }
 
-    private fun parsePrimitive(): ASTExpression {
-        val typ = lexer.peekTokenType()
-
-        if (typ == EOF)
-            throw parseError("unexpected eof")
-
-        if (typ == IF)
-            return parseIf()
-
-        if (typ == LET)
-            return parseLet()
-
-        if (typ == LAMBDA)
-            return parseLambda()
-
-        if (typ == CASE)
-            return parseCase()
-
-        if (typ == LPAREN)
-            return parseParens()
-
-        if (typ == LBRACKET)
-            return parseList()
-
-        if (typ == LITERAL)
-            return AST.constant(lexer.readTokenValue(LITERAL))
-
-        return parseVariableOrConstructor()
-    }
+    private fun parsePrimitive(): ASTExpression =
+        when (lexer.peekTokenType()) {
+            EOF      -> throw parseError("unexpected eof")
+            IF       -> parseIf()
+            LET      -> parseLet()
+            LAMBDA   -> parseLambda()
+            CASE     -> parseCase()
+            LPAREN   -> parseParens()
+            LBRACKET -> parseList()
+            LITERAL  -> AST.constant(lexer.readTokenValue(LITERAL))
+            else     -> parseVariableOrConstructor()
+        }
 
     // if <expr> then <expr> else <expr>
     private fun parseIf(): ASTExpression {

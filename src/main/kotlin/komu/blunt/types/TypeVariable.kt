@@ -11,10 +11,10 @@ class TypeVariable(private val name: String, private val _kind: Kind) : Type() {
     override fun hnf() = true
     override fun toString(precedence: Int) = name
     override val kind = _kind
-    override fun instantiate(vars: List<TypeVariable?>?) = this
+    override fun instantiate(vars: List<TypeVariable>) = this
 
-    override fun apply(substitution: Substitution?): Type =
-        substitution?.lookup(this) ?: this
+    override fun apply(substitution: Substitution): Type =
+        substitution.lookup(this) ?: this
 
     override fun addTypeVariables(variables: Set<TypeVariable>) {
         variables.add(this)

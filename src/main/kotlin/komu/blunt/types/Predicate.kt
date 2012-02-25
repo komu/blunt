@@ -24,10 +24,10 @@ class Predicate(className: String?, typ: Type?) : Types<Predicate?> {
         `type`.addTypeVariables(variables)
     }
 
-    override fun apply(substitution: Substitution?): Predicate =
+    override fun apply(substitution: Substitution): Predicate =
         Predicate(className, `type`.apply(substitution))
 
-    fun instantiate(ts: List<TypeVariable?>?) =
+    fun instantiate(ts: List<TypeVariable>) =
         Predicate(className, `type`.instantiate(ts))
 
     fun overlapsAny(predicates: Collection<Predicate>): Boolean =

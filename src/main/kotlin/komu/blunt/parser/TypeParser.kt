@@ -64,7 +64,7 @@ class TypeParser(val lexer: Lexer) {
         var typ = parseBasic()
 
         while (lexer.readMatchingToken(RIGHT_ARROW))
-            typ = functionType(typ, parseType()).sure()
+            typ = functionType(typ, parseType())
 
         return typ
     }
@@ -75,18 +75,17 @@ class TypeParser(val lexer: Lexer) {
         else
             parseTypePrimitive()
 
-    public fun parseTypePrimitive(): Type {
+    public fun parseTypePrimitive(): Type =
         if (lexer.nextTokenIs(LPAREN))
-            return parseParens()
+            parseParens()
         else if (lexer.nextTokenIs(LBRACKET))
-            return parseBrackets()
+            parseBrackets()
         else if (lexer.nextTokenIs(IDENTIFIER))
-            return parseTypeVariable()
+            parseTypeVariable()
         else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
-            return genericType(lexer.readTokenValue(TYPE_OR_CTOR_NAME)).sure()
+            genericType(lexer.readTokenValue(TYPE_OR_CTOR_NAME))
         else
             throw lexer.expectFailure("type")
-    }
 
     public fun parseTypeConcrete(): Type {
         val name = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
