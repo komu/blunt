@@ -32,12 +32,12 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
         val t = tc.newTVar()
 
-        tc.unify(functionType(tf.value, t).sure(), te.value.sure());
+        tc.unify(functionType(tf.value, t), te.value)
 
-        val result = TypeCheckResult.builder<Type>().sure()
+        val result = TypeCheckResult.builder<Type>()
         result.addPredicates(te.predicates)
         result.addPredicates(tf.predicates)
-        return result.build(t).sure()
+        return result.build(t)
     }
 
     private fun visit(constant: ASTConstant, ass: Assumptions): TypeCheckResult<Type> =
