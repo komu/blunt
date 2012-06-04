@@ -15,7 +15,7 @@ import komu.blunt.types.isIn
 class TypeParser(val lexer: Lexer) {
 
     private val START_TOKENS =
-        Arrays.asList(TokenType.LPAREN, TokenType.LBRACKET, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME).sure()
+        arrayList(TokenType.LPAREN, TokenType.LBRACKET, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME)
 
     class object {
         fun parseType(s: String): Type =

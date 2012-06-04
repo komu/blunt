@@ -25,8 +25,7 @@ class SourceReader(private val source: String) {
 
         if (!hasMore()) return false;
 
-        //return source.regionMatches(position, s, 0, s.length())
-        return source.substring(_position, _position+s.length()) == s
+        return source.regionMatches(position, s, 0, s.length())
     }
 
     fun peek(): Char? =

@@ -9,7 +9,7 @@ object BasicType {
     val STRING = basicType("String");
 
     private fun basicType(name: String): Type =
-        TypeConstructor(name, Kind.STAR.sure())
+        TypeConstructor(name, Kind.STAR)
 }
 
 fun typeFromObject(o: Any): Type =
@@ -24,7 +24,7 @@ fun typeFromObject(o: Any): Type =
 //}
 
 fun typeVariable(name: String): TypeVariable =
-    typeVariable(name, Kind.STAR.sure())
+    typeVariable(name, Kind.STAR)
 
 fun typeVariable(name: String, kind: Kind): TypeVariable =
     TypeVariable(name, kind)
@@ -34,7 +34,7 @@ fun listType(t: Type) =
 
 
 fun basicType(name: String): Type =
-    TypeConstructor(name, Kind.STAR.sure())
+    TypeConstructor(name, Kind.STAR)
 
 fun functionType(argumentType: Type, returnType: Type) =
     genericType("->", argumentType, returnType)

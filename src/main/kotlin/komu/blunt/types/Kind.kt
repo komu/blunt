@@ -5,9 +5,7 @@ import java.util.Objects.hash
 abstract class Kind protected () {
 
     class object {
-        object STAR : Kind() {
-            override fun toString(l: Boolean) = "*"
-        }
+        val STAR: Kind = StarKind()
 
         fun arrow(left: Kind, right: Kind): Kind = ArrowKind(left, right)
 
@@ -21,6 +19,10 @@ abstract class Kind protected () {
     fun toString() = toString(false)
 
     protected abstract fun toString(l: Boolean): String
+}
+
+class StarKind : Kind() {
+    override fun toString(l: Boolean) = "*"
 }
 
 class ArrowKind(val left: Kind, val right: Kind) : Kind() {
