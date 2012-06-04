@@ -108,7 +108,7 @@ class ClassEnv() {
             throw RuntimeException("class already defined: '$name'")
 
         for (val superClass in cl.superClasses)
-            if (classes.containsKey(superClass))
+            if (!classes.containsKey(superClass))
                 throw RuntimeException("unknown superclass '$superClass'")
 
         classes.put(name, cl)
