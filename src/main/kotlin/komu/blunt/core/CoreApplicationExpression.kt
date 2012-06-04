@@ -8,8 +8,8 @@ class CoreApplicationExpression(private val func: CoreExpression,
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
         val instructions = Instructions()
 
-        instructions.append(func.assemble(asm, Register.PROCEDURE.sure(), Linkage.NEXT))
-        instructions.append(arg.assemble(asm, Register.ARG.sure(), Linkage.NEXT).preserving(Register.PROCEDURE.sure()))
+        instructions.append(func.assemble(asm, Register.PROCEDURE, Linkage.NEXT))
+        instructions.append(arg.assemble(asm, Register.ARG, Linkage.NEXT).preserving(Register.PROCEDURE))
 
         if (linkage == Linkage.RETURN && target == Register.VAL) {
             instructions.applyTail();
@@ -38,7 +38,7 @@ class CoreApplicationExpression(private val func: CoreExpression,
 
     override fun simplify() =
         // TODO: simplify application of lambda
-        CoreApplicationExpression(func.simplify().sure(), arg.simplify().sure())
+        CoreApplicationExpression(func.simplify(), arg.simplify())
 
     override fun toString() = "($func $arg)"
 }

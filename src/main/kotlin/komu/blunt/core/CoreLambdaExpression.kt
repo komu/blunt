@@ -25,7 +25,7 @@ class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpre
 
         instructions.label(lambda)
         instructions.createEnvironment(envSize)
-        instructions.append(body.assemble(asm, Register.VAL.sure(), Linkage.RETURN))
+        instructions.append(body.assemble(asm, Register.VAL, Linkage.RETURN))
         instructions.label(afterLambda)
 
         return instructions

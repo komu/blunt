@@ -32,16 +32,16 @@ class Assumptions private(private val mappings: Map<Symbol,Scheme>) : Types<Assu
 
     fun toString() = mappings.toString()
 
-    override fun addTypeVariables(variables: Set<TypeVariable>) {
+    override fun addTypeVariables(result: Set<TypeVariable>) {
         for (val scheme in mappings.values())
-            scheme.addTypeVariables(variables)
+            scheme.addTypeVariables(result)
     }
 
     override fun apply(substitution: Substitution): Assumptions {
         val builder = builder()
 
         for (val entry in mappings.entrySet())
-            builder.add(entry?.getKey().sure(), entry?.getValue()?.apply(substitution).sure())
+            builder.add(entry.key, entry.value.apply(substitution).sure())
 
         return builder.build()
     }

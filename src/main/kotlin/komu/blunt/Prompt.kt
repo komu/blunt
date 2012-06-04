@@ -8,11 +8,11 @@ import java.io.InputStreamReader
 
 class Prompt {
 
-    private val reader = BufferedReader(InputStreamReader(System.`in`.sure()))
+    private val reader = BufferedReader(InputStreamReader(System.`in`))
 
     fun readExpression(prompt: String): ASTExpression {
         print(prompt)
-        System.out?.flush()
+        System.out.flush()
 
         return Parser.parseExpression(reader.readLine() ?: "")
     }

@@ -12,8 +12,7 @@ class CoreSequenceExpression(expressions: List<CoreExpression>) : CoreExpression
 
     private val expressions = ArrayList<CoreExpression>(expressions)
 
-    this(vararg expressions: CoreExpression): this(Collections.emptyList<CoreExpression>().sure()) {
-        throw UnsupportedOperationException("construct list from varargs") // TODO
+    this(vararg expressions: CoreExpression): this(*expressions) {
     }
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {

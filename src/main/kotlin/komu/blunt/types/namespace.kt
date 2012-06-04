@@ -31,7 +31,7 @@ fun typeVariable(name: String, kind: Kind): TypeVariable =
     TypeVariable(name, kind)
 
 fun listType(t: Type) =
-    TypeApplication(TypeConstructor("[]", Kind.ofParams(1).sure()), t)
+    TypeApplication(TypeConstructor("[]", Kind.ofParams(1)), t)
 
 
 fun basicType(name: String): Type =
@@ -44,13 +44,13 @@ fun functionType(args: List<Type>, resultType: Type): Type =
     if (args.isEmpty())
         resultType
     else
-        functionType(args.first(), functionType(args.subList(1, args.size).sure(), resultType))
+        functionType(args.first(), functionType(args.subList(1, args.size), resultType))
 
 fun tupleType(vararg types: Type): Type =
     tupleType(types.toList())
 
 fun tupleType(types: List<Type>): Type =
-    genericType(ConstructorNames.tupleName(types.size).sure(), types)
+    genericType(ConstructorNames.tupleName(types.size), types)
 
 fun genericType(name: String, vararg params: Type): Type =
     genericType(name, params.toList())

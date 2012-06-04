@@ -6,5 +6,5 @@ import java.util.Set
 
 trait Types<T : Types<T>?> {
     fun addTypeVariables(result: Set<TypeVariable>)
-    fun apply(s: Substitution): T
+    fun apply(substitution: Substitution): T
 }

@@ -15,7 +15,7 @@ import java.util.Collections
 final class PatternParser(val lexer: Lexer) {
 
     private val PATTERN_START_TOKENS =
-        Arrays.asList(TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, TokenType.UNDERSCORE).sure()
+        arrayList(TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, TokenType.UNDERSCORE)
 
     // <literal> | <variable> | ( <pattern> ) | <constructor> <pattern>* |
     public fun parsePattern(): Pattern {
@@ -64,7 +64,7 @@ final class PatternParser(val lexer: Lexer) {
         lexer.expectToken(TokenType.LBRACKET)
 
         if (lexer.readMatchingToken(TokenType.RBRACKET))
-            return Pattern.constructor(ConstructorNames.NIL.sure())
+            return Pattern.constructor(ConstructorNames.NIL)
 
         val patterns = ArrayList<Pattern>()
 
@@ -78,17 +78,17 @@ final class PatternParser(val lexer: Lexer) {
     }
 
     private fun createList(patterns: List<Pattern>): Pattern {
-        var result = Pattern.constructor(ConstructorNames.NIL.sure())
+        var result = Pattern.constructor(ConstructorNames.NIL)
 
         for (val pattern in Lists.reverse(patterns))
-            result = Pattern.constructor(ConstructorNames.CONS.sure(), pattern, result)
+            result = Pattern.constructor(ConstructorNames.CONS, pattern, result)
 
         return result
     }
 
     private fun parseParens(): Pattern {
         if (lexer.readMatchingToken(TokenType.RPAREN))
-            return Pattern.constructor(ConstructorNames.UNIT.sure())
+            return Pattern.constructor(ConstructorNames.UNIT)
 
         val patterns = ArrayList<Pattern>()
 
@@ -101,6 +101,6 @@ final class PatternParser(val lexer: Lexer) {
         if (patterns.size() == 1)
             return patterns.get(0)
         else
-            return Pattern.constructor(ConstructorNames.tupleName(patterns.size()).sure(), ImmutableList.copyOf(patterns).sure())
+            return Pattern.constructor(ConstructorNames.tupleName(patterns.size()), ImmutableList.copyOf(patterns).sure())
     }
 }

@@ -40,7 +40,7 @@ class OpLoadExtracted(target: Register, private val source: Register, private va
     override fun load(vm: VM): Any? {
         var obj = vm.get(source)
         for (val index in path.indices())
-            obj = (obj as TypeConstructorValue).items.sure()[index.sure()]
+            obj = (obj as TypeConstructorValue).items[index]
         return obj
     }
 
@@ -52,7 +52,7 @@ class OpLoadTag(target: Register, private val source: Register, private val path
     override fun load(vm: VM): Any? {
         var obj = vm.get(source) as TypeConstructorValue
         for (val index in path.indices())
-            obj = obj.items.sure()[index.sure()] as TypeConstructorValue
+            obj = obj.items[index] as TypeConstructorValue
         return obj.name
     }
 
@@ -72,7 +72,7 @@ class OpLoadVariable(target: Register, private val variable: VariableReference) 
 class OpLoadLambda(target: Register, private val label: Label) : OpLoad(target) {
 
     override fun load(vm: VM): CompoundProcedure {
-        val env = vm.get(Register.ENV.sure()) as Environment
+        val env = vm.get(Register.ENV) as Environment
         return CompoundProcedure(label.address, env)
     }
 

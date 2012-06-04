@@ -19,6 +19,6 @@ class CoreLetExpression(private val variable: VariableReference,
 
     override fun simplify() =
         // TODO: if value is constant, propagate it into body
-        CoreLetExpression(variable, value.simplify().sure(), body.simplify().sure())
+        CoreLetExpression(variable, value.simplify(), body.simplify())
 }
 

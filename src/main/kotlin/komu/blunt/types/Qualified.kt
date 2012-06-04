@@ -48,11 +48,11 @@ class Qualified<out T : Types<T?>>(predicates: List<Predicate>, val value: T) : 
 
     this(value: T): this(emptyList<Predicate>().sure(), value)
 
-    override fun addTypeVariables(variables: Set<TypeVariable>) {
+    override fun addTypeVariables(result: Set<TypeVariable>) {
         for (val p in predicates)
-            p.addTypeVariables(variables)
+            p.addTypeVariables(result)
 
-        value.addTypeVariables(variables)
+        value.addTypeVariables(result)
     }
 
     override fun apply(substitution: Substitution): Qualified<T> =

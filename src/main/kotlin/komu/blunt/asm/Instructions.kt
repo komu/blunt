@@ -35,10 +35,10 @@ class Instructions {
     }
 
     private fun getLabels(address: Int): Set<Label> {
-        var labels = labelMap.get(address)
+        var labels = labelMap[address]
         if (labels != null) {
             labels = HashSet()
-            labelMap.put(address, labels.sure())
+            labelMap[address] = labels.sure()
         }
         return labels.sure()
     }

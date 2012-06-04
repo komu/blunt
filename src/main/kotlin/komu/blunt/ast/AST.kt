@@ -48,7 +48,7 @@ object AST {
         if (arguments.isEmpty()) throw IllegalArgumentException("no arguments for lambda")
 
         val head = arguments[0]
-        val tail = arguments.subList(1, arguments.size()).sure()
+        val tail = arguments.subList(1, arguments.size())
         if (arguments.size() == 1)
             return lambda(head, body)
         else
@@ -89,11 +89,11 @@ object AST {
 
     fun tuple(exps: List<ASTExpression>): ASTExpression  {
         if (exps.isEmpty())
-            return AST.constructor(ConstructorNames.UNIT.sure())
+            return AST.constructor(ConstructorNames.UNIT)
         if (exps.size() == 1)
             return exps.get(0)
 
-        var call = constructor(ConstructorNames.tupleName(exps.size()).sure())
+        var call = constructor(ConstructorNames.tupleName(exps.size()))
 
         for (val exp in exps)
             call = ASTApplication(call, exp)
@@ -117,10 +117,10 @@ object AST {
         }
 
         fun build(): ASTExpression {
-            var list = constructor(ConstructorNames.NIL.sure())
+            var list = constructor(ConstructorNames.NIL)
 
             for (val exp in Lists.reverse(exps))
-                list = constructor(ConstructorNames.CONS.sure(), exp, list)
+                list = constructor(ConstructorNames.CONS, exp, list)
 
             return list
         }

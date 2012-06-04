@@ -17,8 +17,8 @@ class Predicate(val className: String, val `type`: Type) : Types<Predicate?> {
 
     fun inHnf() = `type`.hnf()
 
-    override fun addTypeVariables(variables: Set<TypeVariable>) {
-        `type`.addTypeVariables(variables)
+    override fun addTypeVariables(result: Set<TypeVariable>) {
+        `type`.addTypeVariables(result)
     }
 
     override fun apply(substitution: Substitution): Predicate =

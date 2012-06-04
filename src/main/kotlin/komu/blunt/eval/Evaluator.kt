@@ -78,12 +78,12 @@ class Evaluator() {
     }
 
     private fun run(expression: CoreExpression, env: Environment): Any? {
-        val pos = instructions.pos();
+        val pos = instructions.pos()
 
-        instructions.append(expression.simplify().assemble(Assembler(), Register.VAL.sure(), Linkage.NEXT))
+        instructions.append(expression.simplify().assemble(Assembler(), Register.VAL, Linkage.NEXT))
 
         val vm = VM(instructions, env, rootBindings.runtimeEnvironment)
-        vm.set(Register.PC.sure(), pos)
+        vm.set(Register.PC, pos)
         val result = vm.run()
         steps += vm.steps
         return result;

@@ -70,33 +70,32 @@ class ClassEnv() {
         addInstance(isIn("Ord", BasicType.INTEGER))
         addInstance(isIn("Ord", BasicType.STRING))
 
-        addInstance(asList(isIn("Ord", typeVariable("a")),
-                           isIn("Ord", typeVariable("b"))),
-                           isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))))
+        addInstance(arrayList(isIn("Ord", typeVariable("a")),
+                              isIn("Ord", typeVariable("b"))),
+                              isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))))
 
-        addInstance(asList(isIn("Eq", typeVariable("a")),
-                           isIn("Eq", typeVariable("b"))),
-                           isIn("Eq", tupleType(typeVariable("a"), typeVariable("b"))))
+        addInstance(arrayList(isIn("Eq", typeVariable("a")),
+                              isIn("Eq", typeVariable("b"))),
+                              isIn("Eq", tupleType(typeVariable("a"), typeVariable("b"))))
 
-        addInstance(asList(isIn("Eq", typeVariable("a"))),
-                           isIn("Eq", listType(typeVariable("a"))))
+        addInstance(arrayList(isIn("Eq", typeVariable("a"))),
+                              isIn("Eq", listType(typeVariable("a"))))
 
-        addInstance(asList(isIn("Eq", typeVariable("a"))),
-                           isIn("Eq", genericType("Maybe", typeVariable("a"))))
+        addInstance(arrayList(isIn("Eq", typeVariable("a"))),
+                              isIn("Eq", genericType("Maybe", typeVariable("a"))))
     }
 
     public fun addInstance(predicate: Predicate) {
         addInstance(Collections.emptyList<Predicate>().sure(), predicate)
     }
 
-    public fun addInstance(predicates: List<Predicate>?, predicate0: Predicate) {
-        val predicate = predicate0.sure()
+    public fun addInstance(predicates: List<Predicate>, predicate: Predicate) {
         val cl = getClass(predicate.className)
 
         if (predicate.overlapsAny(cl.instancePredicates()))
             throw RuntimeException("overlapping instances")
 
-        cl.addInstance(Qualified(predicates.sure(), predicate))
+        cl.addInstance(Qualified(predicates, predicate))
     }
 
     public fun addClass(name: String, vararg superClasses: String) {
@@ -119,14 +118,13 @@ class ClassEnv() {
         result.add(predicate)
 
         for (val superName in getSuperClasses(predicate.className))
-            result.addAll(bySuper(isIn(superName, predicate.`type`).sure()))
+            result.addAll(bySuper(isIn(superName, predicate.`type`)))
 
         return result
     }
 
     private fun byInstance(predicate: Predicate): List<Predicate>? {
-        for (val it2 in getInstances(predicate.className)) {
-            val it = it2.sure()
+        for (val it in getInstances(predicate.className)) {
             try {
                 val s = Unifier.matchPredicate(it.predicate, predicate)
                 return TypeUtils.applySubstitution(s, it.predicates)
@@ -148,7 +146,7 @@ class ClassEnv() {
             return false
         } else {
             for (val q in qs)
-                if (!entails(ps, q.sure()))
+                if (!entails(ps, q))
                     return false
             return true
         }
@@ -196,7 +194,7 @@ class ClassEnv() {
         val retainedPredicates = ArrayList<Predicate>()
 
         for (val predicate in reduce(originalPredicates))
-            if (fixedVariables.containsAll(getTypeVariables(predicate.sure())))
+            if (fixedVariables.containsAll(getTypeVariables(predicate)))
                 deferredPredicates.add(predicate)
             else
                 retainedPredicates.add(predicate)

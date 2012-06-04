@@ -102,7 +102,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
             return analyze(AST.apply(AST.variable("error"), AST.constant("match failure")), env)
 
         val head = alts.first()
-        val tail = alts.subList(1, alts.size).sure()
+        val tail = alts.subList(1, alts.size)
 
         val alt = analyze(head, matchedObject, env)
         return CoreIfExpression(alt.extractor, alt.body, createAlts(matchedObject, tail, env))

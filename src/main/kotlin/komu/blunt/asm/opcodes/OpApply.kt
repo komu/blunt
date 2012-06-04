@@ -30,7 +30,7 @@ class OpApply private(private val tail: Boolean) : OpCode() {
     }
 
     private fun executeCompound(vm: VM, procedure: CompoundProcedure) {
-        vm.env = procedure.env.sure()
+        vm.env = procedure.env
         vm.pc = procedure.address
     }
 

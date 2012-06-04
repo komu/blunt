@@ -11,7 +11,7 @@ class ASTLetRec(val bindings: ImmutableList<ImplicitBinding>, val body: ASTExpre
         val simplifiedBindings = ArrayList<ImplicitBinding>()
         for (val binding in bindings)
             simplifiedBindings.add(binding.simplify())
-        return ASTLetRec(ImmutableList.copyOf(simplifiedBindings).sure(), body.simplify().sure())
+        return ASTLetRec(ImmutableList.copyOf(simplifiedBindings).sure(), body.simplify())
     }
 
     override fun toString(): String {

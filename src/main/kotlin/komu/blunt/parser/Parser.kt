@@ -263,7 +263,7 @@ class Parser(source: String) {
     private fun parseParens(): ASTExpression {
         lexer.expectToken(TokenType.LPAREN)
         if (lexer.readMatchingToken(TokenType.RPAREN))
-            return AST.constructor(ConstructorNames.UNIT.sure())
+            return AST.constructor(ConstructorNames.UNIT)
 
         if (lexer.nextTokenIs(TokenType.OPERATOR)) {
             val op = lexer.readTokenValue(TokenType.OPERATOR)
