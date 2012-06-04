@@ -11,7 +11,7 @@ abstract class Type : Types<Type?> {
 
     fun toString() = toString(0)
 
-    protected abstract fun toString(precedent: Int): String
+    protected abstract fun toString(precedence: Int): String
 
     fun getTypeVariables(): Set<TypeVariable> {
        val vars = LinkedHashSet<TypeVariable>()

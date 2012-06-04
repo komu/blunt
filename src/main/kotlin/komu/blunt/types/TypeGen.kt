@@ -12,7 +12,7 @@ class TypeGen(private val index: Int) : Type() {
     override fun addTypeVariables(result: Set<TypeVariable>) { }
     override val kind: Kind
         get() = throw RuntimeException("can't access kind of TypeGen")
-    override fun hnf() = throw RuntimeException("should not call hnf for TypeGen")
+    override fun hnf(): Boolean = throw RuntimeException("should not call hnf for TypeGen")
     override fun toString(precedence: Int) = "TypeGen[$index]"
 }
 

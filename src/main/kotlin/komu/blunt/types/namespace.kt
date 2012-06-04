@@ -4,9 +4,10 @@ import kotlin.util.*
 import java.util.List
 
 object BasicType {
-    val UNIT = basicType("Unit");
-    val INTEGER = basicType("Integer");
-    val STRING = basicType("String");
+    //val UNIT = basicType("Unit")
+    public val UNIT: Type = basicType("Unit")
+    val INTEGER = basicType("Integer")
+    val STRING = basicType("String")
 
     private fun basicType(name: String): Type =
         TypeConstructor(name, Kind.STAR)
