@@ -5,8 +5,15 @@ import komu.blunt.objects.EvaluationException
 import komu.blunt.objects.TypeConstructorValue
 
 import java.math.BigInteger
+import komu.blunt.eval.RootBindings
+import komu.blunt.types.Scheme
+import komu.blunt.parser.TypeParser
 
 object BasicFunctions {
+
+    fun register(bindings: RootBindings) {
+        bindings.bind("primitiveCompare", "Ord a => (a,a) -> Ordering", null)
+    }
 
     //@LibraryFunction("primitiveOpPlus")
     //@TypeScheme("Num a => (a,a) -> a")

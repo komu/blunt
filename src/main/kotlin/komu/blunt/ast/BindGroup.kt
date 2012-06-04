@@ -7,8 +7,8 @@ import java.util.List
 
 class BindGroup(explicitBindings: List<ExplicitBinding>, implicitBindings: List<ImplicitBinding>) {
 
-    val explicitBindings: List<ExplicitBinding> = ArrayList()
-    val implicitBindings: List<List<ImplicitBinding>> = ArrayList();
+    public val explicitBindings: List<ExplicitBinding> = ArrayList()
+    public val implicitBindings: List<List<ImplicitBinding>> = ArrayList();
 
     {
         this.explicitBindings.addAll(explicitBindings)

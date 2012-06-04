@@ -4,11 +4,11 @@ import com.google.common.base.Strings.repeat
 
 object ConstructorNames {
 
-    val CONS  = ":"
-    val NIL   = "[]"
-    val UNIT  = "()"
-    val TRUE  = "True"
-    val FALSE = "False"
+    public val CONS: String  = ":"
+    public val NIL: String   = "[]"
+    public val UNIT: String  = "()"
+    public val TRUE: String  = "True"
+    public val FALSE: String = "False"
 
     fun tupleName(arity: Int) = "(" + repeat(",", arity-1) + ")"
 }

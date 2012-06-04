@@ -6,6 +6,7 @@ import komu.blunt.objects.Symbol
 import komu.blunt.types.DataTypeDefinitions
 import komu.blunt.types.Scheme
 import komu.blunt.types.checker.Assumptions
+import komu.blunt.parser.TypeParser
 
 class RootBindings {
     val staticEnvironment = StaticEnvironment()
@@ -21,6 +22,10 @@ class RootBindings {
         val ref = staticEnvironment.define(name)
         defineVariableType(name, scheme)
         runtimeEnvironment.define(ref, value)
+    }
+
+    fun bind(name: String, scheme: String, value: Any?) {
+        bind(name, TypeParser.parseScheme(scheme), value)
     }
 
     fun defineVariableType(name: Symbol, scheme: Scheme) {

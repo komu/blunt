@@ -67,7 +67,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     }
 
     fun newTVar(): TypeVariable =
-        newTVar(Kind.STAR.sure())
+        newTVar(Kind.STAR)
 
     fun newTVar(kind: Kind): TypeVariable =
         typeVariable(typeName(typeSequence++), kind)

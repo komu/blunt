@@ -44,7 +44,7 @@ fun instantiate(ts: List<TypeVariable>, t: Qualified<Type>): Qualified<Type> {
 
 class Qualified<out T : Types<T?>>(predicates: List<Predicate>, val value: T) : Types<Qualified<T>> {
 
-    val predicates = unmodifiableList(ArrayList<Predicate>(predicates)).sure()
+    public val predicates: List<Predicate> = unmodifiableList(ArrayList<Predicate>(predicates)).sure()
 
     this(value: T): this(emptyList<Predicate>().sure(), value)
 

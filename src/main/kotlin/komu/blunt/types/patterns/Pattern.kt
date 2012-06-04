@@ -4,13 +4,14 @@ import komu.blunt.objects.Symbol
 import com.google.common.base.Objects
 import com.google.common.collect.ImmutableList
 import komu.blunt.types.ConstructorNames;
+import java.util.List
 
 abstract class Pattern {
     abstract fun toString(): String
 
     class object {
         fun constructor(name: String, vararg args: Pattern): Pattern =
-            throw UnsupportedOperationException() //return new ConstructorPattern(name, ImmutableList.copyOf(args));
+            ConstructorPattern(name, ImmutableList.copyOf(args.toList()).sure())
 
         fun constructor(name: String, args: ImmutableList<Pattern>): Pattern =
             ConstructorPattern(name, args)

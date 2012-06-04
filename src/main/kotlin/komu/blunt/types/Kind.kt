@@ -5,7 +5,7 @@ import java.util.Objects.hash
 abstract class Kind protected () {
 
     class object {
-        val STAR: Kind = StarKind()
+        public val STAR: Kind = StarKind()
 
         fun arrow(left: Kind, right: Kind): Kind = ArrowKind(left, right)
 

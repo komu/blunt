@@ -27,16 +27,17 @@ class Evaluator() {
     private var steps = 0.toLong();
 
     {
-        throw UnsupportedOperationException("registering basic functions")
-        ///NativeFunctionRegisterer(rootBindings).register(Class.forName("komu.blunt.stdlib.BasicFunctions"))
+        BasicFunctions.register(rootBindings)
+        //throw UnsupportedOperationException("registering basic functions")
+        //NativeFunctionRegisterer(rootBindings).register(Class.forName("komu.blunt.stdlib.BasicFunctions"))
 
-//        for (val constructor in rootBindings.dataTypes?.getDeclaredConstructors())
-//            createConstructorFunction(constructor.sure())
+        for (val constructor in rootBindings.dataTypes.getDeclaredConstructors())
+            createConstructorFunction(constructor)
     }
 
     fun analyze(expr: ASTExpression): CoreExpression {
         typeCheck(expr)
-        return toCore(expr, rootBindings.staticEnvironment.extend().sure())
+        return toCore(expr, rootBindings.staticEnvironment.extend())
     }
 
     fun load(source: String) {
@@ -51,21 +52,21 @@ class Evaluator() {
     }
 
     private fun processDefinition(definition: ASTValueDefinition) {
-        val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes.sure(), rootBindings.createAssumptions().sure())
+        val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions())
 
-        rootBindings.defineVariableType(definition.name, typ);
-        val v = rootBindings.staticEnvironment.define(definition.name.sure())
+        rootBindings.defineVariableType(definition.name, typ)
+        val v = rootBindings.staticEnvironment.define(definition.name)
 
-        val exp = Analyzer.analyze(definition.value.sure(), rootBindings.dataTypes.sure(), rootBindings.staticEnvironment.sure());
+        val exp = Analyzer.analyze(definition.value, rootBindings.dataTypes, rootBindings.staticEnvironment)
 
-        run(CoreDefineExpression(v, exp), rootBindings.runtimeEnvironment.sure());
+        run(CoreDefineExpression(v, exp), rootBindings.runtimeEnvironment);
     }
 
     private fun register(definition: ASTDataDefinition) {
         rootBindings.dataTypes.register(definition)
 
         for (val ctor in definition.constructors)
-            createConstructorFunction(ctor.sure())
+            createConstructorFunction(ctor)
 
         for (val className in definition.derivedClasses)
             classEnv.addInstance(isIn(className, definition.typ))
@@ -79,7 +80,7 @@ class Evaluator() {
     private fun run(expression: CoreExpression, env: Environment): Any? {
         val pos = instructions.pos();
 
-        instructions.append(expression.simplify().assemble(Assembler(), Register.VAL.sure(), Linkage.NEXT));
+        instructions.append(expression.simplify().assemble(Assembler(), Register.VAL.sure(), Linkage.NEXT))
 
         val vm = VM(instructions, env, rootBindings.runtimeEnvironment)
         vm.set(Register.PC.sure(), pos)
@@ -93,22 +94,21 @@ class Evaluator() {
 
 
     public fun evaluateWithType(exp: ASTExpression): #(Any?,Qualified<Type>) {
-        val env = rootBindings.staticEnvironment.extend().sure()
+        val env = rootBindings.staticEnvironment.extend()
         val typ = typeCheck(exp)
         val expression = toCore(exp, env);
 
         val result = run(expression, rootBindings.runtimeEnvironment.extend(env.size))
 
-//        return #(result, typ);
-        throw UnsupportedOperationException("compiler has problems with tuples")
+        return #(result, typ)
     }
 
     private fun typeCheck(exp: ASTExpression): Qualified<Type> {
-        return TypeChecker.typeCheck(exp, classEnv, rootBindings.dataTypes.sure(), rootBindings.createAssumptions().sure())
+        return TypeChecker.typeCheck(exp, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions())
     }
 
     private fun toCore(exp: ASTExpression, env: StaticEnvironment): CoreExpression =
-        Analyzer.analyze(exp, rootBindings.dataTypes.sure(), env).sure()
+        Analyzer.analyze(exp, rootBindings.dataTypes, env)
 
     fun getSteps() = steps
 

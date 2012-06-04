@@ -10,7 +10,7 @@ class VariableReference private (val frame: Int, val offset: Int, val name: Symb
     }
 
     class object {
-        val GLOBAL_FRAME = -1
+        public val GLOBAL_FRAME: Int = -1
 
         fun nested(frame: Int, offset: Int, name: Symbol) =
             VariableReference(frame, offset, name)

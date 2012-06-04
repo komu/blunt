@@ -7,7 +7,7 @@ import java.util.List
 abstract class Type : Types<Type?> {
     abstract fun instantiate(vars: List<TypeVariable>): Type
     abstract fun hnf(): Boolean
-    abstract val kind: Kind
+    public abstract val kind: Kind
 
     fun toString() = toString(0)
 
