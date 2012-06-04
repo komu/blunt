@@ -5,7 +5,8 @@ import komu.blunt.ast.*
 import komu.blunt.objects.Symbol
 import komu.blunt.types.patterns.*
 import java.util.ArrayList
-import std.util.*
+import kotlin.util.*
+import java.util.List
 
 /**
  * Walks the AST to rename all local variables so that they become unique. This makes
@@ -45,9 +46,7 @@ class IdentifierRenamer {
         }
 
     private fun renamePattern(pattern: ConstructorPattern, ctx: IdentifierMapping): Pattern {
-        val args = ArrayList<Pattern>()
-
-        pattern.args.map(args) {
+        val args: List<Pattern> = pattern.args.map() {
             renameIdentifiers(it, ctx)
         }
 
@@ -117,9 +116,7 @@ class IdentifierRenamer {
     }
 
     private fun visit(astCase: ASTCase, ctx: IdentifierMapping): ASTExpression {
-        val alts = ArrayList<ASTAlternative>(astCase.alternatives.size)
-
-        astCase.alternatives.map(alts) {
+        var alts: List<ASTAlternative> = astCase.alternatives.map {
             val newCtx = ctx.extend()
             AST.alternative(renameIdentifiers(it.pattern, newCtx), renameIdentifiers(it.value, newCtx))
         }

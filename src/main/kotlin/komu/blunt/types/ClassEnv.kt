@@ -1,6 +1,6 @@
 package komu.blunt.types
 
-import std.util.*
+import kotlin.util.*
 
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.checker.Substitution

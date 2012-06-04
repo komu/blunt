@@ -15,8 +15,8 @@ class TypeCheckResult<out T>(val value: T, val predicates: ImmutableList<Predica
         fun of<T>(value: T) = TypeCheckResult(value, ImmutableList.of<Predicate>().sure())
         fun of<T>(value: T, predicates: List<Predicate>) = TypeCheckResult(value, ImmutableList.copyOf(predicates).sure())
 
-        class Builder<T> private () {
-            private val predicates = ArrayList<Predicate>
+        class Builder<T> () {
+            private val predicates = ArrayList<Predicate>()
 
             fun addPredicates(ps: Collection<Predicate>): Builder<T> {
                 predicates.addAll(ps)

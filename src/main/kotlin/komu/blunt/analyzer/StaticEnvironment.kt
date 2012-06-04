@@ -4,7 +4,7 @@ import komu.blunt.objects.Symbol
 
 import java.util.HashMap
 import java.util.List
-import std.util.*
+import kotlin.util.*
 
 class StaticEnvironment(private val parent: StaticEnvironment? = null) {
 

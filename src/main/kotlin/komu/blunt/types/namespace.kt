@@ -1,6 +1,6 @@
 package komu.blunt.types
 
-import std.util.*
+import kotlin.util.*
 import java.util.List
 
 object BasicType {

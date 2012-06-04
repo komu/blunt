@@ -1,13 +1,13 @@
 package komu.blunt.asm
 
-import opcodes.*
+import komu.blunt.asm.opcodes.*
 import komu.blunt.analyzer.VariableReference
 import komu.blunt.core.PatternPath
 import java.util.Set
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
-import std.util.*
+import kotlin.util.*
 
 class Instructions {
     private val instructions = ArrayList<OpCode>()

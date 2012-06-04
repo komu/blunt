@@ -19,19 +19,19 @@ abstract class Environment {
     protected abstract fun set(frame: Int, offset: Int, value: Any?)
 
     fun extend(envSize: Int, arg: Any?): Environment {
-        val args = Array<Any?>(envSize)
+        val args = Array<Any?>(envSize) { _ -> null }
         args[0] = arg
         return NestedEnvironment(args, this)
     }
 
     fun extend(envSize: Int): Environment {
-        return NestedEnvironment(Array<Any?>(envSize), this)
+        return NestedEnvironment(Array<Any?>(envSize) { _ -> null }, this)
     }
 }
 
 class RootEnvironment : Environment() {
 
-    private var bindings = Array<Any?>(512)
+    private var bindings = Array<Any?>(512) { _ -> null }
 
     override fun set(frame: Int, offset: Int, value: Any?) {
         checkFrame(frame)

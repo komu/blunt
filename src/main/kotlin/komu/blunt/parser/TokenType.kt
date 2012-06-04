@@ -6,9 +6,9 @@ import java.util.Map
 open class TokenType<out T>(val name: String) {
 
     class object {
-        private val keywords = HashMap<String, Keyword>()
+        val keywords = HashMap<String, Keyword>()
 
-        fun keyword(name: String) = keywords.get(name).sure()
+        fun keyword(name: String) = keywords[name]
 
         val EOF               = TokenType<Unit>("<eof>")
         val LITERAL           = TokenType<Any>("<literal>")
@@ -47,7 +47,7 @@ class Punctuation(name: String) : TokenType<Unit>(name)
 
 class Keyword(name: String) : TokenType<Unit>(name) {
     {
-        TokenType.keywords.put(name, this)
+        TokenType.keywords[name] = this
     }
 
     override fun toString() = "keyword '$name'"

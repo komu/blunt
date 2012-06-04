@@ -3,7 +3,7 @@ package komu.blunt.types
 import java.util.ArrayList
 import java.util.Collection
 import java.util.List
-import std.util.*
+import kotlin.util.*
 
 class TypeClass(val superClasses: List<String>) {
 
@@ -13,9 +13,6 @@ class TypeClass(val superClasses: List<String>) {
         instances.add(ClassInstance(qual))
     }
 
-    fun instancePredicates(): Collection<Predicate> {
-        val result = ArrayList<Predicate>(instances.size)
-        return instances.map(result) { it.sure().qual.value }
-    }
+    fun instancePredicates(): Collection<Predicate> =
+        instances.map { it.qual.value }
 }
-

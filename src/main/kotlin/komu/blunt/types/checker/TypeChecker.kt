@@ -1,6 +1,6 @@
 package komu.blunt.types.checker
 
-import std.util.*
+import kotlin.util.*
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.ASTValueDefinition
@@ -81,7 +81,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
 
     private fun typeName(index: Int): String =
         if (index < 5)
-            String.valueOf(('a' + index).chr).sure()
+            String.valueOf(('a' + index).toChar()).sure()
         else
             "t" + (index-5)
 

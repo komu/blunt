@@ -1,6 +1,6 @@
 package komu.blunt.asm
 
-import std.util.*
+import kotlin.util.*
 import komu.blunt.asm.opcodes.OpCode
 import komu.blunt.eval.Environment
 import komu.blunt.eval.RootEnvironment
@@ -15,7 +15,7 @@ class VM(private val instructions: Instructions, var env: Environment, val globa
     var procedure: Procedure? = null
     var arg: Any? = null
     var pc = 0
-    var steps = 0.lng
+    var steps = 0.toLong()
 
     private val stack = ArrayList<Any?>(4096)
 

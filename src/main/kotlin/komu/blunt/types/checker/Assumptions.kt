@@ -13,7 +13,7 @@ import java.util.Set
 
 import java.util.Collections.emptyMap
 import java.util.Collections.unmodifiableMap
-import std.util.*
+import kotlin.util.*
 
 class Assumptions private(private val mappings: Map<Symbol,Scheme>) : Types<Assumptions> {
 

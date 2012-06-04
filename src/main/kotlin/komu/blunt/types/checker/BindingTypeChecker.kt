@@ -1,6 +1,6 @@
 package komu.blunt.types.checker
 
-import std.util.*
+import kotlin.util.*
 import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.BindGroup
 import komu.blunt.ast.ExplicitBinding

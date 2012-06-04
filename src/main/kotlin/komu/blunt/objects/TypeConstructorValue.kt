@@ -1,6 +1,6 @@
 package komu.blunt.objects
 
-import std.util.*
+import kotlin.util.*
 import java.util.Arrays
 
 import com.google.common.base.Preconditions.checkArgument
@@ -12,7 +12,7 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
     }
 
     class object {
-        private val EMPTY_ARRAY = Array<Any?>(0)
+        private val EMPTY_ARRAY = Array<Any?>(0) { x -> null }
     }
 
     this(index: Int, name: String): this(index, name, TypeConstructorValue.EMPTY_ARRAY) { }

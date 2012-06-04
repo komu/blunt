@@ -1,6 +1,6 @@
 package komu.blunt.analyzer
 
-import std.util.*
+import kotlin.util.*
 
 import komu.blunt.ast.*
 import komu.blunt.core.*
@@ -32,11 +32,8 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
           else              -> throw Exception("unknown exp $exp")
       }
 
-    private fun analyzeAll(exps: List<ASTExpression>, env: StaticEnvironment): List<CoreExpression>  {
-        val result = ArrayList<CoreExpression>(exps.size())
-        exps.map(result) { analyze(it, env) }
-        return result
-    }
+    private fun analyzeAll(exps: List<ASTExpression>, env: StaticEnvironment): List<CoreExpression> =
+        exps.map { analyze(it, env) }
 
     private fun visit(lambda: ASTLambda, env: StaticEnvironment): CoreExpression {
         val newEnv = env.extend(lambda.argument)

@@ -1,6 +1,6 @@
 package komu.blunt.parser
 
-import std.util.*
+import kotlin.util.*
 import komu.blunt.types.*
 
 import java.util.ArrayList
@@ -15,7 +15,7 @@ import komu.blunt.types.isIn
 class TypeParser(val lexer: Lexer) {
 
     private val START_TOKENS =
-        Arrays.asList(LPAREN, LBRACKET, IDENTIFIER, TYPE_OR_CTOR_NAME).sure()
+        Arrays.asList(TokenType.LPAREN, TokenType.LBRACKET, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME).sure()
 
     class object {
         fun parseType(s: String): Type =
@@ -38,11 +38,11 @@ class TypeParser(val lexer: Lexer) {
         val lexerState = lexer.save()
         try {
             val predicates = ArrayList<Predicate>()
-            if (lexer.readMatchingToken(LPAREN)) {
+            if (lexer.readMatchingToken(TokenType.LPAREN)) {
                 do {
                     predicates.add(parsePredicate())
-                } while (lexer.readMatchingToken(COMMA))
-                lexer.expectToken(RPAREN)
+                } while (lexer.readMatchingToken(TokenType.COMMA))
+                lexer.expectToken(TokenType.RPAREN)
             } else {
                 predicates.add(parsePredicate())
             }
@@ -55,7 +55,7 @@ class TypeParser(val lexer: Lexer) {
     }
 
     private fun parsePredicate(): Predicate {
-        val className = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
+        val className = lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME)
         val typ = parseType()
         return isIn(className, typ)
     }
@@ -63,32 +63,32 @@ class TypeParser(val lexer: Lexer) {
     public fun parseType(): Type {
         var typ = parseBasic()
 
-        while (lexer.readMatchingToken(RIGHT_ARROW))
+        while (lexer.readMatchingToken(TokenType.RIGHT_ARROW))
             typ = functionType(typ, parseType())
 
         return typ
     }
 
     private fun parseBasic(): Type =
-        if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
+        if (lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME))
             parseTypeConcrete()
         else
             parseTypePrimitive()
 
     public fun parseTypePrimitive(): Type =
-        if (lexer.nextTokenIs(LPAREN))
+        if (lexer.nextTokenIs(TokenType.LPAREN))
             parseParens()
-        else if (lexer.nextTokenIs(LBRACKET))
+        else if (lexer.nextTokenIs(TokenType.LBRACKET))
             parseBrackets()
-        else if (lexer.nextTokenIs(IDENTIFIER))
+        else if (lexer.nextTokenIs(TokenType.IDENTIFIER))
             parseTypeVariable()
-        else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
-            genericType(lexer.readTokenValue(TYPE_OR_CTOR_NAME))
+        else if (lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME))
+            genericType(lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME))
         else
             throw lexer.expectFailure("type")
 
     public fun parseTypeConcrete(): Type {
-        val name = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
+        val name = lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME)
 
         val args = ArrayList<Type>()
         while (lexer.nextTokenIsOneOf(START_TOKENS))
@@ -98,18 +98,18 @@ class TypeParser(val lexer: Lexer) {
     }
 
     private fun parseParens(): Type {
-        lexer.expectToken(LPAREN)
+        lexer.expectToken(TokenType.LPAREN)
 
-        if (lexer.readMatchingToken(RPAREN))
+        if (lexer.readMatchingToken(TokenType.RPAREN))
             return BasicType.UNIT
 
         val types = ArrayList<Type>()
         types.add(parseType())
 
-        while (lexer.readMatchingToken(COMMA))
+        while (lexer.readMatchingToken(TokenType.COMMA))
             types.add(parseType())
 
-        lexer.expectToken(RPAREN)
+        lexer.expectToken(TokenType.RPAREN)
 
         if (types.size == 1)
             return types.first()
@@ -118,15 +118,15 @@ class TypeParser(val lexer: Lexer) {
     }
 
     private fun parseBrackets(): Type {
-        lexer.expectToken(LBRACKET)
+        lexer.expectToken(TokenType.LBRACKET)
         val elementType = parseType()
-        lexer.expectToken(RBRACKET)
+        lexer.expectToken(TokenType.RBRACKET)
 
         return listType(elementType)
     }
 
     public fun parseTypeVariable(): TypeVariable {
-        val name = lexer.readTokenValue(IDENTIFIER)
+        val name = lexer.readTokenValue(TokenType.IDENTIFIER)
         return typeVariable(name)
     }
 }

@@ -63,7 +63,7 @@ object AST {
         ASTCase(exp, alts)
 
     fun caseExp(exp: ASTExpression, vararg alts: ASTAlternative): ASTExpression {
-        val lst = ArrayList<ASTAlternative>
+        val lst = ArrayList<ASTAlternative>()
         for (val alt in alts) lst.add(alt)
 
         return ASTCase(exp, ImmutableList.copyOf(lst).sure())
@@ -81,7 +81,7 @@ object AST {
     }
 
     fun sequence(vararg exps: ASTExpression): ASTSequence {
-        val lst = ArrayList<ASTExpression>
+        val lst = ArrayList<ASTExpression>()
         for (val exp in exps) lst.add(exp)
 
         return ASTSequence(ImmutableList.copyOf(lst).sure())

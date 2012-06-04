@@ -1,6 +1,6 @@
 package komu.blunt.types
 
-import std.util.*
+import kotlin.util.*
 import java.util.Collection
 import komu.blunt.types.checker.UnificationException
 import komu.blunt.types.checker.Unifier

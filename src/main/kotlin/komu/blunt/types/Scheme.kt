@@ -1,6 +1,6 @@
 package komu.blunt.types
 
-import std.util.*
+import kotlin.util.*
 
 import komu.blunt.types.checker.Substitution
 
@@ -8,6 +8,7 @@ import java.util.ArrayList
 import java.util.Collections
 import java.util.List
 import java.util.Set
+import java.util.Objects
 
 class Scheme(val kinds: List<Kind?>, val `type`: Qualified<Type>) : Types<Scheme> {
 
@@ -21,10 +22,10 @@ class Scheme(val kinds: List<Kind?>, val `type`: Qualified<Type>) : Types<Scheme
     fun toString() = `type`.toString()
 
     fun equals(obj: Any?) = obj is Scheme && kinds == obj.kinds && `type` == obj.`type`
-    fun hashCode() = kinds.sure().hashCode() * 79 + `type`.sure().hashCode()
+    fun hashCode() = Objects.hash(kinds, `type`)
 
     class object {
-        fun fromType(t: Type) = Scheme(Collections.emptyList<Kind?>.sure(), Qualified(t))
+        fun fromType(t: Type) = Scheme(Collections.emptyList<Kind?>().sure(), Qualified(t))
 
         fun fromTypes(ts: List<out Type>): List<Scheme> {
             val schemes = ArrayList<Scheme>(ts.size)

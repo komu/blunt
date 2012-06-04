@@ -24,7 +24,7 @@ class Evaluator() {
     private val rootBindings = RootBindings()
     private val instructions = Instructions()
     private val classEnv = ClassEnv()
-    private var steps = 0.lng
+    private var steps = 0.toLong();
 
     {
         throw UnsupportedOperationException("registering basic functions")
@@ -121,10 +121,10 @@ class Evaluator() {
     }
 
     private fun readResource(path: String): String {
-        val resource = getClass().getClassLoader()?.getResource(path)
+        val resource = getMyClass().getClassLoader()?.getResource(path)
         return Resources.toString(resource, Charset.forName("UTF-8")).sure()
     }
 
-    private fun getClass() = Class.forName("komu.blunt.eval.Evaluator").sure() // TODO
+    private fun getMyClass() = Class.forName("komu.blunt.eval.Evaluator").sure() // TODO
 }
 

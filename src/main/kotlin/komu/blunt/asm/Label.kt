@@ -4,7 +4,7 @@ class Label(private val name: String) {
 
     private var _address = -1
 
-    protected fun relocateBy(offset: Int) {
+    fun relocateBy(offset: Int) {
         if (offset < 0) throw IllegalArgumentException("negative offset: $offset")
         if (_address == -1) throw IllegalStateException("can't relocate label without original address")
 

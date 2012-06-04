@@ -1,6 +1,6 @@
 package komu.blunt.types
 
-import std.util.*
+import kotlin.util.*
 import java.util.Collection
 import java.util.Collections.emptyList
 import java.util.Collections.unmodifiableList

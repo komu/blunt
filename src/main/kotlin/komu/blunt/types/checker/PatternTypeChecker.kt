@@ -1,6 +1,6 @@
 package komu.blunt.types.checker
 
-import std.util.*
+import kotlin.util.*
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.*
 import komu.blunt.types.patterns.*

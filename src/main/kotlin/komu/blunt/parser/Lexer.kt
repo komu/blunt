@@ -15,7 +15,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     private val indents = IndentStack()
 
     public fun hasMoreTokens(): Boolean =
-        !nextTokenIs(EOF)
+        !nextTokenIs(TokenType.EOF)
 
     public fun peekTokenType(): TokenType<Any> =
         peekToken().tokenType
@@ -79,8 +79,8 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
     }
 
     public fun readOperatorMatchingLevel(level: Int): Operator? {
-        if (nextTokenIs(OPERATOR)) {
-            val op = peekTokenValue(OPERATOR)
+        if (nextTokenIs(TokenType.OPERATOR)) {
+            val op = peekTokenValue(TokenType.OPERATOR)
 
             if (level == op.precedence) {
                 readToken()
@@ -96,20 +96,20 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
 
         val location = reader.location
         if (indents.popIf(reader.column))
-            return Token.ofType(END, location)
+            return Token.ofType(TokenType.END, location)
 
         val ch = peek()
         if (ch == null)
-            return Token.ofType(EOF, location)
+            return Token.ofType(TokenType.EOF, location)
 
         when (ch) {
             '"' ->   return readString()
-            ',' ->   { read(); return Token.ofType(COMMA, location) }
-            '(' ->   { read(); return Token.ofType(LPAREN, location) }
-            ')' ->   { read(); return Token.ofType(RPAREN, location) }
-            ';' ->   { read(); return Token.ofType(SEMICOLON, location) }
-            '[' ->   { read(); return Token.ofType(LBRACKET, location) }
-            ']' ->   { read(); return Token.ofType(RBRACKET, location) }
+            ',' ->   { read(); return Token.ofType(TokenType.COMMA, location) }
+            '(' ->   { read(); return Token.ofType(TokenType.LPAREN, location) }
+            ')' ->   { read(); return Token.ofType(TokenType.RPAREN, location) }
+            ';' ->   { read(); return Token.ofType(TokenType.SEMICOLON, location) }
+            '[' ->   { read(); return Token.ofType(TokenType.LBRACKET, location) }
+            ']' ->   { read(); return Token.ofType(TokenType.RBRACKET, location) }
            else ->   { }
         }
 
@@ -149,16 +149,16 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         val name = sb.toString().sure()
 
         if (name == "_")
-            return Token.ofType(UNDERSCORE, location)
+            return Token.ofType(TokenType.UNDERSCORE, location)
 
         val keyword = TokenType.keyword(name)
 
         if (keyword != null)
             return Token.ofType(keyword, location)
         else if (Character.isUpperCase(name[0]))
-            return Token(TYPE_OR_CTOR_NAME, name, location)
+            return Token(TokenType.TYPE_OR_CTOR_NAME, name, location)
         else
-            return Token(IDENTIFIER, name, location)
+            return Token(TokenType.IDENTIFIER, name, location)
     }
 
     private fun isWhitespace(ch: Char?) =
@@ -168,7 +168,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         ch != null && Character.isJavaIdentifierStart(ch)
 
     private fun isIdentifierPart(ch: Char?) =
-        ch != null && (Character.isJavaIdentifierPart(ch) || "?!'".lastIndexOf(ch.chr) != -1)
+        ch != null && (Character.isJavaIdentifierPart(ch) || "?!'".lastIndexOf(ch.toChar()) != -1)
 
     private fun isOperatorCharacter(ch: Char?) =
         ch != null && "=-+*/<>%?!|&$:.\\~".lastIndexOf(ch) != -1
@@ -186,12 +186,12 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
 
         val op = sb.toString().sure()
         return when (op) {
-          "\\" ->   Token.ofType(LAMBDA, location)
-          "="  ->   Token.ofType(ASSIGN, location)
-          "|"  ->   Token.ofType(OR, location)
-          "->" ->   Token.ofType(RIGHT_ARROW, location)
-          "=>" ->   Token.ofType(BIG_RIGHT_ARROW, location)
-          else ->   Token(OPERATOR, operatorSet[op], location)
+          "\\" ->   Token.ofType(TokenType.LAMBDA, location)
+          "="  ->   Token.ofType(TokenType.ASSIGN, location)
+          "|"  ->   Token.ofType(TokenType.OR, location)
+          "->" ->   Token.ofType(TokenType.RIGHT_ARROW, location)
+          "=>" ->   Token.ofType(TokenType.BIG_RIGHT_ARROW, location)
+          else ->   Token(TokenType.OPERATOR, operatorSet[op], location)
         }
     }
 
@@ -232,7 +232,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         while (isDigit(reader.peek()))
             sb.append(read())
 
-        return Token(LITERAL, BigInteger(sb.toString()), location)
+        return Token(TokenType.LITERAL, BigInteger(sb.toString()), location)
     }
 
     private fun read(): Char {

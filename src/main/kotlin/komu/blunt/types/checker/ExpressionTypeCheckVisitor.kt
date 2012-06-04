@@ -1,6 +1,6 @@
 package komu.blunt.types.checker
 
-import std.util.*
+import kotlin.util.*
 
 import komu.blunt.ast.*
 import komu.blunt.objects.Symbol
@@ -11,7 +11,7 @@ import java.util.List
 
 class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
-    private fun typeCheck(exp: ASTExpression?, ctx: Assumptions): TypeCheckResult<Type> =
+    fun typeCheck(exp: ASTExpression?, ctx: Assumptions): TypeCheckResult<Type> =
       when (exp) {
         is ASTApplication -> visit(exp, ctx)
         is ASTConstant    -> visit(exp, ctx)

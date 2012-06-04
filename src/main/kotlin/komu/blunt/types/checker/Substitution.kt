@@ -1,6 +1,6 @@
 package komu.blunt.types.checker
 
-import std.util.*
+import kotlin.util.*
 import com.google.common.collect.ImmutableMap
 
 import komu.blunt.types.Type

@@ -10,24 +10,23 @@ import java.util.List
 
 import komu.blunt.parser.TokenType.*
 import komu.blunt.types.ConstructorNames
-import komu.blunt.types.patterns.Pattern.*
 import java.util.Collections
 
 final class PatternParser(val lexer: Lexer) {
 
     private val PATTERN_START_TOKENS =
-        Arrays.asList(LPAREN, LBRACKET, LITERAL, IDENTIFIER, TYPE_OR_CTOR_NAME, UNDERSCORE).sure()
+        Arrays.asList(TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, TokenType.UNDERSCORE).sure()
 
     // <literal> | <variable> | ( <pattern> ) | <constructor> <pattern>* |
     public fun parsePattern(): Pattern {
-        if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME)) {
-            val name = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
+        if (lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME)) {
+            val name = lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME)
             val args = ArrayList<Pattern>()
 
             while (lexer.nextTokenIsOneOf(PATTERN_START_TOKENS))
                 args.add(parseSimplePattern())
 
-            return constructor(name, ImmutableList.copyOf(args).sure())
+            return Pattern.constructor(name, ImmutableList.copyOf(args).sure())
         } else {
             return parseSimplePattern()
         }
@@ -36,72 +35,72 @@ final class PatternParser(val lexer: Lexer) {
     public fun parseSimplePattern(): Pattern {
         var pattern = parsePrimitivePattern()
 
-        if (lexer.nextTokenIs(OPERATOR) && lexer.peekTokenValue(OPERATOR).isConstructor) {
-            val op = lexer.readTokenValue(OPERATOR)
+        if (lexer.nextTokenIs(TokenType.OPERATOR) && lexer.peekTokenValue(TokenType.OPERATOR).isConstructor) {
+            val op = lexer.readTokenValue(TokenType.OPERATOR)
 
-            pattern = constructor(op.toString(), pattern, parsePattern())
+            pattern = Pattern.constructor(op.toString(), pattern, parsePattern())
         }
 
         return pattern
     }
 
     private fun parsePrimitivePattern(): Pattern =
-        if (lexer.nextTokenIs(LITERAL))
-            literal(lexer.readTokenValue(LITERAL))
-        else if (lexer.readMatchingToken(UNDERSCORE))
-            wildcard()
-        else if (lexer.nextTokenIs(IDENTIFIER))
-            variable(lexer.readTokenValue(IDENTIFIER))
-        else if (lexer.readMatchingToken(LPAREN))
+        if (lexer.nextTokenIs(TokenType.LITERAL))
+            Pattern.literal(lexer.readTokenValue(TokenType.LITERAL))
+        else if (lexer.readMatchingToken(TokenType.UNDERSCORE))
+            Pattern.wildcard()
+        else if (lexer.nextTokenIs(TokenType.IDENTIFIER))
+            Pattern.variable(lexer.readTokenValue(TokenType.IDENTIFIER))
+        else if (lexer.readMatchingToken(TokenType.LPAREN))
             parseParens()
-        else if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
-            constructor(lexer.readTokenValue(TYPE_OR_CTOR_NAME))
-        else if (lexer.nextTokenIs(LBRACKET))
+        else if (lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME))
+            Pattern.constructor(lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME))
+        else if (lexer.nextTokenIs(TokenType.LBRACKET))
             parseBrackets()
         else
             throw lexer.expectFailure("pattern")
 
     private fun parseBrackets(): Pattern {
-        lexer.expectToken(LBRACKET)
+        lexer.expectToken(TokenType.LBRACKET)
 
-        if (lexer.readMatchingToken(RBRACKET))
-            return constructor(ConstructorNames.NIL.sure())
+        if (lexer.readMatchingToken(TokenType.RBRACKET))
+            return Pattern.constructor(ConstructorNames.NIL.sure())
 
         val patterns = ArrayList<Pattern>()
 
         patterns.add(parsePattern())
-        while (lexer.readMatchingToken(COMMA))
+        while (lexer.readMatchingToken(TokenType.COMMA))
             patterns.add(parsePattern())
 
-        lexer.expectToken(RBRACKET)
+        lexer.expectToken(TokenType.RBRACKET)
 
         return createList(patterns)
     }
 
     private fun createList(patterns: List<Pattern>): Pattern {
-        var result = constructor(ConstructorNames.NIL.sure())
+        var result = Pattern.constructor(ConstructorNames.NIL.sure())
 
         for (val pattern in Lists.reverse(patterns))
-            result = constructor(ConstructorNames.CONS.sure(), pattern, result)
+            result = Pattern.constructor(ConstructorNames.CONS.sure(), pattern, result)
 
         return result
     }
 
     private fun parseParens(): Pattern {
-        if (lexer.readMatchingToken(RPAREN))
-            return constructor(ConstructorNames.UNIT.sure())
+        if (lexer.readMatchingToken(TokenType.RPAREN))
+            return Pattern.constructor(ConstructorNames.UNIT.sure())
 
         val patterns = ArrayList<Pattern>()
 
         do {
             patterns.add(parsePattern())
-        } while (lexer.readMatchingToken(COMMA))
+        } while (lexer.readMatchingToken(TokenType.COMMA))
 
-        lexer.expectToken(RPAREN)
+        lexer.expectToken(TokenType.RPAREN)
 
         if (patterns.size() == 1)
             return patterns.get(0)
         else
-            return constructor(ConstructorNames.tupleName(patterns.size()).sure(), ImmutableList.copyOf(patterns).sure())
+            return Pattern.constructor(ConstructorNames.tupleName(patterns.size()).sure(), ImmutableList.copyOf(patterns).sure())
     }
 }

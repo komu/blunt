@@ -33,7 +33,7 @@ class TypeApplication(val left: Type, val right: Type) : Type() {
         }
 
     override fun toString(precedence: Int): String =
-        toString(LinkedList<Type?>, precedence)
+        toString(LinkedList<Type?>(), precedence)
 
     private fun toString(arguments: LinkedList<Type?>, precedence: Int): String {
         arguments.addFirst(right)
