@@ -1,16 +1,4 @@
-package komu.blunt.parser;
-
-import komu.blunt.types.Predicate;
-import komu.blunt.types.Qualified;
-import komu.blunt.types.Type;
-import komu.blunt.types.TypeVariable;
-import org.junit.Assert;
-import org.junit.Test;
-
-import java.util.Arrays;
-
-import static komu.blunt.types.Type.*;
-import static org.hamcrest.CoreMatchers.is;
+package komu.blunt.parser
 
 public class TypeParserTest {
 /*

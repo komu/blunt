@@ -1,21 +1,7 @@
 package komu.blunt.eval;
 
-import komu.blunt.parser.Parser;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
-
-import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import static java.lang.String.format;
-import static org.junit.Assert.fail;
-
 public class EvaluatorPerformanceTest {
-
+/*
     private static final Evaluator evaluator = new Evaluator();
 
     @Rule
@@ -64,4 +50,5 @@ public class EvaluatorPerformanceTest {
     private @interface MaxSteps {
         long value();
     }
+    */
 }

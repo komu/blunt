@@ -1,4 +1,4 @@
-package komu.blunt.parser;
+package komu.blunt.parser
 
 public class PatternParserTest {
 /*
@@ -73,3 +73,4 @@ public class PatternParserTest {
     }
     */
 }
+

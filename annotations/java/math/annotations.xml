@@ -14,4 +14,7 @@
     <item name='java.math.BigDecimal java.math.BigDecimal add(java.math.BigDecimal)'>
         <annotation name='org.jetbrains.annotations.NotNull'/>
     </item>
+    <item name='java.math.BigInteger java.math.BigInteger valueOf(long)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
 </root>
