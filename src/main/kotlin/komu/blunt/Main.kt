@@ -5,8 +5,8 @@ import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.ASTVariable
 import komu.blunt.eval.Evaluator
 import komu.blunt.objects.EvaluationException
-import komu.blunt.parser.SyntaxException
 import komu.blunt.objects.Symbol
+import komu.blunt.parser.SyntaxException
 
 object Main {
 
@@ -22,8 +22,8 @@ object Main {
                 } else if (isSymbol("dump", exp)) {
                     evaluator.dump()
                 } else {
-                    val result = evaluator.evaluateWithType(exp)
-                    println(result)
+                    val (value, typ) = evaluator.evaluateWithType(exp)
+                    println("$value: $typ")
                 }
             } catch (e: SyntaxException) {
                 println(e)
