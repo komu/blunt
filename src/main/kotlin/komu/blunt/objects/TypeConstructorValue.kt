@@ -57,12 +57,12 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
     private fun toStringAsTuple(): String {
         val sb = StringBuilder()
 
-        sb.append('(');
+        sb.append('(')
 
         for (val i in items.indices) {
-            if (i != 0) sb.append(", ");
+            if (i != 0) sb.append(", ")
 
-            sb.append(items[i]);
+            sb.append(items[i])
         }
         sb.append(')')
 

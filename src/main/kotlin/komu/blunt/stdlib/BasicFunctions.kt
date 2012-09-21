@@ -1,6 +1,8 @@
 package komu.blunt.stdlib
 
+import java.math.BigInteger
 import komu.blunt.eval.RootBindings
+import komu.blunt.objects.TypeConstructorValue
 
 object BasicFunctions {
 
@@ -18,7 +20,11 @@ object BasicFunctions {
         }
 
         bindings.bindFunction("primitiveOpPlus", "Num a => (a,a) -> a") { s ->
-            throw Exception(s.toString())
+            val tc = s as TypeConstructorValue
+            val x = tc.items[0] as BigInteger
+            val y = tc.items[1] as BigInteger
+
+            x + y
         }
 
         bindings.bindFunction("primitiveOpMinus", "Num a => (a,a) -> a") { s ->

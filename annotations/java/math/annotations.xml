@@ -4,5 +4,14 @@
     </item>
     <item name='java.math.BigInteger java.math.BigInteger add(java.math.BigInteger)'>
         <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value" val="&quot;fun add(val : BigInteger) : BigInteger&quot;"/>
+        </annotation>
+    </item>
+    <item name='java.math.BigDecimal java.math.BigDecimal add(java.math.BigDecimal) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='java.math.BigDecimal java.math.BigDecimal add(java.math.BigDecimal)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
     </item>
 </root>
