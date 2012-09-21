@@ -3,9 +3,8 @@ package komu.blunt.asm.opcodes
 import komu.blunt.asm.Register
 import komu.blunt.asm.VM
 import komu.blunt.objects.CompoundProcedure
-import komu.blunt.objects.PrimitiveProcedure
-import komu.blunt.objects.Procedure
 import komu.blunt.objects.EvaluationException
+import komu.blunt.objects.PrimitiveProcedure
 
 class OpApply private(private val tail: Boolean) : OpCode() {
 
@@ -37,6 +36,6 @@ class OpApply private(private val tail: Boolean) : OpCode() {
     // Though the application itself will only modify PC, ENV or VAL, the called code could modify anything.
     override fun modifies(register: Register) = true
 
-    override fun toString() = "(${if (tail) "tail-call" else "call"} ${Register.PROCEDURE} ${Register.ARG}"
+    override fun toString() = "(${if (tail) "tail-call" else "call"} ${Register.PROCEDURE} ${Register.ARG})"
 }
 
