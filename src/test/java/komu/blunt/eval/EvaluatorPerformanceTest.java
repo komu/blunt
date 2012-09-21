@@ -33,7 +33,7 @@ public class EvaluatorPerformanceTest {
     }
 
     private static Object evaluate(String expr) {
-        return evaluator.evaluate(Parser.$classobj.parseExpression(expr));
+        return evaluator.evaluate(Parser.ClassObject$.$instance.parseExpression(expr));
     }
 
     private static class Profiler extends TestWatcher {

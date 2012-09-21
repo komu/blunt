@@ -1,16 +1,12 @@
 package komu.blunt.types.checker
 
+import java.util.Collections.emptyMap
+import java.util.HashMap
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.objects.Symbol
 import komu.blunt.types.Scheme
 import komu.blunt.types.TypeVariable
 import komu.blunt.types.Types
-
-import java.util.HashMap
-
-import java.util.Collections.emptyMap
-import java.util.Collections.unmodifiableMap
-import kotlin.util.*
 
 class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions> {
 
@@ -77,7 +73,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
 
             fun build(): Assumptions {
                 built = true
-                return Assumptions(unmodifiableMap(mappings))
+                return Assumptions(mappings)
             }
 
             fun build(ass: Assumptions) = build().join(ass)

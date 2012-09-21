@@ -1,13 +1,8 @@
 package komu.blunt.types.checker
 
-import kotlin.util.*
-
-import komu.blunt.ast.*
-import komu.blunt.objects.Symbol
-import komu.blunt.types.*
-
 import java.util.ArrayList
-import java.util.List
+import komu.blunt.ast.*
+import komu.blunt.types.*
 
 class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
@@ -46,11 +41,11 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
     private fun visit(lambda: ASTLambda, ass: Assumptions): TypeCheckResult<Type> {
         val argumentType = tc.newTVar()
 
-        val as2 = Assumptions.singleton(lambda.argument, Scheme.fromType(argumentType).sure())
+        val as2 = Assumptions.singleton(lambda.argument, Scheme.fromType(argumentType))
 
         val result = typeCheck(lambda.body, ass.join(as2))
 
-        return TypeCheckResult.of(functionType(argumentType, result.value).sure(), result.predicates)
+        return TypeCheckResult.of(functionType(argumentType, result.value), result.predicates)
     }
 
     private fun visit(let: ASTLet, ass: Assumptions): TypeCheckResult<Type> {
@@ -65,7 +60,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         val expResult = typeCheck(exp, ass)
         result.addPredicates(expResult.predicates)
 
-        val as2 = Assumptions.singleton(arg, Scheme.fromType(expResult.value).sure())
+        val as2 = Assumptions.singleton(arg, Scheme.fromType(expResult.value))
 
         val bodyResult = typeCheck(let.body, ass.join(as2))
         result.addPredicates(bodyResult.predicates)
@@ -87,7 +82,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         for (val exp in sequence.allButLast())
             predicates.addAll(typeCheck(exp, ass).predicates)
 
-        return typeCheck(sequence.last(), ass).withAddedPredicates(predicates).sure()
+        return typeCheck(sequence.last(), ass).withAddedPredicates(predicates)
     }
 
     private fun visit(set: ASTSet, ass: Assumptions): TypeCheckResult<Type> =
@@ -97,14 +92,14 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
     private fun visit(variable: ASTVariable, ass: Assumptions): TypeCheckResult<Type> {
         val scheme = ass.find(variable.name)
         val inst = tc.freshInstance(scheme)
-        return TypeCheckResult.of(inst.value.sure(), inst.predicates.sure())
+        return TypeCheckResult.of(inst.value, inst.predicates)
     }
 
     private fun visit(constructor: ASTConstructor, ass: Assumptions): TypeCheckResult<Type> {
         val ctor = tc.findConstructor(constructor.name)
 
         val inst = tc.freshInstance(ctor.scheme)
-        return TypeCheckResult.of(inst.value.sure(), inst.predicates.sure())
+        return TypeCheckResult.of(inst.value, inst.predicates)
     }
 
     private fun visit(astCase: ASTCase, ass: Assumptions): TypeCheckResult<Type> {
@@ -117,7 +112,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         for (val alt in astCase.alternatives) {
             val patternResult = tc.typeCheck(alt.pattern)
 
-            tc.unify(expResult.value.sure(), patternResult.value.sure())
+            tc.unify(expResult.value, patternResult.value)
             result.addPredicates(patternResult.predicates)
 
             val valueResult = tc.typeCheck(alt.value, patternResult.ass.join(ass))

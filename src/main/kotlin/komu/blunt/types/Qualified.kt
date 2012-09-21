@@ -1,12 +1,9 @@
 package komu.blunt.types
 
-import kotlin.util.*
-import java.util.Collections.emptyList
-import java.util.Collections.unmodifiableList
 import java.util.ArrayList
-import komu.blunt.types.checker.Substitution
 import java.util.LinkedHashSet
 import java.util.Objects.hash
+import komu.blunt.types.checker.Substitution
 import komu.blunt.types.checker.Substitutions
 
 fun quantifyAll(qt: Qualified<Type>): Scheme {
@@ -78,8 +75,10 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : T
         return sb.toString()
     }
 
-    fun equals(rhs: Any?) =
-        rhs is Qualified<out Any?> && value == rhs.value && predicates == rhs.predicates
+    fun equals(rhs: Any?): Boolean {
+        val other = rhs as? Qualified<T>
+        return other != null && value == other.value && predicates == other.predicates
+    }
 
     fun hashCode() = hash(predicates, value)
 }

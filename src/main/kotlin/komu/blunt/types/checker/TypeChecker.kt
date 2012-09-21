@@ -1,6 +1,6 @@
 package komu.blunt.types.checker
 
-import kotlin.util.*
+import java.util.ArrayList
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.ASTValueDefinition
@@ -8,12 +8,6 @@ import komu.blunt.ast.BindGroup
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.*
 import komu.blunt.types.patterns.Pattern
-
-import java.util.ArrayList
-
-import komu.blunt.types.quantifyAll
-import komu.blunt.types.instantiate
-import komu.blunt.types.typeVariable
 
 class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinitions) {
 
@@ -39,7 +33,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
 
     private fun normalize(result: TypeCheckResult<Type>): Qualified<Type> {
         val ps = classEnv.reduce(applySubstitution(result.predicates))
-        return applySubstitution(Qualified(ps, result.value))
+        return Qualified(ps, result.value).apply(substitution)
     }
 
     fun typeCheck(exp: ASTExpression, ass: Assumptions): TypeCheckResult<Type> =

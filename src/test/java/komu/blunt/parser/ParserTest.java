@@ -5,7 +5,8 @@ import org.junit.Test;
 
 import java.math.BigInteger;
 
-import static komu.blunt.parser.ASTMatchers.*;
+import static komu.blunt.parser.ASTMatchers.producesConstant;
+import static komu.blunt.parser.ASTMatchers.producesExpressionMatching;
 import static org.junit.Assert.assertThat;
 
 public class ParserTest {
@@ -88,6 +89,6 @@ public class ParserTest {
     }
 
     private static ASTExpression parsing(String s) {
-        return Parser.$classobj.parseExpression(s);
+        return Parser.ClassObject$.$instance.parseExpression(s);
     }
 }
