@@ -12,9 +12,10 @@ class CoreSequenceExpression(private val expressions: List<CoreExpression>) : Co
         val instructions = Instructions()
 
         if (!expressions.isEmpty()) {
-            for (val exp in allButLast())
+            for (val exp in expressions.allButLast())
+                instructions.append(exp.assemble(asm, target, Linkage.NEXT))
 
-            instructions.append(last().assemble(asm, target, linkage))
+            instructions.append(expressions.last().assemble(asm, target, linkage))
         } else {
             instructions.finishWithLinkage(linkage)
         }
@@ -22,13 +23,10 @@ class CoreSequenceExpression(private val expressions: List<CoreExpression>) : Co
         return instructions
     }
 
-    private fun last(): CoreExpression =
-        expressions[expressions.size()-1]
+    private fun <T> List<T>.allButLast() =
+        subList(0, size-1)
 
-    private fun allButLast(): List<CoreExpression> =
-        expressions.subList(0, expressions.size()-1)
-
-    override fun toString() = expressions.toString()
+    override fun toString() = "(begin $expressions)"
 
     override fun simplify(): CoreExpression {
         val exps = arrayList<CoreExpression>()
@@ -36,11 +34,11 @@ class CoreSequenceExpression(private val expressions: List<CoreExpression>) : Co
             if (exp != CoreEmptyExpression.INSTANCE)
                 exps.add(exp.simplify())
 
-        if (exps.isEmpty())
-            return CoreEmptyExpression.INSTANCE
+        return if (exps.isEmpty())
+            CoreEmptyExpression.INSTANCE
         else if (exps.size == 1)
-            return exps.first()
+            exps.first()
         else
-            return CoreSequenceExpression(exps)
+            CoreSequenceExpression(exps)
     }
 }
