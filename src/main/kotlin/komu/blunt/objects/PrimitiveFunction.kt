@@ -1,14 +1,7 @@
 package komu.blunt.objects
 
-import komu.blunt.stdlib.BasicValues
-import komu.blunt.types.ConstructorNames
-
-import java.lang.reflect.InvocationTargetException
-import java.lang.reflect.Method
-import java.util.Arrays
-
-class PrimitiveFunction : PrimitiveProcedure {
-    override fun apply(arg: Any?): Any? = null
+class PrimitiveFunction(val func: (Any?) -> Any?) : PrimitiveProcedure {
+    override fun apply(arg: Any?): Any? = func(arg)
 //
 //private final Method method;
 //private final String name;

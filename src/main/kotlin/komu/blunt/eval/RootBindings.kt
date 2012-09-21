@@ -1,12 +1,11 @@
 package komu.blunt.eval
 
 import komu.blunt.analyzer.StaticEnvironment
-import komu.blunt.analyzer.VariableReference
 import komu.blunt.objects.Symbol
+import komu.blunt.parser.TypeParser
 import komu.blunt.types.DataTypeDefinitions
 import komu.blunt.types.Scheme
 import komu.blunt.types.checker.Assumptions
-import komu.blunt.parser.TypeParser
 
 class RootBindings {
     val staticEnvironment = StaticEnvironment()
@@ -25,6 +24,10 @@ class RootBindings {
     }
 
     fun bind(name: String, scheme: String, value: Any?) {
+        bind(name, TypeParser.parseScheme(scheme), value)
+    }
+
+    fun bindFunction(name: String, scheme: String, value: (Any?) -> Any?) {
         bind(name, TypeParser.parseScheme(scheme), value)
     }
 

@@ -1,17 +1,46 @@
 package komu.blunt.stdlib
 
-import java.math.BigInteger
 import komu.blunt.eval.RootBindings
 
 object BasicFunctions {
 
     fun register(bindings: RootBindings) {
-        bindings.bind("primitiveCompare", "Ord a => (a,a) -> Ordering", null)
+        bindings.bindFunction("error", "String -> a") { s -> throw Exception(s.toString()) }
+        bindings.bindFunction("show", "a -> String") { s -> s.toString() }
+        bindings.bindFunction("print", "a -> Unit") { s -> print(s) }
+
+        bindings.bindFunction("primitiveCompare", "Ord a => (a,a) -> Ordering") { v ->
+            v
+        }
+
+        bindings.bindFunction("primitiveOpEq", "Eq a => (a,a) -> Boolean") { s ->
+            throw Exception(s.toString())
+        }
+
+        bindings.bindFunction("primitiveOpPlus", "Num a => (a,a) -> a") { s ->
+            throw Exception(s.toString())
+        }
+
+        bindings.bindFunction("primitiveOpMinus", "Num a => (a,a) -> a") { s ->
+            throw Exception(s.toString())
+        }
+
+        bindings.bindFunction("primitiveOpMultiply", "Num a => (a,a) -> a") { s ->
+            throw Exception(s.toString())
+        }
+
+        bindings.bindFunction("primitiveOpDivide", "Num a => (a,a) -> a") { s ->
+            throw Exception(s.toString())
+        }
+
+        bindings.bindFunction("primitiveMod", "Num a => (a,a) -> a") { s ->
+            throw Exception(s.toString())
+        }
     }
 
     //@LibraryFunction("primitiveOpPlus")
     //@TypeScheme("Num a => (a,a) -> a")
-    fun plus(x: BigInteger, y: BigInteger): BigInteger = x.add(y)
+    //fun plus(x: BigInteger, y: BigInteger): BigInteger = x.add(y)
 
 //    @LibraryFunction("primitiveOpMinus")
 //    @TypeScheme("Num a => (a,a) -> a")
