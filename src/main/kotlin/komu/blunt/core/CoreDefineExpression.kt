@@ -20,5 +20,7 @@ class CoreDefineExpression(private val variable: VariableReference, private val 
     }
 
     override fun simplify() = CoreDefineExpression(variable, expression.simplify())
+
+    override fun toString() = "(define $variable $expression)"
 }
 

@@ -20,5 +20,7 @@ class CoreLetExpression(private val variable: VariableReference,
     override fun simplify() =
         // TODO: if value is constant, propagate it into body
         CoreLetExpression(variable, value.simplify(), body.simplify())
+
+    override fun toString() = "(let ($variable $value) $body)"
 }
 

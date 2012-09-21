@@ -1,8 +1,7 @@
 package komu.blunt.core
 
-import komu.blunt.asm.*
-
 import com.google.common.base.Preconditions.checkArgument
+import komu.blunt.asm.*
 
 class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpression) : CoreExpression() {
 
@@ -32,4 +31,6 @@ class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpre
     }
 
     override fun simplify() = CoreLambdaExpression(envSize, body.simplify())
+
+    override fun toString() = "(lambda $envSize $body)"
 }

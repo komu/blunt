@@ -15,4 +15,6 @@ class CoreEmptyExpression private () : CoreExpression() {
     }
 
     override fun simplify() = this
+
+    override fun toString() = "#empty"
 }
