@@ -1,6 +1,6 @@
 package komu.blunt.types
 
-import kotlin.util.*
+import java.math.BigInteger
 
 object BasicType {
     //val UNIT = basicType("Unit")
@@ -13,7 +13,11 @@ object BasicType {
 }
 
 fun typeFromObject(o: Any): Type =
-    throw UnsupportedOperationException()
+    when (o) {
+        is BigInteger -> BasicType.INTEGER
+        is String     -> BasicType.STRING
+        else          -> throw UnsupportedOperationException()
+    }
 
 //private static String mapName(Class<?> type) {
 //return (type == Void.class)                             ? "Unit"
