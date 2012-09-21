@@ -1,10 +1,10 @@
 syntax: glob
 
 *~
+.DS_Store
 out
 target
+.idea/ant.xml
 .idea/workspace.xml
 .idea/uiDesigner.xml
-.idea/dictionaries/*
-.DS_Store
 .idea/libraries/
