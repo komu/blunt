@@ -1,7 +1,5 @@
 package komu.blunt.eval
 
-import com.google.common.io.Resources
-import java.nio.charset.Charset
 import komu.blunt.analyzer.Analyzer
 import komu.blunt.analyzer.StaticEnvironment
 import komu.blunt.asm.*
@@ -121,10 +119,12 @@ class Evaluator() {
     }
 
     private fun readResource(path: String): String {
-        val resource = javaClass.getClassLoader().getResource(path)
-        if (resource != null)
-            return Resources.toString(resource, Charset.forName("UTF-8"))
-        else
+        val resource = javaClass.getClassLoader().getResourceAsStream(path)
+        if (resource != null) {
+            return resource.use {
+                resource.reader("UTF-8").readText()
+            }
+        } else
             throw Exception("could not find resource: $path")
     }
 }

@@ -1,6 +1,5 @@
 package komu.blunt.parser
 
-import com.google.common.collect.ImmutableList
 import java.util.ArrayList
 import komu.blunt.ast.*
 import komu.blunt.objects.Symbol
@@ -80,7 +79,7 @@ class Parser(source: String) {
         lexer.expectToken(TokenType.END)
 
         val functionBuilder = FunctionBuilder()
-        functionBuilder.addAlternative(ImmutableList.of<Pattern>(left, right), value)
+        functionBuilder.addAlternative(arrayList(left, right), value)
         return AST.define(op.toSymbol(), functionBuilder.build())
     }
 
@@ -102,7 +101,7 @@ class Parser(source: String) {
 
             val value = parseExpression()
             lexer.expectToken(TokenType.END)
-            functionBuilder.addAlternative(ImmutableList.copyOf(args), value)
+            functionBuilder.addAlternative(args, value)
         }
 
         return AST.define(name!!, functionBuilder.build())

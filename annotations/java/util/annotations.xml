@@ -25,4 +25,15 @@
     <item name='java.util.Collections java.util.Set&lt;T&gt; emptySet()'>
         <annotation name='org.jetbrains.annotations.NotNull'/>
     </item>
+    <item name='java.util.Collections java.util.Map&lt;K,V&gt; singletonMap(K, V)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value" val="&quot;fun &lt;K, V&gt; singletonMap(key : K, value : V) : Map&lt;K, V&gt;&quot;"/>
+        </annotation>
+    </item>
+    <item name='java.util.Collections java.util.Map&lt;K,V&gt; emptyMap()'>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value" val="&quot;fun &lt;K, V&gt; emptyMap() : Map&lt;K, V&gt;&quot;"/>
+        </annotation>
+    </item>
 </root>

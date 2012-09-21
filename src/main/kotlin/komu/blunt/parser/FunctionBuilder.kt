@@ -1,6 +1,6 @@
 package komu.blunt.parser
 
-import com.google.common.collect.ImmutableList
+import java.util.ArrayList
 import java.util.Collections.singletonList
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTAlternative
@@ -29,17 +29,17 @@ class FunctionBuilder {
     }
 
     fun build(): ASTExpression {
-        val alts = ImmutableList.copyOf(alternatives)
+        val alts = ArrayList(alternatives)
 
         // optimization
         val simpleVars = containsOnlyVariablePatterns(alts)
         if (simpleVars != null)
             return AST.lambda(simpleVars, alts.first().value)
 
-        return AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alts));
+        return AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alts))
     }
 
-    fun containsOnlyVariablePatterns(alts: ImmutableList<ASTAlternative>): List<Symbol>? {
+    fun containsOnlyVariablePatterns(alts: List<ASTAlternative>): List<Symbol>? {
         if (alts.size == 1)
             return variablePattern(alts.first().pattern)
         return null

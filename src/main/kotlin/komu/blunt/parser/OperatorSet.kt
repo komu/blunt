@@ -1,9 +1,7 @@
 package komu.blunt.parser
 
-import java.util.HashMap
-
-import com.google.common.base.Preconditions.checkArgument
 import java.lang.Math.max
+import java.util.HashMap
 
 class OperatorSet() {
 
@@ -28,7 +26,7 @@ class OperatorSet() {
     }
 
     fun addInternal(precedence: Int, associativity: Associativity, names: Array<String>) {
-        checkArgument(precedence >= 0)
+        check(precedence >= 0)
 
         maxPrecedence = max(maxPrecedence, precedence)
         for (val name in names)

@@ -1,35 +1,33 @@
 package komu.blunt.types.checker
 
-import kotlin.util.*
-import com.google.common.collect.ImmutableMap
-
-import komu.blunt.types.Type
-import komu.blunt.types.TypeVariable
-import komu.blunt.types.TypeGen
+import java.util.Collections.emptyMap
+import java.util.Collections.singletonMap
 import komu.blunt.eval.TypeCheckException
-import java.util.ArrayList
+import komu.blunt.types.Type
+import komu.blunt.types.TypeGen
+import komu.blunt.types.TypeVariable
 
-class Substitution(private val mapping: ImmutableMap<TypeVariable,Type>) {
+class Substitution(private val mapping: Map<TypeVariable,Type>) {
 
     // @@
     fun compose(s2: Substitution): Substitution {
-        val builder = ImmutableMap.builder<TypeVariable,Type>()
+        val map = hashMap<TypeVariable,Type>()
 
         for ((key, value) in s2.mapping)
-            builder.put(key, value.apply(this))
+            map[key] = value.apply(this)
 
-        builder.putAll(mapping)
+        map.putAll(mapping)
 
-        return Substitution(builder.build())
+        return Substitution(map)
     }
 
     fun merge(s2: Substitution): Substitution {
         if (agree(s2)) {
-            val builder = ImmutableMap.builder<TypeVariable,Type>()
-            builder.putAll(mapping)
-            builder.putAll(s2.mapping)
+            val map = hashMap<TypeVariable,Type>()
+            map.putAll(mapping)
+            map.putAll(s2.mapping)
 
-            return Substitution(builder.build())
+            return Substitution(map)
         } else
             throw TypeCheckException("merge failed")
     }
@@ -53,12 +51,12 @@ class Substitution(private val mapping: ImmutableMap<TypeVariable,Type>) {
     }
 
     fun apply(subst: Substitution): Substitution {
-        val builder = ImmutableMap.builder<TypeVariable,Type>()
+        val map = hashMap<TypeVariable,Type>()
 
         for ((key, value) in mapping)
-            builder.put(key, value.apply(subst))
+            map[key] = value.apply(subst)
 
-        return Substitution(builder.build())
+        return Substitution(map)
     }
 
     fun lookup(variable: TypeVariable): Type? =
@@ -67,22 +65,22 @@ class Substitution(private val mapping: ImmutableMap<TypeVariable,Type>) {
 
 object Substitutions {
 
-    fun empty() = Substitution(ImmutableMap.of<TypeVariable,Type>())
+    fun empty() = Substitution(emptyMap())
 
     fun singleton(v: TypeVariable, t: Type): Substitution {
         if (v.kind != t.kind)
             throw IllegalArgumentException()
 
-        return Substitution(ImmutableMap.of<TypeVariable,Type>(v, t))
+        return Substitution(singletonMap(v, t))
     }
 
     fun fromTypeVariables(variables: List<TypeVariable>): Substitution {
-        val builder = ImmutableMap.builder<TypeVariable,Type>()
+        val map = hashMap<TypeVariable,Type>()
 
         var index = 0
-        for (val v in variables)
-            builder.put(v, TypeGen(index++))
+        for (v in variables)
+            map[v] = TypeGen(index++)
 
-        return Substitution(builder.build())
+        return Substitution(map)
     }
 }

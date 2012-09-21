@@ -1,7 +1,5 @@
 package komu.blunt.core
 
-import com.google.common.collect.Lists
-
 class PatternPath private (private val parent: PatternPath?, private val index: Int) {
 
     class object {
@@ -23,7 +21,7 @@ class PatternPath private (private val parent: PatternPath?, private val index: 
                 break
         }
 
-        return Lists.reverse(indices.build())
+        return indices.build().reverse()
     }
 
     fun toString() = indices().toString()

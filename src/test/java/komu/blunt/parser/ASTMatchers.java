@@ -2,13 +2,13 @@ package komu.blunt.parser;
 
 import komu.blunt.ast.ASTConstant;
 import komu.blunt.ast.ASTExpression;
-import komu.blunt.ast.ASTVariable;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 
-import static com.google.common.base.Objects.equal;
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Objects;
+
+import static java.util.Objects.requireNonNull;
 
 final class ASTMatchers {
     
@@ -16,7 +16,7 @@ final class ASTMatchers {
         return new ASTMatcher<ASTExpression>(ASTExpression.class) {
             @Override
             public boolean matches(ASTExpression exp) {
-                return equal(exp.toString(), representation);
+                return Objects.equals(exp.toString(), representation);
             }
 
             @Override
@@ -60,7 +60,7 @@ final class ASTMatchers {
         private final Class<T> type;
         
         ASTMatcher(Class<T> type) {
-            this.type = checkNotNull(type);
+            this.type = requireNonNull(type);
         }
         
         @Override

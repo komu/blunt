@@ -1,16 +1,9 @@
 package komu.blunt.parser
 
-import kotlin.util.*
-import com.google.common.collect.ImmutableList
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTDataDefinition
-import komu.blunt.types.*
-
-import java.util.ArrayList
-
-import com.google.common.base.Preconditions.checkNotNull
 import komu.blunt.parser.TokenType.*
-import komu.blunt.types.quantify
+import komu.blunt.types.*
 
 private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 
@@ -74,6 +67,6 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
         }
 
         public fun build(): ASTDataDefinition =
-            AST.data(typeName, getType(), ImmutableList.copyOf(constructors), ImmutableList.copyOf(derivedClasses))
+            AST.data(typeName, getType(), constructors, derivedClasses)
     }
 }

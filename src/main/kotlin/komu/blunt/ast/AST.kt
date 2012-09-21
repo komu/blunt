@@ -1,6 +1,5 @@
 package komu.blunt.ast
 
-import com.google.common.collect.Lists
 import java.util.Collections.singletonList
 import komu.blunt.objects.Symbol
 import komu.blunt.types.ConstructorDefinition
@@ -107,7 +106,7 @@ object AST {
         fun build(): ASTExpression {
             var list = constructor(ConstructorNames.NIL)
 
-            for (val exp in Lists.reverse(exps))
+            for (val exp in exps.reverse())
                 list = constructor(ConstructorNames.CONS, exp, list)
 
             return list

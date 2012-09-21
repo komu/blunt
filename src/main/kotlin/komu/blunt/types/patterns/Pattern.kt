@@ -1,16 +1,14 @@
 package komu.blunt.types.patterns
 
 import komu.blunt.objects.Symbol
-import com.google.common.base.Objects
-import com.google.common.collect.ImmutableList
-import komu.blunt.types.ConstructorNames;
+import komu.blunt.types.ConstructorNames
 
 abstract class Pattern {
     abstract fun toString(): String
 
     class object {
         fun constructor(name: String, vararg args: Pattern): Pattern =
-            ConstructorPattern(name, ImmutableList.copyOf(args.toList()))
+            ConstructorPattern(name, args.toList())
 
         fun constructor(name: String, args: List<Pattern>): Pattern =
             ConstructorPattern(name, args)
@@ -56,7 +54,7 @@ class ConstructorPattern(val name: String, val args: List<Pattern>) : Pattern() 
     }
 
     fun equals(obj: Any?) = obj is ConstructorPattern && name == obj.name && args == obj.args
-    fun hashCode(): Int = Objects.hashCode(name) * 79 + args.hashCode()
+    fun hashCode(): Int = name.hashCode() * 79 + args.hashCode()
 }
 
 class WildcardPattern private () : Pattern() {
@@ -77,5 +75,5 @@ class VariablePattern(val variable: Symbol) : Pattern() {
 class LiteralPattern(val value: Any) : Pattern() {
     override fun toString(): String = value.toString()
     fun equals(obj: Any?) = obj is LiteralPattern && value == obj.value
-    fun hashCode(): Int = Objects.hashCode(value)
+    fun hashCode(): Int = value.hashCode()
 }

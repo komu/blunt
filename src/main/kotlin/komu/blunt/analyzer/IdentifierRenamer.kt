@@ -1,11 +1,8 @@
 package komu.blunt.analyzer
 
-import com.google.common.collect.ImmutableList
 import komu.blunt.ast.*
 import komu.blunt.objects.Symbol
 import komu.blunt.types.patterns.*
-import java.util.ArrayList
-import kotlin.util.*
 
 /**
  * Walks the AST to rename all local variables so that they become unique. This makes
@@ -44,13 +41,8 @@ class IdentifierRenamer {
             else                  -> throw AnalyzationException("invalid pattern $pattern")
         }
 
-    private fun renamePattern(pattern: ConstructorPattern, ctx: IdentifierMapping): Pattern {
-        val args: List<Pattern> = pattern.args.map() {
-            renameIdentifiers(it, ctx)
-        }
-
-        return Pattern.constructor(pattern.name, ImmutableList.copyOf(args))
-    }
+    private fun renamePattern(pattern: ConstructorPattern, ctx: IdentifierMapping): Pattern =
+        Pattern.constructor(pattern.name, pattern.args.map { renameIdentifiers(it, ctx) })
 
     private fun renamePattern(pattern: VariablePattern, ctx: IdentifierMapping): Pattern {
         val v = freshVariable()
@@ -115,11 +107,11 @@ class IdentifierRenamer {
     }
 
     private fun visit(astCase: ASTCase, ctx: IdentifierMapping): ASTExpression {
-        var alts: List<ASTAlternative> = astCase.alternatives.map {
+        var alts = astCase.alternatives.map {
             val newCtx = ctx.extend()
             AST.alternative(renameIdentifiers(it.pattern, newCtx), renameIdentifiers(it.value, newCtx))
         }
 
-        return AST.caseExp(renameIdentifiers(astCase.exp, ctx), ImmutableList.copyOf(alts))
+        return AST.caseExp(renameIdentifiers(astCase.exp, ctx), alts)
     }
 }

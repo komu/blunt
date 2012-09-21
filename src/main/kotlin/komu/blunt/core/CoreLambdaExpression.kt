@@ -1,12 +1,11 @@
 package komu.blunt.core
 
-import com.google.common.base.Preconditions.checkArgument
 import komu.blunt.asm.*
 
 class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpression) : CoreExpression() {
 
     {
-        checkArgument(envSize >= 0)
+        check(envSize >= 0)
     }
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {

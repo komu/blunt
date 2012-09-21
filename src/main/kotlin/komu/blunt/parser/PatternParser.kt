@@ -1,6 +1,5 @@
 package komu.blunt.parser
 
-import com.google.common.collect.Lists
 import komu.blunt.parser.TokenType.*
 import komu.blunt.types.ConstructorNames
 import komu.blunt.types.patterns.Pattern
@@ -73,7 +72,7 @@ final class PatternParser(val lexer: Lexer) {
     private fun createList(patterns: List<Pattern>): Pattern {
         var result = Pattern.constructor(ConstructorNames.NIL)
 
-        for (val pattern in Lists.reverse(patterns))
+        for (pattern in patterns.reverse())
             result = Pattern.constructor(ConstructorNames.CONS, pattern, result)
 
         return result
