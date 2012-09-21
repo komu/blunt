@@ -1,0 +1,8 @@
+<root>
+    <item name='com.google.common.io.Resources java.lang.String toString(java.net.URL, java.nio.charset.Charset) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.io.Resources java.lang.String toString(java.net.URL, java.nio.charset.Charset)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>

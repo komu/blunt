@@ -1,14 +1,11 @@
 package komu.blunt.objects
 
-import kotlin.util.*
 import java.util.Arrays
-
-import com.google.common.base.Preconditions.checkArgument
 
 class TypeConstructorValue(val index: Int, val name: String, val items: Array<Any?> = TypeConstructorValue.EMPTY_ARRAY) : Comparable<TypeConstructorValue> {
 
     {
-        if (index < 0) throw IllegalArgumentException("invalid index: $index")
+        check(index >= 0, "invalid index: $index")
     }
 
     class object {
@@ -22,7 +19,7 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
             name
         else if (isTuple())
             toStringAsTuple()
-        else if (name.equals(":"))
+        else if (name == ":")
             toStringAsList()
         else
             toStringDefault()

@@ -1,6 +1,6 @@
 package komu.blunt.ast
 
-import com.google.common.collect.ImmutableList
+import java.util.Collections.singletonList
 
 class ASTApplication(val func: ASTExpression, val arg: ASTExpression) : ASTExpression() {
 
@@ -11,7 +11,7 @@ class ASTApplication(val func: ASTExpression, val arg: ASTExpression) : ASTExpre
         val simplifiedArg = arg.simplify()
 
         if (simplifiedFunc is ASTLambda) {
-            val bindings = ImmutableList.of(ImplicitBinding(simplifiedFunc.argument, simplifiedArg))
+            val bindings = singletonList(ImplicitBinding(simplifiedFunc.argument, simplifiedArg))
             return ASTLet(bindings, simplifiedFunc.body).simplify()
         } else
             return ASTApplication(simplifiedFunc, simplifiedArg)

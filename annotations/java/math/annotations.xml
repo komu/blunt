@@ -1,0 +1,8 @@
+<root>
+    <item name='java.math.BigInteger java.math.BigInteger add(java.math.BigInteger) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='java.math.BigInteger java.math.BigInteger add(java.math.BigInteger)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>

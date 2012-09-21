@@ -1,13 +1,9 @@
 package komu.blunt.types
 
+import java.util.*
+import java.util.Collections.unmodifiableCollection
 import komu.blunt.analyzer.AnalyzationException
 import komu.blunt.ast.ASTDataDefinition
-
-import java.util.*
-
-import com.google.common.base.Strings.repeat
-import java.util.Collections.unmodifiableCollection
-import komu.blunt.types.quantifyAll
 import komu.blunt.parser.TypeParser
 
 public class DataTypeDefinitions() {
@@ -56,6 +52,6 @@ public class DataTypeDefinitions() {
         return quantifyAll(Qualified.simple(functionType(types, tupleType(types))))
     }
 
-    fun getDeclaredConstructors(): Collection<ConstructorDefinition> =
-        unmodifiableCollection(constructors.values())!!
+    fun getDeclaredConstructors() =
+        unmodifiableCollection(constructors.values())
 }

@@ -13,10 +13,10 @@ abstract class CoreExpression {
         fun and(exps: List<CoreExpression>): CoreExpression {
             return if (exps.isEmpty())
                 CoreConstantExpression(true)
-            else if (exps.size() == 1)
-                exps.get(0)
+            else if (exps.size == 1)
+                exps.first()
             else
-                CoreIfExpression(exps.get(0), and(exps.subList(1, exps.size())), CoreConstantExpression(false))
+                CoreIfExpression(exps.first(), and(exps.tail), CoreConstantExpression(false))
         }
     }
 }

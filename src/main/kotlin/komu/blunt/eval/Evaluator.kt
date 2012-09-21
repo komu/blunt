@@ -1,24 +1,17 @@
 package komu.blunt.eval
 
 import com.google.common.io.Resources
+import java.nio.charset.Charset
 import komu.blunt.analyzer.Analyzer
 import komu.blunt.analyzer.StaticEnvironment
-import komu.blunt.analyzer.VariableReference
 import komu.blunt.asm.*
 import komu.blunt.ast.*
 import komu.blunt.core.CoreDefineExpression
 import komu.blunt.core.CoreExpression
+import komu.blunt.parser.Parser
 import komu.blunt.stdlib.BasicFunctions
 import komu.blunt.types.*
 import komu.blunt.types.checker.TypeChecker
-
-import java.io.IOException
-import java.net.URL
-import java.nio.charset.Charset
-
-import komu.blunt.types.isIn
-import komu.blunt.parser.Parser
-import java.io.Console
 
 class Evaluator() {
 
@@ -128,8 +121,11 @@ class Evaluator() {
     }
 
     private fun readResource(path: String): String {
-        val resource = javaClass.getClassLoader()?.getResource(path)
-        return Resources.toString(resource, Charset.forName("UTF-8"))!!
+        val resource = javaClass.getClassLoader().getResource(path)
+        if (resource != null)
+            return Resources.toString(resource, Charset.forName("UTF-8"))
+        else
+            throw Exception("could not find resource: $path")
     }
 }
 

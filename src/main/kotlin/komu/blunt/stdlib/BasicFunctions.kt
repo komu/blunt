@@ -1,13 +1,7 @@
 package komu.blunt.stdlib
 
-import com.google.common.base.Objects
-import komu.blunt.objects.EvaluationException
-import komu.blunt.objects.TypeConstructorValue
-
 import java.math.BigInteger
 import komu.blunt.eval.RootBindings
-import komu.blunt.types.Scheme
-import komu.blunt.parser.TypeParser
 
 object BasicFunctions {
 
@@ -17,7 +11,7 @@ object BasicFunctions {
 
     //@LibraryFunction("primitiveOpPlus")
     //@TypeScheme("Num a => (a,a) -> a")
-    fun plus(x: BigInteger, y: BigInteger): BigInteger = x.add(y)!!
+    fun plus(x: BigInteger, y: BigInteger): BigInteger = x.add(y)
 
 //    @LibraryFunction("primitiveOpMinus")
 //    @TypeScheme("Num a => (a,a) -> a")

@@ -1,18 +1,12 @@
 package komu.blunt.types.checker
 
-import kotlin.util.*
-import komu.blunt.ast.ASTExpression
+import java.util.LinkedHashSet
 import komu.blunt.ast.BindGroup
 import komu.blunt.ast.ExplicitBinding
 import komu.blunt.ast.ImplicitBinding
+import komu.blunt.ast.names
 import komu.blunt.types.*
-
-import java.util.ArrayList
-import java.util.HashSet
-
-import komu.blunt.types.quantify
 import komu.blunt.utils.intersection
-import java.util.LinkedHashSet
 
 final class BindingTypeChecker(private val tc: TypeChecker) {
 
@@ -62,9 +56,9 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val types = tc.applySubstitution(typeVariables)
         val fs = getTypeVariables(tc.applySubstitution(ass))
 
-        val vss = ArrayList<Set<TypeVariable>>(types.size)
+        val vss = arrayList<Set<TypeVariable>>()
 
-        val genericVariables = HashSet<TypeVariable>()
+        val genericVariables = hashSet<TypeVariable>()
         for (val t in types) {
             val vars = getTypeVariables(t)
             vss.add(vars)
@@ -75,18 +69,16 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
 
         val (deferredPredicates, retainedPredicates) = tc.classEnv.split(fs, intersection(vss), predicates)
 
-        val finalSchemes = ArrayList<Scheme>(types.size)
-        for (val t in types)
-            finalSchemes.add(quantify(genericVariables, Qualified(retainedPredicates, t)))
+        val finalSchemes = types.map { quantify(genericVariables, Qualified(retainedPredicates, it)) }
 
-        val finalAssumptions = Assumptions.from(ImplicitBinding.bindingNames(bindings), finalSchemes)
+        val finalAssumptions = Assumptions.from(bindings.names(), finalSchemes)
         return TypeCheckResult.of(finalAssumptions, deferredPredicates)
     }
 
     private fun typeCheckAndUnifyBindings(bs: List<ImplicitBinding>, ts: List<Type>, ass: Assumptions): List<Predicate> {
-        val as2 = Assumptions.from(ImplicitBinding.bindingNames(bs), Scheme.fromTypes(ts)).join(ass)
+        val as2 = Assumptions.from(bs.names(), Scheme.fromTypes(ts)).join(ass)
 
-        val predicates = ArrayList<Predicate>()
+        val predicates = arrayList<Predicate>()
 
         for (val i in ts.indices) {
             val exp = bs[i].expr

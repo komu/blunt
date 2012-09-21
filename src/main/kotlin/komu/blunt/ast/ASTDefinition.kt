@@ -1,8 +1,8 @@
 package komu.blunt.ast
 
 import komu.blunt.objects.Symbol
-import komu.blunt.types.ConstructorDefinition;
-import komu.blunt.types.Type;
+import komu.blunt.types.ConstructorDefinition
+import komu.blunt.types.Type
 
 abstract class ASTDefinition
 

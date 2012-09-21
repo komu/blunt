@@ -1,14 +1,13 @@
 package komu.blunt.utils
 
+import java.util.Collections.emptySet
 import java.util.HashSet
 
-import java.util.Collections.emptySet
-
 fun intersection<T>(sets: Collection<Set<T>>): Set<T> {
-    val it = sets.iterator()
+    if (sets.isEmpty())
+        return emptySet()
 
-    if (!it.hasNext())
-        return emptySet<T>()!!
+    val it = sets.iterator()
 
     val result = HashSet<T>(it.next())
     while (it.hasNext())

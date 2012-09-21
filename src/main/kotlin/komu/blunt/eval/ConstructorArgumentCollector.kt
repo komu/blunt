@@ -1,10 +1,9 @@
 package komu.blunt.eval
 
-import com.google.common.collect.ImmutableList
+import java.util.ArrayList
 import komu.blunt.objects.PrimitiveProcedure
 import komu.blunt.objects.TypeConstructorValue
 import komu.blunt.types.ConstructorDefinition
-import java.util.ArrayList
 
 class ConstructorArgumentCollector(private val ctor: ConstructorDefinition,
                                    private val args: List<Any?>) : PrimitiveProcedure {
@@ -18,13 +17,13 @@ class ConstructorArgumentCollector(private val ctor: ConstructorDefinition,
     }
 
     override fun apply(arg: Any?): Any? {
-        val newArgs = ArrayList<Any?>(args.size() + 1)
+        val newArgs = ArrayList<Any?>(args.size + 1)
         newArgs.addAll(args)
         newArgs.add(arg)
         if (newArgs.size() == ctor.arity)
-            return TypeConstructorValue(ctor.index, ctor.name, newArgs.toArray());
+            return TypeConstructorValue(ctor.index, ctor.name, newArgs.toArray())
         else
-            return ConstructorArgumentCollector(ctor, newArgs);
+            return ConstructorArgumentCollector(ctor, newArgs)
     }
 }
 

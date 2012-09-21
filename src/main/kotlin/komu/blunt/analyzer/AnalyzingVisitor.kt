@@ -1,15 +1,10 @@
 package komu.blunt.analyzer
 
-import kotlin.util.*
-
 import komu.blunt.ast.*
 import komu.blunt.core.*
 import komu.blunt.objects.Symbol
 import komu.blunt.objects.TypeConstructorValue
-import komu.blunt.types.ConstructorDefinition
 import komu.blunt.types.DataTypeDefinitions
-
-import java.util.ArrayList
 
 class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
 
@@ -100,11 +95,8 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
         if (alts.isEmpty())
             return analyze(AST.apply(AST.variable("error"), AST.constant("match failure")), env)
 
-        val head = alts.first()
-        val tail = alts.subList(1, alts.size)
-
-        val alt = analyze(head, matchedObject, env)
-        return CoreIfExpression(alt.extractor, alt.body, createAlts(matchedObject, tail, env))
+        val alt = analyze(alts.first(), matchedObject, env)
+        return CoreIfExpression(alt.extractor, alt.body, createAlts(matchedObject, alts.tail, env))
     }
 
     private fun analyze(alt: ASTAlternative, matchedObject: VariableReference, env: StaticEnvironment): CoreAlternative {

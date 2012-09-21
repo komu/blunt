@@ -50,11 +50,8 @@
     </item>
     <item name='com.google.common.collect.Lists java.util.List&lt;T&gt; reverse(java.util.List&lt;T&gt;)'>
         <annotation name='jet.runtime.typeinfo.KotlinSignature'>
-            <val name="value" val="&quot;fun &lt;T&gt; reverse(list : List&lt;T&gt;?) : MutableList&lt;T&gt;?&quot;"/>
+            <val name="value" val="&quot;fun &lt;T&gt; reverse(list : List&lt;T&gt;) : MutableList&lt;T&gt;&quot;"/>
         </annotation>
-        <annotation name='org.jetbrains.annotations.NotNull'/>
-    </item>
-    <item name='com.google.common.collect.Lists java.util.List&lt;T&gt; reverse(java.util.List&lt;T&gt;) 0'>
         <annotation name='org.jetbrains.annotations.NotNull'/>
     </item>
     <item name='com.google.common.collect.ImmutableList com.google.common.collect.ImmutableList&lt;E&gt; of(E)'>

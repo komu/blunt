@@ -2,11 +2,9 @@ package komu.blunt.analyzer
 
 import komu.blunt.objects.Symbol
 
-import java.util.HashMap
+class IdentifierMapping(val parent: IdentifierMapping? = null) {
 
-private class IdentifierMapping(val parent: IdentifierMapping? = null) {
-
-    private val mappings = HashMap<Symbol,Symbol>()
+    private val mappings = hashMap<Symbol,Symbol>()
 
     fun get(v: Symbol): Symbol {
         var mapping = this

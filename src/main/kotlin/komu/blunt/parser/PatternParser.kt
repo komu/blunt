@@ -1,15 +1,9 @@
 package komu.blunt.parser
 
-import com.google.common.collect.ImmutableList
 import com.google.common.collect.Lists
-import komu.blunt.types.patterns.Pattern
-
-import java.util.ArrayList
-import java.util.Arrays
-
 import komu.blunt.parser.TokenType.*
 import komu.blunt.types.ConstructorNames
-import java.util.Collections
+import komu.blunt.types.patterns.Pattern
 
 final class PatternParser(val lexer: Lexer) {
 
@@ -65,7 +59,7 @@ final class PatternParser(val lexer: Lexer) {
         if (lexer.readMatchingToken(TokenType.RBRACKET))
             return Pattern.constructor(ConstructorNames.NIL)
 
-        val patterns = ArrayList<Pattern>()
+        val patterns = listBuilder<Pattern>()
 
         patterns.add(parsePattern())
         while (lexer.readMatchingToken(TokenType.COMMA))
@@ -73,7 +67,7 @@ final class PatternParser(val lexer: Lexer) {
 
         lexer.expectToken(TokenType.RBRACKET)
 
-        return createList(patterns)
+        return createList(patterns.build())
     }
 
     private fun createList(patterns: List<Pattern>): Pattern {

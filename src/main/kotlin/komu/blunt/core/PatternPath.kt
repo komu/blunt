@@ -2,8 +2,6 @@ package komu.blunt.core
 
 import com.google.common.collect.Lists
 
-import java.util.ArrayList
-
 class PatternPath private (private val parent: PatternPath?, private val index: Int) {
 
     class object {
@@ -13,19 +11,20 @@ class PatternPath private (private val parent: PatternPath?, private val index: 
     fun extend(index: Int) = PatternPath(this, index)
 
     fun indices(): List<Int> {
-        val indices = ArrayList<Int>()
+        val indices = listBuilder<Int>()
 
         var p = this
         while (true) {
             indices.add(p.index)
 
-            if (p.parent != null)
-                p = p.parent!!
+            val parent = p.parent
+            if (parent != null)
+                p = parent
             else
                 break;
         }
 
-        return Lists.reverse(indices)
+        return Lists.reverse(indices.build())
     }
 
     fun toString() = indices().toString()

@@ -1,15 +1,8 @@
 package komu.blunt.parser
 
-import kotlin.util.*
-import komu.blunt.types.*
-
-import java.util.ArrayList
-import java.util.Arrays
-import java.util.Collections
-
+import java.util.Collections.emptyList
 import komu.blunt.parser.TokenType.*
-import komu.blunt.types.quantifyAll
-import komu.blunt.types.isIn
+import komu.blunt.types.*
 
 class TypeParser(val lexer: Lexer) {
 
@@ -36,7 +29,7 @@ class TypeParser(val lexer: Lexer) {
     private fun parseOptionalPredicates(): List<Predicate> {
         val lexerState = lexer.save()
         try {
-            val predicates = ArrayList<Predicate>()
+            val predicates = listBuilder<Predicate>()
             if (lexer.readMatchingToken(TokenType.LPAREN)) {
                 do {
                     predicates.add(parsePredicate())
@@ -46,10 +39,10 @@ class TypeParser(val lexer: Lexer) {
                 predicates.add(parsePredicate())
             }
             lexer.expectToken(TokenType.BIG_RIGHT_ARROW)
-            return predicates
+            return predicates.build()
         } catch (e: SyntaxException) {
             lexer.restore(lexerState)
-            return Collections.emptyList<Predicate>()!!
+            return emptyList()
         }
     }
 
@@ -89,11 +82,11 @@ class TypeParser(val lexer: Lexer) {
     public fun parseTypeConcrete(): Type {
         val name = lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME)
 
-        val args = ArrayList<Type>()
+        val args = listBuilder<Type>()
         while (lexer.nextTokenIsOneOf(START_TOKENS))
             args.add(parseTypePrimitive())
 
-        return genericType(name, args)
+        return genericType(name, args.build())
     }
 
     private fun parseParens(): Type {
@@ -102,7 +95,7 @@ class TypeParser(val lexer: Lexer) {
         if (lexer.readMatchingToken(TokenType.RPAREN))
             return BasicType.UNIT
 
-        val types = ArrayList<Type>()
+        val types = arrayList<Type>()
         types.add(parseType())
 
         while (lexer.readMatchingToken(TokenType.COMMA))

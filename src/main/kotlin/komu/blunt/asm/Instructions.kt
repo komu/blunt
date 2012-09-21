@@ -1,16 +1,12 @@
 package komu.blunt.asm
 
-import komu.blunt.asm.opcodes.*
 import komu.blunt.analyzer.VariableReference
+import komu.blunt.asm.opcodes.*
 import komu.blunt.core.PatternPath
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.HashSet
-import kotlin.util.*
 
 class Instructions {
-    private val instructions = ArrayList<OpCode>()
-    private val labelMap = HashMap<Int,MutableSet<Label>>()
+    private val instructions = arrayList<OpCode>()
+    private val labelMap = hashMap<Int,MutableSet<Label>>()
 
     fun append(rhs: Instructions) {
         val relocationOffset = instructions.size
@@ -35,8 +31,8 @@ class Instructions {
 
     private fun getLabels(address: Int): MutableSet<Label> {
         var labels = labelMap[address]
-        if (labels != null) {
-            labels = HashSet()
+        if (labels == null) {
+            labels = hashSet()
             labelMap[address] = labels!!
         }
         return labels!!

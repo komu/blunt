@@ -1,7 +1,6 @@
 package komu.blunt.parser
 
 import java.math.BigInteger
-
 import komu.blunt.parser.TokenType.*
 
 public class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()) {
@@ -53,7 +52,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
 
     private fun readToken<T>(typ: TokenType<T>): Token<T> {
         if (nextTokenIs(typ))
-            return readToken().asType<T>(typ)
+            return readToken().asType(typ)
         else
             throw expectFailure("token of type $typ")
     }

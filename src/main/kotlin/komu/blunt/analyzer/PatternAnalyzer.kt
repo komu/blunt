@@ -1,10 +1,8 @@
 package komu.blunt.analyzer
 
+import java.util.ArrayList
 import komu.blunt.core.*
 import komu.blunt.types.patterns.*
-
-import java.util.ArrayList
-import kotlin.util.*
 
 class PatternAnalyzer {
 
@@ -44,7 +42,7 @@ class PatternAnalyzer {
             is VariablePattern    -> CoreConstantExpression(true)
             is LiteralPattern     -> CoreEqualConstantExpression(pattern.value, CoreExtractExpression(matchedObject, path))
             is ConstructorPattern -> constructorPredicate(pattern, path, matchedObject)
-            else                  -> throw AnalyzationException("unnown pattern $pattern")
+            else                  -> throw AnalyzationException("unknown pattern '$pattern'")
         }
 
     private fun constructorPredicate(pattern: ConstructorPattern, path: PatternPath, matchedObject: VariableReference): CoreExpression {

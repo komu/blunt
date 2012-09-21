@@ -1,19 +1,12 @@
 package komu.blunt.parser
 
 import com.google.common.collect.ImmutableList
+import java.util.ArrayList
 import komu.blunt.ast.*
 import komu.blunt.objects.Symbol
-import komu.blunt.types.DataTypeDefinitions
+import komu.blunt.parser.TokenType.*
 import komu.blunt.types.ConstructorNames
 import komu.blunt.types.patterns.Pattern
-import komu.blunt.types.patterns.VariablePattern
-
-import java.util.ArrayList
-
-import java.util.Collections.singletonList
-import komu.blunt.parser.TokenType.*
-import java.util.Arrays
-import kotlin.util.*
 
 class Parser(source: String) {
 
@@ -215,7 +208,7 @@ class Parser(source: String) {
 
         var name = parseIdentifier()
 
-        val args = ArrayList<Symbol>()
+        val args = arrayList<Symbol>()
 
         if (lexer.nextTokenIs(TokenType.OPERATOR)) {
             val op = lexer.readTokenValue(TokenType.OPERATOR)
@@ -243,14 +236,14 @@ class Parser(source: String) {
     private fun parseLambda(): ASTExpression {
         lexer.expectToken(TokenType.LAMBDA)
 
-        val args = ArrayList<Pattern>()
+        val args = listBuilder<Pattern>()
 
         do {
             args.add(patternParser.parseSimplePattern())
         } while (!lexer.readMatchingToken(TokenType.RIGHT_ARROW))
 
         val builder = FunctionBuilder()
-        builder.addAlternative(ImmutableList.copyOf(args), parseExpression())
+        builder.addAlternative(args.build(), parseExpression())
         return builder.build()
     }
 
@@ -284,7 +277,7 @@ class Parser(source: String) {
     // []
     // [<exp> (,<exp>)*]
     private fun parseList(): ASTExpression {
-        val list = AST.listBuilder()
+        val list = AST.bluntListBuilder()
 
         lexer.expectToken(TokenType.LBRACKET)
 

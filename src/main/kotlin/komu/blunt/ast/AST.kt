@@ -1,22 +1,19 @@
 package komu.blunt.ast
 
-import com.google.common.collect.ImmutableList
 import com.google.common.collect.Lists
+import java.util.Collections.singletonList
 import komu.blunt.objects.Symbol
 import komu.blunt.types.ConstructorDefinition
 import komu.blunt.types.ConstructorNames
 import komu.blunt.types.Type
 import komu.blunt.types.patterns.Pattern
 
-import java.util.Arrays
-import java.util.ArrayList
-
 /**
  * Convenience functions for constructing syntax objects.
  */
 object AST {
 
-    fun data(name: String, typ: Type, constructors: ImmutableList<ConstructorDefinition>, derivedClasses: ImmutableList<String>) =
+    fun data(name: String, typ: Type, constructors: List<ConstructorDefinition>, derivedClasses: List<String>) =
         ASTDataDefinition(name, typ, constructors, derivedClasses)
 
     fun constant(value: Any): ASTExpression   = ASTConstant(value)
@@ -59,30 +56,22 @@ object AST {
     fun caseExp(exp: ASTExpression, alts: List<ASTAlternative>): ASTExpression =
         ASTCase(exp, alts)
 
-    fun caseExp(exp: ASTExpression, vararg alts: ASTAlternative): ASTExpression {
-        val lst = ArrayList<ASTAlternative>()
-        for (val alt in alts) lst.add(alt)
-
-        return ASTCase(exp, ImmutableList.copyOf(lst))
-    }
+    fun caseExp(exp: ASTExpression, vararg alts: ASTAlternative): ASTExpression =
+        ASTCase(exp, alts.toList())
 
     fun alternative(pattern: Pattern, exp: ASTExpression): ASTAlternative =
         ASTAlternative(pattern, exp);
 
     fun letRec(name: Symbol, value: ASTExpression, body: ASTExpression): ASTExpression =
-        ASTLetRec(ImmutableList.of(ImplicitBinding(name, value)), body)
+        ASTLetRec(singletonList(ImplicitBinding(name, value)), body)
 
     fun let(recursive: Boolean, binding: ImplicitBinding, body: ASTExpression): ASTExpression {
-        val bindings = ImmutableList.of(binding)
+        val bindings = singletonList(binding)
         return if (recursive) ASTLetRec(bindings, body) else ASTLet(bindings, body)
     }
 
-    fun sequence(vararg exps: ASTExpression): ASTSequence {
-        val lst = ArrayList<ASTExpression>()
-        for (val exp in exps) lst.add(exp)
-
-        return ASTSequence(ImmutableList.copyOf(lst))
-    }
+    fun sequence(vararg exps: ASTExpression): ASTSequence =
+        ASTSequence(exps.toList())
 
     fun tuple(exps: List<ASTExpression>): ASTExpression  {
         if (exps.isEmpty())
@@ -104,10 +93,10 @@ object AST {
     fun define(name: Symbol, value: ASTExpression): ASTValueDefinition =
         ASTValueDefinition(name, value)
 
-    fun listBuilder() = ListBuilder()
+    fun bluntListBuilder() = ListBuilder()
 
     class ListBuilder {
-        private val exps = ArrayList<ASTExpression>()
+        private val exps = arrayList<ASTExpression>()
 
         fun add(exp: ASTExpression) {
             exps.add(exp)
@@ -126,13 +115,13 @@ object AST {
     fun sequenceBuilder() = SequenceBuilder()
 
     class SequenceBuilder {
-        private val exps = ArrayList<ASTExpression>()
+        private val exps = listBuilder<ASTExpression>()
 
         fun add(exp: ASTExpression) {
             exps.add(exp)
         }
 
         fun build(): ASTSequence =
-            ASTSequence(ImmutableList.copyOf(exps))
+            ASTSequence(exps.build())
     }
 }

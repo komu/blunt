@@ -12,28 +12,27 @@ class CoreApplicationExpression(private val func: CoreExpression,
         instructions.append(arg.assemble(asm, Register.ARG, Linkage.NEXT).preserving(Register.PROCEDURE))
 
         if (linkage == Linkage.RETURN && target == Register.VAL) {
-            instructions.applyTail();
+            instructions.applyTail()
 
         } else {
             val afterCall = asm.newLabel("afterCall");
 
             // TODO: make pushing env the responsibility of called procedure
-            if (linkage != Linkage.RETURN) instructions.pushRegister(Register.ENV);
+            if (linkage != Linkage.RETURN) instructions.pushRegister(Register.ENV)
 
             // TODO: use label from linkage if possible (depends on callee saving env)
-            instructions.pushLabel(afterCall);
-            instructions.apply();
-            instructions.label(afterCall);
-            if (linkage != Linkage.RETURN) instructions.popRegister(Register.ENV);
+            instructions.pushLabel(afterCall)
+            instructions.apply()
+            instructions.label(afterCall)
+            if (linkage != Linkage.RETURN) instructions.popRegister(Register.ENV)
 
             if (target != Register.VAL)
-                instructions.copy(target, Register.VAL);
+                instructions.copy(target, Register.VAL)
 
-            instructions.finishWithLinkage(linkage);
+            instructions.finishWithLinkage(linkage)
         }
 
-
-        return instructions;
+        return instructions
     }
 
     override fun simplify() =

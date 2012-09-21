@@ -1,10 +1,8 @@
 package komu.blunt.eval
 
-import komu.blunt.analyzer.VariableReference
-
-import java.util.Arrays
-
 import java.lang.Math.max
+import java.util.Arrays
+import komu.blunt.analyzer.VariableReference
 
 abstract class Environment {
 
@@ -49,7 +47,7 @@ class RootEnvironment : Environment() {
         checkFrame(v.frame)
 
         if (v.offset >= bindings.size)
-            bindings = Arrays.copyOf(bindings, max(v.offset + 1, bindings.size * 2))!!
+            bindings = Arrays.copyOf(bindings, max(v.offset + 1, bindings.size * 2))
 
         bindings[v.offset] = value
     }

@@ -1,21 +1,13 @@
 package komu.blunt.types
 
-import kotlin.util.*
-
-import komu.blunt.eval.TypeCheckException
-import komu.blunt.types.checker.Substitution
-import komu.blunt.types.checker.UnificationException
-import komu.blunt.types.checker.Unifier
-
-import javax.annotation.Nullable
 import java.util.ArrayList
+import java.util.Collections.emptyList
 import java.util.HashMap
-import java.util.Arrays.asList
-import komu.blunt.types.isIn
-import java.util.Collections
-import java.util.Arrays
 import java.util.HashSet
 import java.util.LinkedHashSet
+import komu.blunt.eval.TypeCheckException
+import komu.blunt.types.checker.UnificationException
+import komu.blunt.types.checker.Unifier
 
 class ClassEnv() {
 
@@ -82,7 +74,7 @@ class ClassEnv() {
     }
 
     public fun addInstance(predicate: Predicate) {
-        addInstance(Collections.emptyList<Predicate>()!!, predicate)
+        addInstance(emptyList(), predicate)
     }
 
     public fun addInstance(predicates: List<Predicate>, predicate: Predicate) {
@@ -110,7 +102,7 @@ class ClassEnv() {
     }
 
     private fun bySuper(predicate: Predicate): List<Predicate> {
-        val result = ArrayList<Predicate>()
+        val result = arrayList<Predicate>()
         result.add(predicate)
 
         for (val superName in getSuperClasses(predicate.className))
@@ -168,7 +160,7 @@ class ClassEnv() {
 
     private fun simplify(ps: List<Predicate>): List<Predicate> {
         val combinedPredicates = HashSet<Predicate>()
-        val rs = ArrayList<Predicate>()
+        val rs = listBuilder<Predicate>()
 
         for (val p in ps) {
             if (!entails(combinedPredicates, p)) {
@@ -177,7 +169,7 @@ class ClassEnv() {
             }
         }
 
-        return rs
+        return rs.build()
     }
 
     fun reduce(ps: List<Predicate>): List<Predicate> =

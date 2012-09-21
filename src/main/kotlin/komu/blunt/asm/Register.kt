@@ -1,24 +1,21 @@
 package komu.blunt.asm
 
-import komu.blunt.objects.Procedure
 import komu.blunt.eval.Environment
+import komu.blunt.objects.Procedure
 
-// TODO: enum
-class Register private (private val name: String) {
-    class object {
-        val VAL       = Register("val")
-        val ENV       = Register("env")
-        val PROCEDURE = Register("procedure")
-        val ARG       = Register("arg")
-        val PC        = Register("pc")
-    }
+enum class Register (val name: String) {
+    VAL       : Register("val")
+    ENV       : Register("env")
+    PROCEDURE : Register("procedure")
+    ARG       : Register("arg")
+    PC        : Register("pc")
 
     fun isValidValue(value: Any): Boolean =
         when (this) {
-            Register.PROCEDURE -> value is Procedure
-            Register.PC        -> value is Int
-            Register.ENV       -> value is Environment
-            else               -> true
+            PROCEDURE -> value is Procedure
+            PC        -> value is Int
+            ENV       -> value is Environment
+            else      -> true
         }
 
     fun toString() = name

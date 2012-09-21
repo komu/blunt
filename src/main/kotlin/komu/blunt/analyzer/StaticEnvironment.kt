@@ -2,12 +2,9 @@ package komu.blunt.analyzer
 
 import komu.blunt.objects.Symbol
 
-import java.util.HashMap
-import kotlin.util.*
-
 class StaticEnvironment(private val parent: StaticEnvironment? = null) {
 
-    private val variables = HashMap<Symbol, VariableInfo>()
+    private val variables = hashMap<Symbol, VariableInfo>()
 
     fun lookup(name: Symbol) = lookup(name, 0)
 
