@@ -3,6 +3,7 @@ package komu.blunt.stdlib
 import java.math.BigInteger
 import komu.blunt.eval.RootBindings
 import komu.blunt.objects.TypeConstructorValue
+import kotlin.math.div
 
 object BasicFunctions {
 
@@ -11,12 +12,26 @@ object BasicFunctions {
         bindings.bindFunction("show", "a -> String") { s -> s.toString() }
         bindings.bindFunction("print", "a -> Unit") { s -> print(s) }
 
-        bindings.bindFunction("primitiveCompare", "Ord a => (a,a) -> Ordering") { v ->
-            v
+        bindings.bindFunction("primitiveCompare", "Ord a => (a,a) -> Ordering") { s ->
+            val tc = s as TypeConstructorValue
+            val x = tc.items[0] as Comparable<Any?>
+            val y = tc.items[1] as Comparable<Any?>
+
+            val r = x.compareTo(y)
+            if (r < 0)
+                BasicValues.LT
+            else if (r > 0)
+                BasicValues.GT
+            else
+                BasicValues.EQ
         }
 
         bindings.bindFunction("primitiveOpEq", "Eq a => (a,a) -> Boolean") { s ->
-            throw Exception(s.toString())
+            val tc = s as TypeConstructorValue
+            val x = tc.items[0]
+            val y = tc.items[1]
+
+            x == y
         }
 
         bindings.bindFunction("primitiveOpPlus", "Num a => (a,a) -> a") { s ->
@@ -28,19 +43,35 @@ object BasicFunctions {
         }
 
         bindings.bindFunction("primitiveOpMinus", "Num a => (a,a) -> a") { s ->
-            throw Exception(s.toString())
+            val tc = s as TypeConstructorValue
+            val x = tc.items[0] as BigInteger
+            val y = tc.items[1] as BigInteger
+
+            x - y
         }
 
         bindings.bindFunction("primitiveOpMultiply", "Num a => (a,a) -> a") { s ->
-            throw Exception(s.toString())
+            val tc = s as TypeConstructorValue
+            val x = tc.items[0] as BigInteger
+            val y = tc.items[1] as BigInteger
+
+            x * y
         }
 
         bindings.bindFunction("primitiveOpDivide", "Num a => (a,a) -> a") { s ->
-            throw Exception(s.toString())
+            val tc = s as TypeConstructorValue
+            val x = tc.items[0] as BigInteger
+            val y = tc.items[1] as BigInteger
+
+            x / y
         }
 
         bindings.bindFunction("primitiveMod", "Num a => (a,a) -> a") { s ->
-            throw Exception(s.toString())
+            val tc = s as TypeConstructorValue
+            val x = tc.items[0] as BigInteger
+            val y = tc.items[1] as BigInteger
+
+            x % y
         }
     }
 
