@@ -7,7 +7,6 @@ import komu.blunt.eval.RootEnvironment
 import komu.blunt.objects.Procedure
 
 import java.util.ArrayList
-import java.util.List
 
 class VM(private val instructions: Instructions, var env: Environment, val globalEnvironment: RootEnvironment) {
 

@@ -3,17 +3,15 @@ package komu.blunt.types.checker
 import com.google.common.collect.ImmutableList
 import komu.blunt.types.Predicate
 
-import java.util.List
 import java.util.ArrayList
-import java.util.Collection
 
 class TypeCheckResult<out T>(val value: T, val predicates: ImmutableList<Predicate>) {
 
     class object {
         fun builder<T>() = Builder<T>()
 
-        fun of<T>(value: T) = TypeCheckResult(value, ImmutableList.of<Predicate>().sure())
-        fun of<T>(value: T, predicates: List<Predicate>) = TypeCheckResult(value, ImmutableList.copyOf(predicates).sure())
+        fun of<T>(value: T) = TypeCheckResult(value, ImmutableList.of<Predicate>())
+        fun of<T>(value: T, predicates: List<Predicate>) = TypeCheckResult(value, ImmutableList.copyOf(predicates))
 
         class Builder<T> () {
             private val predicates = ArrayList<Predicate>()

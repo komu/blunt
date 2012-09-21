@@ -5,7 +5,6 @@ import komu.blunt.objects.PrimitiveProcedure
 import komu.blunt.objects.TypeConstructorValue
 import komu.blunt.types.ConstructorDefinition
 import java.util.ArrayList
-import java.util.List
 
 class ConstructorArgumentCollector(private val ctor: ConstructorDefinition,
                                    private val args: List<Any?>) : PrimitiveProcedure {

@@ -2,8 +2,11 @@
   <dictionary name="komu">
     <words>
       <w>analyzation</w>
+      <w>exps</w>
       <w>lbracket</w>
       <w>lparen</w>
+      <w>parens</w>
+      <w>qual</w>
       <w>rbracket</w>
       <w>rparen</w>
     </words>

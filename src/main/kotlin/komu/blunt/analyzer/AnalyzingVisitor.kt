@@ -10,7 +10,6 @@ import komu.blunt.types.ConstructorDefinition
 import komu.blunt.types.DataTypeDefinitions
 
 import java.util.ArrayList
-import java.util.List
 
 class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
 
@@ -111,6 +110,6 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
     private fun analyze(alt: ASTAlternative, matchedObject: VariableReference, env: StaticEnvironment): CoreAlternative {
         val extractor = patternAnalyzer.createExtractor(alt.pattern, matchedObject, env)
         val body = analyze(alt.value, env)
-        return CoreAlternative(extractor.predicate, CoreSequenceExpression(extractor.extractor, body))
+        return CoreAlternative(extractor.predicate, CoreSequenceExpression.of(extractor.extractor, body))
     }
 }

@@ -1,10 +1,9 @@
 package komu.blunt.parser
 
 import java.util.ArrayList
-import java.util.List
 
 final class IndentStack {
-    val indents = ArrayList<Int>()
+    val indents = arrayList<Int>()
 
     fun push(column: Int) {
         indents.add(column)

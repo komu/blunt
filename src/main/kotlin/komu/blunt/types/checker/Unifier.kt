@@ -55,7 +55,7 @@ object Unifier {
 
     private fun unifyApplication(lhs: TypeApplication, rhs: TypeApplication): Substitution {
         val s1 = mgu(lhs.left, rhs.left)
-        val s2 = mgu(lhs.right.apply(s1).sure(), rhs.right.apply(s1).sure())
+        val s2 = mgu(lhs.right.apply(s1), rhs.right.apply(s1))
 
         return s2.compose(s1)
     }

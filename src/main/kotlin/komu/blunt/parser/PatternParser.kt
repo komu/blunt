@@ -6,7 +6,6 @@ import komu.blunt.types.patterns.Pattern
 
 import java.util.ArrayList
 import java.util.Arrays
-import java.util.List
 
 import komu.blunt.parser.TokenType.*
 import komu.blunt.types.ConstructorNames
@@ -21,12 +20,12 @@ final class PatternParser(val lexer: Lexer) {
     public fun parsePattern(): Pattern {
         if (lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME)) {
             val name = lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME)
-            val args = ArrayList<Pattern>()
+            val args = listBuilder<Pattern>()
 
             while (lexer.nextTokenIsOneOf(PATTERN_START_TOKENS))
                 args.add(parseSimplePattern())
 
-            return Pattern.constructor(name, ImmutableList.copyOf(args).sure())
+            return Pattern.constructor(name, args.build())
         } else {
             return parseSimplePattern()
         }
@@ -90,7 +89,7 @@ final class PatternParser(val lexer: Lexer) {
         if (lexer.readMatchingToken(TokenType.RPAREN))
             return Pattern.constructor(ConstructorNames.UNIT)
 
-        val patterns = ArrayList<Pattern>()
+        val patterns = arrayList<Pattern>()
 
         do {
             patterns.add(parsePattern())
@@ -98,9 +97,9 @@ final class PatternParser(val lexer: Lexer) {
 
         lexer.expectToken(TokenType.RPAREN)
 
-        if (patterns.size() == 1)
-            return patterns.get(0)
+        if (patterns.size == 1)
+            return patterns[0]
         else
-            return Pattern.constructor(ConstructorNames.tupleName(patterns.size()), ImmutableList.copyOf(patterns).sure())
+            return Pattern.constructor(ConstructorNames.tupleName(patterns.size()), patterns)
     }
 }

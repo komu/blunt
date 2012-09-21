@@ -7,20 +7,15 @@ import komu.blunt.types.TypeVariable
 import komu.blunt.types.Types
 
 import java.util.HashMap
-import java.util.List
-import java.util.Map
-import java.util.Set
 
 import java.util.Collections.emptyMap
 import java.util.Collections.unmodifiableMap
 import kotlin.util.*
 
-class Assumptions private(private val mappings: Map<Symbol,Scheme>) : Types<Assumptions> {
-
-    private this(): this(emptyMap<Symbol,Scheme>().sure()) { }
+class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions> {
 
     fun join(ass: Assumptions) =
-        builder().addAll(ass).addAll(this).build()
+            builder().addAll(ass).addAll(this).build()
 
     fun find(name: Symbol): Scheme {
         val scheme = mappings.get(name)
@@ -32,7 +27,7 @@ class Assumptions private(private val mappings: Map<Symbol,Scheme>) : Types<Assu
 
     fun toString() = mappings.toString()
 
-    override fun addTypeVariables(result: Set<TypeVariable>) {
+    override fun addTypeVariables(result: MutableSet<TypeVariable>) {
         for (val scheme in mappings.values())
             scheme.addTypeVariables(result)
     }
@@ -41,7 +36,7 @@ class Assumptions private(private val mappings: Map<Symbol,Scheme>) : Types<Assu
         val builder = builder()
 
         for (val entry in mappings.entrySet())
-            builder.add(entry.key, entry.value.apply(substitution).sure())
+            builder.add(entry.key, entry.value.apply(substitution))
 
         return builder.build()
     }
@@ -49,7 +44,7 @@ class Assumptions private(private val mappings: Map<Symbol,Scheme>) : Types<Assu
     class object {
 
         fun builder() = Builder()
-        fun empty() = Assumptions()
+        fun empty() = Assumptions(emptyMap<Symbol,Scheme>()!!)
         fun singleton(arg: Symbol, scheme: Scheme) = builder().add(arg, scheme).build()
 
         fun from(names: List<Symbol>, schemes: List<Scheme>): Assumptions {
@@ -82,7 +77,7 @@ class Assumptions private(private val mappings: Map<Symbol,Scheme>) : Types<Assu
 
             fun build(): Assumptions {
                 built = true
-                return Assumptions(unmodifiableMap(mappings).sure())
+                return Assumptions(unmodifiableMap(mappings))
             }
 
             fun build(ass: Assumptions) = build().join(ass)

@@ -3,7 +3,6 @@ package komu.blunt.asm
 import komu.blunt.asm.opcodes.*
 import komu.blunt.analyzer.VariableReference
 import komu.blunt.core.PatternPath
-import java.util.Set
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.HashSet
@@ -11,7 +10,7 @@ import kotlin.util.*
 
 class Instructions {
     private val instructions = ArrayList<OpCode>()
-    private val labelMap = HashMap<Int,Set<Label>>()
+    private val labelMap = HashMap<Int,MutableSet<Label>>()
 
     fun append(rhs: Instructions) {
         val relocationOffset = instructions.size
@@ -34,13 +33,13 @@ class Instructions {
         getLabels(label.address).add(label)
     }
 
-    private fun getLabels(address: Int): Set<Label> {
+    private fun getLabels(address: Int): MutableSet<Label> {
         var labels = labelMap[address]
         if (labels != null) {
             labels = HashSet()
-            labelMap[address] = labels.sure()
+            labelMap[address] = labels!!
         }
-        return labels.sure()
+        return labels!!
     }
 
     fun dump() {
@@ -89,7 +88,7 @@ fun Instructions.finishWithLinkage(linkage: Linkage) {
     } else if (linkage == Linkage.RETURN) {
         popRegister(Register.PC)
     } else {
-        jump(linkage.label.sure())
+        jump(linkage.label!!)
     }
 }
 

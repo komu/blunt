@@ -1,14 +1,10 @@
 package komu.blunt.parser
 
 import java.math.BigInteger
-import java.util.Collection
 
 import komu.blunt.parser.TokenType.*
-import java.util.List
 
-public class Lexer(source: String, private val operatorSet: OperatorSet) {
-
-    this(source: String): this(source, OperatorSet()) { }
+public class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()) {
 
     private val reader = SourceReader(source)
     private var nextToken: Token<Any>? = null
@@ -39,15 +35,15 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         if (nextToken == null)
             nextToken = readTokenInternal()
 
-        return nextToken.sure()
+        return nextToken!!
     }
 
     public fun peekTokenValue<T>(typ: TokenType<T>): T =
         peekToken().asType<T>(typ).value
 
     private fun readToken(): Token<Any> {
-        if (nextToken != null) {
-            val token = nextToken.sure()
+        val token = nextToken
+        if (token != null) {
             nextToken = null
             return token
         } else {
@@ -146,7 +142,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         while (isIdentifierPart(reader.peek()))
             sb.append(read())
 
-        val name = sb.toString().sure()
+        val name = sb.toString()
 
         if (name == "_")
             return Token.ofType(TokenType.UNDERSCORE, location)
@@ -184,7 +180,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
         while (isOperatorCharacter(reader.peek()))
             sb.append(read())
 
-        val op = sb.toString().sure()
+        val op = sb.toString()
         return when (op) {
           "\\" ->   Token.ofType(TokenType.LAMBDA, location)
           "="  ->   Token.ofType(TokenType.ASSIGN, location)
@@ -221,7 +217,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet) {
             }
         }
 
-        return Token(TokenType.LITERAL, sb.toString().sure(), location)
+        return Token(TokenType.LITERAL, sb.toString(), location)
     }
 
     private fun readNumber(): Token<Any> {

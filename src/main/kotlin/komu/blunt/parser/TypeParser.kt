@@ -6,7 +6,6 @@ import komu.blunt.types.*
 import java.util.ArrayList
 import java.util.Arrays
 import java.util.Collections
-import java.util.List
 
 import komu.blunt.parser.TokenType.*
 import komu.blunt.types.quantifyAll
@@ -50,7 +49,7 @@ class TypeParser(val lexer: Lexer) {
             return predicates
         } catch (e: SyntaxException) {
             lexer.restore(lexerState)
-            return Collections.emptyList<Predicate>().sure()
+            return Collections.emptyList<Predicate>()!!
         }
     }
 

@@ -2,9 +2,6 @@ package komu.blunt.types
 
 import komu.blunt.types.checker.Substitution
 
-import java.util.List
-import java.util.Set
-
 class ClassInstance(val qual: Qualified<Predicate>) : Types<ClassInstance> {
 
     val predicates: List<Predicate>
@@ -13,7 +10,7 @@ class ClassInstance(val qual: Qualified<Predicate>) : Types<ClassInstance> {
     val predicate: Predicate
         get() = qual.value
 
-    override fun addTypeVariables(result: Set<TypeVariable>) {
+    override fun addTypeVariables(result: MutableSet<TypeVariable>) {
         qual.addTypeVariables(result)
     }
 

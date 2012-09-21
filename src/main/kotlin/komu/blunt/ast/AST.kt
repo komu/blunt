@@ -8,9 +8,6 @@ import komu.blunt.types.ConstructorNames
 import komu.blunt.types.Type
 import komu.blunt.types.patterns.Pattern
 
-import java.util.List
-
-import com.google.common.collect.Lists.newArrayList
 import java.util.Arrays
 import java.util.ArrayList
 
@@ -59,24 +56,24 @@ object AST {
         caseExp(test, alternative(Pattern.constructor(ConstructorNames.TRUE), cons),
                       alternative(Pattern.constructor(ConstructorNames.FALSE), alt))
 
-    fun caseExp(exp: ASTExpression, alts: ImmutableList<ASTAlternative>): ASTExpression =
+    fun caseExp(exp: ASTExpression, alts: List<ASTAlternative>): ASTExpression =
         ASTCase(exp, alts)
 
     fun caseExp(exp: ASTExpression, vararg alts: ASTAlternative): ASTExpression {
         val lst = ArrayList<ASTAlternative>()
         for (val alt in alts) lst.add(alt)
 
-        return ASTCase(exp, ImmutableList.copyOf(lst).sure())
+        return ASTCase(exp, ImmutableList.copyOf(lst))
     }
 
     fun alternative(pattern: Pattern, exp: ASTExpression): ASTAlternative =
         ASTAlternative(pattern, exp);
 
     fun letRec(name: Symbol, value: ASTExpression, body: ASTExpression): ASTExpression =
-        ASTLetRec(ImmutableList.of(ImplicitBinding(name, value)).sure(), body)
+        ASTLetRec(ImmutableList.of(ImplicitBinding(name, value)), body)
 
     fun let(recursive: Boolean, binding: ImplicitBinding, body: ASTExpression): ASTExpression {
-        val bindings = ImmutableList.of(binding).sure()
+        val bindings = ImmutableList.of(binding)
         return if (recursive) ASTLetRec(bindings, body) else ASTLet(bindings, body)
     }
 
@@ -84,7 +81,7 @@ object AST {
         val lst = ArrayList<ASTExpression>()
         for (val exp in exps) lst.add(exp)
 
-        return ASTSequence(ImmutableList.copyOf(lst).sure())
+        return ASTSequence(ImmutableList.copyOf(lst))
     }
 
     fun tuple(exps: List<ASTExpression>): ASTExpression  {
@@ -136,6 +133,6 @@ object AST {
         }
 
         fun build(): ASTSequence =
-            ASTSequence(ImmutableList.copyOf(exps).sure())
+            ASTSequence(ImmutableList.copyOf(exps))
     }
 }

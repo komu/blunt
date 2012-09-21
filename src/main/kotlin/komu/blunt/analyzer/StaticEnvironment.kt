@@ -3,7 +3,6 @@ package komu.blunt.analyzer
 import komu.blunt.objects.Symbol
 
 import java.util.HashMap
-import java.util.List
 import kotlin.util.*
 
 class StaticEnvironment(private val parent: StaticEnvironment? = null) {

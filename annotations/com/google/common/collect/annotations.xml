@@ -1,0 +1,72 @@
+<root>
+    <item name='com.google.common.collect.ImmutableMap.Builder com.google.common.collect.ImmutableMap&lt;K,V&gt; build()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableMap com.google.common.collect.ImmutableMap.Builder&lt;K,V&gt; builder()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableMap com.google.common.collect.ImmutableSet&lt;java.util.Map.Entry&lt;K,V&gt;&gt; entrySet()'>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value" val="&quot;fun entrySet() : ImmutableSet&lt;Map.Entry&lt;K, V&gt;&gt;&quot;"/>
+        </annotation>
+    </item>
+    <item name='com.google.common.collect.ImmutableMap com.google.common.collect.ImmutableSet&lt;K&gt; keySet()'>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value" val="&quot;fun keySet() : ImmutableSet&lt;K&gt;&quot;"/>
+        </annotation>
+    </item>
+    <item name='com.google.common.collect.ImmutableSet com.google.common.collect.UnmodifiableIterator&lt;E&gt; iterator()'>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value" val="&quot;fun iterator() : UnmodifiableIterator&lt;E&gt;?&quot;"/>
+        </annotation>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableMap com.google.common.collect.ImmutableMap&lt;K,V&gt; of()'>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value" val="&quot;fun &lt;K, V&gt; of() : ImmutableMap&lt;K, V&gt;?&quot;"/>
+        </annotation>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableMap com.google.common.collect.ImmutableMap&lt;K,V&gt; of(K, V)'>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value" val="&quot;fun &lt;K, V&gt; of(k1 : K?, v1 : V?) : ImmutableMap&lt;K, V&gt;?&quot;"/>
+        </annotation>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableMap com.google.common.collect.ImmutableMap&lt;K,V&gt; of(K, V, K, V)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableMap com.google.common.collect.ImmutableMap&lt;K,V&gt; of(K, V, K, V, K, V)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableMap com.google.common.collect.ImmutableMap&lt;K,V&gt; of(K, V, K, V, K, V, K, V)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableMap com.google.common.collect.ImmutableMap&lt;K,V&gt; of(K, V, K, V, K, V, K, V, K, V)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableList com.google.common.collect.ImmutableList&lt;E&gt; copyOf(java.util.Collection&lt;? extends E&gt;)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.Lists java.util.List&lt;T&gt; reverse(java.util.List&lt;T&gt;)'>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value" val="&quot;fun &lt;T&gt; reverse(list : List&lt;T&gt;?) : MutableList&lt;T&gt;?&quot;"/>
+        </annotation>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.Lists java.util.List&lt;T&gt; reverse(java.util.List&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableList com.google.common.collect.ImmutableList&lt;E&gt; of(E)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableList com.google.common.collect.ImmutableList&lt;E&gt; of(E, E)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableList com.google.common.collect.ImmutableList&lt;E&gt; of(E, E, E)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='com.google.common.collect.ImmutableList com.google.common.collect.ImmutableList&lt;E&gt; of()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>

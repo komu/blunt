@@ -6,17 +6,15 @@ import komu.blunt.types.checker.Substitution
 
 import java.util.ArrayList
 import java.util.Collections
-import java.util.List
-import java.util.Set
 import java.util.Objects
 
-class Scheme(val kinds: List<Kind?>, val `type`: Qualified<Type>) : Types<Scheme> {
+class Scheme(val kinds: List<Kind>, val `type`: Qualified<Type>) : Types<Scheme> {
 
     override fun apply(substitution: Substitution): Scheme =
         Scheme(kinds, `type`.apply(substitution))
 
-    override fun addTypeVariables(variables: Set<TypeVariable>) {
-        `type`.addTypeVariables(variables)
+    override fun addTypeVariables(result: MutableSet<TypeVariable>) {
+        `type`.addTypeVariables(result)
     }
 
     fun toString() = `type`.toString()
@@ -25,7 +23,7 @@ class Scheme(val kinds: List<Kind?>, val `type`: Qualified<Type>) : Types<Scheme
     fun hashCode() = Objects.hash(kinds, `type`)
 
     class object {
-        fun fromType(t: Type) = Scheme(Collections.emptyList<Kind?>().sure(), Qualified(t))
+        fun fromType(t: Type) = Scheme(arrayList(), Qualified.simple(t))
 
         fun fromTypes(ts: List<out Type>): List<Scheme> {
             val schemes = ArrayList<Scheme>(ts.size)

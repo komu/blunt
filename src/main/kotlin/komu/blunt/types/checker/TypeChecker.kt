@@ -10,8 +10,6 @@ import komu.blunt.types.*
 import komu.blunt.types.patterns.Pattern
 
 import java.util.ArrayList
-import java.util.Collection
-import java.util.List
 
 import komu.blunt.types.quantifyAll
 import komu.blunt.types.instantiate
@@ -58,13 +56,8 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
         patternTypeChecker.typeCheck(pattern)
 
-    fun freshInstance(scheme: Scheme): Qualified<Type> {
-        val ts = ArrayList<TypeVariable>(scheme.kinds.size)
-        for (val kind in scheme.kinds)
-            ts.add(newTVar(kind.sure()))
-
-        return instantiate(ts, scheme.`type`)
-    }
+    fun freshInstance(scheme: Scheme): Qualified<Type> =
+        instantiate(scheme.kinds.map { newTVar(it) }, scheme.`type`)
 
     fun newTVar(): TypeVariable =
         newTVar(Kind.STAR)
@@ -81,37 +74,31 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
 
     private fun typeName(index: Int): String =
         if (index < 5)
-            String.valueOf(('a' + index).toChar()).sure()
+            ('a' + index).toChar().toString()
         else
             "t" + (index-5)
 
     fun unify(t1: Type, t2: Type) {
         try {
-            val u = Unifier.mgu(t1.apply(substitution).sure(), t2.apply(substitution).sure())
+            val u = Unifier.mgu(t1.apply(substitution), t2.apply(substitution))
             substitution = u.compose(substitution)
         } catch (e: UnificationException) {
-            throw TypeCheckException(e)
+            throw TypeCheckException(e.toString())
         }
     }
 
-    fun applySubstitution<T : Types<T?>>(t: T): T =
-      t.apply(substitution).sure()
+    fun applySubstitution<T : Types<T>>(t: T): T =
+      t.apply(substitution)
 
-    fun applySubstitution<T : Types<T?>>(t: Qualified<T>): Qualified<T> =
-      t.apply(substitution).sure()
+    fun applySubstitution<T : Types<T>>(t: Qualified<T>): Qualified<T> =
+      t.apply(substitution)
 
     // TODO
     fun applySubstitution(t: Assumptions): Assumptions =
-      t.apply(substitution).sure()
+      t.apply(substitution)
 
-    fun applySubstitution<T : Types<T?>>(ts: Collection<T>): List<T> {
-        val result = ArrayList<T>(ts.size)
-
-        for (val t in ts)
-            result.add(t.apply(substitution).sure())
-
-        return result
-    }
+    fun applySubstitution<T : Types<T>>(ts: Collection<T>): List<T> =
+        ts.map { it.apply(substitution) }
 
     fun findConstructor(name: String): ConstructorDefinition =
         dataTypes.findConstructor(name)

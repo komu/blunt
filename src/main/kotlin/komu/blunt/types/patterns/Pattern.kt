@@ -4,16 +4,15 @@ import komu.blunt.objects.Symbol
 import com.google.common.base.Objects
 import com.google.common.collect.ImmutableList
 import komu.blunt.types.ConstructorNames;
-import java.util.List
 
 abstract class Pattern {
     abstract fun toString(): String
 
     class object {
         fun constructor(name: String, vararg args: Pattern): Pattern =
-            ConstructorPattern(name, ImmutableList.copyOf(args.toList()).sure())
+            ConstructorPattern(name, ImmutableList.copyOf(args.toList()))
 
-        fun constructor(name: String, args: ImmutableList<Pattern>): Pattern =
+        fun constructor(name: String, args: List<Pattern>): Pattern =
             ConstructorPattern(name, args)
 
         fun variable(name: String): Pattern =
@@ -28,18 +27,18 @@ abstract class Pattern {
         fun wildcard(): Pattern =
             WildcardPattern.INSTANCE
 
-        fun tuple(args: ImmutableList<Pattern>): Pattern  {
+        fun tuple(args: List<Pattern>): Pattern  {
             if (args.isEmpty())
-                return constructor(ConstructorNames.UNIT.sure())
+                return constructor(ConstructorNames.UNIT)
             if (args.size() == 1)
                 return args.get(0)
             else
-                return constructor(ConstructorNames.tupleName(args.size()).sure(), args);
+                return constructor(ConstructorNames.tupleName(args.size()), args);
         }
     }
 }
 
-class ConstructorPattern(val name: String, val args: ImmutableList<Pattern>) : Pattern() {
+class ConstructorPattern(val name: String, val args: List<Pattern>) : Pattern() {
 
     override fun toString(): String {
         if (args.isEmpty())
@@ -50,10 +49,10 @@ class ConstructorPattern(val name: String, val args: ImmutableList<Pattern>) : P
         sb.append(name)
 
         for (val arg in args)
-            sb.append(' ')?.append(arg)
+            sb.append(' ').append(arg)
         sb.append(')')
 
-        return sb.toString().sure()
+        return sb.toString()
     }
 
     fun equals(obj: Any?) = obj is ConstructorPattern && name == obj.name && args == obj.args

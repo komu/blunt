@@ -3,12 +3,11 @@ package komu.blunt.ast
 import komu.blunt.types.checker.Assumptions
 
 import java.util.ArrayList
-import java.util.List
 
 class BindGroup(explicitBindings: List<ExplicitBinding>, implicitBindings: List<ImplicitBinding>) {
 
-    public val explicitBindings: List<ExplicitBinding> = ArrayList()
-    public val implicitBindings: List<List<ImplicitBinding>> = ArrayList();
+    public val explicitBindings: MutableList<ExplicitBinding> = arrayList()
+    public val implicitBindings: MutableList<List<ImplicitBinding>> = arrayList();
 
     {
         this.explicitBindings.addAll(explicitBindings)

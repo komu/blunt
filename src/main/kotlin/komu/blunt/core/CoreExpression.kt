@@ -2,8 +2,6 @@ package komu.blunt.core
 
 import komu.blunt.asm.*
 
-import java.util.List
-
 abstract class CoreExpression {
 
     abstract fun simplify(): CoreExpression
@@ -18,7 +16,7 @@ abstract class CoreExpression {
             else if (exps.size() == 1)
                 exps.get(0)
             else
-                CoreIfExpression(exps.get(0), and(exps.subList(1, exps.size()).sure()), CoreConstantExpression(false))
+                CoreIfExpression(exps.get(0), and(exps.subList(1, exps.size())), CoreConstantExpression(false))
         }
     }
 }

@@ -18,6 +18,7 @@ import java.nio.charset.Charset
 
 import komu.blunt.types.isIn
 import komu.blunt.parser.Parser
+import java.io.Console
 
 class Evaluator() {
 
@@ -52,14 +53,20 @@ class Evaluator() {
     }
 
     private fun processDefinition(definition: ASTValueDefinition) {
-        val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions())
+        try {
+            val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions())
 
-        rootBindings.defineVariableType(definition.name, typ)
-        val v = rootBindings.staticEnvironment.define(definition.name)
 
-        val exp = Analyzer.analyze(definition.value, rootBindings.dataTypes, rootBindings.staticEnvironment)
+            rootBindings.defineVariableType(definition.name, typ)
+            val v = rootBindings.staticEnvironment.define(definition.name)
 
-        run(CoreDefineExpression(v, exp), rootBindings.runtimeEnvironment);
+            val exp = Analyzer.analyze(definition.value, rootBindings.dataTypes, rootBindings.staticEnvironment)
+
+            run(CoreDefineExpression(v, exp), rootBindings.runtimeEnvironment)
+        } catch (e: TypeCheckException) {
+            println("failure in definition: $definition")
+            throw e
+        }
     }
 
     private fun register(definition: ASTDataDefinition) {
@@ -90,17 +97,17 @@ class Evaluator() {
     }
 
     public fun evaluate(exp: ASTExpression): Any? =
-        evaluateWithType(exp)._1
+        evaluateWithType(exp).first
 
 
-    public fun evaluateWithType(exp: ASTExpression): #(Any?,Qualified<Type>) {
+    public fun evaluateWithType(exp: ASTExpression): Pair<Any?, Qualified<Type>> {
         val env = rootBindings.staticEnvironment.extend()
         val typ = typeCheck(exp)
         val expression = toCore(exp, env);
 
         val result = run(expression, rootBindings.runtimeEnvironment.extend(env.size))
 
-        return #(result, typ)
+        return Pair(result, typ)
     }
 
     private fun typeCheck(exp: ASTExpression): Qualified<Type> {
@@ -121,10 +128,8 @@ class Evaluator() {
     }
 
     private fun readResource(path: String): String {
-        val resource = getMyClass().getClassLoader()?.getResource(path)
-        return Resources.toString(resource, Charset.forName("UTF-8")).sure()
+        val resource = javaClass.getClassLoader()?.getResource(path)
+        return Resources.toString(resource, Charset.forName("UTF-8"))!!
     }
-
-    private fun getMyClass() = Class.forName("komu.blunt.eval.Evaluator").sure() // TODO
 }
 

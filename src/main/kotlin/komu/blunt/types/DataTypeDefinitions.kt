@@ -53,9 +53,9 @@ public class DataTypeDefinitions() {
         for (val i in 0..arity+1)
             types.add(typeVariable("t" + i))
 
-        return quantifyAll(Qualified(functionType(types, tupleType(types))))
+        return quantifyAll(Qualified.simple(functionType(types, tupleType(types))))
     }
 
     fun getDeclaredConstructors(): Collection<ConstructorDefinition> =
-        unmodifiableCollection(constructors.values()).sure()
+        unmodifiableCollection(constructors.values())!!
 }

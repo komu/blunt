@@ -17,7 +17,7 @@ object BasicFunctions {
 
     //@LibraryFunction("primitiveOpPlus")
     //@TypeScheme("Num a => (a,a) -> a")
-    fun plus(x: BigInteger, y: BigInteger): BigInteger = x.add(y).sure()
+    fun plus(x: BigInteger, y: BigInteger): BigInteger = x.add(y)!!
 
 //    @LibraryFunction("primitiveOpMinus")
 //    @TypeScheme("Num a => (a,a) -> a")

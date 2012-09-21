@@ -1,6 +1,5 @@
 package komu.blunt.ast
 
-import com.google.common.collect.ImmutableList;
 import komu.blunt.objects.Symbol
 import komu.blunt.types.ConstructorDefinition;
 import komu.blunt.types.Type;
@@ -13,8 +12,8 @@ class ASTValueDefinition(val name: Symbol, val value: ASTExpression) : ASTDefini
 
 class ASTDataDefinition(val name: String,
                         val typ: Type,
-                        val constructors: ImmutableList<ConstructorDefinition>,
-                        val derivedClasses: ImmutableList<String>) : ASTDefinition() {
+                        val constructors: List<ConstructorDefinition>,
+                        val derivedClasses: List<String>) : ASTDefinition() {
 
     fun toString() = "data $name = $constructors"
 }

@@ -1,7 +1,6 @@
 package komu.blunt.types
 
 import kotlin.util.*
-import java.util.List
 
 object BasicType {
     //val UNIT = basicType("Unit")

@@ -8,7 +8,6 @@ import com.google.common.collect.ImmutableList
 import komu.blunt.types.patterns.Pattern
 import komu.blunt.ast.AST
 
-import java.util.List
 import komu.blunt.types.patterns.VariablePattern
 import java.util.Collections.singletonList
 
@@ -32,7 +31,7 @@ class FunctionBuilder {
     }
 
     fun build(): ASTExpression {
-        val alts = ImmutableList.copyOf(alternatives).sure()
+        val alts = ImmutableList.copyOf(alternatives)
 
         // optimization
         val simpleVars = containsOnlyVariablePatterns(alts)

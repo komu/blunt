@@ -1,15 +1,12 @@
 package komu.blunt.types
 
 import kotlin.util.*
-import java.util.Collection
 import java.util.Collections.emptyList
 import java.util.Collections.unmodifiableList
 import java.util.ArrayList
 import komu.blunt.types.checker.Substitution
-import java.util.List
 import java.util.LinkedHashSet
 import java.util.Objects.hash
-import java.util.Set
 import komu.blunt.types.checker.Substitutions
 
 fun quantifyAll(qt: Qualified<Type>): Scheme {
@@ -19,7 +16,7 @@ fun quantifyAll(qt: Qualified<Type>): Scheme {
 }
 
 fun quantify(vs: Collection<TypeVariable>, qt: Qualified<Type>): Scheme {
-    val kinds = ArrayList<Kind?>()
+    val kinds = ArrayList<Kind>()
     val vars = ArrayList<TypeVariable>()
 
     val types = LinkedHashSet<TypeVariable>()
@@ -42,13 +39,15 @@ fun instantiate(ts: List<TypeVariable>, t: Qualified<Type>): Qualified<Type> {
     return Qualified(ps, t.value.instantiate(ts))
 }
 
-class Qualified<out T : Types<T?>>(predicates: List<Predicate>, val value: T) : Types<Qualified<T>> {
+class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : Types<Qualified<T>> {
 
-    public val predicates: List<Predicate> = unmodifiableList(ArrayList<Predicate>(predicates)).sure()
+    public val predicates: List<Predicate> = ArrayList<Predicate>(predicates)
 
-    this(value: T): this(emptyList<Predicate>().sure(), value)
+    class object {
+        fun simple<T : Types<T>>(value: T) = Qualified<T>(arrayList(), value)
+    }
 
-    override fun addTypeVariables(result: Set<TypeVariable>) {
+    override fun addTypeVariables(result: MutableSet<TypeVariable>) {
         for (val p in predicates)
             p.addTypeVariables(result)
 
@@ -56,7 +55,7 @@ class Qualified<out T : Types<T?>>(predicates: List<Predicate>, val value: T) : 
     }
 
     override fun apply(substitution: Substitution): Qualified<T> =
-        Qualified(TypeUtils.applySubstitution<Predicate>(substitution, predicates), value.apply(substitution).sure())
+        Qualified(TypeUtils.applySubstitution<Predicate>(substitution, predicates), value.apply(substitution))
 
     fun toString(): String {
         val sb = StringBuilder()
@@ -64,7 +63,7 @@ class Qualified<out T : Types<T?>>(predicates: List<Predicate>, val value: T) : 
         if (!predicates.isEmpty()) {
             sb.append("(")
 
-            val it = predicates.iterator().sure()
+            val it = predicates.iterator()
             while (it.hasNext()) {
                 sb.append(it.next())
                 if (it.hasNext())
@@ -76,11 +75,11 @@ class Qualified<out T : Types<T?>>(predicates: List<Predicate>, val value: T) : 
 
         sb.append(value)
 
-        return sb.toString().sure()
+        return sb.toString()
     }
 
     fun equals(rhs: Any?) =
-        rhs is Qualified<T> && value == rhs.value && predicates == rhs.predicates
+        rhs is Qualified<out Any?> && value == rhs.value && predicates == rhs.predicates
 
     fun hashCode() = hash(predicates, value)
 }

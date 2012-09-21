@@ -4,7 +4,6 @@ import komu.blunt.core.*
 import komu.blunt.types.patterns.*
 
 import java.util.ArrayList
-import java.util.List
 import kotlin.util.*
 
 class PatternAnalyzer {

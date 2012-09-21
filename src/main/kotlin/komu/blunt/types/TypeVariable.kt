@@ -2,8 +2,6 @@ package komu.blunt.types
 
 import komu.blunt.types.checker.Substitution
 
-import java.util.List
-import java.util.Set
 import java.util.Objects.hash
 
 class TypeVariable(private val name: String, private val _kind: Kind) : Type() {
@@ -16,8 +14,8 @@ class TypeVariable(private val name: String, private val _kind: Kind) : Type() {
     override fun apply(substitution: Substitution): Type =
         substitution.lookup(this) ?: this
 
-    override fun addTypeVariables(variables: Set<TypeVariable>) {
-        variables.add(this)
+    override fun addTypeVariables(result: MutableSet<TypeVariable>) {
+        result.add(this)
     }
 
     fun equals(obj: Any?) =

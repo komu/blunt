@@ -1,7 +1,6 @@
 package komu.blunt.parser
 
 import java.util.HashMap
-import java.util.Map
 
 import com.google.common.base.Preconditions.checkArgument
 import java.lang.Math.max

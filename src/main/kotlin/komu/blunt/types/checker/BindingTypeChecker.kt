@@ -6,12 +6,9 @@ import komu.blunt.ast.BindGroup
 import komu.blunt.ast.ExplicitBinding
 import komu.blunt.ast.ImplicitBinding
 import komu.blunt.types.*
-import komu.blunt.utils.Pair
 
 import java.util.ArrayList
 import java.util.HashSet
-import java.util.List
-import java.util.Set
 
 import komu.blunt.types.quantify
 import komu.blunt.utils.intersection
@@ -25,11 +22,11 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val explicitAssumptions = bindings.assumptionFromExplicitBindings()
 
         val res = typeCheckImplicits(bindings, ass.join(explicitAssumptions))
-        val newAssumptions = res.value.join(explicitAssumptions).sure()
+        val newAssumptions = res.value.join(explicitAssumptions)
         result.addPredicates(res.predicates)
-        result.addPredicates(typeCheckExplicits(bindings, ass.join(newAssumptions).sure()))
+        result.addPredicates(typeCheckExplicits(bindings, ass.join(newAssumptions)))
 
-        return result.build(newAssumptions).sure()
+        return result.build(newAssumptions)
     }
 
     private fun typeCheckImplicits(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions>  {
@@ -42,14 +39,14 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
             assumptions.addAll(res.value)
         }
 
-        return result.build(assumptions.build().sure()).sure()
+        return result.build(assumptions.build())
     }
 
     private fun typeCheckExplicits(bindGroup: BindGroup, ass: Assumptions): List<Predicate> {
-        val predicates = ArrayList<Predicate>()
+        val predicates = arrayList<Predicate>()
 
         for (val b in bindGroup.explicitBindings)
-            predicates.addAll(typeCheck(b.sure(), ass))
+            predicates.addAll(typeCheck(b, ass))
 
         return predicates
     }
@@ -75,18 +72,15 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         }
 
         genericVariables.removeAll(fs)
-        val sharedVariables = intersection(vss)
 
-        val split = tc.classEnv.split(fs, sharedVariables, predicates)
-        val deferredPredicates = split.first.sure()
-        val retainedPredicates = split.second.sure()
+        val (deferredPredicates, retainedPredicates) = tc.classEnv.split(fs, intersection(vss), predicates)
 
         val finalSchemes = ArrayList<Scheme>(types.size)
         for (val t in types)
             finalSchemes.add(quantify(genericVariables, Qualified(retainedPredicates, t)))
 
-        val finalAssumptions = Assumptions.from(ImplicitBinding.bindingNames(bindings), finalSchemes).sure()
-        return TypeCheckResult.of(finalAssumptions, deferredPredicates.sure())
+        val finalAssumptions = Assumptions.from(ImplicitBinding.bindingNames(bindings), finalSchemes)
+        return TypeCheckResult.of(finalAssumptions, deferredPredicates)
     }
 
     private fun typeCheckAndUnifyBindings(bs: List<ImplicitBinding>, ts: List<Type>, ass: Assumptions): List<Predicate> {
@@ -99,7 +93,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
             val typ = ts[i]
 
             val res = tc.typeCheck(exp, as2)
-            tc.unify(res.value.sure(), typ)
+            tc.unify(res.value, typ)
             predicates.addAll(res.predicates)
         }
 

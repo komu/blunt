@@ -3,17 +3,17 @@ package komu.blunt.core
 import komu.blunt.asm.*
 
 import java.util.ArrayList
-import java.util.List
 
 import java.util.Arrays
 import java.util.Collections
 
 class CoreSequenceExpression(expressions: List<CoreExpression>) : CoreExpression() {
 
-    private val expressions = ArrayList<CoreExpression>(expressions)
-
-    this(vararg expressions: CoreExpression): this(*expressions) {
+    class object {
+        fun of(vararg expressions: CoreExpression) = CoreSequenceExpression(expressions.toList())
     }
+
+    private val expressions: List<CoreExpression> = ArrayList<CoreExpression>(expressions)
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
         val instructions = Instructions()
@@ -33,9 +33,9 @@ class CoreSequenceExpression(expressions: List<CoreExpression>) : CoreExpression
         expressions[expressions.size()-1]
 
     private fun allButLast(): List<CoreExpression> =
-        expressions.subList(0, expressions.size()-1).sure()
+        expressions.subList(0, expressions.size()-1)
 
-    override fun toString() = expressions.toString().sure()
+    override fun toString() = expressions.toString()
 
     override fun simplify(): CoreExpression {
         val exps = ArrayList<CoreExpression>(expressions.size());

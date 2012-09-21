@@ -6,17 +6,13 @@ import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.checker.Substitution
 import komu.blunt.types.checker.UnificationException
 import komu.blunt.types.checker.Unifier
-import komu.blunt.utils.Pair
 
 import javax.annotation.Nullable
 import java.util.ArrayList
 import java.util.HashMap
 import java.util.Arrays.asList
 import komu.blunt.types.isIn
-import java.util.Collection
 import java.util.Collections
-import java.util.List
-import java.util.Set
 import java.util.Arrays
 import java.util.HashSet
 import java.util.LinkedHashSet
@@ -86,7 +82,7 @@ class ClassEnv() {
     }
 
     public fun addInstance(predicate: Predicate) {
-        addInstance(Collections.emptyList<Predicate>().sure(), predicate)
+        addInstance(Collections.emptyList<Predicate>()!!, predicate)
     }
 
     public fun addInstance(predicates: List<Predicate>, predicate: Predicate) {

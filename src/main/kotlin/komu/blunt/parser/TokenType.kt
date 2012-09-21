@@ -1,7 +1,6 @@
 package komu.blunt.parser
 
 import java.util.HashMap
-import java.util.Map
 
 val keywords = HashMap<String, Keyword>()
 

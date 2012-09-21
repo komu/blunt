@@ -9,7 +9,6 @@ import komu.blunt.types.patterns.Pattern
 import komu.blunt.types.patterns.VariablePattern
 
 import java.util.ArrayList
-import java.util.List
 
 import java.util.Collections.singletonList
 import komu.blunt.parser.TokenType.*
@@ -33,12 +32,12 @@ class Parser(source: String) {
     }
 
     fun parseDefinitions(): List<ASTDefinition> {
-        val result = ArrayList<ASTDefinition>()
+        val result = listBuilder<ASTDefinition>()
 
         while (lexer.hasMoreTokens())
             result.add(parseDefinition())
 
-        return result
+        return result.build()
     }
 
     fun parseDefinition(): ASTDefinition =
@@ -88,7 +87,7 @@ class Parser(source: String) {
         lexer.expectToken(TokenType.END)
 
         val functionBuilder = FunctionBuilder()
-        functionBuilder.addAlternative(ImmutableList.of<Pattern>(left, right).sure(), value)
+        functionBuilder.addAlternative(ImmutableList.of<Pattern>(left, right), value)
         return AST.define(op.toSymbol(), functionBuilder.build())
     }
 
@@ -97,7 +96,7 @@ class Parser(source: String) {
         val functionBuilder = FunctionBuilder()
 
         var name: Symbol? = null
-        while (name == null || nextTokenIsIdentifier(name.sure())) {
+        while (name == null || nextTokenIsIdentifier(name!!)) {
             lexer.pushBlockStartAtNextToken()
             name = parseIdentifier()
 
@@ -110,10 +109,10 @@ class Parser(source: String) {
 
             val value = parseExpression()
             lexer.expectToken(TokenType.END)
-            functionBuilder.addAlternative(ImmutableList.copyOf(args).sure(), value)
+            functionBuilder.addAlternative(ImmutableList.copyOf(args), value)
         }
 
-        return AST.define(name.sure(), functionBuilder.build())
+        return AST.define(name!!, functionBuilder.build())
     }
 
     private fun nextTokenIsIdentifier(name: Symbol) =
@@ -130,8 +129,6 @@ class Parser(source: String) {
                 return exp
             }
         }
-
-        throw AssertionError("unreached")
     }
 
     private fun parseExp(level: Int): ASTExpression =
@@ -152,8 +149,6 @@ class Parser(source: String) {
                 return exp
             }
         }
-
-        throw AssertionError("unreached")
     }
 
     private fun parseApplicative(): ASTExpression {
@@ -196,13 +191,13 @@ class Parser(source: String) {
         val exp = parseExpression()
         lexer.expectToken(TokenType.OF)
 
-        val alts = ArrayList<ASTAlternative>()
+        val alts = listBuilder<ASTAlternative>()
         do {
             alts.add(parseAlternative())
         } while (!lexer.nextTokenIs(TokenType.END))
         lexer.expectToken(TokenType.END)
 
-        return AST.caseExp(exp, ImmutableList.copyOf(alts).sure())
+        return AST.caseExp(exp, alts.build())
     }
 
     private fun parseAlternative(): ASTAlternative {
@@ -255,7 +250,7 @@ class Parser(source: String) {
         } while (!lexer.readMatchingToken(TokenType.RIGHT_ARROW))
 
         val builder = FunctionBuilder()
-        builder.addAlternative(ImmutableList.copyOf(args).sure(), parseExpression())
+        builder.addAlternative(ImmutableList.copyOf(args), parseExpression())
         return builder.build()
     }
 

@@ -6,7 +6,6 @@ import komu.blunt.objects.Symbol
 import komu.blunt.types.patterns.*
 import java.util.ArrayList
 import kotlin.util.*
-import java.util.List
 
 /**
  * Walks the AST to rename all local variables so that they become unique. This makes
@@ -50,7 +49,7 @@ class IdentifierRenamer {
             renameIdentifiers(it, ctx)
         }
 
-        return Pattern.constructor(pattern.name, ImmutableList.copyOf(args).sure())
+        return Pattern.constructor(pattern.name, ImmutableList.copyOf(args))
     }
 
     private fun renamePattern(pattern: VariablePattern, ctx: IdentifierMapping): Pattern {
@@ -121,6 +120,6 @@ class IdentifierRenamer {
             AST.alternative(renameIdentifiers(it.pattern, newCtx), renameIdentifiers(it.value, newCtx))
         }
 
-        return AST.caseExp(renameIdentifiers(astCase.exp, ctx), ImmutableList.copyOf(alts).sure())
+        return AST.caseExp(renameIdentifiers(astCase.exp, ctx), ImmutableList.copyOf(alts))
     }
 }

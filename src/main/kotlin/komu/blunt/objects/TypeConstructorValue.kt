@@ -5,7 +5,7 @@ import java.util.Arrays
 
 import com.google.common.base.Preconditions.checkArgument
 
-class TypeConstructorValue(val index: Int, val name: String, val items: Array<Any?>) : Comparable<TypeConstructorValue> {
+class TypeConstructorValue(val index: Int, val name: String, val items: Array<Any?> = TypeConstructorValue.EMPTY_ARRAY) : Comparable<TypeConstructorValue> {
 
     {
         if (index < 0) throw IllegalArgumentException("invalid index: $index")
@@ -14,8 +14,6 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
     class object {
         private val EMPTY_ARRAY = Array<Any?>(0) { x -> null }
     }
-
-    this(index: Int, name: String): this(index, name, TypeConstructorValue.EMPTY_ARRAY) { }
 
     fun isTuple() = name.startsWith("(,")
 
@@ -38,25 +36,25 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
 
         var value: TypeConstructorValue = items[1] as TypeConstructorValue
         while (value.name == ":") {
-            sb.append(", ")?.append(value.items[0])
+            sb.append(", ").append(value.items[0])
             value = value.items[1] as TypeConstructorValue
         }
 
         sb.append(']')
 
-        return sb.toString().sure()
+        return sb.toString()
     }
 
     private fun toStringDefault(): String {
         val sb = StringBuilder()
 
-        sb.append('(')?.append(name)
+        sb.append('(').append(name)
 
         for (val param in items)
-            sb.append(' ')?.append(param)
+            sb.append(' ').append(param)
 
         sb.append(')')
-        return sb.toString().sure()
+        return sb.toString()
     }
 
     private fun toStringAsTuple(): String {
@@ -71,7 +69,7 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
         }
         sb.append(')')
 
-        return sb.toString().sure()
+        return sb.toString()
     }
 
     fun equals(o: Any?) =
@@ -80,7 +78,7 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
     fun hashCode() =
         Arrays.hashCode(items)
 
-    override fun compareTo(o: TypeConstructorValue): Int {
+    override fun compareTo(other: TypeConstructorValue): Int {
 //        if (index != o.index)
 //            return index - o.index;
 //

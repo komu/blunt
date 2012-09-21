@@ -7,7 +7,6 @@ import komu.blunt.ast.ASTDataDefinition
 import komu.blunt.types.*
 
 import java.util.ArrayList
-import java.util.List
 
 import com.google.common.base.Preconditions.checkNotNull
 import komu.blunt.parser.TokenType.*
@@ -44,7 +43,7 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
     private fun parseConstructor(builder: DataTypeBuilder): Unit {
         val constructorName = lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME)
 
-        val args = ArrayList<Type>()
+        val args = arrayList<Type>()
         while (!lexer.nextTokenIs(TokenType.OR) && !lexer.nextTokenIs(TokenType.END) && !lexer.nextTokenIs(TokenType.DERIVING))
             args.add(typeParser.parseTypePrimitive())
 
@@ -53,9 +52,9 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 
     private class DataTypeBuilder(val typeName: String) {
 
-        private val vars = ArrayList<TypeVariable>()
-        private val constructors = ArrayList<ConstructorDefinition>()
-        private val derivedClasses = ArrayList<String>()
+        private val vars = arrayList<TypeVariable>()
+        private val constructors = arrayList<ConstructorDefinition>()
+        private val derivedClasses = arrayList<String>()
         private var constructorIndex = 0
 
         public fun addVariable(variable: TypeVariable) {
@@ -63,7 +62,7 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
         }
 
         public fun addConstructor(constructorName: String, args: List<Type>) {
-            val scheme = quantify(vars, Qualified<Type>(functionType(args, getType())))
+            val scheme = quantify(vars, Qualified.simple(functionType(args, getType())))
             constructors.add(ConstructorDefinition(constructorIndex++, constructorName, scheme, args.size))
         }
 
@@ -75,6 +74,6 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
         }
 
         public fun build(): ASTDataDefinition =
-            AST.data(typeName, getType(), ImmutableList.copyOf(constructors).sure(), ImmutableList.copyOf(derivedClasses).sure())
+            AST.data(typeName, getType(), ImmutableList.copyOf(constructors), ImmutableList.copyOf(derivedClasses))
     }
 }
