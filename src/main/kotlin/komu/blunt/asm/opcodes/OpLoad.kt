@@ -1,14 +1,13 @@
 package komu.blunt.asm.opcodes
 
+import komu.blunt.analyzer.VariableReference
+import komu.blunt.asm.Label
 import komu.blunt.asm.Register
 import komu.blunt.asm.VM
 import komu.blunt.core.PatternPath
-import komu.blunt.objects.TypeConstructorValue
-import komu.blunt.analyzer.VariableReference
-import komu.blunt.asm.Label
-import komu.blunt.objects.CompoundProcedure
 import komu.blunt.eval.Environment
-import komu.blunt.objects.Procedure
+import komu.blunt.objects.CompoundProcedure
+import komu.blunt.objects.TypeConstructorValue
 
 abstract class OpLoad(private val target: Register) : OpCode() {
 
@@ -66,7 +65,7 @@ class OpLoadVariable(target: Register, private val variable: VariableReference) 
         return env.lookup(variable)
     }
 
-    override fun description() = "(variable ${variable.frame} ${variable.offset} [${variable.name}])"
+    override fun description() = "(variable ${variable.frame} ${variable.offset}) ; ${variable.name}"
 }
 
 class OpLoadLambda(target: Register, private val label: Label) : OpLoad(target) {
