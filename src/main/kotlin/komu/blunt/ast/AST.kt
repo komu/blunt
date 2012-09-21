@@ -76,10 +76,12 @@ object AST {
     fun tuple(exps: List<ASTExpression>): ASTExpression  {
         if (exps.isEmpty())
             return AST.constructor(ConstructorNames.UNIT)
-        if (exps.size() == 1)
-            return exps.get(0)
+        if (exps.size == 1)
+            return exps.first()
 
-        var call = constructor(ConstructorNames.tupleName(exps.size()))
+        val name = ConstructorNames.tupleName(exps.size)
+
+        var call = constructor(name)
 
         for (val exp in exps)
             call = ASTApplication(call, exp)

@@ -73,11 +73,13 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
             "t" + (index-5)
 
     fun unify(t1: Type, t2: Type) {
+        val tt1 = t1.apply(substitution)
+        val tt2 = t2.apply(substitution)
         try {
-            val u = Unifier.mgu(t1.apply(substitution), t2.apply(substitution))
+            val u = Unifier.mgu(tt1, tt2)
             substitution = u.compose(substitution)
         } catch (e: UnificationException) {
-            throw TypeCheckException(e.toString())
+            throw TypeCheckException("$tt1 -- $tt2 -- $e")
         }
     }
 

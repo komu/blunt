@@ -1,14 +1,12 @@
 package komu.blunt.types
 
-import kotlin.util.*
-import komu.blunt.types.checker.Substitution
-
 import java.util.Objects.hash
+import komu.blunt.types.checker.Substitution
 
 class TypeConstructor(private val name: String, private val _kind: Kind) : Type() {
 
     class object {
-        private val tuplePattern = java.util.regex.Pattern.compile("\\(,+\\)")!!
+        private val tuplePattern = java.util.regex.Pattern.compile("\\(,+\\)")
     }
 
     override fun apply(substitution: Substitution) = this
@@ -29,7 +27,7 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
             functionToString(arguments, precedence);
         else if (name.equals("[]") && arguments.size == 1)
             "[" + arguments.first() + "]"
-        else if (tuplePattern.matcher(name)!!.matches())
+        else if (tuplePattern.matcher(name).matches())
             tupleToString(arguments)
         else
             defaultToString(arguments, precedence)
@@ -66,9 +64,9 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
         val sb = StringBuilder()
 
         if (precedence != 0) sb.append("(")
-        sb.append(arguments.get(0).toString(1))
+        sb.append(arguments[0].toString(1))
         sb.append(" -> ")
-        sb.append(arguments.get(1).toString(0))
+        sb.append(arguments[1].toString(0))
         if (precedence != 0) sb.append(")")
 
         return sb.toString()
