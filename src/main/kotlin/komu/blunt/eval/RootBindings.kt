@@ -1,6 +1,7 @@
 package komu.blunt.eval
 
 import komu.blunt.analyzer.StaticEnvironment
+import komu.blunt.objects.PrimitiveFunction
 import komu.blunt.objects.Symbol
 import komu.blunt.parser.TypeParser
 import komu.blunt.types.DataTypeDefinitions
@@ -28,7 +29,7 @@ class RootBindings {
     }
 
     fun bindFunction(name: String, scheme: String, value: (Any?) -> Any?) {
-        bind(name, TypeParser.parseScheme(scheme), value)
+        bind(name, TypeParser.parseScheme(scheme), PrimitiveFunction(value))
     }
 
     fun defineVariableType(name: Symbol, scheme: Scheme) {
