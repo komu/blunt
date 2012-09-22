@@ -1,5 +1,7 @@
 package komu.blunt.types
 
+import komu.blunt.utils.appendTimes
+
 object ConstructorNames {
 
     public val CONS: String  = ":"
@@ -8,13 +10,6 @@ object ConstructorNames {
     public val TRUE: String  = "True"
     public val FALSE: String = "False"
 
-    fun tupleName(arity: Int) = "(" + repeat(",", arity-1) + ")"
-
-    private fun repeat(s: String, count: Int): String {
-        val sb = StringBuilder(s.length * count)
-        for (i in 1..count)
-            sb.append(s)
-        return sb.toString()
-    }
+    fun tupleName(arity: Int) = StringBuilder("(").appendTimes(",", arity-1).append(")").toString()
 }
 

@@ -48,6 +48,13 @@ fun StringBuilder.appendWithSeparator(xs: Array<Any?>, separator: String): Strin
     return this
 }
 
+
+fun StringBuilder.appendTimes(s: String, count: Int): StringBuilder {
+    for (i in 1..count)
+        sb.append(s)
+    return this
+}
+
 fun ClassLoader.readResourceAsString(path: String): String? {
     val stream = javaClass.getClassLoader().getResourceAsStream(path)
     return if (stream != null)
@@ -55,4 +62,3 @@ fun ClassLoader.readResourceAsString(path: String): String? {
     else
         null
 }
-
