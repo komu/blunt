@@ -2,9 +2,6 @@ package komu.blunt.ast
 
 class ASTSequence(val exps: List<ASTExpression>) : ASTExpression() {
 
-    fun last(): ASTExpression =
-        exps.last()
-
     override fun simplify(): ASTExpression {
         val simplified = exps.map { it.simplify() }
         return if (simplified.size == 1) simplified.first() else ASTSequence(simplified)

@@ -15,8 +15,8 @@ class BindGroup(explicitBindings: List<ExplicitBinding>, implicitBindings: List<
     fun assumptionFromExplicitBindings(): Assumptions {
         val builder = Assumptions.builder()
 
-        for (val b in explicitBindings)
-            builder.add(b.name, b.scheme)
+        for (binding in explicitBindings)
+            builder.add(binding.name, binding.scheme)
 
         return builder.build()
     }

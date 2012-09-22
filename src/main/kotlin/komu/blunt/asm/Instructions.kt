@@ -63,6 +63,16 @@ class Instructions {
     fun get(pc: Int): OpCode = instructions[pc]
 }
 
+fun instructions(block: Instructions.() -> Unit): Instructions {
+    val instructions = Instructions()
+    instructions.block()
+    return instructions
+}
+
+fun Instructions.instructionsOf(instructions: Instructions) {
+    append(instructions)
+}
+
 /**
 * Returns an instruction stream identical to this one, but which guarantees
 * that given register will not be modified.
@@ -70,15 +80,15 @@ class Instructions {
 * If the instructions in the stream will never modify given register, then
 * it is safe to return the stream as it is.
 */
-fun Instructions.preserving(register: Register): Instructions {
-    if (modifies(register)) {
-        val instructions = Instructions()
-        instructions.pushRegister(register)
-        instructions.append(this)
-        instructions.popRegister(register)
-        return instructions
+fun Instructions.preserving(register: Register, block: Instructions.() -> Unit) {
+    val instructions = Instructions()
+    instructions.block()
+    if (instructions.modifies(register)) {
+        pushRegister(register)
+        instructionsOf(instructions)
+        popRegister(register)
     } else {
-        return this
+        instructionsOf(instructions)
     }
 }
 

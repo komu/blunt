@@ -6,18 +6,14 @@ import komu.blunt.stdlib.BasicValues
 
 class CoreDefineExpression(private val variable: VariableReference, private val expression: CoreExpression) : CoreExpression() {
 
-    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
-        val instructions = Instructions()
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
+        instructions {
+            instructionsOf(expression.assemble(asm, target, Linkage.NEXT))
+            storeVariable(variable, target)
 
-        instructions.append(expression.assemble(asm, target, Linkage.NEXT))
-
-        instructions.storeVariable(variable, target)
-
-        instructions.loadConstant(target, BasicValues.UNIT)
-        instructions.finishWithLinkage(linkage)
-
-        return instructions
-    }
+            loadConstant(target, BasicValues.UNIT)
+            finishWithLinkage(linkage)
+        }
 
     override fun simplify() = CoreDefineExpression(variable, expression.simplify())
 

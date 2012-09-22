@@ -9,20 +9,17 @@ class CoreSequenceExpression (private val expressions: List<CoreExpression>) : C
         fun of(vararg expressions: CoreExpression) = CoreSequenceExpression(expressions.toList())
     }
 
-    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
-        val instructions = Instructions()
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
+        instructions {
+            if (!expressions.empty) {
+                for (exp in expressions.allButLast())
+                    instructionsOf(exp.assemble(asm, target, Linkage.NEXT))
 
-        if (!expressions.empty) {
-            for (exp in expressions.allButLast())
-                instructions.append(exp.assemble(asm, target, Linkage.NEXT))
-
-            instructions.append(expressions.last().assemble(asm, target, linkage))
-        } else {
-            instructions.finishWithLinkage(linkage)
+                instructionsOf(expressions.last().assemble(asm, target, linkage))
+            } else {
+                finishWithLinkage(linkage)
+            }
         }
-
-        return instructions
-    }
 
     override fun toString() = "(begin $expressions)"
 

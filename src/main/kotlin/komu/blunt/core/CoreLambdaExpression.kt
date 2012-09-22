@@ -8,26 +8,23 @@ class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpre
         check(envSize >= 0)
     }
 
-    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
-        val instructions = Instructions()
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
+        instructions {
+            // TODO: place the lambda in a new code section
+            val lambda = asm.newLabel("lambda")
+            val afterLambda = asm.newLabel("after-lambda")
 
-        // TODO: place the lambda in a new code section
-        val lambda = asm.newLabel("lambda")
-        val afterLambda = asm.newLabel("after-lambda")
+            loadLambda(target, lambda)
+            if (linkage == Linkage.NEXT)
+                jump(afterLambda)
+            else
+                finishWithLinkage(linkage)
 
-        instructions.loadLambda(target, lambda)
-        if (linkage == Linkage.NEXT)
-            instructions.jump(afterLambda)
-        else
-            instructions.finishWithLinkage(linkage)
-
-        instructions.label(lambda)
-        instructions.createEnvironment(envSize)
-        instructions.append(body.assemble(asm, Register.VAL, Linkage.RETURN))
-        instructions.label(afterLambda)
-
-        return instructions
-    }
+            label(lambda)
+            createEnvironment(envSize)
+            instructionsOf(body.assemble(asm, Register.VAL, Linkage.RETURN))
+            label(afterLambda)
+        }
 
     override fun simplify() = CoreLambdaExpression(envSize, body.simplify())
 

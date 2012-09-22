@@ -83,7 +83,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         for (val exp in sequence.exps.allButLast())
             predicates.addAll(typeCheck(exp, ass).predicates)
 
-        return typeCheck(sequence.last(), ass).withAddedPredicates(predicates)
+        return typeCheck(sequence.exps.last(), ass).withAddedPredicates(predicates)
     }
 
     private fun visit(set: ASTSet, ass: Assumptions): TypeCheckResult<Type> =

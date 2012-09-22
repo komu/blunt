@@ -1,39 +1,41 @@
 package komu.blunt.core
 
 import komu.blunt.asm.*
+import komu.blunt.asm.Linkage.*
+import komu.blunt.asm.Register.*
 
 class CoreApplicationExpression(private val func: CoreExpression,
                                 private val arg: CoreExpression) : CoreExpression() {
 
-    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
-        val instructions = Instructions()
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
+        instructions {
+            instructionsOf(func.assemble(asm, PROCEDURE, NEXT))
 
-        instructions.append(func.assemble(asm, Register.PROCEDURE, Linkage.NEXT))
-        instructions.append(arg.assemble(asm, Register.ARG, Linkage.NEXT).preserving(Register.PROCEDURE))
+            preserving(PROCEDURE) {
+                instructionsOf(arg.assemble(asm, ARG, NEXT))
+            }
 
-        if (linkage == Linkage.RETURN && target == Register.VAL) {
-            instructions.applyTail()
+            if (linkage == RETURN && target == VAL) {
+                applyTail()
 
-        } else {
-            val afterCall = asm.newLabel("afterCall");
+            } else {
+                val afterCall = asm.newLabel("afterCall");
 
-            // TODO: make pushing env the responsibility of called procedure
-            if (linkage != Linkage.RETURN) instructions.pushRegister(Register.ENV)
+                // TODO: make pushing env the responsibility of called procedure
+                if (linkage != RETURN) pushRegister(ENV)
 
-            // TODO: use label from linkage if possible (depends on callee saving env)
-            instructions.pushLabel(afterCall)
-            instructions.apply()
-            instructions.label(afterCall)
-            if (linkage != Linkage.RETURN) instructions.popRegister(Register.ENV)
+                // TODO: use label from linkage if possible (depends on callee saving env)
+                pushLabel(afterCall)
+                apply()
+                label(afterCall)
+                if (linkage != RETURN) popRegister(ENV)
 
-            if (target != Register.VAL)
-                instructions.copy(target, Register.VAL)
+                if (target != VAL)
+                    copy(target, VAL)
 
-            instructions.finishWithLinkage(linkage)
+                finishWithLinkage(linkage)
+            }
         }
-
-        return instructions
-    }
 
     override fun simplify() =
         // TODO: simplify application of lambda
@@ -41,4 +43,3 @@ class CoreApplicationExpression(private val func: CoreExpression,
 
     override fun toString() = "($func $arg)"
 }
-

@@ -9,12 +9,11 @@ class CoreConstantExpression(val value: Any) : CoreExpression() {
         val FALSE = CoreConstantExpression(true)
     }
 
-    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
-        val instructions = Instructions()
-        instructions.loadConstant(target, value)
-        instructions.finishWithLinkage(linkage)
-        return instructions
-    }
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
+        instructions {
+            loadConstant(target, value)
+            finishWithLinkage(linkage)
+        }
 
     override fun simplify() = this
     override fun toString(): String = value.toString()

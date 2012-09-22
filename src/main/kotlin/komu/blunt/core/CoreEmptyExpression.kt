@@ -8,11 +8,10 @@ class CoreEmptyExpression private () : CoreExpression() {
         val INSTANCE = CoreEmptyExpression()
     }
 
-    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
-        val instructions = Instructions()
-        instructions.finishWithLinkage(linkage)
-        return instructions
-    }
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
+        instructions {
+            finishWithLinkage(linkage)
+        }
 
     override fun simplify() = this
 

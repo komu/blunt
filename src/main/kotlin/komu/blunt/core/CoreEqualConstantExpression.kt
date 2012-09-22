@@ -4,13 +4,12 @@ import komu.blunt.asm.*
 
 class CoreEqualConstantExpression(private val value: Any?, private val expression: CoreExpression) : CoreExpression() {
 
-    override fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions {
-        val instructions = Instructions()
-        instructions.append(expression.assemble(asm, target, Linkage.NEXT))
-        instructions.equalConstant(target, target, value)
-        instructions.finishWithLinkage(linkage)
-        return instructions
-    }
+    override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
+        instructions {
+            instructionsOf(expression.assemble(asm, target, Linkage.NEXT))
+            equalConstant(target, target, value)
+            finishWithLinkage(linkage)
+        }
 
     override fun toString() = "(= $value $expression)"
 
