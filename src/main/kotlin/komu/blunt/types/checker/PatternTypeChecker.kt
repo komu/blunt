@@ -1,6 +1,7 @@
 package komu.blunt.types.checker
 
 import java.util.ArrayList
+import java.util.Collections.emptyList
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.*
 import komu.blunt.types.patterns.*
@@ -10,15 +11,15 @@ class PatternTypeChecker(private val tc: TypeChecker) {
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
         when (pattern) {
             is VariablePattern    -> typeCheckVariable(pattern)
-            is WildcardPattern    -> PatternTypeCheckResult(arrayList(), Assumptions.empty(), tc.newTVar())
-            is LiteralPattern     -> PatternTypeCheckResult(arrayList(), Assumptions.empty(), typeFromObject(pattern.value))
+            is WildcardPattern    -> PatternTypeCheckResult(emptyList(), Assumptions.empty(), tc.newTVar())
+            is LiteralPattern     -> PatternTypeCheckResult(emptyList(), Assumptions.empty(), typeFromObject(pattern.value))
             is ConstructorPattern -> typeCheckConstructor(pattern)
             else                  -> throw Exception("invalid pattern $pattern")
         }
 
     private fun typeCheckVariable(pattern: VariablePattern): PatternTypeCheckResult<Type> {
         val tv = tc.newTVar()
-        return PatternTypeCheckResult(arrayList(), Assumptions.singleton(pattern.variable, Scheme.fromType(tv)), tv)
+        return PatternTypeCheckResult(emptyList(), Assumptions.singleton(pattern.variable, Scheme.fromType(tv)), tv)
     }
 
     private fun typeCheckConstructor(pattern: ConstructorPattern): PatternTypeCheckResult<Type> {
@@ -35,7 +36,6 @@ class PatternTypeChecker(private val tc: TypeChecker) {
         tc.unify(q.value, functionType(result.value, t))
 
         val predicates = ArrayList<Predicate>()
-
         predicates.addAll(result.predicates)
         predicates.addAll(q.predicates)
 

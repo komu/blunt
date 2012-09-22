@@ -1,6 +1,7 @@
 package komu.blunt.types
 
 import java.util.ArrayList
+import java.util.Collections.emptyList
 import java.util.Objects.hash
 import komu.blunt.types.checker.Substitution
 import komu.blunt.types.checker.Substitutions
@@ -30,11 +31,11 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : T
     public val predicates: List<Predicate> = ArrayList<Predicate>(predicates)
 
     class object {
-        fun simple<T : Types<T>>(value: T) = Qualified<T>(arrayList(), value)
+        fun simple<T : Types<T>>(value: T) = Qualified<T>(emptyList(), value)
     }
 
     override fun addTypeVariables(result: MutableSet<TypeVariable>) {
-        for (val p in predicates)
+        for (p in predicates)
             p.addTypeVariables(result)
 
         value.addTypeVariables(result)
