@@ -16,8 +16,6 @@ class Label(private val name: String) {
 
         set(value) {
             check(value >= 0, "negative address: $value")
-            check($address == -1, "address already set")
-
             $address = value
         }
 
