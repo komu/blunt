@@ -56,7 +56,7 @@ class IdentifierRenamer {
     private fun visit(sequence: ASTSequence, ctx: IdentifierMapping): ASTExpression {
         val result = AST.sequenceBuilder()
 
-        for (val exp in sequence.exps)
+        for (exp in sequence.exps)
             result.add(renameIdentifiers(exp, ctx))
 
         return result.build()
@@ -81,7 +81,7 @@ class IdentifierRenamer {
     }
 
     private fun visit(let: ASTLet, ctx: IdentifierMapping): ASTExpression {
-        if (let.bindings.size != 1) throw UnsupportedOperationException()
+        if (let.bindings.size != 1) throw UnsupportedOperationException("")
 
         val newCtx = ctx.extend()
 

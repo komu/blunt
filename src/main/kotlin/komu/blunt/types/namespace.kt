@@ -44,10 +44,10 @@ fun functionType(argumentType: Type, returnType: Type) =
     genericType("->", argumentType, returnType)
 
 fun functionType(args: List<Type>, resultType: Type): Type =
-    if (args.isEmpty())
+    if (args.empty)
         resultType
     else
-        functionType(args.first(), functionType(args.subList(1, args.size), resultType))
+        functionType(args.first(), functionType(args.tail, resultType))
 
 fun tupleType(vararg types: Type): Type =
     tupleType(types.toList())

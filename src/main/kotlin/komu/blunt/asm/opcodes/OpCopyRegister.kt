@@ -9,6 +9,5 @@ class OpCopyRegister(private val target: Register, private val source: Register)
     }
 
     override fun modifies(register: Register) = register == target
-
     override fun toString() = "(copy $target $source)"
 }

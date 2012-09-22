@@ -225,7 +225,7 @@ class Parser(source: String) {
         lexer.expectToken(TokenType.IN)
         val body = parseExpression()
 
-        if (!args.isEmpty())
+        if (!args.empty)
             value = AST.lambda(args, value)
 
         return AST.let(recursive, ImplicitBinding(name, value), body)

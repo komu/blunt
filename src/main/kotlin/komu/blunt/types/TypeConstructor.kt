@@ -2,6 +2,7 @@ package komu.blunt.types
 
 import java.util.Objects.hash
 import komu.blunt.types.checker.Substitution
+import komu.blunt.utils.appendWithSeparator
 
 class TypeConstructor(private val name: String, private val _kind: Kind) : Type() {
 
@@ -46,19 +47,8 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
         return sb.toString()
     }
 
-    private fun tupleToString(arguments: List<Type>): String {
-        val sb = StringBuilder()
-        sb.append("(")
-
-        val it = arguments.iterator()
-        while (it.hasNext()) {
-            sb.append(it.next().toString(0))
-            if (it.hasNext())
-                sb.append(", ")
-        }
-        sb.append(")")
-        return sb.toString()
-    }
+    private fun tupleToString(arguments: List<Type>) =
+        StringBuilder("(").appendWithSeparator(arguments, ", ").append(")").toString()
 
     private fun functionToString(arguments: List<Type>, precedence: Int): String {
         val sb = StringBuilder()

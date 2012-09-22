@@ -1,12 +1,9 @@
 package komu.blunt.asm
 
-import kotlin.util.*
-import komu.blunt.asm.opcodes.OpCode
+import java.util.ArrayList
 import komu.blunt.eval.Environment
 import komu.blunt.eval.RootEnvironment
 import komu.blunt.objects.Procedure
-
-import java.util.ArrayList
 
 class VM(private val instructions: Instructions, var env: Environment, val globalEnvironment: RootEnvironment) {
 
@@ -36,7 +33,6 @@ class VM(private val instructions: Instructions, var env: Environment, val globa
             Register.ENV       -> env
             Register.PC        -> pc
             Register.PROCEDURE -> procedure
-            else               -> throw IllegalArgumentException("unknown register: $register")
         }
 
     fun set(register: Register, value: Any?) {
@@ -46,7 +42,6 @@ class VM(private val instructions: Instructions, var env: Environment, val globa
             Register.ENV       -> env = value as Environment
             Register.PC        -> pc = value as Int
             Register.PROCEDURE -> procedure = value as Procedure?
-            else               -> throw IllegalArgumentException("unknown register: $register")
         }
     }
 

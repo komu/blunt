@@ -11,12 +11,12 @@ abstract class CoreExpression {
     class object {
 
         fun and(exps: List<CoreExpression>): CoreExpression {
-            return if (exps.isEmpty())
-                CoreConstantExpression(true)
+            return if (exps.empty)
+                CoreConstantExpression.TRUE
             else if (exps.size == 1)
                 exps.first()
             else
-                CoreIfExpression(exps.first(), and(exps.tail), CoreConstantExpression(false))
+                CoreIfExpression(exps.first(), and(exps.tail), CoreConstantExpression.FALSE)
         }
     }
 }

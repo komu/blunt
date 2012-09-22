@@ -5,6 +5,7 @@ import java.util.LinkedHashSet
 import java.util.Objects.hash
 import komu.blunt.types.checker.Substitution
 import komu.blunt.types.checker.Substitutions
+import komu.blunt.utils.appendWithSeparator
 
 fun quantifyAll(qt: Qualified<Type>): Scheme {
     val types = LinkedHashSet<TypeVariable>()
@@ -57,18 +58,8 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : T
     fun toString(): String {
         val sb = StringBuilder()
 
-        if (!predicates.isEmpty()) {
-            sb.append("(")
-
-            val it = predicates.iterator()
-            while (it.hasNext()) {
-                sb.append(it.next())
-                if (it.hasNext())
-                    sb.append(", ")
-            }
-
-            sb.append(") => ")
-        }
+        if (!predicates.empty)
+            sb.append("(").appendWithSeparator(predicates, ", ").append(") => ")
 
         sb.append(value)
 

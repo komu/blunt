@@ -6,7 +6,7 @@ import komu.blunt.asm.VM
 class OpCreateEnvironment(private val envSize: Int) : OpCode() {
 
     {
-        if (envSize < 0) throw IllegalArgumentException("negative envSize: $envSize")
+        check(envSize >= 0)
     }
 
     override fun execute(vm: VM) {
@@ -14,7 +14,6 @@ class OpCreateEnvironment(private val envSize: Int) : OpCode() {
     }
 
     override fun modifies(register: Register) = register == Register.ENV
-
     override fun toString() = "(load ${Register.ENV} (create-env ${Register.ENV} ${Register.ENV} $envSize))"
 }
 

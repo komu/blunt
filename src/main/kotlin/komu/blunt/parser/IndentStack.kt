@@ -11,7 +11,7 @@ final class IndentStack {
 
     fun popIf(column: Int): Boolean {
         val last = indents.size - 1
-        if (!indents.isEmpty() && column <= indents.get(last)) {
+        if (!indents.empty && column <= indents[last]) {
             indents.remove(last)
             return true
         }

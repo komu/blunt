@@ -26,8 +26,7 @@ abstract class OpLoad(private val target: Register) : OpCode() {
 class OpLoadConstant(target: Register, private val value: Any) : OpLoad(target) {
 
     {
-        if (!target.isValidValue(value))
-            throw IllegalArgumentException("invalid value for register $target: $value")
+        check(target.isValidValue(value), "invalid value for register $target: $value")
     }
 
     override fun load(vm: VM)= value
@@ -61,7 +60,7 @@ class OpLoadTag(target: Register, private val source: Register, private val path
 class OpLoadVariable(target: Register, private val variable: VariableReference) : OpLoad(target) {
 
     override fun load(vm: VM): Any? {
-        val env = if (variable.isGlobal()) vm.globalEnvironment else vm.env
+        val env = if (variable.global) vm.globalEnvironment else vm.env
         return env.lookup(variable)
     }
 

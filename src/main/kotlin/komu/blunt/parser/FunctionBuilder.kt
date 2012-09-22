@@ -15,8 +15,8 @@ class FunctionBuilder {
     private val alternatives = arrayList<ASTAlternative>()
 
     fun addAlternative(args: List<Pattern>, body: ASTExpression) {
-        if (exps.isEmpty()) {
-            for (val i in args.indices) {
+        if (exps.empty) {
+            for (i in args.indices) {
                 val v = Symbol("\$arg$i") // TODO: fresh symbols
                 symbols.add(v)
                 exps.add(AST.variable(v))

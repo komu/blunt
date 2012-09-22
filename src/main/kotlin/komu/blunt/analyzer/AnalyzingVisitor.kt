@@ -23,11 +23,8 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
           is ASTVariable    -> visit(exp, env)
           is ASTConstructor -> visit(exp, env)
           is ASTCase        -> visit(exp, env)
-          else              -> throw Exception("unknown exp $exp")
+          else              -> throw AnalyzationException("unknown expression '$exp'")
       }
-
-    private fun analyzeAll(exps: List<ASTExpression>, env: StaticEnvironment): List<CoreExpression> =
-        exps.map { analyze(it, env) }
 
     private fun visit(lambda: ASTLambda, env: StaticEnvironment): CoreExpression {
         val newEnv = env.extend(lambda.argument)
@@ -41,17 +38,17 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
     private fun visit(constructor: ASTConstructor, ctx: StaticEnvironment): CoreExpression {
         val ctor = dataTypes.findConstructor(constructor.name)
 
-        if (ctor.arity == 0)
-            return analyze(AST.constant(TypeConstructorValue(ctor.index, ctor.name)), ctx)
+        return if (ctor.arity == 0)
+            analyze(AST.constant(TypeConstructorValue(ctor.index, ctor.name)), ctx)
         else
-            return analyze(AST.variable(ctor.name), ctx)
+            analyze(AST.variable(ctor.name), ctx)
     }
 
-    private fun visit(sequence: ASTSequence, env: StaticEnvironment): CoreExpression {
-        if (sequence.exps.isEmpty()) throw AnalyzationException("empty sequence")
-
-        return CoreSequenceExpression(analyzeAll(sequence.exps, env))
-    }
+    private fun visit(sequence: ASTSequence, env: StaticEnvironment): CoreExpression =
+        if (!sequence.exps.empty)
+            CoreSequenceExpression(sequence.exps.map { analyze(it, env) })
+        else
+            throw AnalyzationException("empty sequence")
 
     private fun visit(let: ASTLet, env: StaticEnvironment): CoreExpression {
         if (let.bindings.size != 1)
@@ -91,15 +88,15 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
         return CoreLetExpression(matchedObject, exp, body)
     }
 
-    private fun createAlts(matchedObject: VariableReference, alts: List<ASTAlternative>, env: StaticEnvironment): CoreExpression {
-        if (alts.isEmpty())
-            return analyze(AST.apply(AST.variable("error"), AST.constant("match failure")), env)
+    private fun createAlts(matchedObject: VariableReference, alts: List<ASTAlternative>, env: StaticEnvironment): CoreExpression =
+        if (alts.empty)
+            analyze(AST.error("match failure"), env)
+        else {
+            val (extractor, body) = analyzeAlternative(alts.first(), matchedObject, env)
+            CoreIfExpression(extractor, body, createAlts(matchedObject, alts.tail, env))
+        }
 
-        val alt = analyze(alts.first(), matchedObject, env)
-        return CoreIfExpression(alt.extractor, alt.body, createAlts(matchedObject, alts.tail, env))
-    }
-
-    private fun analyze(alt: ASTAlternative, matchedObject: VariableReference, env: StaticEnvironment): CoreAlternative {
+    private fun analyzeAlternative(alt: ASTAlternative, matchedObject: VariableReference, env: StaticEnvironment): CoreAlternative {
         val extractor = patternAnalyzer.createExtractor(alt.pattern, matchedObject, env)
         val body = analyze(alt.value, env)
         return CoreAlternative(extractor.predicate, CoreSequenceExpression.of(extractor.extractor, body))

@@ -31,6 +31,9 @@ object AST {
         return exp.simplify()
     }
 
+    fun error(message: String): ASTExpression =
+        AST.apply(AST.variable("error"), AST.constant(message))
+
     fun constructor(name: String, vararg args: ASTExpression): ASTExpression =
         apply2(ASTConstructor(name), args)
 
@@ -38,14 +41,13 @@ object AST {
         ASTLambda(argument, body)
 
     fun lambda(arguments: List<Symbol>, body: ASTExpression): ASTExpression {
-        if (arguments.isEmpty()) throw IllegalArgumentException("no arguments for lambda")
+        if (arguments.empty) throw IllegalArgumentException("no arguments for lambda")
 
-        val head = arguments[0]
-        val tail = arguments.subList(1, arguments.size())
-        if (arguments.size() == 1)
+        val head = arguments.first()
+        if (arguments.size == 1)
             return lambda(head, body)
         else
-            return lambda(head, lambda(tail, body))
+            return lambda(head, lambda(arguments.tail, body))
     }
 
     fun ifExp(test: ASTExpression, cons: ASTExpression, alt: ASTExpression): ASTExpression =
@@ -73,7 +75,7 @@ object AST {
         ASTSequence(exps.toList())
 
     fun tuple(exps: List<ASTExpression>): ASTExpression  {
-        if (exps.isEmpty())
+        if (exps.empty)
             return AST.constructor(ConstructorNames.UNIT)
         if (exps.size == 1)
             return exps.first()

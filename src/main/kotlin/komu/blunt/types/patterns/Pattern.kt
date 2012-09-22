@@ -26,10 +26,10 @@ abstract class Pattern {
             WildcardPattern.INSTANCE
 
         fun tuple(args: List<Pattern>): Pattern  {
-            if (args.isEmpty())
+            if (args.empty)
                 return constructor(ConstructorNames.UNIT)
-            if (args.size() == 1)
-                return args.get(0)
+            if (args.size == 1)
+                return args.first()
             else
                 return constructor(ConstructorNames.tupleName(args.size()), args);
         }
@@ -39,14 +39,14 @@ abstract class Pattern {
 class ConstructorPattern(val name: String, val args: List<Pattern>) : Pattern() {
 
     override fun toString(): String {
-        if (args.isEmpty())
+        if (args.empty)
             return name
 
         val sb = StringBuilder()
         sb.append('(')
         sb.append(name)
 
-        for (val arg in args)
+        for (arg in args)
             sb.append(' ').append(arg)
         sb.append(')')
 

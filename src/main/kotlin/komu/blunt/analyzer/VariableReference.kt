@@ -5,8 +5,8 @@ import komu.blunt.objects.Symbol
 class VariableReference private (val frame: Int, val offset: Int, val name: Symbol) {
 
     {
-        if (frame < GLOBAL_FRAME) throw IllegalArgumentException("invalid frame $frame")
-        if (offset < 0) throw IllegalArgumentException("invalid offset $offset")
+        check(frame >= GLOBAL_FRAME, "invalid frame $frame")
+        check(offset >= 0, "invalid offset $offset")
     }
 
     class object {
@@ -19,6 +19,8 @@ class VariableReference private (val frame: Int, val offset: Int, val name: Symb
             VariableReference(GLOBAL_FRAME, offset, name)
     }
 
-    fun isGlobal() = frame == GLOBAL_FRAME
-    fun toString() = "VariableReference [frame=$frame, offset=$offset]"
+    val global: Boolean
+        get() = frame == GLOBAL_FRAME
+
+    fun toString() = if (global) "(GlobalVar $offset)" else "(LocalVar $frame:$offset)"
 }

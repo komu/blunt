@@ -5,9 +5,6 @@ class ASTSequence(val exps: List<ASTExpression>) : ASTExpression() {
     fun last(): ASTExpression =
         exps.last()
 
-    fun allButLast(): List<ASTExpression> =
-        exps.subList(0, exps.size-1)
-
     override fun simplify(): ASTExpression {
         val simplified = exps.map { it.simplify() }
         return if (simplified.size == 1) simplified.first() else ASTSequence(simplified)
