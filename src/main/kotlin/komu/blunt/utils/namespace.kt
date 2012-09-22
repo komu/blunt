@@ -16,8 +16,8 @@ fun intersection<T>(sets: Collection<Set<T>>): Set<T> {
     return result
 }
 
-fun <T> List<T>.allButLast(): List<T> =
-    subList(0, size-1)
+val <T> List<T>.init: List<T>
+    get() = if (empty) this else subList(0, size-1)
 
 fun StringBuilder.appendWithSeparator(xs: Iterable<Any?>, separator: String): StringBuilder {
     var first = true

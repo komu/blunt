@@ -82,17 +82,18 @@ final class PatternParser(val lexer: Lexer) {
         if (lexer.readMatchingToken(TokenType.RPAREN))
             return Pattern.constructor(ConstructorNames.UNIT)
 
-        val patterns = arrayList<Pattern>()
+        val patternsBuilder = listBuilder<Pattern>()
 
         do {
-            patterns.add(parsePattern())
+            patternsBuilder.add(parsePattern())
         } while (lexer.readMatchingToken(TokenType.COMMA))
 
         lexer.expectToken(TokenType.RPAREN)
 
+        val patterns = patternsBuilder.build()
         if (patterns.size == 1)
-            return patterns[0]
+            return patterns.first()
         else
-            return Pattern.constructor(ConstructorNames.tupleName(patterns.size()), patterns)
+            return Pattern.constructor(ConstructorNames.tupleName(patterns.size), patterns)
     }
 }

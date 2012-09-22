@@ -31,7 +31,7 @@ abstract class Pattern {
             if (args.size == 1)
                 return args.first()
             else
-                return constructor(ConstructorNames.tupleName(args.size()), args);
+                return constructor(ConstructorNames.tupleName(args.size), args);
         }
     }
 }

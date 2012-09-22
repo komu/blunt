@@ -20,7 +20,7 @@ class ConstructorArgumentCollector(private val ctor: ConstructorDefinition,
         val newArgs = ArrayList<Any?>(args.size + 1)
         newArgs.addAll(args)
         newArgs.add(arg)
-        if (newArgs.size() == ctor.arity)
+        if (newArgs.size == ctor.arity)
             return TypeConstructorValue(ctor.index, ctor.name, newArgs.toArray())
         else
             return ConstructorArgumentCollector(ctor, newArgs)

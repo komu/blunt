@@ -3,7 +3,7 @@ package komu.blunt.types.checker
 import java.util.ArrayList
 import komu.blunt.ast.*
 import komu.blunt.types.*
-import komu.blunt.utils.allButLast
+import komu.blunt.utils.init
 
 class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
@@ -80,7 +80,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
     private fun visit(sequence: ASTSequence, ass: Assumptions): TypeCheckResult<Type> {
         val predicates = ArrayList<Predicate>()
 
-        for (val exp in sequence.exps.allButLast())
+        for (val exp in sequence.exps.init)
             predicates.addAll(typeCheck(exp, ass).predicates)
 
         return typeCheck(sequence.exps.last(), ass).withAddedPredicates(predicates)

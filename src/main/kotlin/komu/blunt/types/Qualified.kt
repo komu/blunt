@@ -29,13 +29,8 @@ fun quantify(vs: Collection<TypeVariable>, qt: Qualified<Type>): Scheme {
     return Scheme(kinds, qt.apply(Substitutions.fromTypeVariables(vars)))
 }
 
-fun instantiate(ts: List<TypeVariable>, t: Qualified<Type>): Qualified<Type> {
-    val ps = ArrayList<Predicate>(t.predicates.size())
-    for (val p in t.predicates)
-        ps.add(p.instantiate(ts))
-
-    return Qualified(ps, t.value.instantiate(ts))
-}
+fun instantiate(ts: List<TypeVariable>, t: Qualified<Type>): Qualified<Type> =
+    Qualified(t.predicates.map { it.instantiate(ts) }, t.value.instantiate(ts))
 
 class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : Types<Qualified<T>> {
 
