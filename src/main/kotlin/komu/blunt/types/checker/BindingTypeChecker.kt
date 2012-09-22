@@ -1,6 +1,5 @@
 package komu.blunt.types.checker
 
-import java.util.LinkedHashSet
 import komu.blunt.ast.BindGroup
 import komu.blunt.ast.ExplicitBinding
 import komu.blunt.ast.ImplicitBinding
@@ -11,26 +10,25 @@ import komu.blunt.utils.intersection
 final class BindingTypeChecker(private val tc: TypeChecker) {
 
     fun typeCheckBindGroup(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions> {
-        val result = TypeCheckResult.builder<Assumptions>()
-
         val explicitAssumptions = bindings.assumptionFromExplicitBindings()
 
-        val res = typeCheckImplicits(bindings, ass.join(explicitAssumptions))
-        val newAssumptions = res.value.join(explicitAssumptions)
-        result.addPredicates(res.predicates)
-        result.addPredicates(typeCheckExplicits(bindings, ass.join(newAssumptions)))
+        val (implicitAssumptions, predicates) = typeCheckImplicits(bindings, ass.join(explicitAssumptions))
+        val joinedAssumptions = implicitAssumptions.join(explicitAssumptions)
 
-        return result.build(newAssumptions)
+        val result = TypeCheckResult.builder<Assumptions>()
+        result.addPredicates(predicates)
+        result.addPredicates(typeCheckExplicits(bindings, ass.join(joinedAssumptions)))
+        return result.build(joinedAssumptions)
     }
 
-    private fun typeCheckImplicits(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions>  {
+    private fun typeCheckImplicits(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions> {
         val result = TypeCheckResult.builder<Assumptions>()
         val assumptions = Assumptions.builder()
 
-        for (val bs in bindings.implicitBindings) {
-            val res = typeCheckImplicitGroup(bs, assumptions.build(ass))
-            result.addPredicates(res.predicates)
-            assumptions.addAll(res.value)
+        for (bindingGroup in bindings.implicitBindings) {
+            val (newAssumptions, predicates) = typeCheckImplicitGroup(bindingGroup, assumptions.build(ass))
+            result.addPredicates(predicates)
+            assumptions.addAll(newAssumptions)
         }
 
         return result.build(assumptions.build())
@@ -39,8 +37,8 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
     private fun typeCheckExplicits(bindGroup: BindGroup, ass: Assumptions): List<Predicate> {
         val predicates = arrayList<Predicate>()
 
-        for (val b in bindGroup.explicitBindings)
-            predicates.addAll(typeCheck(b, ass))
+        for (binding in bindGroup.explicitBindings)
+            predicates.addAll(typeCheck(binding, ass))
 
         return predicates
     }
@@ -54,13 +52,13 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val predicates = typeCheckAndUnifyBindings(bindings, typeVariables, ass)
 
         val types = tc.applySubstitution(typeVariables)
-        val fs = getTypeVariables(tc.applySubstitution(ass))
+        val fs = tc.applySubstitution(ass).getTypeVariables()
 
         val vss = arrayList<Set<TypeVariable>>()
 
         val genericVariables = hashSet<TypeVariable>()
         for (val t in types) {
-            val vars = getTypeVariables(t)
+            val vars = t.getTypeVariables()
             vss.add(vars)
             genericVariables.addAll(vars)
         }
@@ -80,28 +78,13 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
 
         val predicates = arrayList<Predicate>()
 
-        for (val i in ts.indices) {
-            val exp = bs[i].expr
-            val typ = ts[i]
+        for ((i, typ) in ts.withIndices()) {
+            val (t, ps) = tc.typeCheck(bs[i].expr, as2)
 
-            val res = tc.typeCheck(exp, as2)
-            tc.unify(res.value, typ)
-            predicates.addAll(res.predicates)
+            tc.unify(t, typ)
+            predicates.addAll(ps)
         }
 
         return tc.applySubstitution(predicates)
-    }
-
-    // TODO: duplication
-    private fun getTypeVariables(t: Type): Set<TypeVariable> {
-        val types = LinkedHashSet<TypeVariable>()
-        t.addTypeVariables(types)
-        return types
-    }
-
-    private fun getTypeVariables(t: Assumptions): Set<TypeVariable> {
-        val types = LinkedHashSet<TypeVariable>()
-        t.addTypeVariables(types)
-        return types
     }
 }

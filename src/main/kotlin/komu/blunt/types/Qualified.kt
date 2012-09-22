@@ -14,19 +14,16 @@ fun quantifyAll(qt: Qualified<Type>): Scheme {
 }
 
 fun quantify(vs: Collection<TypeVariable>, qt: Qualified<Type>): Scheme {
-    val kinds = ArrayList<Kind>()
-    val vars = ArrayList<TypeVariable>()
+    val kinds = listBuilder<Kind>()
+    val vars = listBuilder<TypeVariable>()
 
-    val types = LinkedHashSet<TypeVariable>()
-    qt.addTypeVariables(types)
-
-    for (val v in types)
-        if (vs.contains(v)) {
+    for (v in qt.getTypeVariables())
+        if (v in vs) {
             vars.add(v)
             kinds.add(v.kind)
         }
 
-    return Scheme(kinds, qt.apply(Substitutions.fromTypeVariables(vars)))
+    return Scheme(kinds.build(), qt.apply(Substitutions.fromTypeVariables(vars.build())))
 }
 
 fun instantiate(ts: List<TypeVariable>, t: Qualified<Type>): Qualified<Type> =

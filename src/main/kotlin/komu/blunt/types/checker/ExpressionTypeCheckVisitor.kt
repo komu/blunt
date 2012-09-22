@@ -30,10 +30,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
         tc.unify(functionType(tf.value, t), te.value)
 
-        val result = TypeCheckResult.builder<Type>()
-        result.addPredicates(te.predicates)
-        result.addPredicates(tf.predicates)
-        return result.build(t)
+        return TypeCheckResult.of(t, te.predicates, tf.predicates)
     }
 
     private fun visit(constant: ASTConstant, ass: Assumptions): TypeCheckResult<Type> =
@@ -41,32 +38,26 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
     private fun visit(lambda: ASTLambda, ass: Assumptions): TypeCheckResult<Type> {
         val argumentType = tc.newTVar()
-
         val as2 = Assumptions.singleton(lambda.argument, Scheme.fromType(argumentType))
+        val (resultType, predicates) = typeCheck(lambda.body, ass.join(as2))
 
-        val result = typeCheck(lambda.body, ass.join(as2))
-
-        return TypeCheckResult.of(functionType(argumentType, result.value), result.predicates)
+        return TypeCheckResult.of(functionType(argumentType, resultType), predicates)
     }
 
     private fun visit(let: ASTLet, ass: Assumptions): TypeCheckResult<Type> {
         if (let.bindings.size != 1)
             throw UnsupportedOperationException("multi-var let is not supported")
 
-        val result = TypeCheckResult.builder<Type>()
-
         val arg = let.bindings.first().name
         val exp = let.bindings.first().expr
 
         val expResult = typeCheck(exp, ass)
-        result.addPredicates(expResult.predicates)
 
         val as2 = Assumptions.singleton(arg, Scheme.fromType(expResult.value))
 
         val bodyResult = typeCheck(let.body, ass.join(as2))
-        result.addPredicates(bodyResult.predicates)
 
-        return result.build(bodyResult.value)
+        return TypeCheckResult.of(bodyResult.value, expResult.predicates, bodyResult.predicates)
     }
 
     private fun visit(letRec: ASTLetRec, ass: Assumptions): TypeCheckResult<Type> {
@@ -80,7 +71,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
     private fun visit(sequence: ASTSequence, ass: Assumptions): TypeCheckResult<Type> {
         val predicates = ArrayList<Predicate>()
 
-        for (val exp in sequence.exps.init)
+        for (exp in sequence.exps.init)
             predicates.addAll(typeCheck(exp, ass).predicates)
 
         return typeCheck(sequence.exps.last(), ass).withAddedPredicates(predicates)

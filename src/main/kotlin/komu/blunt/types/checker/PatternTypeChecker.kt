@@ -45,15 +45,15 @@ class PatternTypeChecker(private val tc: TypeChecker) {
     private fun assumptionsFrom(patterns: List<Pattern>): PatternTypeCheckResult<List<Type>> {
         val predicates = ArrayList<Predicate>()
         var ass = Assumptions.empty()
-        val types = ArrayList<Type>(patterns.size)
+        val types = listBuilder<Type>()
 
-        for (val pattern in patterns) {
+        for (pattern in patterns) {
             val result = tc.typeCheck(pattern)
 
             predicates.addAll(result.predicates)
             ass = ass.join(result.ass)
             types.add(result.value)
         }
-        return PatternTypeCheckResult(predicates, ass, types)
+        return PatternTypeCheckResult(predicates, ass, types.build())
     }
 }

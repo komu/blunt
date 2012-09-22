@@ -83,12 +83,6 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         }
     }
 
-    fun applySubstitution<T : Types<T>>(t: T): T =
-      t.apply(substitution)
-
-    fun applySubstitution<T : Types<T>>(t: Qualified<T>): Qualified<T> =
-      t.apply(substitution)
-
     // TODO
     fun applySubstitution(t: Assumptions): Assumptions =
       t.apply(substitution)

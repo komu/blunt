@@ -41,14 +41,8 @@ class Substitution(private val mapping: Map<TypeVariable,Type>) {
         return true
     }
 
-    fun apply(types: List<Type>): List<Type> {
-        val result = listBuilder<Type>()
-
-        for (val t in types)
-            result.add(t.apply(this))
-
-        return result.build()
-    }
+    fun apply(types: List<Type>): List<Type> =
+        types.map { it.apply(this) }
 
     fun apply(subst: Substitution): Substitution {
         val map = hashMap<TypeVariable,Type>()
@@ -68,8 +62,7 @@ object Substitutions {
     fun empty() = Substitution(emptyMap())
 
     fun singleton(v: TypeVariable, t: Type): Substitution {
-        if (v.kind != t.kind)
-            throw IllegalArgumentException()
+        check(v.kind == t.kind, "kinds don't match")
 
         return Substitution(singletonMap(v, t))
     }
@@ -77,9 +70,8 @@ object Substitutions {
     fun fromTypeVariables(variables: List<TypeVariable>): Substitution {
         val map = hashMap<TypeVariable,Type>()
 
-        var index = 0
-        for (v in variables)
-            map[v] = TypeGen(index++)
+        for ((i,v) in variables.withIndices())
+            map[v] = TypeGen(i)
 
         return Substitution(map)
     }

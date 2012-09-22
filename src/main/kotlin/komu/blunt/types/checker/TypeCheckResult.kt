@@ -11,6 +11,12 @@ class TypeCheckResult<out T>(val value: T, val predicates: List<Predicate>) {
 
         fun of<T>(value: T) = TypeCheckResult(value, emptyList())
         fun of<T>(value: T, predicates: List<Predicate>) = TypeCheckResult(value, predicates)
+        fun of<T>(value: T, vararg predicateCollections: Collection<Predicate>): TypeCheckResult<T> {
+            val list = arrayList<Predicate>()
+            for (ps in predicateCollections)
+                list.addAll(ps)
+            return TypeCheckResult(value, list)
+        }
 
         class Builder<T> () {
             private val predicates = ArrayList<Predicate>()
@@ -23,6 +29,9 @@ class TypeCheckResult<out T>(val value: T, val predicates: List<Predicate>) {
             fun build(t: T) = of(t, predicates)
         }
     }
+
+    fun component1() = value
+    fun component2() = predicates
 
     fun withAddedPredicates(predicates: List<Predicate>): TypeCheckResult<T> {
         val builder = builder<T>()

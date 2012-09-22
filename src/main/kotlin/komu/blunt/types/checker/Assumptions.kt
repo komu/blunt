@@ -12,7 +12,7 @@ import komu.blunt.types.Types
 class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions> {
 
     fun join(ass: Assumptions) =
-            builder().addAll(ass).addAll(this).build()
+        builder().addAll(ass).addAll(this).build()
 
     fun find(name: Symbol): Scheme {
         val scheme = mappings[name]
