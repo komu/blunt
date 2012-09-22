@@ -3,7 +3,7 @@ package komu.blunt.stdlib
 import java.math.BigInteger
 import komu.blunt.eval.RootBindings
 import komu.blunt.objects.TypeConstructorValue
-import kotlin.math.div
+import kotlin.math.*
 
 object BasicFunctions {
 
