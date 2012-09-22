@@ -5,7 +5,7 @@ import komu.blunt.asm.*
 class OpPushRegister(private val register: Register) : OpCode() {
 
     override fun execute(vm: VM) {
-        vm.push(vm.get(register))
+        vm.push(vm[register])
     }
 
     override fun modifies(register: Register) = false

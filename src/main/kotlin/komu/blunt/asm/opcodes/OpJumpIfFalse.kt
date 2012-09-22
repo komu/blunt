@@ -15,7 +15,7 @@ class OpJumpIfFalse(private val register: Register, private val label: Label) : 
     }
 
     override fun execute(vm: VM) {
-        val value = vm.get(register)
+        val value = vm[register]
         if (isFalse(value))
             vm.pc = label.address
     }

@@ -60,7 +60,7 @@ class Substitution(private val mapping: Map<TypeVariable,Type>) {
     }
 
     fun lookup(variable: TypeVariable): Type? =
-        mapping.get(variable)
+        mapping[variable]
 }
 
 object Substitutions {

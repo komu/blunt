@@ -14,7 +14,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
             builder().addAll(ass).addAll(this).build()
 
     fun find(name: Symbol): Scheme {
-        val scheme = mappings.get(name)
+        val scheme = mappings[name]
         if (scheme != null)
             return scheme
         else
@@ -24,15 +24,15 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
     fun toString() = mappings.toString()
 
     override fun addTypeVariables(result: MutableSet<TypeVariable>) {
-        for (val scheme in mappings.values())
+        for (scheme in mappings.values())
             scheme.addTypeVariables(result)
     }
 
     override fun apply(substitution: Substitution): Assumptions {
         val builder = builder()
 
-        for (val entry in mappings.entrySet())
-            builder.add(entry.key, entry.value.apply(substitution))
+        for ((key, value) in mappings)
+            builder.add(key, value.apply(substitution))
 
         return builder.build()
     }
@@ -48,7 +48,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
                 throw IllegalArgumentException("${names.size} != ${schemes.size}")
 
             val builder = Builder()
-            for (val i in names.indices)
+            for (i in names.indices)
                 builder.add(names[i], schemes[i])
 
             return builder.build()

@@ -2,28 +2,23 @@ package komu.blunt.asm
 
 class Label(private val name: String) {
 
-    private var _address = -1
-
     fun relocateBy(offset: Int) {
-        if (offset < 0) throw IllegalArgumentException("negative offset: $offset")
-        if (_address == -1) throw IllegalStateException("can't relocate label without original address")
+        check(offset >= 0, "negative offset: $offset")
 
-        _address += offset
+        address += offset
     }
 
-    var address: Int
+    var address: Int = -1
         get() {
-            if (_address == -1) throw IllegalStateException("address not initialized")
-
-            return _address
+            check($address != -1, "address not initialized")
+            return $address
         }
+
         set(value) {
-            if (value < 0) throw IllegalArgumentException("negative address")
+            check(value >= 0, "negative address: $value")
+            check($address == -1, "address already set")
 
-            if (this._address != -1)
-                throw IllegalStateException("address already set")
-
-            this._address = value
+            $address = value
         }
 
     fun toString() = name

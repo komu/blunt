@@ -8,22 +8,23 @@ class PatternPath private (private val parent: PatternPath?, private val index: 
 
     fun extend(index: Int) = PatternPath(this, index)
 
-    fun indices(): List<Int> {
-        val indices = listBuilder<Int>()
+    val indices: List<Int>
+        get() {
+            val indices = listBuilder<Int>()
 
-        var p = this
-        while (true) {
-            val parent = p.parent
-            if (parent != null) {
-                indices.add(p.index)
-                p = parent
-            } else
-                break
+            var p = this
+            while (true) {
+                val parent = p.parent
+                if (parent != null) {
+                    indices.add(p.index)
+                    p = parent
+                } else
+                    break
+            }
+
+            return indices.build().reverse()
         }
 
-        return indices.build().reverse()
-    }
-
-    fun toString() = indices().toString()
+    fun toString() = indices.toString()
 }
 

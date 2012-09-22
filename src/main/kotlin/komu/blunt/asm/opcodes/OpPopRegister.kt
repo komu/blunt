@@ -5,7 +5,7 @@ import komu.blunt.asm.*
 class OpPopRegister(private val target: Register) : OpCode() {
 
     override fun execute(vm: VM) {
-        vm.set(target, vm.pop())
+        vm[target] = vm.pop()
     }
 
     override fun modifies(register: Register) = register == target

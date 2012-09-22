@@ -81,7 +81,7 @@ class Evaluator() {
         instructions.append(expression.simplify().assemble(Assembler(), Register.VAL, Linkage.NEXT))
 
         val vm = VM(instructions, env, rootBindings.runtimeEnvironment)
-        vm.set(Register.PC, pos)
+        vm.pc = pos
         val result = vm.run()
         steps += vm.steps
         return result;

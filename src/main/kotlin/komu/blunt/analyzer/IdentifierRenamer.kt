@@ -66,10 +66,10 @@ class IdentifierRenamer {
         AST.apply(renameIdentifiers(application.func, ctx), renameIdentifiers(application.arg, ctx))
 
     private fun visit(set: ASTSet, ctx: IdentifierMapping): ASTExpression =
-        AST.set(ctx.get(set.variable), renameIdentifiers(set.exp, ctx))
+        AST.set(ctx[set.variable], renameIdentifiers(set.exp, ctx))
 
     private fun visit(variable: ASTVariable, ctx: IdentifierMapping): ASTExpression =
-        AST.variable(ctx.get(variable.name))
+        AST.variable(ctx[variable.name])
 
     private fun visit(lambda: ASTLambda, ctx: IdentifierMapping): ASTExpression {
         val newCtx = ctx.extend()

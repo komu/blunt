@@ -6,14 +6,14 @@ import komu.blunt.analyzer.VariableReference
 
 abstract class Environment {
 
-    fun lookup(v: VariableReference) =
-        lookup(v.frame, v.offset)
+    fun get(v: VariableReference) =
+        get(v.frame, v.offset)
 
     fun set(v: VariableReference, value: Any?) {
         set(v.frame, v.offset, value)
     }
 
-    protected abstract fun lookup(frame: Int, offset: Int): Any?
+    protected abstract fun get(frame: Int, offset: Int): Any?
     protected abstract fun set(frame: Int, offset: Int, value: Any?)
 
     fun extend(envSize: Int, arg: Any?): Environment {
@@ -37,7 +37,7 @@ class RootEnvironment : Environment() {
         bindings[offset] = value
     }
 
-    override fun lookup(frame: Int, offset: Int): Any? {
+    override fun get(frame: Int, offset: Int): Any? {
         checkFrame(frame)
 
         return bindings[offset]
@@ -60,16 +60,16 @@ class RootEnvironment : Environment() {
 
 class NestedEnvironment(private val bindings: Array<Any?>, private val parent: Environment) : Environment() {
 
-    override fun lookup(frame: Int, offset: Int): Any? =
+    override fun get(frame: Int, offset: Int): Any? =
         if (frame == 0)
             bindings[offset]
         else
-            parent.lookup(frame-1, offset)
+            parent[frame-1, offset]
 
     override fun set(frame: Int, offset: Int, value: Any?) {
         if (frame == 0)
             bindings[offset] = value
         else
-            parent.set(frame-1, offset, value)
+            parent[frame-1, offset] = value
     }
 }
