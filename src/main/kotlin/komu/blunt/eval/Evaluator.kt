@@ -76,7 +76,7 @@ class Evaluator() {
     }
 
     private fun run(expression: CoreExpression, env: Environment): Any? {
-        val pos = instructions.pos()
+        val pos = instructions.pos
 
         instructions.append(expression.simplify().assemble(Assembler(), Register.VAL, Linkage.NEXT))
 

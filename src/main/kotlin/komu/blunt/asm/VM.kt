@@ -17,7 +17,7 @@ class VM(private val instructions: Instructions, var env: Environment, val globa
 
     fun run(): Any? {
         while (true) {
-            if (pc >= instructions.count()) break
+            if (pc >= instructions.count) break
             val op = instructions[pc++]
             steps++
             op.execute(this)

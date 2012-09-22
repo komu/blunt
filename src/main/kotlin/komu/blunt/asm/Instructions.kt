@@ -54,11 +54,13 @@ class Instructions {
         instructions.add(op)
     }
 
-    fun count() = instructions.size
+    val count: Int
+        get() = instructions.size
+
+    val pos: Int
+        get() = instructions.size
 
     fun get(pc: Int): OpCode = instructions[pc]
-
-    fun pos(): Int = instructions.size
 }
 
 /**
