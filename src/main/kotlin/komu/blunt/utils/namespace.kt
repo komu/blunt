@@ -32,3 +32,27 @@ fun StringBuilder.appendWithSeparator(xs: Iterable<Any?>, separator: String): St
     }
     return this
 }
+
+
+fun StringBuilder.appendWithSeparator(xs: Array<Any?>, separator: String): StringBuilder {
+    var first = true
+
+    for (x in xs) {
+        if (first)
+            first = false
+        else
+            append(separator)
+
+        append(x)
+    }
+    return this
+}
+
+fun ClassLoader.readResourceAsString(path: String): String? {
+    val stream = javaClass.getClassLoader().getResourceAsStream(path)
+    return if (stream != null)
+        stream.use { it.reader("UTF-8").readText() }
+    else
+        null
+}
+

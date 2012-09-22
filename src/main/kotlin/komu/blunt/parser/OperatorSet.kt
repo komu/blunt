@@ -29,8 +29,8 @@ class OperatorSet() {
         check(precedence >= 0)
 
         maxPrecedence = max(maxPrecedence, precedence)
-        for (val name in names)
-            ops.put(name, Operator(name, associativity, precedence))
+        for (name in names)
+            ops[name] = Operator(name, associativity, precedence)
     }
 
     fun get(name: String): Operator =

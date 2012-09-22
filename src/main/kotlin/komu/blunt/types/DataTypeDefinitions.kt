@@ -1,7 +1,6 @@
 package komu.blunt.types
 
 import java.util.*
-import java.util.Collections.unmodifiableCollection
 import komu.blunt.analyzer.AnalyzationException
 import komu.blunt.ast.ASTDataDefinition
 import komu.blunt.parser.TypeParser
@@ -49,6 +48,6 @@ public class DataTypeDefinitions() {
         return quantifyAll(Qualified.simple(functionType(types, tupleType(types))))
     }
 
-    fun getDeclaredConstructors() =
-        unmodifiableCollection(constructors.values())
+    val declaredConstructors: Collection<ConstructorDefinition>
+        get() = constructors.values()
 }

@@ -46,7 +46,7 @@ class IdentifierRenamer {
 
     private fun renamePattern(pattern: VariablePattern, ctx: IdentifierMapping): Pattern {
         val v = freshVariable()
-        ctx.put(pattern.variable, v)
+        ctx[pattern.variable] = v
         return Pattern.variable(v)
     }
 
@@ -75,7 +75,7 @@ class IdentifierRenamer {
         val newCtx = ctx.extend()
 
         val v = freshVariable()
-        newCtx.put(lambda.argument, v)
+        newCtx[lambda.argument] = v
 
         return AST.lambda(v, renameIdentifiers(lambda.body, newCtx))
     }
@@ -86,7 +86,7 @@ class IdentifierRenamer {
         val newCtx = ctx.extend()
 
         val v = freshVariable()
-        newCtx.put(let.bindings.first().name, v)
+        newCtx[let.bindings.first().name] = v
 
         val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.first().expr, ctx))
 
@@ -99,7 +99,7 @@ class IdentifierRenamer {
         val newCtx = ctx.extend()
 
         val v = freshVariable()
-        newCtx.put(let.bindings.first().name, v)
+        newCtx[let.bindings.first().name] = v
 
         val binding = ImplicitBinding(v, renameIdentifiers(let.bindings.first().expr, newCtx))
 

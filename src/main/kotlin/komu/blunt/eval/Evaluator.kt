@@ -10,20 +10,21 @@ import komu.blunt.parser.Parser
 import komu.blunt.stdlib.BasicFunctions
 import komu.blunt.types.*
 import komu.blunt.types.checker.TypeChecker
+import komu.blunt.utils.readResourceAsString
 
 class Evaluator() {
 
     private val rootBindings = RootBindings()
     private val instructions = Instructions()
     private val classEnv = ClassEnv()
-    private var steps = 0.toLong();
+    var steps = 0.toLong();
 
     {
         BasicFunctions.register(rootBindings)
         //throw UnsupportedOperationException("registering basic functions")
         //NativeFunctionRegisterer(rootBindings).register(Class.forName("komu.blunt.stdlib.BasicFunctions"))
 
-        for (val constructor in rootBindings.dataTypes.getDeclaredConstructors())
+        for (constructor in rootBindings.dataTypes.declaredConstructors)
             createConstructorFunction(constructor)
     }
 
@@ -35,7 +36,7 @@ class Evaluator() {
     fun load(source: String) {
         val parser = Parser(source)
 
-        for (val define in parser.parseDefinitions())
+        for (define in parser.parseDefinitions())
             when (define) {
                 is ASTValueDefinition -> processDefinition(define)
                 is ASTDataDefinition  -> register(define)
@@ -47,13 +48,13 @@ class Evaluator() {
         try {
             val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions())
 
-
             rootBindings.defineVariableType(definition.name, typ)
             val v = rootBindings.staticEnvironment.define(definition.name)
 
             val exp = Analyzer.analyze(definition.value, rootBindings.dataTypes, rootBindings.staticEnvironment)
 
             run(CoreDefineExpression(v, exp), rootBindings.runtimeEnvironment)
+
         } catch (e: TypeCheckException) {
             println("failure in definition: $definition")
             throw e
@@ -63,10 +64,10 @@ class Evaluator() {
     private fun register(definition: ASTDataDefinition) {
         rootBindings.dataTypes.register(definition)
 
-        for (val ctor in definition.constructors)
+        for (ctor in definition.constructors)
             createConstructorFunction(ctor)
 
-        for (val className in definition.derivedClasses)
+        for (className in definition.derivedClasses)
             classEnv.addInstance(isIn(className, definition.typ))
     }
 
@@ -84,12 +85,11 @@ class Evaluator() {
         vm.pc = pos
         val result = vm.run()
         steps += vm.steps
-        return result;
+        return result
     }
 
     public fun evaluate(exp: ASTExpression): Any? =
         evaluateWithType(exp).first
-
 
     public fun evaluateWithType(exp: ASTExpression): Pair<Any?, Qualified<Type>> {
         val env = rootBindings.staticEnvironment.extend()
@@ -101,14 +101,11 @@ class Evaluator() {
         return Pair(result, typ)
     }
 
-    private fun typeCheck(exp: ASTExpression): Qualified<Type> {
-        return TypeChecker.typeCheck(exp, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions())
-    }
+    private fun typeCheck(exp: ASTExpression) =
+        TypeChecker.typeCheck(exp, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions())
 
-    private fun toCore(exp: ASTExpression, env: StaticEnvironment): CoreExpression =
+    private fun toCore(exp: ASTExpression, env: StaticEnvironment) =
         Analyzer.analyze(exp, rootBindings.dataTypes, env)
-
-    fun getSteps() = steps
 
     fun dump() {
         instructions.dump()
@@ -118,14 +115,7 @@ class Evaluator() {
         load(readResource(path))
     }
 
-    private fun readResource(path: String): String {
-        val resource = javaClass.getClassLoader().getResourceAsStream(path)
-        if (resource != null) {
-            return resource.use {
-                resource.reader("UTF-8").readText()
-            }
-        } else
+    private fun readResource(path: String): String =
+        javaClass.getClassLoader().readResourceAsString(path) ?:
             throw Exception("could not find resource: $path")
-    }
 }
-

@@ -14,17 +14,17 @@ class RootBindings {
     private val assumptions = Assumptions.builder()
     val dataTypes = DataTypeDefinitions()
 
-    fun bind(name: String, scheme: Scheme, value: Any?) {
+    fun bind(name: String, scheme: Scheme, value: Any) {
         bind(Symbol(name), scheme, value)
     }
 
-    fun bind(name: Symbol, scheme: Scheme, value: Any?) {
+    fun bind(name: Symbol, scheme: Scheme, value: Any) {
         val ref = staticEnvironment.define(name)
         defineVariableType(name, scheme)
         runtimeEnvironment.define(ref, value)
     }
 
-    fun bind(name: String, scheme: String, value: Any?) {
+    fun bind(name: String, scheme: String, value: Any) {
         bind(name, TypeParser.parseScheme(scheme), value)
     }
 
@@ -33,9 +33,9 @@ class RootBindings {
     }
 
     fun defineVariableType(name: Symbol, scheme: Scheme) {
-        assumptions.add(name, scheme)
+        assumptions[name] = scheme
     }
 
-    fun createAssumptions(): Assumptions =
+    fun createAssumptions() =
         assumptions.build()
 }

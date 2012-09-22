@@ -23,7 +23,7 @@ class IdentifierMapping(val parent: IdentifierMapping? = null) {
         return v
     }
 
-    fun put(oldName: Symbol, newName: Symbol) {
+    fun set(oldName: Symbol, newName: Symbol) {
         val old = mappings.put(oldName, newName)
         if (old != null)
             throw IllegalArgumentException("duplicate mapping for '$oldName'");

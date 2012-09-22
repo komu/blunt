@@ -1,6 +1,7 @@
 package komu.blunt.types.checker
 
 import java.util.Collections.emptyMap
+import java.util.Collections.singletonMap
 import java.util.HashMap
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.objects.Symbol
@@ -32,7 +33,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
         val builder = builder()
 
         for ((key, value) in mappings)
-            builder.add(key, value.apply(substitution))
+            builder[key] = value.apply(substitution)
 
         return builder.build()
     }
@@ -41,7 +42,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
 
         fun builder() = Builder()
         fun empty() = Assumptions(emptyMap())
-        fun singleton(arg: Symbol, scheme: Scheme) = builder().add(arg, scheme).build()
+        fun singleton(arg: Symbol, scheme: Scheme) = Assumptions(singletonMap(arg, scheme))
 
         fun from(names: List<Symbol>, schemes: List<Scheme>): Assumptions {
             if (names.size != schemes.size)
@@ -49,7 +50,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
 
             val builder = Builder()
             for (i in names.indices)
-                builder.add(names[i], schemes[i])
+                builder[names[i]] = schemes[i]
 
             return builder.build()
         }
@@ -59,10 +60,9 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
             private var mappings = HashMap<Symbol,Scheme>()
             private var built = false
 
-            fun add(name: Symbol, scheme: Scheme): Builder {
+            fun set(name: Symbol, scheme: Scheme) {
                 ensurePrivateCopy()
-                mappings.put(name, scheme)
-                return this
+                mappings[name] = scheme
             }
 
             fun addAll(ass: Assumptions): Builder {

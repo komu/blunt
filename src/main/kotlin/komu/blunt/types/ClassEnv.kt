@@ -98,7 +98,7 @@ class ClassEnv() {
             if (!classes.containsKey(superClass))
                 throw RuntimeException("unknown superclass '$superClass'")
 
-        classes.put(name, cl)
+        classes[name] = cl
     }
 
     private fun bySuper(predicate: Predicate): List<Predicate> {

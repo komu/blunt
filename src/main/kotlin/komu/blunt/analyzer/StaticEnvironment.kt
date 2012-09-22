@@ -23,17 +23,17 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
             throw AnalyzationException("Variable '$name' is already defined in this scope.")
 
         val offset = variables.size
-        variables.put(name, VariableInfo(name, offset))
+        variables[name] = VariableInfo(name, offset)
         return reference(0, offset, name)
     }
 
     fun lookupInCurrentScopeOrDefine(name: Symbol): VariableReference {
         val v = variables[name]
 
-        if (v != null)
-            return reference(0, v.offset, v.name)
+        return if (v != null)
+            reference(0, v.offset, v.name)
         else
-            return define(name)
+            define(name)
     }
 
     private fun reference(frame: Int, offset: Int, name: Symbol): VariableReference =

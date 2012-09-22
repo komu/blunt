@@ -1,6 +1,7 @@
 package komu.blunt.objects
 
 import java.util.Arrays
+import komu.blunt.utils.appendWithSeparator
 
 class TypeConstructorValue(val index: Int, val name: String, val items: Array<Any?> = TypeConstructorValue.EMPTY_ARRAY) : Comparable<TypeConstructorValue> {
 
@@ -54,20 +55,8 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
         return sb.toString()
     }
 
-    private fun toStringAsTuple(): String {
-        val sb = StringBuilder()
-
-        sb.append('(')
-
-        for (val i in items.indices) {
-            if (i != 0) sb.append(", ")
-
-            sb.append(items[i])
-        }
-        sb.append(')')
-
-        return sb.toString()
-    }
+    private fun toStringAsTuple() =
+        StringBuilder("(").appendWithSeparator(items, ", ").append(')').toString()
 
     fun equals(o: Any?) =
         o is TypeConstructorValue && index == o.index && Arrays.equals(items, o.items)
