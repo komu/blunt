@@ -52,13 +52,13 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val predicates = typeCheckAndUnifyBindings(bindings, typeVariables, ass)
 
         val types = tc.applySubstitution(typeVariables)
-        val fs = tc.applySubstitution(ass).getTypeVariables()
+        val fs = tc.applySubstitution(ass).typeVariables
 
         val vss = arrayList<Set<TypeVariable>>()
 
         val genericVariables = hashSet<TypeVariable>()
         for (val t in types) {
-            val vars = t.getTypeVariables()
+            val vars = t.typeVariables
             vss.add(vars)
             genericVariables.addAll(vars)
         }

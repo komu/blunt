@@ -51,7 +51,7 @@ fun StringBuilder.appendWithSeparator(xs: Array<Any?>, separator: String): Strin
 
 fun StringBuilder.appendTimes(s: String, count: Int): StringBuilder {
     for (i in 1..count)
-        sb.append(s)
+        append(s)
     return this
 }
 

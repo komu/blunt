@@ -1,23 +1,19 @@
 package komu.blunt.types
 
 import java.util.ArrayList
-import java.util.LinkedHashSet
 import java.util.Objects.hash
 import komu.blunt.types.checker.Substitution
 import komu.blunt.types.checker.Substitutions
 import komu.blunt.utils.appendWithSeparator
 
-fun quantifyAll(qt: Qualified<Type>): Scheme {
-    val types = LinkedHashSet<TypeVariable>()
-    qt.addTypeVariables(types)
-    return quantify(types, qt)
-}
+fun quantifyAll(qt: Qualified<Type>): Scheme =
+    quantify(qt.typeVariables, qt)
 
 fun quantify(vs: Collection<TypeVariable>, qt: Qualified<Type>): Scheme {
     val kinds = listBuilder<Kind>()
     val vars = listBuilder<TypeVariable>()
 
-    for (v in qt.getTypeVariables())
+    for (v in qt.typeVariables)
         if (v in vs) {
             vars.add(v)
             kinds.add(v.kind)

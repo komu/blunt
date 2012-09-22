@@ -64,7 +64,7 @@ object Unifier {
         if (t == u)
             return Substitutions.empty()
 
-        if (t.containsVariable(u))
+        if (u in t.typeVariables)
             throw unificationFailure("occurs check fails", u, t)
 
         if (u.kind != t.kind)

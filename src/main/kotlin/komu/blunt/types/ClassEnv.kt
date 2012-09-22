@@ -180,7 +180,7 @@ class ClassEnv() {
         val retainedPredicates = listBuilder<Predicate>()
 
         for (predicate in reduce(originalPredicates))
-            if (fixedVariables.containsAll(predicate.getTypeVariables()))
+            if (fixedVariables.containsAll(predicate.typeVariables))
                 deferredPredicates.add(predicate)
             else
                 retainedPredicates.add(predicate)

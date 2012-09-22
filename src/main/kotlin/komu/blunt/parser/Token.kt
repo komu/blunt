@@ -9,5 +9,8 @@ class Token<out T>(val tokenType: TokenType<T>, val value: T, val location: Sour
     fun toString() = tokenType.toString()
 
     fun asType<U>(t: TokenType<U>): Token<U> =
-        this as Token<U>
+        if (tokenType == t)
+            this as Token<U>
+        else
+            throw Exception("can't cast token of type $tokenType to $t")
 }
