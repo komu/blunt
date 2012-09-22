@@ -30,12 +30,14 @@ class Instructions {
     }
 
     private fun getLabels(address: Int): MutableSet<Label> {
-        var labels = labelMap[address]
-        if (labels == null) {
-            labels = hashSet()
-            labelMap[address] = labels!!
+        val existingLabels = labelMap[address]
+        if (existingLabels != null) {
+            return existingLabels
+        } else {
+            val newLabels = hashSet<Label>()
+            labelMap[address] = newLabels
+            return newLabels
         }
-        return labels!!
     }
 
     fun dump() {

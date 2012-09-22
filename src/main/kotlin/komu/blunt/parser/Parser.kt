@@ -92,7 +92,7 @@ class Parser(source: String) {
             lexer.pushBlockStartAtNextToken()
             name = parseIdentifier()
 
-            val args = ArrayList<Pattern>()
+            val args = listBuilder<Pattern>()
 
             while (!lexer.nextTokenIs(TokenType.ASSIGN))
                 args.add(patternParser.parseSimplePattern())
@@ -101,7 +101,7 @@ class Parser(source: String) {
 
             val value = parseExpression()
             lexer.expectToken(TokenType.END)
-            functionBuilder.addAlternative(args, value)
+            functionBuilder.addAlternative(args.build(), value)
         }
 
         return AST.define(name!!, functionBuilder.build())

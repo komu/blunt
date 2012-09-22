@@ -40,7 +40,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
     class object {
 
         fun builder() = Builder()
-        fun empty() = Assumptions(emptyMap<Symbol,Scheme>()!!)
+        fun empty() = Assumptions(emptyMap())
         fun singleton(arg: Symbol, scheme: Scheme) = builder().add(arg, scheme).build()
 
         fun from(names: List<Symbol>, schemes: List<Scheme>): Assumptions {

@@ -31,10 +31,14 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
         types.contains(peekTokenType())
 
     private fun peekToken(): Token<Any> {
-        if (nextToken == null)
-            nextToken = readTokenInternal()
-
-        return nextToken!!
+        val next = nextToken
+        if (next != null) {
+            return next
+        } else {
+            val next2 = readTokenInternal()
+            nextToken = next2
+            return next2
+        }
     }
 
     public fun peekTokenValue<T>(typ: TokenType<T>): T =
