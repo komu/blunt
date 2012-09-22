@@ -1,16 +1,12 @@
 package komu.blunt.types
 
-import kotlin.util.*
+import komu.blunt.types.checker.Substitution
 import komu.blunt.types.checker.UnificationException
 import komu.blunt.types.checker.Unifier
 
-import komu.blunt.types.checker.Substitution;
-
-import java.util.Objects.hash
-
 fun isIn(className: String, typ: Type) = Predicate(className, typ)
 
-class Predicate(val className: String, val `type`: Type) : Types<Predicate> {
+data class Predicate(val className: String, val `type`: Type) : Types<Predicate> {
 
     fun inHnf() = `type`.hnf()
 
@@ -24,24 +20,14 @@ class Predicate(val className: String, val `type`: Type) : Types<Predicate> {
     fun instantiate(ts: List<TypeVariable>) =
         Predicate(className, `type`.instantiate(ts))
 
-    fun overlapsAny(predicates: Collection<Predicate>): Boolean =
+    fun overlapsAny(predicates: Collection<Predicate>) =
         predicates.any { overlaps(it) }
 
-    fun overlaps(predicate: Predicate): Boolean {
+    fun overlaps(predicate: Predicate): Boolean =
         try {
             Unifier.mguPredicate(this, predicate)
-            return true
+            true
         } catch (e: UnificationException) {
-            return false
+            false
         }
-    }
-
-    fun equals(rhs: Any?) =
-        rhs is Predicate && className == rhs.className && `type` == rhs.`type`
-
-    fun hashCode() =
-        hash(className, `type`)
-
-    fun toString() =
-        "$className ${`type`}"
 }

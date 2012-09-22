@@ -36,18 +36,18 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
     private fun parseConstructor(builder: DataTypeBuilder): Unit {
         val constructorName = lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME)
 
-        val args = arrayList<Type>()
+        val args = listBuilder<Type>()
         while (!lexer.nextTokenIs(TokenType.OR) && !lexer.nextTokenIs(TokenType.END) && !lexer.nextTokenIs(TokenType.DERIVING))
             args.add(typeParser.parseTypePrimitive())
 
-        builder.addConstructor(constructorName, args)
+        builder.addConstructor(constructorName, args.build())
     }
 
     private class DataTypeBuilder(val typeName: String) {
 
         private val vars = arrayList<TypeVariable>()
-        private val constructors = arrayList<ConstructorDefinition>()
-        private val derivedClasses = arrayList<String>()
+        private val constructors = listBuilder<ConstructorDefinition>()
+        private val derivedClasses = listBuilder<String>()
         private var constructorIndex = 0
 
         public fun addVariable(variable: TypeVariable) {
@@ -67,6 +67,6 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
         }
 
         public fun build(): ASTDataDefinition =
-            AST.data(typeName, getType(), constructors, derivedClasses)
+            AST.data(typeName, getType(), constructors.build(), derivedClasses.build())
     }
 }

@@ -10,7 +10,7 @@ import komu.blunt.types.patterns.Pattern
 import komu.blunt.types.patterns.VariablePattern
 
 class FunctionBuilder {
-    private val symbols = arrayList<Symbol>()
+    private val symbols = listBuilder<Symbol>()
     private val exps = arrayList<ASTExpression>()
     private val alternatives = arrayList<ASTAlternative>()
 
@@ -36,7 +36,7 @@ class FunctionBuilder {
         if (simpleVars != null)
             return AST.lambda(simpleVars, alts.first().value)
 
-        return AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alts))
+        return AST.lambda(symbols.build(), AST.caseExp(AST.tuple(exps), alts))
     }
 
     fun containsOnlyVariablePatterns(alts: List<ASTAlternative>): List<Symbol>? {

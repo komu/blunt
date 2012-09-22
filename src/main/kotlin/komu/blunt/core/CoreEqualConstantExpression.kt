@@ -2,7 +2,7 @@ package komu.blunt.core
 
 import komu.blunt.asm.*
 
-class CoreEqualConstantExpression(private val value: Any?, private val expression: CoreExpression) : CoreExpression() {
+class CoreEqualConstantExpression(private val value: Any, private val expression: CoreExpression) : CoreExpression() {
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {

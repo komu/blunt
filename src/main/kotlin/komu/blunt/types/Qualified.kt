@@ -45,7 +45,7 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : T
     }
 
     override fun apply(substitution: Substitution): Qualified<T> =
-        Qualified(TypeUtils.applySubstitution<Predicate>(substitution, predicates), value.apply(substitution))
+        Qualified(predicates.map { it.apply(substitution) }, value.apply(substitution))
 
     fun toString(): String {
         val sb = StringBuilder()

@@ -3,8 +3,6 @@ package komu.blunt.types
 import java.util.ArrayList
 import java.util.Collections.emptyList
 import java.util.HashMap
-import java.util.HashSet
-import java.util.LinkedHashSet
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.checker.UnificationException
 import komu.blunt.types.checker.Unifier
@@ -80,7 +78,7 @@ class ClassEnv() {
     public fun addInstance(predicates: List<Predicate>, predicate: Predicate) {
         val cl = getClass(predicate.className)
 
-        if (predicate.overlapsAny(cl.instancePredicates()))
+        if (predicate.overlapsAny(cl.instancePredicates))
             throw RuntimeException("overlapping instances")
 
         cl.addInstance(Qualified(predicates, predicate))
@@ -94,7 +92,7 @@ class ClassEnv() {
         if (defined(name))
             throw RuntimeException("class already defined: '$name'")
 
-        for (val superClass in cl.superClasses)
+        for (superClass in cl.superClasses)
             if (!classes.containsKey(superClass))
                 throw RuntimeException("unknown superclass '$superClass'")
 
@@ -105,17 +103,17 @@ class ClassEnv() {
         val result = arrayList<Predicate>()
         result.add(predicate)
 
-        for (val superName in getSuperClasses(predicate.className))
+        for (superName in getSuperClasses(predicate.className))
             result.addAll(bySuper(isIn(superName, predicate.`type`)))
 
         return result
     }
 
     private fun byInstance(predicate: Predicate): List<Predicate>? {
-        for (val it in getInstances(predicate.className)) {
+        for (instance in getInstances(predicate.className)) {
             try {
-                val s = Unifier.matchPredicate(it.predicate, predicate)
-                return TypeUtils.applySubstitution(s, it.predicates)
+                val s = Unifier.matchPredicate(instance.predicate, predicate)
+                return instance.predicates.map { it.apply(s) }
             } catch (e: UnificationException) {
                 // skip
             }
@@ -125,8 +123,8 @@ class ClassEnv() {
     }
 
     private fun entails(ps: Collection<Predicate>, p: Predicate): Boolean {
-        for (val pp in ps)
-           if (bySuper(pp).contains(p))
+        for (pp in ps)
+           if (p in bySuper(pp))
                return true
 
         val qs = byInstance(p)
@@ -143,7 +141,7 @@ class ClassEnv() {
     private fun toHfns(predicates: List<Predicate>): List<Predicate> {
         val result = ArrayList<Predicate>()
 
-        for (val predicate in predicates) {
+        for (predicate in predicates) {
             if (predicate.inHnf()) {
                 result.add(predicate)
             } else {
@@ -159,10 +157,10 @@ class ClassEnv() {
     }
 
     private fun simplify(ps: List<Predicate>): List<Predicate> {
-        val combinedPredicates = HashSet<Predicate>()
+        val combinedPredicates = hashSet<Predicate>()
         val rs = listBuilder<Predicate>()
 
-        for (val p in ps) {
+        for (p in ps) {
             if (!entails(combinedPredicates, p)) {
                 combinedPredicates.add(p)
                 rs.add(p)
@@ -178,35 +176,23 @@ class ClassEnv() {
     fun split(fixedVariables: Set<TypeVariable>,
               quantifyVariables: Set<TypeVariable>,
               originalPredicates: List<Predicate>): Pair<List<Predicate>, List<Predicate>> {
-        val deferredPredicates = ArrayList<Predicate>()
-        val retainedPredicates = ArrayList<Predicate>()
+        val deferredPredicates = listBuilder<Predicate>()
+        val retainedPredicates = listBuilder<Predicate>()
 
-        for (val predicate in reduce(originalPredicates))
-            if (fixedVariables.containsAll(getTypeVariables(predicate)))
+        for (predicate in reduce(originalPredicates))
+            if (fixedVariables.containsAll(predicate.getTypeVariables()))
                 deferredPredicates.add(predicate)
             else
                 retainedPredicates.add(predicate)
 
         // TODO: defaulted
-        return Pair(deferredPredicates, retainedPredicates)
-    }
-
-    // TODO: duplication
-    private fun getTypeVariables(p: Predicate): Set<TypeVariable> {
-        val types = LinkedHashSet<TypeVariable>()
-        p.addTypeVariables(types)
-        return types
+        return Pair(deferredPredicates.build(), retainedPredicates.build())
     }
 
     fun defined(name: String) =
         classes.containsKey(name)
 
-    private fun getClass(name: String): TypeClass {
-        val cl = classes[name]
-        if (cl != null)
-            return cl
-        else
-            throw RuntimeException("unknown class '$name'");
-    }
+    private fun getClass(name: String): TypeClass =
+        classes[name] ?: throw RuntimeException("unknown class '$name'");
 }
 

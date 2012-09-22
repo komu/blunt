@@ -1,7 +1,5 @@
 package komu.blunt.types
 
-import kotlin.util.*
-
 class TypeClass(val superClasses: List<String>) {
 
     val instances = arrayList<ClassInstance>()
@@ -10,6 +8,6 @@ class TypeClass(val superClasses: List<String>) {
         instances.add(ClassInstance(qual))
     }
 
-    fun instancePredicates(): Collection<Predicate> =
-        instances.map { it.qual.value }
+    val instancePredicates: Collection<Predicate>
+        get() = instances.map { it.qual.value }
 }

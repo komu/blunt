@@ -1,5 +1,6 @@
 package komu.blunt.analyzer
 
+import java.util.Collections.singletonList
 import komu.blunt.objects.Symbol
 
 class StaticEnvironment(private val parent: StaticEnvironment? = null) {
@@ -43,7 +44,7 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
             VariableReference.nested(frame, offset, name)
 
     fun extend(name: Symbol) =
-        extend(arrayList(name))
+        extend(singletonList(name))
 
     fun extend() =
         StaticEnvironment(this)
@@ -51,7 +52,7 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
     fun extend(symbols: List<Symbol>): StaticEnvironment {
         val env = StaticEnvironment(this)
 
-        for (val symbol in symbols)
+        for (symbol in symbols)
             env.define(symbol)
 
         return env

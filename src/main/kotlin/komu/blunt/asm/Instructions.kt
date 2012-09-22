@@ -41,9 +41,8 @@ class Instructions {
     }
 
     fun dump() {
-        var address = 0;
-        for (val instruction in instructions) {
-            for (val label in getLabels(address++))
+        for ((address, instruction) in instructions.withIndices()) {
+            for (label in getLabels(address))
                 println("$label:")
 
             println("    $instruction")
@@ -162,6 +161,6 @@ fun Instructions.copy(target: Register, source: Register) {
     this.add(OpCopyRegister(target, source))
 }
 
-fun Instructions.equalConstant(target: Register, source: Register, value: Any?) {
+fun Instructions.equalConstant(target: Register, source: Register, value: Any) {
     this.add(OpEqualConstant(target, source, value))
 }
