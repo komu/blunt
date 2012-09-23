@@ -6,26 +6,16 @@ import java.util.HashMap
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.checker.UnificationException
 import komu.blunt.types.checker.Unifier
+import komu.blunt.utils.addAll
 
-class ClassEnv() {
+class ClassEnv {
 
     private val classes = HashMap<String,TypeClass>()
     private val defaults = ArrayList<Type>();
 
     {
         defaults.add(BasicType.INTEGER)
-        addCoreClasses();
-        addNumClasses();
-        addDefaultInstances();
-    }
 
-    private fun getSuperClasses(name: String): Collection<String> =
-        getClass(name).superClasses
-
-    private fun getInstances(name: String): Collection<ClassInstance> =
-        getClass(name).instances
-
-    private fun addCoreClasses() {
         addClass("Eq")
         addClass("Ord", "Eq")
         addClass("Show")
@@ -34,9 +24,7 @@ class ClassEnv() {
         addClass("Enum")
         addClass("Functor")
         addClass("Monad")
-    }
 
-    private fun addNumClasses() {
         addClass("Num", "Eq", "Show")
         addClass("Real", "Num", "Ord")
         addClass("Fractional", "Num")
@@ -44,6 +32,8 @@ class ClassEnv() {
         addClass("RealFrac", "Real", "Fractional")
         addClass("Floating", "Fractional")
         addClass("RealFloat", "RealFrac", "Floating")
+
+        addDefaultInstances()
     }
 
     private fun addDefaultInstances() {
@@ -56,19 +46,17 @@ class ClassEnv() {
         addInstance(isIn("Ord", BasicType.INTEGER))
         addInstance(isIn("Ord", BasicType.STRING))
 
-        addInstance(arrayList(isIn("Ord", typeVariable("a")),
-                              isIn("Ord", typeVariable("b"))),
-                              isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))))
+        addInstance(arrayList(isIn("Ord", typeVariable("a")), isIn("Ord", typeVariable("b"))),
+                    isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))))
 
-        addInstance(arrayList(isIn("Eq", typeVariable("a")),
-                              isIn("Eq", typeVariable("b"))),
-                              isIn("Eq", tupleType(typeVariable("a"), typeVariable("b"))))
+        addInstance(arrayList(isIn("Eq", typeVariable("a")), isIn("Eq", typeVariable("b"))),
+                    isIn("Eq", tupleType(typeVariable("a"), typeVariable("b"))))
 
         addInstance(arrayList(isIn("Eq", typeVariable("a"))),
-                              isIn("Eq", listType(typeVariable("a"))))
+                    isIn("Eq", listType(typeVariable("a"))))
 
         addInstance(arrayList(isIn("Eq", typeVariable("a"))),
-                              isIn("Eq", genericType("Maybe", typeVariable("a"))))
+                    isIn("Eq", genericType("Maybe", typeVariable("a"))))
     }
 
     public fun addInstance(predicate: Predicate) {
@@ -76,12 +64,12 @@ class ClassEnv() {
     }
 
     public fun addInstance(predicates: List<Predicate>, predicate: Predicate) {
-        val cl = getClass(predicate.className)
+        val typeClass = getClass(predicate.className)
 
-        if (predicate.overlapsAny(cl.instancePredicates))
+        if (predicate.overlapsAny(typeClass.instancePredicates))
             throw RuntimeException("overlapping instances")
 
-        cl.addInstance(Qualified(predicates, predicate))
+        typeClass.addInstance(Qualified(predicates, predicate))
     }
 
     public fun addClass(name: String, vararg superClasses: String) {
@@ -100,17 +88,19 @@ class ClassEnv() {
     }
 
     private fun bySuper(predicate: Predicate): List<Predicate> {
-        val result = arrayList<Predicate>()
+        val typeClass = getClass(predicate.className)
+        val result = listBuilder<Predicate>()
         result.add(predicate)
 
-        for (superName in getSuperClasses(predicate.className))
+        for (superName in typeClass.superClasses)
             result.addAll(bySuper(isIn(superName, predicate.`type`)))
 
-        return result
+        return result.build()
     }
 
     private fun byInstance(predicate: Predicate): List<Predicate>? {
-        for (instance in getInstances(predicate.className)) {
+        val typeClass = getClass(predicate.className)
+        for (instance in typeClass.instances) {
             try {
                 val s = Unifier.matchPredicate(instance.predicate, predicate)
                 return instance.predicates.map { it.apply(s) }
@@ -120,22 +110,6 @@ class ClassEnv() {
         }
 
         return null;
-    }
-
-    private fun entails(ps: Collection<Predicate>, p: Predicate): Boolean {
-        for (pp in ps)
-           if (p in bySuper(pp))
-               return true
-
-        val qs = byInstance(p)
-        if (qs == null) {
-            return false
-        } else {
-            for (val q in qs)
-                if (!entails(ps, q))
-                    return false
-            return true
-        }
     }
 
     private fun toHfns(predicates: List<Predicate>): List<Predicate> {
@@ -158,16 +132,25 @@ class ClassEnv() {
 
     private fun simplify(ps: List<Predicate>): List<Predicate> {
         val combinedPredicates = hashSet<Predicate>()
-        val rs = listBuilder<Predicate>()
+        val result = listBuilder<Predicate>()
 
         for (p in ps) {
-            if (!entails(combinedPredicates, p)) {
+            if (!combinedPredicates.entails(p)) {
                 combinedPredicates.add(p)
-                rs.add(p)
+                result.add(p)
             }
         }
 
-        return rs.build()
+        return result.build()
+    }
+
+    // Returns true iff this collection of predicates entails "entailed".
+    private fun Collection<Predicate>.entails(entailed: Predicate): Boolean {
+        if (this.any { entailed in bySuper(it) })
+            return true
+
+        val qs = byInstance(entailed)
+        return qs != null && qs.all { entails(it) }
     }
 
     fun reduce(ps: List<Predicate>): List<Predicate> =
