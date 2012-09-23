@@ -1,10 +1,9 @@
 package komu.blunt.types
 
-import komu.blunt.eval.TypeCheckException
-import komu.blunt.types.checker.Substitution
-
 import java.util.LinkedList
 import java.util.Objects.hash
+import komu.blunt.eval.TypeCheckException
+import komu.blunt.types.checker.Substitution
 
 class TypeApplication(val left: Type, val right: Type) : Type() {
 
@@ -14,7 +13,8 @@ class TypeApplication(val left: Type, val right: Type) : Type() {
     override fun instantiate(vars: List<TypeVariable>) =
         TypeApplication(left.instantiate(vars), right.instantiate(vars))
 
-    override fun hnf() = left.hnf()
+    override val hnf: Boolean
+        get() = left.hnf
 
     override fun addTypeVariables(result: MutableSet<TypeVariable>) {
         left.addTypeVariables(result)

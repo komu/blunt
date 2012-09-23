@@ -2,7 +2,7 @@ package komu.blunt.types
 
 abstract class Type : Types<Type> {
     abstract fun instantiate(vars: List<TypeVariable>): Type
-    abstract fun hnf(): Boolean
+    public abstract val hnf: Boolean
     public abstract val kind: Kind
 
     fun toString() = toString(0)

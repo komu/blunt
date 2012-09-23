@@ -9,7 +9,7 @@ fun isIn(className: String, typ: Type) = Predicate(className, typ)
 data class Predicate(val className: String, val predicateType: Type) : Types<Predicate> {
 
     val inHnf: Boolean
-        get() = predicateType.hnf()
+        get() = predicateType.hnf
 
     override fun addTypeVariables(result: MutableSet<TypeVariable>) {
         predicateType.addTypeVariables(result)

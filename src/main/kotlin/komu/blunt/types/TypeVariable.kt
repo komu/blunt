@@ -1,12 +1,11 @@
 package komu.blunt.types
 
-import komu.blunt.types.checker.Substitution
-
 import java.util.Objects.hash
+import komu.blunt.types.checker.Substitution
 
 class TypeVariable(private val name: String, private val _kind: Kind) : Type() {
 
-    override fun hnf() = true
+    override val hnf = true
     override fun toString(precedence: Int) = name
     override val kind = _kind
     override fun instantiate(vars: List<TypeVariable>) = this

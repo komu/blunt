@@ -11,7 +11,7 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
     }
 
     override fun apply(substitution: Substitution) = this
-    override fun hnf() = false
+    override val hnf = false
     override fun instantiate(vars: List<TypeVariable>) = this
     override fun addTypeVariables(result: MutableSet<TypeVariable>) { }
     override val kind = _kind
