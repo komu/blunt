@@ -35,14 +35,14 @@ object Unifier {
 
     fun mguPredicate(left: Predicate, right: Predicate): Substitution  {
         if (left.className == right.className)
-            return mgu(left.`type`, right.`type`)
+            return mgu(left.predicateType, right.predicateType)
 
         throw unificationFailure("classes differ", left, right)
     }
 
     fun matchPredicate(left: Predicate, right: Predicate): Substitution {
         if (left.className == right.className)
-            return match(left.`type`, right.`type`)
+            return match(left.predicateType, right.predicateType)
 
         throw unificationFailure("classes differ", left, right)
     }

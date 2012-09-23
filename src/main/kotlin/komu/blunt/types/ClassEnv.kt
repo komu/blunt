@@ -93,7 +93,7 @@ class ClassEnv {
         result.add(predicate)
 
         for (superName in typeClass.superClasses)
-            result.addAll(bySuper(isIn(superName, predicate.`type`)))
+            result.addAll(bySuper(isIn(superName, predicate.predicateType)))
 
         return result.build()
     }
@@ -113,21 +113,21 @@ class ClassEnv {
     }
 
     private fun toHfns(predicates: List<Predicate>): List<Predicate> {
-        val result = ArrayList<Predicate>()
+        val result = listBuilder<Predicate>()
 
         for (predicate in predicates) {
-            if (predicate.inHnf()) {
+            if (predicate.inHnf) {
                 result.add(predicate)
             } else {
                 val qs = byInstance(predicate)
                 if (qs != null)
                     result.addAll(toHfns(qs))
                 else
-                    throw TypeCheckException("could not find instance of ${predicate.className} for type ${predicate.`type`}")
+                    throw TypeCheckException("could not find instance of ${predicate.className} for type ${predicate.predicateType}")
             }
         }
 
-        return result
+        return result.build()
     }
 
     private fun simplify(ps: List<Predicate>): List<Predicate> {
