@@ -61,7 +61,7 @@ fun StringBuilder.appendTimes(s: String, count: Int): StringBuilder {
 }
 
 fun ClassLoader.readResourceAsString(path: String): String? {
-    val stream = javaClass.getClassLoader().getResourceAsStream(path)
+    val stream = getResourceAsStream(path)
     return if (stream != null)
         stream.use { it.reader("UTF-8").readText() }
     else
