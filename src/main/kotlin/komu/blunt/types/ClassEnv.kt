@@ -1,8 +1,6 @@
 package komu.blunt.types
 
-import java.util.ArrayList
 import java.util.Collections.emptyList
-import java.util.HashMap
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.checker.UnificationException
 import komu.blunt.types.checker.Unifier
@@ -10,8 +8,8 @@ import komu.blunt.utils.addAll
 
 class ClassEnv {
 
-    private val classes = HashMap<String,TypeClass>()
-    private val defaults = ArrayList<Type>();
+    private val classes = hashMap<String,TypeClass>()
+    private val defaults = arrayList<Type>();
 
     {
         defaults.add(BasicType.INTEGER)

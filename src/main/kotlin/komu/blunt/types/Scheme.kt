@@ -1,6 +1,5 @@
 package komu.blunt.types
 
-import java.util.Collections.emptyList
 import java.util.Objects
 import komu.blunt.types.checker.Substitution
 
@@ -17,11 +16,4 @@ class Scheme(val kinds: List<Kind>, val `type`: Qualified<Type>) : Types<Scheme>
 
     fun equals(obj: Any?) = obj is Scheme && kinds == obj.kinds && `type` == obj.`type`
     fun hashCode() = Objects.hash(kinds, `type`)
-
-    class object {
-        fun fromType(t: Type) = Scheme(emptyList(), Qualified.simple(t))
-
-        fun fromTypes(ts: List<out Type>): List<Scheme> =
-            ts.map { Scheme.fromType(it) }
-    }
 }
