@@ -10,3 +10,4 @@ abstract class Type : Types<Type> {
     protected abstract fun toString(precedence: Int): String
 }
 
+fun List<Type>.kinds() = map { it.kind }

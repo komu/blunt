@@ -55,7 +55,7 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
         }
 
         public fun addConstructor(constructorName: String, args: List<Type>) {
-            val scheme = quantify(vars, Qualified.simple(functionType(args, getType())))
+            val scheme = Qualified.simple(functionType(args, getType())).quantify(vars)
             constructors.add(ConstructorDefinition(constructorIndex++, constructorName, scheme, args.size))
         }
 

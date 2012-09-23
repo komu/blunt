@@ -51,7 +51,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val typeVariables = tc.newTVars(bindings.size)
         val predicates = typeCheckAndUnifyBindings(bindings, typeVariables, ass)
 
-        val types = tc.applySubstitution(typeVariables)
+        val types = tc.applySubstitution<Type>(typeVariables)
         val fs = tc.applySubstitution(ass).typeVariables
 
         val vss = arrayList<Set<TypeVariable>>()
@@ -67,7 +67,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
 
         val (deferredPredicates, retainedPredicates) = tc.classEnv.split(fs, intersection(vss), predicates)
 
-        val finalSchemes = types.map { quantify(genericVariables, Qualified(retainedPredicates, it)) }
+        val finalSchemes = types.map { Qualified(retainedPredicates, it).quantify(genericVariables) }
 
         val finalAssumptions = Assumptions.from(bindings.names(), finalSchemes)
         return TypeCheckResult.of(finalAssumptions, deferredPredicates)

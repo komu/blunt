@@ -45,7 +45,7 @@ public class DataTypeDefinitions() {
 
     private fun tupleConstructorScheme(arity: Int): Scheme {
         val types = (0..arity-1).map { typeVariable("t$it")}
-        return quantifyAll(Qualified.simple(functionType(types, tupleType(types))))
+        return Qualified.simple(functionType(types, tupleType(types))).quantifyAll()
     }
 
     val declaredConstructors: Collection<ConstructorDefinition>

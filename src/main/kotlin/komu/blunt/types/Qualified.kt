@@ -7,25 +7,6 @@ import komu.blunt.types.checker.Substitution
 import komu.blunt.types.checker.Substitutions
 import komu.blunt.utils.appendWithSeparator
 
-fun quantifyAll(qt: Qualified<Type>): Scheme =
-    quantify(qt.typeVariables, qt)
-
-fun quantify(vs: Collection<TypeVariable>, qt: Qualified<Type>): Scheme {
-    val kinds = listBuilder<Kind>()
-    val vars = listBuilder<TypeVariable>()
-
-    for (v in qt.typeVariables)
-        if (v in vs) {
-            vars.add(v)
-            kinds.add(v.kind)
-        }
-
-    return Scheme(kinds.build(), qt.apply(Substitutions.fromTypeVariables(vars.build())))
-}
-
-fun instantiate(ts: List<TypeVariable>, t: Qualified<Type>): Qualified<Type> =
-    Qualified(t.predicates.map { it.instantiate(ts) }, t.value.instantiate(ts))
-
 class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : Types<Qualified<T>> {
 
     public val predicates: List<Predicate> = ArrayList<Predicate>(predicates)
@@ -61,4 +42,15 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : T
     }
 
     fun hashCode() = hash(predicates, value)
+}
+
+fun Qualified<Type>.instantiate(ts: List<TypeVariable>): Qualified<Type> =
+    Qualified(predicates.map { it.instantiate(ts) }, value.instantiate(ts))
+
+fun Qualified<Type>.quantifyAll(): Scheme =
+    quantify(typeVariables)
+
+fun Qualified<Type>.quantify(vs: Collection<TypeVariable>): Scheme {
+    val vars = typeVariables.filter { it in vs }
+    return Scheme(vars.kinds(), apply(Substitutions.fromTypeVariables(vars)))
 }

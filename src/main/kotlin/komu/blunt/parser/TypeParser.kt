@@ -14,7 +14,7 @@ class TypeParser(val lexer: Lexer) {
             TypeParser(Lexer(s)).parseType()
 
         fun parseScheme(s: String): Scheme =
-            quantifyAll(parseQualified(s))
+            parseQualified(s).quantifyAll()
 
         fun parseQualified(s: String): Qualified<Type> =
             TypeParser(Lexer(s)).parseQualified()

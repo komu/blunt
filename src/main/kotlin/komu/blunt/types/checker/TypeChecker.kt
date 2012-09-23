@@ -1,6 +1,5 @@
 package komu.blunt.types.checker
 
-import java.util.ArrayList
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.ASTValueDefinition
@@ -27,7 +26,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         fun typeCheck(exp: ASTValueDefinition, classEnv: ClassEnv, dataTypes: DataTypeDefinitions, ass: Assumptions): Scheme {
             val checker = TypeChecker(classEnv, dataTypes)
 
-            return quantifyAll(checker.normalize(checker.typeCheck(exp, ass)))
+            return checker.normalize(checker.typeCheck(exp, ass)).quantifyAll()
         }
     }
 
@@ -51,7 +50,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         patternTypeChecker.typeCheck(pattern)
 
     fun freshInstance(scheme: Scheme): Qualified<Type> =
-        instantiate(scheme.kinds.map { newTVar(it) }, scheme.`type`)
+        scheme.`type`.instantiate(newTVars(scheme.kinds))
 
     fun newTVar(): TypeVariable =
         newTVar(Kind.STAR)
@@ -59,12 +58,11 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     fun newTVar(kind: Kind): TypeVariable =
         typeVariable(typeName(typeSequence++), kind)
 
-    fun newTVars(size: Int): List<Type> {
-        val types = ArrayList<Type>(size)
-        for (val i in 1..size)
-            types.add(newTVar())
-        return types
-    }
+    fun newTVars(size: Int): List<TypeVariable> =
+        (1..size).map { newTVar() }
+
+    fun newTVars(kinds: List<Kind>): List<TypeVariable> =
+        kinds.map { newTVar(it) }
 
     private fun typeName(index: Int): String =
         if (index < 5)
