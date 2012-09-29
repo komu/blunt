@@ -1,7 +1,7 @@
 package komu.blunt.eval
 
-import komu.blunt.analyzer.Analyzer
 import komu.blunt.analyzer.StaticEnvironment
+import komu.blunt.analyzer.analyze
 import komu.blunt.asm.*
 import komu.blunt.ast.*
 import komu.blunt.core.CoreDefineExpression
@@ -51,7 +51,7 @@ class Evaluator() {
             rootBindings.defineVariableType(definition.name, typ)
             val v = rootBindings.staticEnvironment.define(definition.name)
 
-            val exp = Analyzer.analyze(definition.value, rootBindings.dataTypes, rootBindings.staticEnvironment)
+            val exp = analyze(definition.value, rootBindings.dataTypes, rootBindings.staticEnvironment)
 
             run(CoreDefineExpression(v, exp), rootBindings.runtimeEnvironment)
 
@@ -105,7 +105,7 @@ class Evaluator() {
         TypeChecker.typeCheck(exp, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions())
 
     private fun toCore(exp: ASTExpression, env: StaticEnvironment) =
-        Analyzer.analyze(exp, rootBindings.dataTypes, env)
+        analyze(exp, rootBindings.dataTypes, env)
 
     fun dump() {
         instructions.dump()
