@@ -7,6 +7,9 @@ import komu.blunt.parser.TokenType.*
 import komu.blunt.types.ConstructorNames
 import komu.blunt.types.patterns.Pattern
 
+fun parseExpression(source: String) =
+    Parser(source).parseExpression()
+
 class Parser(source: String) {
 
     private val operators = OperatorSet()
@@ -17,11 +20,6 @@ class Parser(source: String) {
 
     private val EXPRESSION_START_TOKENS =
         arrayList(TokenType.IF, TokenType.LET, TokenType.LAMBDA, TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, TokenType.CASE)
-
-    class object {
-        fun parseExpression(source: String) =
-            Parser(source).parseExpression()
-    }
 
     fun parseDefinitions(): List<ASTDefinition> {
         val result = listBuilder<ASTDefinition>()

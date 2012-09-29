@@ -70,5 +70,5 @@ public class ParserTest {
     }
 
     private fun parsing(s: String) =
-        Parser.parseExpression(s)
+        parseExpression(s)
 }

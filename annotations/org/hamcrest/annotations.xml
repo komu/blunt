@@ -1,0 +1,23 @@
+<root>
+    <item name='org.hamcrest.CoreMatchers org.hamcrest.Matcher&lt;T&gt; is(T)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='org.hamcrest.CoreMatchers org.hamcrest.Matcher&lt;T&gt; anything()'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='org.hamcrest.CoreMatchers org.hamcrest.Matcher&lt;T&gt; is(org.hamcrest.Matcher&lt;T&gt;)'>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value" val="&quot;fun &lt;T&gt; is(matcher : Matcher&lt;T&gt;?) : Matcher&lt;T&gt;?&quot;"/>
+        </annotation>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='org.hamcrest.CoreMatchers org.hamcrest.Matcher&lt;T&gt; is(org.hamcrest.Matcher&lt;T&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='org.hamcrest.CoreMatchers org.hamcrest.Matcher&lt;java.lang.Object&gt; instanceOf(java.lang.Class&lt;?&gt;) 0'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+    <item name='org.hamcrest.CoreMatchers org.hamcrest.Matcher&lt;java.lang.Object&gt; instanceOf(java.lang.Class&lt;?&gt;)'>
+        <annotation name='org.jetbrains.annotations.NotNull'/>
+    </item>
+</root>

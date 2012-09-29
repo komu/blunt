@@ -1,177 +1,163 @@
 package komu.blunt.eval;
 
+import java.math.BigInteger
+import komu.blunt.analyzer.AnalyzationException
+import komu.blunt.core.CoreExpression
+import komu.blunt.objects.CompoundProcedure
+import komu.blunt.parser.parseExpression
+import komu.blunt.stdlib.booleanToConstructor
+import kotlin.test.fail
+import org.hamcrest.CoreMatchers.`is` as isEqualTo
+import org.hamcrest.CoreMatchers.anything
+import org.hamcrest.CoreMatchers.instanceOf
+import org.hamcrest.Matcher
+import org.junit.Assert.assertThat
+import org.junit.BeforeClass as beforeclass
+import org.junit.Test as test
+
 public class EvaluatorTest {
-/*
-    private static final Evaluator evaluator = new Evaluator();
 
-    @BeforeClass
-    public static void loadPrelude() throws IOException {
-        evaluator.loadResource("prelude.blunt");
+    class object {
+        val evaluator = Evaluator();
+        {
+            evaluator.loadResource("prelude.blunt")
+        }
     }
 
-    @Test
-    public void selfEvaluatingObjects() {
-        assertThatEvaluating("42", produces(42));
-        assertThatEvaluating("True", produces(true));
-        assertThatEvaluating("False", produces(false));
+    test fun selfEvaluatingObjects() {
+        assertThatEvaluating("42", produces(42))
+        assertThatEvaluating("True", produces(true))
+        assertThatEvaluating("False", produces(false))
     }
 
-    @Test
-    public void primitiveOperators() {
-        assertThatEvaluating("1 + 2", produces(3));
+    test fun primitiveOperators() {
+        assertThatEvaluating("1 + 2", produces(3))
     }
 
-    @Test
-    public void patternsInLambdas() {
-        assertThatEvaluating("(\\(a,b) -> a) (42, 24)", produces(42));
+    test fun patternsInLambdas() {
+        assertThatEvaluating("(\\(a,b) -> a) (42, 24)", produces(42))
     }
 
-    @Test
-    public void ifExpression() {
-        assertThatEvaluating("if True then 1 + 2 else 3 + 4", produces(3));
-        assertThatEvaluating("if False then 1 + 2 else 3 + 4", produces(7));
+    test fun ifExpression() {
+        assertThatEvaluating("if True then 1 + 2 else 3 + 4", produces(3))
+        assertThatEvaluating("if False then 1 + 2 else 3 + 4", produces(7))
     }
 
-    @Test
-    public void lambdaExpression() {
-        assertThatEvaluating("\\ x -> x", is(instanceOf(CompoundProcedure.class)));
-        assertThatEvaluating("(\\ x -> x + 1) 2", produces(3));
-        assertThatEvaluating("(\\ x -> \\ y -> x + y) 3 4", produces(7));
-        assertThatEvaluating("(\\ x y -> x + y) 3 4", produces(7));
+    test fun lambdaExpression() {
+        assertThatEvaluating("\\ x -> x", instanceOf(javaClass<CompoundProcedure>()))
+        assertThatEvaluating("(\\ x -> x + 1) 2", produces(3))
+        assertThatEvaluating("(\\ x -> \\ y -> x + y) 3 4", produces(7))
+        assertThatEvaluating("(\\ x y -> x + y) 3 4", produces(7))
     }
 
-    @Test
-    public void equality() {
-        assertThatEvaluating("1 == 1", produces(true));
-        assertThatEvaluating("1 == 2", produces(false));
+    test fun equality() {
+        assertThatEvaluating("1 == 1", produces(true))
+        assertThatEvaluating("1 == 2", produces(false))
     }
 
-    @Test
-    public void nestedCalls() {
-        assertThatEvaluating("2 * 3 + ((5 + 6) * 7 * 8)", produces(622));
+    test fun nestedCalls() {
+        assertThatEvaluating("2 * 3 + ((5 + 6) * 7 * 8)", produces(622))
     }
 
-    @Test
-    public void polymorphicTypeWithDifferentInstantiations() {
-        assertThatEvaluating("True == (1 == 1)", produces(true));
+    test fun polymorphicTypeWithDifferentInstantiations() {
+        assertThatEvaluating("True == (1 == 1)", produces(true))
     }
 
-    @Test
-    public void equalityBetweenDifferentTypes() {
-        assertStaticError("2 == \"foo\"");
+    test fun equalityBetweenDifferentTypes() {
+        assertStaticError("2 == \"foo\"")
     }
 
-    @Test
-    public void accessingUnboundVariable() {
-        assertStaticError("\\x -> y");
+    test fun accessingUnboundVariable() {
+        assertStaticError("\\x -> y")
     }
 
-    @Test
-    public void typeErrors() {
+    test fun typeErrors() {
         assertStaticError("if 0 then 1 else 2");
         assertStaticError("if true then 1 else false");
     }
 
-    @Test
-    public void typeInference() {
-        assertThatEvaluating("\\n -> n", is(anything()));
+    test fun typeInference() {
+        assertThatEvaluating("\\n -> n", isEqualTo(anything<Any?>()))
         assertThatEvaluating("(\\n -> n) 42", produces(42));
     }
 
-    @Test
-    public void let() {
+    test fun let() {
         assertThatEvaluating("let x = 42 in x", produces(42));
         //assertThatEvaluating("let x = 42; y = 2 in x + y", produces(3));
         assertThatEvaluating("let x = 42 in let y = 3 in x+y", produces(45));
     }
 
-    @Test
-    public void sequence() {
+    test fun sequence() {
         assertThatEvaluating("1; 2; 3", produces(3));
     }
-    
-    @Test
-    public void letRec() {
+
+    test fun letRec() {
         assertThatEvaluating("let rec f = \\n -> if 0 == n then 1 else n * f (n - 1) in f 10)", produces(3628800));
         assertThatEvaluating("let rec f n = if 0 == n then 1 else n * f (n - 1) in f 10)", produces(3628800));
     }
 
-    @Test
-    public void letFunctions() {
+    test fun letFunctions() {
         assertThatEvaluating("let f x = x * x in f 4", produces(16));
     }
 
-    @Test
-    public void pairs() {
+    test fun pairs() {
         assertThatEvaluating("fst (1, \"foo\")", produces(1));
         assertThatEvaluating("snd (1, \"foo\")", produces("foo"));
     }
 
-    @Test
-    public void lists() {
+    test fun lists() {
         assertThatEvaluating("length [1,2,3]", produces(3));
     }
 
-    @Test
-    public void simpleCase() {
+    test fun simpleCase() {
         assertThatEvaluating("case 4 of\n  n -> n\n", produces(4));
     }
 
-    @Test
-    public void matchingUnit() {
+    test fun matchingUnit() {
         assertThatEvaluating("case () of\n  () -> 2\n", produces(2));
     }
 
-    @Test
-    public void constructorMatchingCase() {
+    test fun constructorMatchingCase() {
         assertThatEvaluating("case Nothing of\n  Just x -> 1\n  Nothing -> 2\n", produces(2));
         assertThatEvaluating("case Just 3 of\n  Just x -> 1\n  Nothing -> 2\n", produces(1));
         assertThatEvaluating("case Just 3 of\n  Just x -> x\n  Nothing -> 2\n", produces(3));
     }
-    
-    @Test
-    public void listMatching() {
+
+    test fun listMatching() {
         assertThatEvaluating("case [] of\n  [] -> 42\n", produces(42));
         assertThatEvaluating("case [1] of\n  x:xs -> x\n", produces(1));
         assertThatEvaluating("case [1,2,3,4,5,6,7] of\n  x:_:y:_ -> x+y\n", produces(4));
     }
 
-    @Test
-    public void matchingTuples() {
+    test fun matchingTuples() {
         assertThatEvaluating("case (1,2) of\n  (x,y) -> x+y\n", produces(3));
         assertThatEvaluating("case (1,2,\"foo\") of\n  (x,y,z) -> z\n", produces("foo"));
     }
 
-    private void assertStaticError(String expr) {
+    fun assertStaticError(expr: String) {
         try {
-            analyze(expr);
-            fail("Expected error when analyzing: " + expr);
-        }  catch (AnalyzationException e) {
+            analyze(expr)
+            fail("Expected error when analyzing '$expr'")
+        }  catch (e: AnalyzationException) {
         }
     }
 
-    private static void assertThatEvaluating(String expr, Matcher<Object> matcher) {
-        assertThat(evaluate(expr), matcher);
+    fun assertThatEvaluating(expr: String, matcher: Matcher<Any?>) {
+        assertThat(evaluate(expr), matcher)
     }
 
-    private static CoreExpression analyze(String expr) {
-        return new Evaluator().analyze(Parser.$classobj.parseExpression(expr));
-    }
+    private fun analyze(expr: String): CoreExpression =
+        Evaluator().analyze(parseExpression(expr))
 
-    private static Object evaluate(String expr) {
-        return evaluator.evaluate(Parser.$classobj.parseExpression(expr));
-    }
+    private fun evaluate(expr: String): Any? =
+        evaluator.evaluate(parseExpression(expr))
 
-    private static Matcher<Object> produces(final int value) {
-        return CoreMatchers.<Object>is(BigInteger.valueOf(value));
-    }
+    private fun produces(value: Long): Matcher<Any?> =
+        isEqualTo<Any?>(BigInteger.valueOf(value))
 
-    private static Matcher<Object> produces(final String value) {
-        return CoreMatchers.<Object>is(value);
-    }
-    
-    private static Matcher<Object> produces(final boolean value) {
-        return CoreMatchers.<Object>is(booleanToConstructor(value));
-    }
-*/
+    private fun produces(value: String): Matcher<Any?> =
+        isEqualTo<Any?>(value)
+
+    private fun produces(value: Boolean): Matcher<Any?> =
+        isEqualTo<Any?>(booleanToConstructor(value))
 }
