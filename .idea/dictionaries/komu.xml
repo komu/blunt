@@ -10,6 +10,7 @@
       <w>qual</w>
       <w>rbracket</w>
       <w>rparen</w>
+      <w>sexp</w>
     </words>
   </dictionary>
 </component>

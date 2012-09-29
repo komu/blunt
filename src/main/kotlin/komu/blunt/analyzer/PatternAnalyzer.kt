@@ -13,8 +13,8 @@ class PatternAnalyzer {
 
     private fun makeExtractor(pattern: Pattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression =
         when (pattern) {
-            is WildcardPattern    -> CoreEmptyExpression.INSTANCE
-            is LiteralPattern     -> CoreEmptyExpression.INSTANCE
+            is WildcardPattern    -> CoreExpression.EMPTY
+            is LiteralPattern     -> CoreExpression.EMPTY
             is VariablePattern    -> variableExtractor(pattern, path, env, matchedObject)
             is ConstructorPattern -> constructorExtractor(pattern, path, env, matchedObject)
             else                  -> throw AnalyzationException("unnown pattern $pattern")
