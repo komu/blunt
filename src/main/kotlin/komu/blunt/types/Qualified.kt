@@ -5,7 +5,6 @@ import java.util.Collections.emptyList
 import java.util.Objects.hash
 import komu.blunt.types.checker.Substitution
 import komu.blunt.types.checker.Substitutions
-import komu.blunt.utils.appendWithSeparator
 
 class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : Types<Qualified<T>> {
 
@@ -29,7 +28,7 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : T
         val sb = StringBuilder()
 
         if (!predicates.empty)
-            sb.append("(").appendWithSeparator(predicates, ", ").append(") => ")
+            predicates.appendString(sb, ", ", "(", ") => ")
 
         sb.append(value)
 

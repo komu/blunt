@@ -24,36 +24,6 @@ fun <T> ImmutableArrayListBuilder<T>.addAll(xs: Iterable<out T>) {
         add(x)
 }
 
-fun StringBuilder.appendWithSeparator(xs: Iterable<Any?>, separator: String): StringBuilder {
-    var first = true
-
-    for (x in xs) {
-        if (first)
-            first = false
-        else
-            append(separator)
-
-        append(x)
-    }
-    return this
-}
-
-
-fun StringBuilder.appendWithSeparator(xs: Array<Any?>, separator: String): StringBuilder {
-    var first = true
-
-    for (x in xs) {
-        if (first)
-            first = false
-        else
-            append(separator)
-
-        append(x)
-    }
-    return this
-}
-
-
 fun StringBuilder.appendTimes(s: String, count: Int): StringBuilder {
     for (i in 1..count)
         append(s)
