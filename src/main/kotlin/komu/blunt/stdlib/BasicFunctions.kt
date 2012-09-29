@@ -31,7 +31,7 @@ object BasicFunctions {
             val x = tc.items[0]
             val y = tc.items[1]
 
-            x == y
+            booleanToConstructor(x == y)
         }
 
         bindings.bindFunction("primitiveOpPlus", "Num a => (a,a) -> a") { s ->
