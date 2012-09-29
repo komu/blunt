@@ -5,8 +5,10 @@ import komu.blunt.objects.Symbol
 class VariableInfo(val name: Symbol, val offset: Int) {
 
     {
-        check(offset >= 0, "negative offset $offset")
+        require(offset >= 0, "negative offset $offset")
     }
+
+    fun toReference(frame: Int) = VariableReference.nested(frame, offset, name)
 
     fun toString() = name.toString()
 }

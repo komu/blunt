@@ -3,15 +3,9 @@ package komu.blunt.analyzer
 import komu.blunt.core.*
 import komu.blunt.types.patterns.*
 
-class PatternAnalyzer {
+object PatternAnalyzer {
 
-    fun createExtractor(pattern: Pattern, matchedObject: VariableReference, env: StaticEnvironment): PatternExtractor {
-        val predicate = makePredicate(pattern, PatternPath.EMPTY, matchedObject)
-        val extractor = makeExtractor(pattern, PatternPath.EMPTY, env, matchedObject)
-        return PatternExtractor(predicate, extractor)
-    }
-
-    private fun makeExtractor(pattern: Pattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression =
+    fun makeExtractor(pattern: Pattern, matchedObject: VariableReference, env: StaticEnvironment, path: PatternPath=PatternPath.EMPTY): CoreExpression =
         when (pattern) {
             is WildcardPattern    -> CoreExpression.EMPTY
             is LiteralPattern     -> CoreExpression.EMPTY
@@ -25,16 +19,12 @@ class PatternAnalyzer {
         return CoreSetExpression(v, CoreExtractExpression(matchedObject, path))
     }
 
-    private fun constructorExtractor(pattern: ConstructorPattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression {
-        val exps = listBuilder<CoreExpression>()
+    private fun constructorExtractor(pattern: ConstructorPattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression =
+        CoreExpression.sequence(pattern.args.withIndices().map { p ->
+            makeExtractor(p.second, matchedObject, env, path.extend(p.first))
+        })
 
-        for ((i,p) in pattern.args.withIndices())
-            exps.add(makeExtractor(p, path.extend(i), env, matchedObject))
-
-        return CoreSequenceExpression(exps.build())
-    }
-
-    private fun makePredicate(pattern: Pattern, path: PatternPath, matchedObject: VariableReference): CoreExpression =
+    fun makePredicate(pattern: Pattern, matchedObject: VariableReference, path: PatternPath=PatternPath.EMPTY): CoreExpression =
         when (pattern) {
             is WildcardPattern    -> CoreConstantExpression.TRUE
             is VariablePattern    -> CoreConstantExpression.TRUE
@@ -48,7 +38,7 @@ class PatternAnalyzer {
         exps.add(matchesConstructor(path, pattern.name, matchedObject))
 
         for ((i,p) in pattern.args.withIndices())
-            exps.add(makePredicate(p, path.extend(i), matchedObject))
+            exps.add(makePredicate(p, matchedObject, path.extend(i)))
 
         return CoreExpression.and(exps.build())
     }

@@ -1,7 +1,10 @@
 package komu.blunt.objects
 
-class Symbol (private val value: String) {
-    fun toString() = value
-    fun equals(obj: Any?) = obj is Symbol && value == obj.value
-    fun hashCode() = value.hashCode()
+class Symbol (private val name: String) {
+    {
+        require(!name.isEmpty(), "empty name")
+    }
+    fun toString() = name
+    fun equals(obj: Any?) = obj is Symbol && name == obj.name
+    fun hashCode() = name.hashCode()
 }

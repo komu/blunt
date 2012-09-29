@@ -1,20 +1,20 @@
 package komu.blunt.analyzer
 
-import java.util.Collections.singletonList
 import komu.blunt.objects.Symbol
 
 class StaticEnvironment(private val parent: StaticEnvironment? = null) {
 
     private val variables = hashMap<Symbol, VariableInfo>()
 
-    fun lookup(name: Symbol) = lookup(name, 0)
+    val size: Int
+        get() = variables.size
 
-    fun lookup(name: Symbol, depth: Int): VariableReference {
+    fun get(name: Symbol, depth: Int = 0): VariableReference {
         val v = variables[name]
-        if (v != null)
-            return reference(depth, v.offset, name)
+        return if (v != null)
+            v.toReference(depth)
         else if (parent != null)
-            return parent.lookup(name, depth+1)
+            parent[name, depth+1]
         else
             throw UnboundVariableException(name)
     }
@@ -23,18 +23,15 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
         if (variables.containsKey(name))
             throw AnalyzationException("Variable '$name' is already defined in this scope.")
 
-        val offset = variables.size
-        variables[name] = VariableInfo(name, offset)
-        return reference(0, offset, name)
+        val v = VariableInfo(name, variables.size)
+        variables[name] = v
+        return v.toReference(0)
     }
 
     fun lookupInCurrentScopeOrDefine(name: Symbol): VariableReference {
         val v = variables[name]
 
-        return if (v != null)
-            reference(0, v.offset, v.name)
-        else
-            define(name)
+        return if (v != null) v.toReference(0) else define(name)
     }
 
     private fun reference(frame: Int, offset: Int, name: Symbol): VariableReference =
@@ -43,13 +40,10 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
         else
             VariableReference.nested(frame, offset, name)
 
-    fun extend(name: Symbol) =
-        extend(singletonList(name))
+    fun extend(vararg names: Symbol) =
+        extend(names.toList())
 
-    fun extend() =
-        StaticEnvironment(this)
-
-    fun extend(symbols: List<Symbol>): StaticEnvironment {
+    fun extend(symbols: Iterable<Symbol>): StaticEnvironment {
         val env = StaticEnvironment(this)
 
         for (symbol in symbols)
@@ -57,7 +51,4 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
 
         return env
     }
-
-    val size: Int
-        get() = variables.size
 }

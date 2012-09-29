@@ -6,10 +6,6 @@ import komu.blunt.utils.init
 
 class CoreSequenceExpression (private val expressions: List<CoreExpression>) : CoreExpression() {
 
-    class object {
-        fun of(vararg expressions: CoreExpression) = CoreSequenceExpression(expressions.toList())
-    }
-
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {
             if (!expressions.empty) {
@@ -34,10 +30,6 @@ class CoreSequenceExpression (private val expressions: List<CoreExpression>) : C
                 builder.add(sexp)
         }
 
-        val exps = builder.build()
-        return if (exps.size == 1)
-            exps.first()
-        else
-            CoreSequenceExpression(exps)
+        return CoreExpression.sequence(builder.build())
     }
 }

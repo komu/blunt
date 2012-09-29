@@ -53,7 +53,7 @@ class IdentifierMapping(val parent: IdentifierMapping? = null) {
      * Creates a new unique symbol based on name, installs it on the mapping and returns it.
      */
     fun freshMappingFor(name: Symbol): Symbol {
-        val v = Symbol("\$${name}_${sequence.next()}")
+        val v = sequence.nextSymbol("\$${name}_")
         this[name] = v
         return v
     }

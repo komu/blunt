@@ -13,6 +13,11 @@ abstract class CoreExpression {
 
         val EMPTY = CoreSequenceExpression(emptyList())
 
+        fun sequence(vararg exps: CoreExpression) = sequence(exps.toList())
+
+        fun sequence(exps: List<CoreExpression>): CoreExpression =
+            if (exps.size == 1) exps.first() else CoreSequenceExpression(exps)
+
         fun and(exps: List<CoreExpression>): CoreExpression =
             when (exps.size) {
                 0 -> CoreConstantExpression.TRUE
