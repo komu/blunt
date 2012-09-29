@@ -38,6 +38,8 @@ abstract class Pattern {
 
 class ConstructorPattern(val name: String, val args: List<Pattern>) : Pattern() {
 
+    fun map(f: (Pattern) -> Pattern) = ConstructorPattern(name, args.map(f))
+
     override fun toString(): String {
         if (args.empty)
             return name

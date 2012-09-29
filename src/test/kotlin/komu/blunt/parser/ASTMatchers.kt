@@ -12,8 +12,8 @@ public fun producesExpressionMatching(representation: String): Matcher<ASTExpres
         protected override fun matches(exp: ASTExpression): Boolean =
             exp.toString() == representation
 
-        public override fun describeTo(description: Description?) {
-            description?.appendValue(representation)
+        public override fun describeTo(description: Description) {
+            description.appendValue(representation)
         }
     }
 /*
@@ -37,8 +37,8 @@ public fun producesConstant(value: Any): Matcher<ASTExpression> =
         protected override fun matches(exp: ASTConstant): Boolean =
             throw UnsupportedOperationException()
 
-        public override fun describeTo(description: Description?) {
-            description?.appendText("constant ")?.appendValue(value)
+        public override fun describeTo(description: Description) {
+            description.appendText("constant ").appendValue(value)
         }
     }
 

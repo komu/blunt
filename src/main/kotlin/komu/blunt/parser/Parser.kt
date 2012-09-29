@@ -274,19 +274,19 @@ class Parser(source: String) {
     // []
     // [<exp> (,<exp>)*]
     private fun parseList(): ASTExpression {
-        val list = AST.bluntListBuilder()
+        val exps = listBuilder<ASTExpression>()
 
         lexer.expectToken(TokenType.LBRACKET)
 
         if (!lexer.nextTokenIs(TokenType.RBRACKET)) {
             do {
-                list.add(parseExpression())
+                exps.add(parseExpression())
             } while (lexer.readMatchingToken(TokenType.COMMA))
         }
 
         lexer.expectToken(TokenType.RBRACKET)
 
-        return list.build()
+        return AST.list(exps.build())
     }
 
     private fun parseVariableOrConstructor(): ASTExpression {

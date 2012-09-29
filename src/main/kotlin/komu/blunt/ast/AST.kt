@@ -96,35 +96,12 @@ object AST {
     fun define(name: Symbol, value: ASTExpression): ASTValueDefinition =
         ASTValueDefinition(name, value)
 
-    fun bluntListBuilder() = ListBuilder()
+    fun list(exps: List<ASTExpression>): ASTExpression {
+        var list = constructor(ConstructorNames.NIL)
 
-    class ListBuilder {
-        private val exps = arrayList<ASTExpression>()
+        for (val exp in exps.reverse())
+            list = constructor(ConstructorNames.CONS, exp, list)
 
-        fun add(exp: ASTExpression) {
-            exps.add(exp)
-        }
-
-        fun build(): ASTExpression {
-            var list = constructor(ConstructorNames.NIL)
-
-            for (val exp in exps.reverse())
-                list = constructor(ConstructorNames.CONS, exp, list)
-
-            return list
-        }
-    }
-
-    fun sequenceBuilder() = SequenceBuilder()
-
-    class SequenceBuilder {
-        private val exps = listBuilder<ASTExpression>()
-
-        fun add(exp: ASTExpression) {
-            exps.add(exp)
-        }
-
-        fun build(): ASTSequence =
-            ASTSequence(exps.build())
+        return list
     }
 }

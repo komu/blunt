@@ -4,6 +4,8 @@ import java.util.Collections.singletonList
 
 class ASTApplication(val func: ASTExpression, val arg: ASTExpression) : ASTExpression() {
 
+    fun map(f: (ASTExpression) -> ASTExpression) = ASTApplication(f(func), f(arg))
+
     override fun toString() = "($func $arg)"
 
     override fun simplify(): ASTExpression {

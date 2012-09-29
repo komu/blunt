@@ -8,4 +8,10 @@ import komu.blunt.types.DataTypeDefinitions
  * Converts ASTExpressions to CoreExpressions.
  */
 fun analyze(exp: ASTExpression, dataTypes: DataTypeDefinitions, env: StaticEnvironment): CoreExpression =
-    AnalyzingVisitor(dataTypes).analyze(IdentifierRenamer.rename(exp).simplify(), env)
+    AnalyzingVisitor(dataTypes).analyze(renameIdentifiers(exp).simplify(), env)
+
+/**
+ * α-convert the expression.
+ */
+fun renameIdentifiers(exp: ASTExpression): ASTExpression =
+    IdentifierMapping().rename(exp)
