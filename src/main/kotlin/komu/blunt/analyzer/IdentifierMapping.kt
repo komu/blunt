@@ -1,6 +1,7 @@
 package komu.blunt.analyzer
 
 import komu.blunt.objects.Symbol
+import komu.blunt.utils.Sequence
 
 class IdentifierMapping(val parent: IdentifierMapping? = null) {
 
@@ -43,10 +44,4 @@ class IdentifierMapping(val parent: IdentifierMapping? = null) {
         this[name] = v
         return v
     }
-}
-
-class Sequence {
-    private var num = 1
-
-    fun next() = num++
 }
