@@ -2,6 +2,7 @@ package komu.blunt.parser
 
 import java.math.BigInteger
 import komu.blunt.parser.TokenType.*
+import komu.blunt.utils.*
 
 public class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()) {
 
@@ -10,7 +11,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
     private val indents = IndentStack()
 
     public fun hasMoreTokens(): Boolean =
-        !nextTokenIs(TokenType.EOF)
+        !nextTokenIs(EOF)
 
     public fun peekTokenType(): TokenType<Any> =
         peekToken().tokenType
@@ -54,12 +55,11 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
         }
     }
 
-    private fun readToken<T>(typ: TokenType<T>): Token<T> {
+    private fun readToken<T>(typ: TokenType<T>): Token<T> =
         if (nextTokenIs(typ))
-            return readToken().asType(typ)
+            readToken().asType(typ)
         else
             throw expectFailure("token of type $typ")
-    }
 
     public fun readTokenValue<T>(typ: TokenType<T>): T =
         readToken(typ).value
@@ -78,8 +78,8 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
     }
 
     public fun readOperatorMatchingLevel(level: Int): Operator? {
-        if (nextTokenIs(TokenType.OPERATOR)) {
-            val op = peekTokenValue(TokenType.OPERATOR)
+        if (nextTokenIs(OPERATOR)) {
+            val op = peekTokenValue(OPERATOR)
 
             if (level == op.precedence) {
                 readToken()
@@ -95,31 +95,31 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
 
         val location = reader.location
         if (indents.popIf(reader.column))
-            return Token.ofType(TokenType.END, location)
+            return Token.ofType(END, location)
 
         val ch = peek()
         if (ch == null)
-            return Token.ofType(TokenType.EOF, location)
+            return Token.ofType(EOF, location)
 
         when (ch) {
             '"' ->   return readString()
-            ',' ->   { read(); return Token.ofType(TokenType.COMMA, location) }
-            '(' ->   { read(); return Token.ofType(TokenType.LPAREN, location) }
-            ')' ->   { read(); return Token.ofType(TokenType.RPAREN, location) }
-            ';' ->   { read(); return Token.ofType(TokenType.SEMICOLON, location) }
-            '[' ->   { read(); return Token.ofType(TokenType.LBRACKET, location) }
-            ']' ->   { read(); return Token.ofType(TokenType.RBRACKET, location) }
+            ',' ->   { read(); return Token.ofType(COMMA, location) }
+            '(' ->   { read(); return Token.ofType(LPAREN, location) }
+            ')' ->   { read(); return Token.ofType(RPAREN, location) }
+            ';' ->   { read(); return Token.ofType(SEMICOLON, location) }
+            '[' ->   { read(); return Token.ofType(LBRACKET, location) }
+            ']' ->   { read(); return Token.ofType(RBRACKET, location) }
            else ->   { }
         }
 
-        if (isDigit(ch))
-            return readNumber()
-        if (isOperatorCharacter(peek()))
-            return readOperator()
-        if (isIdentifierStart(peek()))
-            return readIdentifierOrKeyword()
-
-        throw parseError("unexpected token: '${read()}'")
+        return if (ch.isDigit())
+            readNumber()
+        else if (isOperatorCharacter(ch))
+            readOperator()
+        else if (isIdentifierStart(ch))
+            readIdentifierOrKeyword()
+        else
+            throw parseError("unexpected token: '${read()}'")
     }
 
     private fun skipWhitespace() {
@@ -140,57 +140,45 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
     private fun readIdentifierOrKeyword(): Token<Any> {
         val location = reader.location
 
-        val sb = StringBuilder()
-
-        while (isIdentifierPart(reader.peek()))
-            sb.append(read())
-
-        val name = sb.toString()
+        val name = readWhile() { isIdentifierPart(it) }
 
         if (name == "_")
-            return Token.ofType(TokenType.UNDERSCORE, location)
+            return Token.ofType(UNDERSCORE, location)
 
         val keyword = TokenType.keyword(name)
 
-        if (keyword != null)
-            return Token.ofType(keyword, location)
-        else if (Character.isUpperCase(name[0]))
-            return Token(TokenType.TYPE_OR_CTOR_NAME, name, location)
+        return if (keyword != null)
+            Token.ofType(keyword, location)
+        else if (name[0].isUpperCase())
+            Token(TYPE_OR_CTOR_NAME, name, location)
         else
-            return Token(TokenType.IDENTIFIER, name, location)
+            Token(IDENTIFIER, name, location)
     }
 
     private fun isWhitespace(ch: Char?) =
-        ch != null && Character.isWhitespace(ch)
+        ch != null && ch.isWhitespace()
 
-    private fun isIdentifierStart(ch: Char?) =
-        ch != null && Character.isJavaIdentifierStart(ch)
+    private fun isIdentifierStart(ch: Char) =
+        ch.isJavaIdentifierStart()
 
-    private fun isIdentifierPart(ch: Char?) =
-        ch != null && (Character.isJavaIdentifierPart(ch) || "?!'".lastIndexOf(ch.toChar()) != -1)
+    private fun isIdentifierPart(ch: Char) =
+        ch.isJavaIdentifierPart() || ch in "?!'"
 
-    private fun isOperatorCharacter(ch: Char?) =
-        ch != null && "=-+*/<>%?!|&$:.\\~".lastIndexOf(ch) != -1
-
-    private fun isDigit(ch: Char?) =
-        ch != null && Character.isDigit(ch)
+    private fun isOperatorCharacter(ch: Char) =
+        ch in "=-+*/<>%?!|&$:.\\~"
 
     private fun readOperator(): Token<Any> {
         val location = reader.location
 
-        val sb = StringBuilder()
+        val op = readWhile() { isOperatorCharacter(it) }
 
-        while (isOperatorCharacter(reader.peek()))
-            sb.append(read())
-
-        val op = sb.toString()
         return when (op) {
-          "\\" ->   Token.ofType(TokenType.LAMBDA, location)
-          "="  ->   Token.ofType(TokenType.ASSIGN, location)
-          "|"  ->   Token.ofType(TokenType.OR, location)
-          "->" ->   Token.ofType(TokenType.RIGHT_ARROW, location)
-          "=>" ->   Token.ofType(TokenType.BIG_RIGHT_ARROW, location)
-          else ->   Token(TokenType.OPERATOR, operatorSet[op], location)
+          "\\" ->   Token.ofType(LAMBDA, location)
+          "="  ->   Token.ofType(ASSIGN, location)
+          "|"  ->   Token.ofType(OR, location)
+          "->" ->   Token.ofType(RIGHT_ARROW, location)
+          "=>" ->   Token.ofType(BIG_RIGHT_ARROW, location)
+          else ->   Token(OPERATOR, operatorSet[op], location)
         }
     }
 
@@ -220,27 +208,31 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
             }
         }
 
-        return Token(TokenType.LITERAL, sb.toString(), location)
+        return Token(LITERAL, sb.toString(), location)
     }
 
     private fun readNumber(): Token<Any> {
         val location = reader.location
+        val s = readWhile() { it.isDigit() }
 
+        return Token(LITERAL, BigInteger(s), location)
+    }
+
+    private fun readWhile(predicate: (Char) -> Boolean): String {
         val sb = StringBuilder()
 
-        while (isDigit(reader.peek()))
+        while (true) {
+            val ch = reader.peek()
+            if (ch == null || !predicate(ch))
+                break;
             sb.append(read())
+        }
 
-        return Token(TokenType.LITERAL, BigInteger(sb.toString()), location)
+        return sb.toString()
     }
 
-    private fun read(): Char {
-        val ch = reader.read()
-        if (ch != null)
-            return ch
-        else
-            throw parseError("unexpected EOF")
-    }
+    private fun read(): Char =
+        reader.read() ?: throw parseError("unexpected EOF")
 
     private fun peek(): Char? =
         reader.peek()

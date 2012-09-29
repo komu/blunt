@@ -117,11 +117,8 @@ class ClassEnv {
             if (predicate.inHnf) {
                 result.add(predicate)
             } else {
-                val qs = byInstance(predicate)
-                if (qs != null)
-                    result.addAll(toHfns(qs))
-                else
-                    throw TypeCheckException("could not find instance of ${predicate.className} for type ${predicate.predicateType}")
+                val qs = byInstance(predicate) ?: throw TypeCheckException("could not find instance of ${predicate.className} for type ${predicate.predicateType}")
+                result.addAll(toHfns(qs))
             }
         }
 

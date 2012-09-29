@@ -33,10 +33,10 @@ class FunctionBuilder {
 
         // optimization
         val simpleVars = containsOnlyVariablePatterns(alts)
-        if (simpleVars != null)
-            return AST.lambda(simpleVars, alts.first().value)
-
-        return AST.lambda(symbols.build(), AST.caseExp(AST.tuple(exps), alts))
+        return if (simpleVars != null)
+            AST.lambda(simpleVars, alts.first().value)
+        else
+            AST.lambda(symbols.build(), AST.caseExp(AST.tuple(exps), alts))
     }
 
     fun containsOnlyVariablePatterns(alts: List<ASTAlternative>): List<Symbol>? {

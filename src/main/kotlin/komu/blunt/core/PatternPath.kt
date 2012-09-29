@@ -14,12 +14,9 @@ class PatternPath private (private val parent: PatternPath?, private val index: 
 
             var p = this
             while (true) {
-                val parent = p.parent
-                if (parent != null) {
-                    indices.add(p.index)
-                    p = parent
-                } else
-                    break
+                val parent = p.parent ?: break
+                indices.add(p.index)
+                p = parent
             }
 
             return indices.build().reverse()

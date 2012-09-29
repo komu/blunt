@@ -2,6 +2,7 @@ package komu.blunt.utils
 
 import java.util.Collections.emptySet
 import java.util.HashSet
+import kotlin.nullable.*
 
 fun intersection<T>(sets: Collection<Set<T>>): Set<T> {
     if (sets.empty)
@@ -30,10 +31,9 @@ fun StringBuilder.appendTimes(s: String, count: Int): StringBuilder {
     return this
 }
 
-fun ClassLoader.readResourceAsString(path: String): String? {
-    val stream = getResourceAsStream(path)
-    return if (stream != null)
+fun ClassLoader.readResourceAsString(path: String): String? =
+    getResourceAsStream(path).map { stream ->
         stream.use { it.reader("UTF-8").readText() }
-    else
-        null
-}
+    }
+
+fun String.contains(ch: Char) = indexOf(ch) != -1

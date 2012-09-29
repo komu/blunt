@@ -14,13 +14,8 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
     fun join(ass: Assumptions) =
         builder().addAll(ass).addAll(this).build()
 
-    fun find(name: Symbol): Scheme {
-        val scheme = mappings[name]
-        if (scheme != null)
-            return scheme
-        else
-            throw TypeCheckException("unbound identifier: '$name'")
-    }
+    fun find(name: Symbol): Scheme =
+        mappings[name] ?: throw TypeCheckException("unbound identifier: '$name'")
 
     fun toString() = mappings.toString()
 

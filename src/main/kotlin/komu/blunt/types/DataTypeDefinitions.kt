@@ -35,13 +35,8 @@ public class DataTypeDefinitions() {
         constructors[definition.name] = definition
     }
 
-    fun findConstructor(name: String): ConstructorDefinition {
-        val ctor = constructors[name]
-        if (ctor != null)
-            return ctor
-        else
-            throw AnalyzationException("unknown type constructor '$name'")
-    }
+    fun findConstructor(name: String): ConstructorDefinition =
+        constructors[name] ?: throw AnalyzationException("unknown type constructor '$name'")
 
     private fun tupleConstructorScheme(arity: Int): Scheme {
         val types = (0..arity-1).map { typeVariable("t$it")}
