@@ -5,11 +5,18 @@ import komu.blunt.core.*
 import komu.blunt.objects.Symbol
 import komu.blunt.objects.TypeConstructorValue
 import komu.blunt.types.DataTypeDefinitions
+import komu.blunt.utils.Sequence
+
+/**
+ * Converts ASTExpressions to CoreExpressions.
+ */
+fun analyze(exp: ASTExpression, dataTypes: DataTypeDefinitions, env: StaticEnvironment): CoreExpression =
+    AnalyzingVisitor(dataTypes).analyze(renameIdentifiers(exp).simplify(), env)
 
 class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
 
     private val patternAnalyzer = PatternAnalyzer()
-    private var sequence = 1
+    private val sequence = Sequence()
 
     fun analyze(exp: ASTExpression, env: StaticEnvironment): CoreExpression =
       when (exp) {
@@ -82,7 +89,7 @@ class AnalyzingVisitor(val dataTypes: DataTypeDefinitions) {
     private fun visit(astCase: ASTCase, env: StaticEnvironment): CoreExpression {
         val exp = analyze(astCase.exp, env)
 
-        val v = Symbol("\$match${sequence++}")
+        val v = Symbol("\$match${sequence.next()}")
         val matchedObject = env.define(v)
         val body = createAlts(matchedObject, astCase.alternatives, env)
         return CoreLetExpression(matchedObject, exp, body)
