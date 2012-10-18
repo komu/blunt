@@ -9,7 +9,10 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
     val size: Int
         get() = variables.size
 
-    fun get(name: Symbol, depth: Int = 0): VariableReference {
+    fun get(name: Symbol): VariableReference =
+        get(name, 0)
+
+    fun get(name: Symbol, depth: Int): VariableReference {
         val v = variables[name]
         return if (v != null)
             v.toReference(depth)
