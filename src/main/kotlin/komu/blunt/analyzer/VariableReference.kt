@@ -5,8 +5,8 @@ import komu.blunt.objects.Symbol
 class VariableReference private (val frame: Int, val offset: Int, val name: Symbol) {
 
     {
-        check(frame >= GLOBAL_FRAME, "invalid frame $frame")
-        check(offset >= 0, "invalid offset $offset")
+        require(frame >= GLOBAL_FRAME, "invalid frame $frame")
+        require(offset >= 0, "invalid offset $offset")
     }
 
     class object {
