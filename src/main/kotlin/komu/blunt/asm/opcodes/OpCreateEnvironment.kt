@@ -6,7 +6,7 @@ import komu.blunt.asm.VM
 class OpCreateEnvironment(private val envSize: Int) : OpCode() {
 
     {
-        check(envSize >= 0)
+        require(envSize >= 0)
     }
 
     override fun execute(vm: VM) {
