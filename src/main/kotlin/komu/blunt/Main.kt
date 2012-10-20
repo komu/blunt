@@ -5,13 +5,9 @@ import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.ASTVariable
 import komu.blunt.eval.Evaluator
 import komu.blunt.objects.EvaluationException
-import komu.blunt.objects.Symbol
 import komu.blunt.parser.SyntaxException
 
 object Main {
-
-    val SYMBOL_EXIT = Symbol("exit")
-    val SYMBOL_DUMP = Symbol("dump")
 
     fun repl(evaluator: Evaluator) {
         val prompt = Prompt()
