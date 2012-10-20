@@ -10,20 +10,19 @@ import komu.blunt.parser.SyntaxException
 
 object Main {
 
+    val SYMBOL_EXIT = Symbol("exit")
+    val SYMBOL_DUMP = Symbol("dump")
+
     fun repl(evaluator: Evaluator) {
         val prompt = Prompt()
 
         while (true) {
             try {
                 val exp = prompt.readExpression(">>> ")
-
-                if (isSymbol("exit", exp)) {
-                    break;
-                } else if (isSymbol("dump", exp)) {
-                    evaluator.dump()
-                } else {
-                    val (value, typ) = evaluator.evaluateWithType(exp)
-                    println("$value: $typ")
+                when {
+                    exp.isSymbol("exit") -> break
+                    exp.isSymbol("dump") -> evaluator.dump()
+                    else                 -> evaluator.evaluateAndPrint(exp)
                 }
             } catch (e: SyntaxException) {
                 println(e)
@@ -37,8 +36,13 @@ object Main {
         }
     }
 
-    private fun isSymbol(name: String, exp: ASTExpression) =
-        exp is ASTVariable && Symbol(name) == exp.name
+    fun Evaluator.evaluateAndPrint(exp: ASTExpression) {
+        val (value, typ) = evaluateWithType(exp)
+        println("$value: $typ")
+    }
+
+    fun ASTExpression.isSymbol(name: String) =
+        this is ASTVariable && name == this.name.toString()
 }
 
 fun main(args : Array<String>) {
@@ -46,7 +50,7 @@ fun main(args : Array<String>) {
 
     evaluator.loadResource("prelude.blunt")
 
-    for (val arg in args)
+    for (arg in args)
         evaluator.loadResource(arg)
 
     Main.repl(evaluator)
