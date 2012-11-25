@@ -1,5 +1,8 @@
 package komu.blunt.stdlib
 
+import java.lang.annotation.Retention
+import java.lang.annotation.RetentionPolicy
+import java.lang.reflect.Method
 import java.math.BigInteger
 import komu.blunt.eval.RootBindings
 import komu.blunt.objects.TypeConstructorValue
@@ -7,133 +10,60 @@ import kotlin.math.*
 
 object BasicFunctions {
 
+    Retention(RetentionPolicy.RUNTIME)
+    annotation class libraryFunction(val name: String, val scheme: String)
+
     fun register(bindings: RootBindings) {
-        bindings.bindFunction("error", "String -> a") { s -> throw Exception(s.toString()) }
-        bindings.bindFunction("show", "a -> String") { s -> s.toString() }
-        bindings.bindFunction("print", "a -> Unit") { s -> print(s) }
+        val methods = javaClass.getMethods() as Array<Method>
 
-        bindings.bindFunction("primitiveCompare", "Ord a => (a,a) -> Ordering") { s ->
-            val tc = s as TypeConstructorValue
-            val x = tc.items[0] as Comparable<Any?>
-            val y = tc.items[1] as Comparable<Any?>
-
-            val r = x.compareTo(y)
-            if (r < 0)
-                BasicValues.LT
-            else if (r > 0)
-                BasicValues.GT
-            else
-                BasicValues.EQ
-        }
-
-        bindings.bindFunction("primitiveOpEq", "Eq a => (a,a) -> Boolean") { s ->
-            val tc = s as TypeConstructorValue
-            val x = tc.items[0]
-            val y = tc.items[1]
-
-            booleanToConstructor(x == y)
-        }
-
-        bindings.bindFunction("primitiveOpPlus", "Num a => (a,a) -> a") { s ->
-            val tc = s as TypeConstructorValue
-            val x = tc.items[0] as BigInteger
-            val y = tc.items[1] as BigInteger
-
-            x + y
-        }
-
-        bindings.bindFunction("primitiveOpMinus", "Num a => (a,a) -> a") { s ->
-            val tc = s as TypeConstructorValue
-            val x = tc.items[0] as BigInteger
-            val y = tc.items[1] as BigInteger
-
-            x - y
-        }
-
-        bindings.bindFunction("primitiveOpMultiply", "Num a => (a,a) -> a") { s ->
-            val tc = s as TypeConstructorValue
-            val x = tc.items[0] as BigInteger
-            val y = tc.items[1] as BigInteger
-
-            x * y
-        }
-
-        bindings.bindFunction("primitiveOpDivide", "Num a => (a,a) -> a") { s ->
-            val tc = s as TypeConstructorValue
-            val x = tc.items[0] as BigInteger
-            val y = tc.items[1] as BigInteger
-
-            x / y
-        }
-
-        bindings.bindFunction("primitiveMod", "Num a => (a,a) -> a") { s ->
-            val tc = s as TypeConstructorValue
-            val x = tc.items[0] as BigInteger
-            val y = tc.items[1] as BigInteger
-
-            x % y
+        for (method in methods) {
+            val libraryFunc = method.getAnnotation(javaClass<libraryFunction>())
+            if (libraryFunc != null) {
+                bindings.bindFunction(libraryFunc.name, libraryFunc.scheme, { s ->
+                    if (s is TypeConstructorValue)
+                        method.invoke(BasicFunctions, *s.items)
+                    else
+                        method.invoke(BasicFunctions, s)
+                })
+            }
         }
     }
 
-    //@LibraryFunction("primitiveOpPlus")
-    //@TypeScheme("Num a => (a,a) -> a")
-    //fun plus(x: BigInteger, y: BigInteger): BigInteger = x.add(y)
+    libraryFunction("primitiveCompare", "Ord a => (a,a) -> Ordering")
+    fun primitiveCompare<T : Comparable<T>>(x: T, y: T): TypeConstructorValue {
+        val r = x.compareTo(y)
+        return if (r < 0)
+            BasicValues.LT
+        else if (r > 0)
+            BasicValues.GT
+        else
+            BasicValues.EQ
+    }
 
-//    @LibraryFunction("primitiveOpMinus")
-//    @TypeScheme("Num a => (a,a) -> a")
-//    public static BigInteger minus(BigInteger x, BigInteger y) {
-//        return x.subtract(y);
-//    }
-//
-//    @LibraryFunction("primitiveOpMultiply")
-//    @TypeScheme("Num a => (a,a) -> a")
-//    public static BigInteger multiply(BigInteger x, BigInteger y) {
-//        return x.multiply(y);
-//    }
-//
-//    @LibraryFunction("primitiveOpDivide")
-//    @TypeScheme("Num a => (a,a) -> a")
-//    public static BigInteger divide(BigInteger x, BigInteger y) {
-//        return x.divide(y);
-//    }
-//
-//    @LibraryFunction("primitiveMod")
-//    @TypeScheme("Num a => (a,a) -> a")
-//    public static BigInteger modulo(BigInteger x, BigInteger y) {
-//        return x.mod(y);
-//    }
-//
-//    @LibraryFunction("primitiveOpEq")
-//    @TypeScheme("Eq a => (a,a) -> Boolean")
-//    public static <T> boolean equal(T x, T y) {
-//        return Objects.equal(x, y);
-//    }
-//
-//    @LibraryFunction("primitiveCompare")
-//    @TypeScheme("Ord a => (a,a) -> Ordering")
-//    public static <T extends Comparable<T>> TypeConstructorValue compare(T x, T y) {
-//        int r = x.compareTo(y);
-//        if (r < 0)
-//            return BasicValues.LT;
-//        else if (r > 0)
-//            return BasicValues.GT;
-//        else
-//            return BasicValues.EQ;
-//    }
-//
-//    @LibraryFunction("show")
-//    public static <T> String show(T o) {
-//        return String.valueOf(o);
-//    }
-//
-//    @LibraryFunction("error")
-//    public static <T> T error(String message) {
-//        throw new EvaluationException(message);
-//    }
-//
-//    @LibraryFunction("print")
-//    public static <T> void print(T value) {
-//        System.out.print(value);
-//    }
+    libraryFunction("show", "a -> String")
+    fun show(s: Any): String = s.toString()
+
+    libraryFunction("error", "String -> a")
+    fun error(s: Any) = throw Exception(s.toString())
+
+    libraryFunction("print", "a -> Unit")
+    fun primitivePrint(s: Any) = print(s)
+
+    libraryFunction("primitiveOpEq", "Eq a => (a,a) -> Boolean")
+    fun primitiveOpEq(x: Any, y: Any): TypeConstructorValue = booleanToConstructor(x == y)
+
+    libraryFunction("primitiveOpPlus", "Num a => (a,a) -> a")
+    fun primitiveOpPlus(x: BigInteger, y: BigInteger): BigInteger = x + y
+
+    libraryFunction("primitiveOpMinus", "Num a => (a,a) -> a")
+    fun primitiveOpMinus(x: BigInteger, y: BigInteger): BigInteger = x - y
+
+    libraryFunction("primitiveOpMultiply", "Num a => (a,a) -> a")
+    fun primitiveOpMultiply(x: BigInteger, y: BigInteger): BigInteger = x * y
+
+    libraryFunction("primitiveOpDivide", "Num a => (a,a) -> a")
+    fun primitiveOpDivide(x: BigInteger, y: BigInteger): BigInteger = x / y
+
+    libraryFunction("primitiveMod", "Num a => (a,a) -> a")
+    fun primitiveOpMod(x: BigInteger, y: BigInteger): BigInteger = x % y
 }
-

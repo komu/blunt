@@ -1,0 +1,8 @@
+<root>
+    <item name='java.lang.reflect.Method T getAnnotation(java.lang.Class&lt;T&gt;)'>
+        <annotation name='jet.runtime.typeinfo.KotlinSignature'>
+            <val name="value"
+                 val="&quot;fun &lt;T : Annotation&gt; getAnnotation(annotationClass : Class&lt;T&gt;) : T?&quot;"/>
+        </annotation>
+    </item>
+</root>
