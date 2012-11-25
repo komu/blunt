@@ -58,7 +58,7 @@ fun tupleType(types: List<Type>): Type =
 fun genericType(name: String, vararg params: Type): Type =
     genericType(name, params.toList())
 
-fun genericType(name: String, params: List<out Type>): Type {
+fun genericType(name: String, params: List<Type>): Type {
     var t: Type = TypeConstructor(name, Kind.ofParams(params.size))
 
     for (val param in params)

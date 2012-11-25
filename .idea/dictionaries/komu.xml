@@ -2,15 +2,36 @@
   <dictionary name="komu">
     <words>
       <w>analyzation</w>
+      <w>classobj</w>
+      <w>concat</w>
       <w>exps</w>
+      <w>foldl</w>
+      <w>foldr</w>
+      <w>hfns</w>
+      <w>implicits</w>
+      <w>instanceof</w>
       <w>lbracket</w>
+      <w>letrecs</w>
       <w>lparen</w>
+      <w>matchers</w>
+      <w>parameterized</w>
       <w>paren</w>
       <w>parens</w>
+      <w>printf</w>
       <w>qual</w>
       <w>rbracket</w>
+      <w>registerer</w>
+      <w>repl</w>
       <w>rparen</w>
+      <w>scanl</w>
+      <w>scanr</w>
       <w>sexp</w>
+      <w>tuple</w>
+      <w>tuples</w>
+      <w>typeinfo</w>
+      <w>uncurry</w>
+      <w>unlines</w>
+      <w>unwords</w>
     </words>
   </dictionary>
 </component>

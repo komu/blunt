@@ -1,5 +1,3 @@
 <root>
-    <item name='java.lang.Class java.lang.ClassLoader getClassLoader()'>
-        <annotation name='org.jetbrains.annotations.NotNull'/>
-    </item>
+
 </root>

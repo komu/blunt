@@ -116,6 +116,6 @@ class Evaluator() {
     }
 
     private fun readResource(path: String): String =
-        javaClass.getClassLoader().readResourceAsString(path) ?:
+        javaClass.getClassLoader()!!.readResourceAsString(path) ?:
             throw Exception("could not find resource: $path")
 }

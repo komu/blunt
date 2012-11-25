@@ -6,7 +6,7 @@ import komu.blunt.core.PatternPath
 
 class Instructions {
     private val instructions = arrayList<OpCode>()
-    private val labelMap = hashMap<Int,MutableSet<Label>>()
+    private val labelMap: MutableMap<Int,MutableSet<Label>> = hashMap<Int,MutableSet<Label>>()
 
     fun append(rhs: Instructions) {
         val relocationOffset = instructions.size

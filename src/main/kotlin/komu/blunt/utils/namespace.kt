@@ -20,7 +20,7 @@ fun intersection<T>(sets: Collection<Set<T>>): Set<T> {
 val <T> List<T>.init: List<T>
     get() = if (empty) this else subList(0, size-1)
 
-fun <T> ImmutableArrayListBuilder<T>.addAll(xs: Iterable<out T>) {
+fun <T> ImmutableArrayListBuilder<T>.addAll(xs: Iterable<T>) {
     for (x in xs)
         add(x)
 }
