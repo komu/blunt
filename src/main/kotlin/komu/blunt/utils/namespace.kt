@@ -1,5 +1,6 @@
 package komu.blunt.utils
 
+import java.util.ArrayList
 import java.util.Collections.emptySet
 import java.util.HashSet
 import kotlin.nullable.*
@@ -14,6 +15,13 @@ fun intersection<T>(sets: Collection<Set<T>>): Set<T> {
     while (it.hasNext())
         result.retainAll(it.next())
 
+    return result
+}
+
+fun <T> List<T>.concat(rhs: List<T>): List<T> {
+    val result = ArrayList<T>(this.size + rhs.size)
+    result.addAll(this)
+    result.addAll(rhs)
     return result
 }
 

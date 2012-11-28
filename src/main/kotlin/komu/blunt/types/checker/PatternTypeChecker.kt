@@ -5,6 +5,7 @@ import java.util.Collections.emptyList
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.*
 import komu.blunt.types.patterns.*
+import komu.blunt.utils.concat
 
 class PatternTypeChecker(private val tc: TypeChecker) {
 
@@ -35,9 +36,7 @@ class PatternTypeChecker(private val tc: TypeChecker) {
 
         tc.unify(q.value, functionType(result.value, t))
 
-        val predicates = ArrayList<Predicate>()
-        predicates.addAll(result.predicates)
-        predicates.addAll(q.predicates)
+        val predicates = result.predicates.concat(q.predicates)
 
         return PatternTypeCheckResult(predicates, result.ass, t)
     }
@@ -54,6 +53,7 @@ class PatternTypeChecker(private val tc: TypeChecker) {
             ass = ass.join(result.ass)
             types.add(result.value)
         }
+
         return PatternTypeCheckResult(predicates, ass, types.build())
     }
 }
