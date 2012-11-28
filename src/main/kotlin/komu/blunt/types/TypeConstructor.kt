@@ -38,7 +38,7 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
         if (precedence != 0) sb.append("(")
         sb.append(name)
 
-        for (val arg in arguments)
+        for (arg in arguments)
             sb.append(' ').append(arg.toString(1))
 
         if (precedence != 0) sb.append(")")

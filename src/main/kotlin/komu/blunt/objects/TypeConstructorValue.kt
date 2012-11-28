@@ -47,7 +47,7 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
 
         sb.append('(').append(name)
 
-        for (val param in items)
+        for (param in items)
             sb.append(' ').append(param)
 
         sb.append(')')
@@ -67,7 +67,7 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
 //        if (index != o.index)
 //            return index - o.index;
 //
-//        for (val i in items.indices) {
+//        for (i in items.indices) {
 //            val lhs = items[i] as Comparable<*>
 //            val rhs = o.items[i] as Comparable<*>
 //            val c = lhs.compareTo(rhs);

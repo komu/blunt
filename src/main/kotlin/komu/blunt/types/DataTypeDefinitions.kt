@@ -15,7 +15,7 @@ public class DataTypeDefinitions() {
         register(1, ConstructorNames.CONS, "a -> [a] -> [a]", 2)
 
         // TODO: create necessary tuples on demand
-        for (val arity in 2..31)
+        for (arity in 2..31)
             register(ConstructorDefinition(arity-2, ConstructorNames.tupleName(arity), tupleConstructorScheme(arity), arity))
     }
 
@@ -24,7 +24,7 @@ public class DataTypeDefinitions() {
     }
 
     fun register(definition: ASTDataDefinition) {
-        for (val constructor in definition.constructors)
+        for (constructor in definition.constructors)
             register(constructor)
     }
 

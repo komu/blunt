@@ -14,7 +14,7 @@ class ASTSequence(val exps: List<ASTExpression>) : ASTExpression() {
 
         sb.append("(begin")
 
-        for (val exp in exps)
+        for (exp in exps)
             sb.append(' ').append(exp)
 
         sb.append(')')

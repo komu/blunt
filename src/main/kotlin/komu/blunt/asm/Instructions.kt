@@ -13,8 +13,8 @@ class Instructions {
 
         instructions.addAll(rhs.instructions)
 
-        for (val labels in rhs.labelMap.values()) {
-            for (val label in labels) {
+        for (labels in rhs.labelMap.values()) {
+            for (label in labels) {
                 label.relocateBy(relocationOffset)
                 getLabels(label.address).add(label)
             }

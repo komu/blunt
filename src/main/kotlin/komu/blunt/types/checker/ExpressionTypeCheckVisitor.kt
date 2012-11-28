@@ -10,14 +10,14 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
     fun typeCheck(exp: ASTExpression, ctx: Assumptions): TypeCheckResult<Type> =
       when (exp) {
         is ASTApplication -> visit(exp, ctx)
-        is ASTConstant    -> visit(exp, ctx)
+        is ASTConstant    -> visit(exp)
         is ASTLambda      -> visit(exp, ctx)
         is ASTLet         -> visit(exp, ctx)
         is ASTLetRec      -> visit(exp, ctx)
         is ASTSequence    -> visit(exp, ctx)
         is ASTSet         -> visit(exp, ctx)
         is ASTVariable    -> visit(exp, ctx)
-        is ASTConstructor -> visit(exp, ctx)
+        is ASTConstructor -> visit(exp)
         is ASTCase        -> visit(exp, ctx)
         else              -> throw Exception("unknown exp $exp")
       }
@@ -33,7 +33,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         return TypeCheckResult.of(t, te.predicates, tf.predicates)
     }
 
-    private fun visit(constant: ASTConstant, ass: Assumptions): TypeCheckResult<Type> =
+    private fun visit(constant: ASTConstant): TypeCheckResult<Type> =
         TypeCheckResult.of(constant.valueType())
 
     private fun visit(lambda: ASTLambda, ass: Assumptions): TypeCheckResult<Type> {
@@ -87,7 +87,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         return TypeCheckResult.of(inst.value, inst.predicates)
     }
 
-    private fun visit(constructor: ASTConstructor, ass: Assumptions): TypeCheckResult<Type> {
+    private fun visit(constructor: ASTConstructor): TypeCheckResult<Type> {
         val ctor = tc.findConstructor(constructor.name)
 
         val inst = tc.freshInstance(ctor.scheme)
@@ -101,7 +101,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
         val result = TypeCheckResult.builder<Type>()
 
-        for (val alt in astCase.alternatives) {
+        for (alt in astCase.alternatives) {
             val patternResult = tc.typeCheck(alt.pattern)
 
             tc.unify(expResult.value, patternResult.value)

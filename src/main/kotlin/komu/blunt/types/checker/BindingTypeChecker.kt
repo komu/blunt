@@ -57,7 +57,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val vss = arrayList<Set<TypeVariable>>()
 
         val genericVariables = hashSet<TypeVariable>()
-        for (val t in types) {
+        for (t in types) {
             val vars = t.typeVariables
             vss.add(vars)
             genericVariables.addAll(vars)

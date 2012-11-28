@@ -36,7 +36,7 @@ class OpLoadExtracted(target: Register, private val source: Register, private va
 
     override fun load(vm: VM): Any? {
         var obj = vm[source]
-        for (val index in path.indices)
+        for (index in path.indices)
             obj = (obj as TypeConstructorValue).items[index]
         return obj
     }
@@ -48,7 +48,7 @@ class OpLoadTag(target: Register, private val source: Register, private val path
 
     override fun load(vm: VM): Any? {
         var obj = vm[source] as TypeConstructorValue
-        for (val index in path.indices)
+        for (index in path.indices)
             obj = obj.items[index] as TypeConstructorValue
         return obj.name
     }

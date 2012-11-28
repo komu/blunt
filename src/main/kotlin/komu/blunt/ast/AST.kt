@@ -25,7 +25,7 @@ object AST {
     private fun apply2(func: ASTExpression, args: Array<ASTExpression>): ASTExpression {
         var exp = func
 
-        for (val arg in args)
+        for (arg in args)
             exp = ASTApplication(exp, arg)
 
         return exp.simplify()
@@ -84,7 +84,7 @@ object AST {
 
         var call = constructor(name)
 
-        for (val exp in exps)
+        for (exp in exps)
             call = ASTApplication(call, exp)
 
         return call
@@ -99,7 +99,7 @@ object AST {
     fun list(exps: List<ASTExpression>): ASTExpression {
         var list = constructor(ConstructorNames.NIL)
 
-        for (val exp in exps.reverse())
+        for (exp in exps.reverse())
             list = constructor(ConstructorNames.CONS, exp, list)
 
         return list

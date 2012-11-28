@@ -61,7 +61,7 @@ fun genericType(name: String, vararg params: Type): Type =
 fun genericType(name: String, params: List<Type>): Type {
     var t: Type = TypeConstructor(name, Kind.ofParams(params.size))
 
-    for (val param in params)
+    for (param in params)
         t = TypeApplication(t, param)
 
     return t
