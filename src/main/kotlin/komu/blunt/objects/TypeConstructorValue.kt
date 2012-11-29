@@ -5,7 +5,7 @@ import java.util.Arrays
 class TypeConstructorValue(val index: Int, val name: String, val items: Array<Any?> = TypeConstructorValue.EMPTY_ARRAY) : Comparable<TypeConstructorValue> {
 
     {
-        check(index >= 0, "invalid index: $index")
+        require(index >= 0, "invalid index: $index")
     }
 
     class object {

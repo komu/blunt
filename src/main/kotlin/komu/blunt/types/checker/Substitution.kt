@@ -62,7 +62,7 @@ object Substitutions {
     fun empty() = Substitution(emptyMap())
 
     fun singleton(v: TypeVariable, t: Type): Substitution {
-        check(v.kind == t.kind, "kinds don't match")
+        require(v.kind == t.kind, "kinds don't match")
 
         return Substitution(singletonMap(v, t))
     }

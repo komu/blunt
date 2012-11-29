@@ -21,11 +21,8 @@ class SourceReader(private val source: String) {
     }
 
     fun matches(s: String): Boolean {
-        if (s == "") throw IllegalArgumentException("empty string")
-
-        if (!hasMore) return false
-
-        return source.regionMatches(position, s, 0, s.length())
+        require(s != "", "empty string")
+        return hasMore && source.regionMatches(position, s, 0, s.length())
     }
 
     fun peek(): Char? =
@@ -49,7 +46,7 @@ class SourceReader(private val source: String) {
     var position: Int
         get() = _position
         set(position) {
-            check(position >= 0 && position < source.length)
+            require(position >= 0 && position < source.length)
             this._position = position
         }
 

@@ -26,7 +26,7 @@ class OperatorSet() {
     }
 
     fun addInternal(precedence: Int, associativity: Associativity, names: Array<String>) {
-        check(precedence >= 0)
+        require(precedence >= 0)
 
         maxPrecedence = max(maxPrecedence, precedence)
         for (name in names)

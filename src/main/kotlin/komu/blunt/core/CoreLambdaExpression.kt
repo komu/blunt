@@ -5,7 +5,7 @@ import komu.blunt.asm.*
 class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpression) : CoreExpression() {
 
     {
-        check(envSize >= 0)
+        require(envSize >= 0)
     }
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =

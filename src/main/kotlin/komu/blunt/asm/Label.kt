@@ -3,7 +3,7 @@ package komu.blunt.asm
 class Label(private val name: String) {
 
     fun relocateBy(offset: Int) {
-        check(offset >= 0, "negative offset: $offset")
+        require(offset >= 0, "negative offset: $offset")
 
         address += offset
     }
@@ -15,7 +15,7 @@ class Label(private val name: String) {
         }
 
         set(value) {
-            check(value >= 0, "negative address: $value")
+            require(value >= 0, "negative address: $value")
             $address = value
         }
 
