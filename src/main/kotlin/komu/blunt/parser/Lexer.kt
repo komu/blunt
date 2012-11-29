@@ -241,11 +241,10 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
     }
 
     public fun save(): LexerState =
-        // TODO: save whole reader state, including row and column
-        LexerState(reader.position, indents.toList(), nextToken)
+        LexerState(reader.save(), indents.toList(), nextToken)
 
     fun restore(state: LexerState) {
-        reader.position = state.position
+        reader.restore(state.readerState)
         indents.reset(state.indents)
         nextToken = state.nextToken
     }

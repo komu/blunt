@@ -1,3 +1,3 @@
 package komu.blunt.parser
 
-class LexerState(val position: Int, val indents: List<Int>, val nextToken: Token<Any>?)
+class LexerState(val readerState: SourceReaderState, val indents: List<Int>, val nextToken: Token<Any>?)

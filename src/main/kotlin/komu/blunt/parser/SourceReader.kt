@@ -52,4 +52,14 @@ class SourceReader(private val source: String) {
             check(position >= 0 && position < source.length)
             this._position = position
         }
+
+    fun save() = SourceReaderState(line, column, position)
+
+    fun restore(state: SourceReaderState) {
+        _line = state.line
+        _column = state.column
+        _position = state.position
+    }
 }
+
+class SourceReaderState (val line: Int, val column: Int, val position: Int)
