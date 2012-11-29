@@ -6,43 +6,30 @@ import komu.blunt.core.PatternPath
 
 class Instructions {
     private val instructions = arrayList<OpCode>()
-    private val labelMap: MutableMap<Int,MutableSet<Label>> = hashMap<Int,MutableSet<Label>>()
+    private val labelMap = LabelMap()
 
     fun append(rhs: Instructions) {
         val relocationOffset = instructions.size
 
         instructions.addAll(rhs.instructions)
 
-        for (labels in rhs.labelMap.values()) {
-            for (label in labels) {
-                label.relocateBy(relocationOffset)
-                getLabels(label.address).add(label)
-            }
+        for (label in rhs.labelMap) {
+            label.relocateBy(relocationOffset)
+            labelMap.add(label)
         }
     }
 
     fun modifies(register: Register): Boolean =
-        instructions any { it.modifies(register) }
+        instructions.any { it.modifies(register) }
 
     fun label(label: Label) {
         label.address = instructions.size
-        getLabels(label.address).add(label)
-    }
-
-    private fun getLabels(address: Int): MutableSet<Label> {
-        val existingLabels = labelMap[address]
-        if (existingLabels != null) {
-            return existingLabels
-        } else {
-            val newLabels = hashSet<Label>()
-            labelMap[address] = newLabels
-            return newLabels
-        }
+        labelMap.add(label)
     }
 
     fun dump() {
         for ((address, instruction) in instructions.withIndices()) {
-            for (label in getLabels(address))
+            for (label in labelMap.labelsAt(address))
                 println("$label:")
 
             println("    $instruction")
@@ -54,9 +41,6 @@ class Instructions {
     }
 
     val count: Int
-        get() = instructions.size
-
-    val pos: Int
         get() = instructions.size
 
     fun get(pc: Int): OpCode = instructions[pc]
