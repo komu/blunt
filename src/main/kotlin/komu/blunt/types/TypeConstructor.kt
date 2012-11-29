@@ -23,14 +23,16 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
         hash(name, kind)
 
     internal fun toString(arguments: List<Type>, precedence: Int): String =
-        if (name == "->" && arguments.size == 2)
-            functionToString(arguments, precedence);
-        else if (name.equals("[]") && arguments.size == 1)
-            "[" + arguments.first() + "]"
-        else if (tuplePattern.matcher(name).matches())
-            tupleToString(arguments)
-        else
-            defaultToString(arguments, precedence)
+        when {
+            name == "->" && arguments.size == 2 ->
+                functionToString(arguments, precedence);
+            name.equals("[]") && arguments.size == 1 ->
+                "[" + arguments.first() + "]"
+            tuplePattern.matcher(name).matches() ->
+                tupleToString(arguments)
+            else ->
+                defaultToString(arguments, precedence)
+        }
 
     private fun defaultToString(arguments: List<Type>, precedence: Int): String {
         val sb = StringBuilder()

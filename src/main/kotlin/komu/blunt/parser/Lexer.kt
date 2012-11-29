@@ -112,14 +112,12 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
            else ->   { }
         }
 
-        return if (ch.isDigit())
-            readNumber()
-        else if (isOperatorCharacter(ch))
-            readOperator()
-        else if (isIdentifierStart(ch))
-            readIdentifierOrKeyword()
-        else
-            throw parseError("unexpected token: '${read()}'")
+        return when {
+            ch.isDigit()            -> readNumber()
+            isOperatorCharacter(ch) -> readOperator()
+            isIdentifierStart(ch)   -> readIdentifierOrKeyword()
+            else                    -> throw parseError("unexpected token: '${read()}'")
+        }
     }
 
     private fun skipWhitespace() {
@@ -147,12 +145,11 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
 
         val keyword = TokenType.keyword(name)
 
-        return if (keyword != null)
-            Token.ofType(keyword, location)
-        else if (name[0].isUpperCase())
-            Token(TYPE_OR_CTOR_NAME, name, location)
-        else
-            Token(IDENTIFIER, name, location)
+        return when {
+            keyword != null       -> Token.ofType(keyword, location)
+            name[0].isUpperCase() -> Token(TYPE_OR_CTOR_NAME, name, location)
+            else                  -> Token(IDENTIFIER, name, location)
+        }
     }
 
     private fun isWhitespace(ch: Char?) =

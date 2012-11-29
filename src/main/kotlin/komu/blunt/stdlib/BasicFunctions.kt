@@ -32,12 +32,11 @@ object BasicFunctions {
     libraryFunction("primitiveCompare", "Ord a => (a,a) -> Ordering")
     fun primitiveCompare<T : Comparable<T>>(x: T, y: T): TypeConstructorValue {
         val r = x.compareTo(y)
-        return if (r < 0)
-            BasicValues.LT
-        else if (r > 0)
-            BasicValues.GT
-        else
-            BasicValues.EQ
+        return when {
+            r < 0 -> BasicValues.LT
+            r > 0 -> BasicValues.GT
+            else  -> BasicValues.EQ
+        }
     }
 
     libraryFunction("show", "a -> String")

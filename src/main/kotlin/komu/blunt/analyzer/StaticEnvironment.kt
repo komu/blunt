@@ -14,12 +14,11 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
 
     fun get(name: Symbol, depth: Int): VariableReference {
         val v = variables[name]
-        return if (v != null)
-            v.toReference(depth)
-        else if (parent != null)
-            parent[name, depth+1]
-        else
-            throw UnboundVariableException(name)
+        return when {
+            v != null      -> v.toReference(depth)
+            parent != null -> parent[name, depth+1]
+            else           -> throw UnboundVariableException(name)
+        }
     }
 
     fun define(name: Symbol): VariableReference {

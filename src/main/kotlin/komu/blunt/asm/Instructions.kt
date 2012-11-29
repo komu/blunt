@@ -76,12 +76,10 @@ fun Instructions.preserving(register: Register, block: Instructions.() -> Unit) 
 }
 
 fun Instructions.finishWithLinkage(linkage: Linkage) {
-    if (linkage == Linkage.NEXT) {
-        // nada
-    } else if (linkage == Linkage.RETURN) {
-        popRegister(Register.PC)
-    } else {
-        jump(linkage.label!!)
+    when (linkage) {
+        Linkage.NEXT   -> { }
+        Linkage.RETURN -> popRegister(Register.PC)
+        else           -> jump(linkage.label!!)
     }
 }
 

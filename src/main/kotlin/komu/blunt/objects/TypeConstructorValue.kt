@@ -15,14 +15,12 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
     fun isTuple() = name.startsWith("(,")
 
     fun toString(): String =
-        if (items.size == 0)
-            name
-        else if (isTuple())
-            toStringAsTuple()
-        else if (name == ":")
-            toStringAsList()
-        else
-            toStringDefault()
+        when {
+            items.size == 0 -> name
+            isTuple()       -> toStringAsTuple()
+            name == ":"     -> toStringAsList()
+            else            -> toStringDefault()
+        }
 
     private fun toStringAsList(): String {
         val sb = StringBuilder()

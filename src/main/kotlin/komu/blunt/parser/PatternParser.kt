@@ -37,20 +37,22 @@ final class PatternParser(val lexer: Lexer) {
     }
 
     private fun parsePrimitivePattern(): Pattern =
-        if (lexer.nextTokenIs(TokenType.LITERAL))
-            Pattern.literal(lexer.readTokenValue(TokenType.LITERAL))
-        else if (lexer.readMatchingToken(TokenType.UNDERSCORE))
-            Pattern.wildcard()
-        else if (lexer.nextTokenIs(TokenType.IDENTIFIER))
-            Pattern.variable(lexer.readTokenValue(TokenType.IDENTIFIER))
-        else if (lexer.readMatchingToken(TokenType.LPAREN))
-            parseParens()
-        else if (lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME))
-            Pattern.constructor(lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME))
-        else if (lexer.nextTokenIs(TokenType.LBRACKET))
-            parseBrackets()
-        else
-            throw lexer.expectFailure("pattern")
+        when {
+            lexer.nextTokenIs(TokenType.LITERAL) ->
+                Pattern.literal(lexer.readTokenValue(TokenType.LITERAL))
+            lexer.readMatchingToken(TokenType.UNDERSCORE) ->
+                Pattern.wildcard()
+            lexer.nextTokenIs(TokenType.IDENTIFIER) ->
+                Pattern.variable(lexer.readTokenValue(TokenType.IDENTIFIER))
+            lexer.readMatchingToken(TokenType.LPAREN) ->
+                parseParens()
+            lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME) ->
+                Pattern.constructor(lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME))
+            lexer.nextTokenIs(TokenType.LBRACKET) ->
+                parseBrackets()
+            else ->
+                throw lexer.expectFailure("pattern")
+        }
 
     private fun parseBrackets(): Pattern {
         lexer.expectToken(TokenType.LBRACKET)
