@@ -2,7 +2,6 @@ package komu.blunt.stdlib
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy
-import java.lang.reflect.Method
 import java.math.BigInteger
 import komu.blunt.eval.RootBindings
 import komu.blunt.objects.TypeConstructorValue
@@ -14,9 +13,7 @@ object BasicFunctions {
     annotation class libraryFunction(val name: String, val scheme: String)
 
     fun register(bindings: RootBindings) {
-        val methods = javaClass.getMethods() as Array<Method>
-
-        for (method in methods) {
+        for (method in javaClass.getMethods()) {
             val libraryFunc = method.getAnnotation(javaClass<libraryFunction>())
             if (libraryFunc != null) {
                 bindings.bindFunction(libraryFunc.name, libraryFunc.scheme, { s ->

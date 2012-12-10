@@ -35,10 +35,8 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : T
         return sb.toString()
     }
 
-    fun equals(rhs: Any?): Boolean {
-        val other = rhs as? Qualified<T>
-        return other != null && value == other.value && predicates == other.predicates
-    }
+    fun equals(rhs: Any?) =
+        rhs is Qualified<*> && value == rhs.value && predicates == rhs.predicates
 
     fun hashCode() = hash(predicates, value)
 }
