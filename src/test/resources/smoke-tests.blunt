@@ -1,0 +1,8 @@
+assertEqual x y =
+    if x == y then 0 else error "assertion failed"
+
+test_sorting () =
+    assertEqual [1,2,3] (sort [3,2,1])
+
+runTests () =
+    test_sorting()
