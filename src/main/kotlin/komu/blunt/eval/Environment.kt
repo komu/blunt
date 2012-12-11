@@ -47,7 +47,7 @@ class RootEnvironment : Environment() {
         checkFrame(v.frame)
 
         if (v.offset >= bindings.size)
-            bindings = Arrays.copyOf<Any?>(bindings, max(v.offset + 1, bindings.size * 2)) as Array<Any?>
+            bindings = Arrays.copyOf<Any?>(bindings, max(v.offset + 1, bindings.size * 2))
 
         bindings[v.offset] = value
     }
