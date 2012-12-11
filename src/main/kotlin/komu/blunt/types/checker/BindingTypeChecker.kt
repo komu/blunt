@@ -1,5 +1,7 @@
 package komu.blunt.types.checker
 
+import java.util.ArrayList
+import java.util.HashSet
 import komu.blunt.ast.BindGroup
 import komu.blunt.ast.ExplicitBinding
 import komu.blunt.ast.ImplicitBinding
@@ -35,7 +37,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
     }
 
     private fun typeCheckExplicits(bindGroup: BindGroup, ass: Assumptions): List<Predicate> {
-        val predicates = arrayList<Predicate>()
+        val predicates = ArrayList<Predicate>()
 
         for (binding in bindGroup.explicitBindings)
             predicates.addAll(typeCheck(binding, ass))
@@ -54,9 +56,9 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val types = tc.applySubstitution<Type>(typeVariables)
         val fs = tc.applySubstitution(ass).typeVariables
 
-        val vss = arrayList<Set<TypeVariable>>()
+        val vss = ArrayList<Set<TypeVariable>>()
 
-        val genericVariables = hashSet<TypeVariable>()
+        val genericVariables = HashSet<TypeVariable>()
         for (t in types) {
             val vars = t.typeVariables
             vss.add(vars)
@@ -76,7 +78,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
     private fun typeCheckAndUnifyBindings(bs: List<ImplicitBinding>, ts: List<Type>, ass: Assumptions): List<Predicate> {
         val as2 = Assumptions.from(bs.names(), ts.map { it.toScheme() }).join(ass)
 
-        val predicates = arrayList<Predicate>()
+        val predicates = ArrayList<Predicate>()
 
         for ((i, typ) in ts.withIndices()) {
             val (t, ps) = tc.typeCheck(bs[i].expr, as2)

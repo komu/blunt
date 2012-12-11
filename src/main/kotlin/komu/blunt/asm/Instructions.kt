@@ -1,11 +1,12 @@
 package komu.blunt.asm
 
+import java.util.ArrayList
 import komu.blunt.analyzer.VariableReference
 import komu.blunt.asm.opcodes.*
 import komu.blunt.core.PatternPath
 
 class Instructions {
-    private val instructions = arrayList<OpCode>()
+    private val instructions = ArrayList<OpCode>()
     private val labelMap = LabelMap()
 
     fun append(rhs: Instructions) {

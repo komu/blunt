@@ -12,7 +12,7 @@ class TypeCheckResult<out T>(val value: T, val predicates: List<Predicate>) {
         fun of<T>(value: T) = TypeCheckResult(value, emptyList())
         fun of<T>(value: T, predicates: List<Predicate>) = TypeCheckResult(value, predicates)
         fun of<T>(value: T, vararg predicateCollections: Collection<Predicate>): TypeCheckResult<T> {
-            val list = arrayList<Predicate>()
+            val list = ArrayList<Predicate>()
             for (ps in predicateCollections)
                 list.addAll(ps)
             return TypeCheckResult(value, list)

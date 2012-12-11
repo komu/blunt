@@ -1,5 +1,6 @@
 package komu.blunt.parser
 
+import java.util.ArrayList
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTDataDefinition
 import komu.blunt.parser.TokenType.*
@@ -45,7 +46,7 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 
     private class DataTypeBuilder(val typeName: String) {
 
-        private val vars = arrayList<TypeVariable>()
+        private val vars = ArrayList<TypeVariable>()
         private val constructors = listBuilder<ConstructorDefinition>()
         private val derivedClasses = listBuilder<String>()
         private var constructorIndex = 0

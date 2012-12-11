@@ -3,7 +3,7 @@ package komu.blunt.parser
 import java.util.ArrayList
 
 final class IndentStack {
-    val indents = arrayList<Int>()
+    val indents = ArrayList<Int>()
 
     fun push(column: Int) {
         indents.add(column)

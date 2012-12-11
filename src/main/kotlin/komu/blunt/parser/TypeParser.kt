@@ -1,5 +1,6 @@
 package komu.blunt.parser
 
+import java.util.ArrayList
 import java.util.Collections.emptyList
 import komu.blunt.parser.TokenType.*
 import komu.blunt.types.*
@@ -97,7 +98,7 @@ class TypeParser(val lexer: Lexer) {
         if (lexer.readMatchingToken(TokenType.RPAREN))
             return BasicType.UNIT
 
-        val types = arrayList<Type>()
+        val types = ArrayList<Type>()
         types.add(parseType())
 
         while (lexer.readMatchingToken(TokenType.COMMA))
@@ -105,10 +106,7 @@ class TypeParser(val lexer: Lexer) {
 
         lexer.expectToken(TokenType.RPAREN)
 
-        if (types.size == 1)
-            return types.first()
-        else
-            return tupleType(types)
+        return if (types.size == 1) types.first() else tupleType(types)
     }
 
     private fun parseBrackets(): Type {

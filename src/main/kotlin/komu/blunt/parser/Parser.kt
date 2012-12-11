@@ -205,7 +205,7 @@ class Parser(source: String) {
 
         var name = parseIdentifier()
 
-        val args = arrayList<Symbol>()
+        val args = ArrayList<Symbol>()
 
         if (lexer.nextTokenIs(TokenType.OPERATOR)) {
             val op = lexer.readTokenValue(TokenType.OPERATOR)
