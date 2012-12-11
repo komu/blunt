@@ -19,7 +19,7 @@ class Parser(source: String) {
     private val dataTypeParser = DataTypeParser(lexer, typeParser)
 
     private val EXPRESSION_START_TOKENS =
-        arrayList(TokenType.IF, TokenType.LET, TokenType.LAMBDA, TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, TokenType.CASE)
+        listOf(TokenType.IF, TokenType.LET, TokenType.LAMBDA, TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, TokenType.CASE)
 
     fun parseDefinitions(): List<ASTDefinition> {
         val result = listBuilder<ASTDefinition>()
@@ -77,7 +77,7 @@ class Parser(source: String) {
         lexer.expectToken(TokenType.END)
 
         val functionBuilder = FunctionBuilder()
-        functionBuilder.addAlternative(arrayList(left, right), value)
+        functionBuilder.addAlternative(listOf(left, right), value)
         return AST.define(op.toSymbol(), functionBuilder.build())
     }
 

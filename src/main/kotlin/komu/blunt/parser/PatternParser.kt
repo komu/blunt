@@ -7,7 +7,7 @@ import komu.blunt.types.patterns.Pattern
 final class PatternParser(val lexer: Lexer) {
 
     private val PATTERN_START_TOKENS =
-        arrayList(TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, TokenType.UNDERSCORE)
+        listOf(TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, TokenType.UNDERSCORE)
 
     // <literal> | <variable> | ( <pattern> ) | <constructor> <pattern>* |
     public fun parsePattern(): Pattern {

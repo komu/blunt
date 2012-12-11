@@ -11,8 +11,8 @@ import komu.blunt.types.patterns.VariablePattern
 
 class FunctionBuilder {
     private val symbols = listBuilder<Symbol>()
-    private val exps = arrayList<ASTExpression>()
-    private val alternatives = arrayList<ASTAlternative>()
+    private val exps = ArrayList<ASTExpression>()
+    private val alternatives = ArrayList<ASTAlternative>()
 
     fun addAlternative(args: List<Pattern>, body: ASTExpression) {
         if (exps.empty) {

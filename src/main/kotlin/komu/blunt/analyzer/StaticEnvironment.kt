@@ -30,11 +30,8 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
         return v.toReference(0)
     }
 
-    fun lookupInCurrentScopeOrDefine(name: Symbol): VariableReference {
-        val v = variables[name]
-
-        return if (v != null) v.toReference(0) else define(name)
-    }
+    fun lookupInCurrentScopeOrDefine(name: Symbol): VariableReference =
+        variables[name]?.toReference(0) ?: define(name)
 
     private fun reference(frame: Int, offset: Int, name: Symbol): VariableReference =
         if (parent == null)

@@ -7,7 +7,7 @@ import komu.blunt.types.*
 class TypeParser(val lexer: Lexer) {
 
     private val START_TOKENS =
-        arrayList(TokenType.LPAREN, TokenType.LBRACKET, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME)
+        listOf(TokenType.LPAREN, TokenType.LBRACKET, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME)
 
     class object {
         fun parseType(s: String): Type =

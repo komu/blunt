@@ -44,16 +44,16 @@ class ClassEnv {
         addInstance(isIn("Ord", BasicType.INTEGER))
         addInstance(isIn("Ord", BasicType.STRING))
 
-        addInstance(arrayList(isIn("Ord", typeVariable("a")), isIn("Ord", typeVariable("b"))),
+        addInstance(listOf(isIn("Ord", typeVariable("a")), isIn("Ord", typeVariable("b"))),
                     isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))))
 
-        addInstance(arrayList(isIn("Eq", typeVariable("a")), isIn("Eq", typeVariable("b"))),
+        addInstance(listOf(isIn("Eq", typeVariable("a")), isIn("Eq", typeVariable("b"))),
                     isIn("Eq", tupleType(typeVariable("a"), typeVariable("b"))))
 
-        addInstance(arrayList(isIn("Eq", typeVariable("a"))),
+        addInstance(listOf(isIn("Eq", typeVariable("a"))),
                     isIn("Eq", listType(typeVariable("a"))))
 
-        addInstance(arrayList(isIn("Eq", typeVariable("a"))),
+        addInstance(listOf(isIn("Eq", typeVariable("a"))),
                     isIn("Eq", genericType("Maybe", typeVariable("a"))))
     }
 
