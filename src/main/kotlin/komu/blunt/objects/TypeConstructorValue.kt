@@ -59,7 +59,7 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
         o is TypeConstructorValue && index == o.index && Arrays.equals(items, o.items)
 
     fun hashCode() =
-        Arrays.hashCode(items)
+        Arrays.hashCode(items as Array<Any>)
 
     override fun compareTo(other: TypeConstructorValue): Int {
 //        if (index != o.index)

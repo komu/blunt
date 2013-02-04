@@ -7,9 +7,9 @@ import komu.blunt.objects.CompoundProcedure
 import komu.blunt.parser.parseExpression
 import komu.blunt.stdlib.booleanToConstructor
 import kotlin.test.fail
-import org.hamcrest.CoreMatchers.`is` as isEqualTo
 import org.hamcrest.CoreMatchers.anything
 import org.hamcrest.CoreMatchers.instanceOf
+import org.hamcrest.CoreMatchers.`is` as isEqualTo
 import org.hamcrest.Matcher
 import org.junit.Assert.assertThat
 import org.junit.BeforeClass as beforeclass
@@ -44,7 +44,7 @@ public class EvaluatorTest {
     }
 
     test fun lambdaExpression() {
-        assertThatEvaluating("\\ x -> x", instanceOf(javaClass<CompoundProcedure>()))
+        assertThatEvaluating("\\ x -> x", instanceOf(javaClass<CompoundProcedure>()) as Matcher<Any?>)
         assertThatEvaluating("(\\ x -> x + 1) 2", produces(3))
         assertThatEvaluating("(\\ x -> \\ y -> x + y) 3 4", produces(7))
         assertThatEvaluating("(\\ x y -> x + y) 3 4", produces(7))

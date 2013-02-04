@@ -10,7 +10,7 @@ import komu.blunt.types.patterns.Pattern
 fun parseExpression(source: String) =
     Parser(source).parseExpression()
 
-class Parser(source: String) {
+public class Parser(source: String) {
 
     private val operators = OperatorSet()
     private val lexer = Lexer(source, operators)
