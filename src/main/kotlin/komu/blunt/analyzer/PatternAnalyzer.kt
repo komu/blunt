@@ -22,7 +22,7 @@ object PatternAnalyzer {
     private fun constructorExtractor(pattern: ConstructorPattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression =
         CoreExpression.sequence(pattern.args.withIndices().map { p ->
             makeExtractor(p.second, matchedObject, env, path.extend(p.first))
-        })
+        }.toList())
 
     fun makePredicate(pattern: Pattern, matchedObject: VariableReference, path: PatternPath=PatternPath.EMPTY): CoreExpression =
         when (pattern) {

@@ -59,7 +59,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         typeVariable(typeName(typeSequence++), kind)
 
     fun newTVars(size: Int): List<TypeVariable> =
-        (1..size).map { newTVar() }
+        (1..size).toList().map { newTVar() }
 
     fun newTVars(kinds: List<Kind>): List<TypeVariable> =
         kinds.map { newTVar(it) }
