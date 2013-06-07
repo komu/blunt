@@ -7,10 +7,10 @@ import komu.blunt.eval.RootBindings
 import komu.blunt.objects.TypeConstructorValue
 import kotlin.math.*
 
-object BasicFunctions {
+Retention(RetentionPolicy.RUNTIME)
+annotation class libraryFunction(val name: String, val scheme: String)
 
-    Retention(RetentionPolicy.RUNTIME)
-    annotation class libraryFunction(val name: String, val scheme: String)
+object BasicFunctions {
 
     fun register(bindings: RootBindings) {
         for (method in javaClass.getMethods()) {
