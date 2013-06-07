@@ -6,12 +6,12 @@ import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.Type
 import komu.blunt.types.TypeGen
 import komu.blunt.types.TypeVariable
+import java.util.HashMap
 
 class Substitution(private val mapping: Map<TypeVariable,Type>) {
 
-    // @@
     fun compose(s2: Substitution): Substitution {
-        val map = hashMap<TypeVariable,Type>()
+        val map = HashMap<TypeVariable,Type>()
 
         for ((key, value) in s2.mapping)
             map[key] = value.apply(this)
@@ -23,7 +23,7 @@ class Substitution(private val mapping: Map<TypeVariable,Type>) {
 
     fun merge(s2: Substitution): Substitution {
         if (agree(s2)) {
-            val map = hashMap<TypeVariable,Type>()
+            val map = HashMap<TypeVariable,Type>()
             map.putAll(mapping)
             map.putAll(s2.mapping)
 
@@ -45,7 +45,7 @@ class Substitution(private val mapping: Map<TypeVariable,Type>) {
         types.map { it.apply(this) }
 
     fun apply(subst: Substitution): Substitution {
-        val map = hashMap<TypeVariable,Type>()
+        val map = HashMap<TypeVariable,Type>()
 
         for ((key, value) in mapping)
             map[key] = value.apply(subst)
@@ -68,7 +68,7 @@ object Substitutions {
     }
 
     fun fromTypeVariables(variables: List<TypeVariable>): Substitution {
-        val map = hashMap<TypeVariable,Type>()
+        val map = HashMap<TypeVariable,Type>()
 
         for ((i,v) in variables.withIndices())
             map[v] = TypeGen(i)

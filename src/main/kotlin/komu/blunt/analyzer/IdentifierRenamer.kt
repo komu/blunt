@@ -4,6 +4,7 @@ import komu.blunt.ast.*
 import komu.blunt.objects.Symbol
 import komu.blunt.types.patterns.*
 import komu.blunt.utils.Sequence
+import java.util.HashMap
 
 /**
  * Walks the AST to perform α-conversion on all expressions. After performing this conversion, the
@@ -18,28 +19,13 @@ fun renameIdentifiers(exp: ASTExpression) =
  */
 class IdentifierMapping(val parent: IdentifierMapping? = null) {
 
-    private val mappings = hashMap<Symbol,Symbol>()
+    private val mappings = HashMap<Symbol,Symbol>()
     private val sequence: Sequence = if (parent != null) parent.seq() else Sequence()
 
     private fun seq() = sequence
 
-    fun get(v: Symbol): Symbol {
-        var mapping = this
-
-        while (true) {
-            val sym = mapping.mappings[v]
-            if (sym != null)
-                return sym
-
-            val parent = mapping.parent
-            if (parent == null)
-                break
-            else
-                mapping = parent
-        }
-
-        return v
-    }
+    fun get(v: Symbol): Symbol =
+        mappings[v] ?: parent?.get(v) ?: v
 
     fun set(oldName: Symbol, newName: Symbol) {
         val old = mappings.put(oldName, newName)

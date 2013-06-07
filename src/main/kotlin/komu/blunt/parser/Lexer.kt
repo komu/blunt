@@ -221,7 +221,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
         while (true) {
             val ch = reader.peek()
             if (ch == null || !predicate(ch))
-                break;
+                break
             sb.append(read())
         }
 

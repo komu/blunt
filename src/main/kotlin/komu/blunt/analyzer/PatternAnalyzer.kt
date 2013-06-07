@@ -26,8 +26,8 @@ object PatternAnalyzer {
 
     fun makePredicate(pattern: Pattern, matchedObject: VariableReference, path: PatternPath=PatternPath.EMPTY): CoreExpression =
         when (pattern) {
-            is WildcardPattern    -> CoreConstantExpression.TRUE
-            is VariablePattern    -> CoreConstantExpression.TRUE
+            is WildcardPattern    -> CoreExpression.TRUE
+            is VariablePattern    -> CoreExpression.TRUE
             is LiteralPattern     -> CoreEqualConstantExpression(pattern.value, CoreExtractExpression(matchedObject, path))
             is ConstructorPattern -> constructorPredicate(pattern, path, matchedObject)
             else                  -> throw AnalyzationException("unknown pattern '$pattern'")

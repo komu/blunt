@@ -11,6 +11,8 @@ abstract class CoreExpression {
 
     class object {
 
+        val TRUE  = CoreConstantExpression(true)
+        val FALSE = CoreConstantExpression(false)
         val EMPTY = CoreSequenceExpression(emptyList())
 
         fun sequence(vararg exps: CoreExpression) = sequence(exps.toList())
@@ -20,9 +22,9 @@ abstract class CoreExpression {
 
         fun and(exps: List<CoreExpression>): CoreExpression =
             when (exps.size) {
-                0 -> CoreConstantExpression.TRUE
-                1 -> exps.first()
-                else -> CoreIfExpression(exps.first(), and(exps.tail), CoreConstantExpression.FALSE)
+                0    -> TRUE
+                1    -> exps.first()
+                else -> CoreIfExpression(exps.first(), and(exps.tail), FALSE)
             }
     }
 }

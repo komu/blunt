@@ -3,9 +3,9 @@ package komu.blunt.core
 import komu.blunt.asm.*
 import komu.blunt.asm.opcodes.OpJumpIfFalse
 
-class CoreIfExpression(private val condition: CoreExpression,
-                       private val consequent: CoreExpression,
-                       private val alternative: CoreExpression) : CoreExpression() {
+class CoreIfExpression(val condition: CoreExpression,
+                       val consequent: CoreExpression,
+                       val alternative: CoreExpression) : CoreExpression() {
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {
@@ -30,14 +30,15 @@ class CoreIfExpression(private val condition: CoreExpression,
         }
 
     override fun simplify(): CoreExpression {
-        val simplifiedCondition = condition.simplify()
-        val simplifiedConsequent = consequent.simplify()
-        val simplifiedAlternative = alternative.simplify()
+        val test = condition.simplify()
+        val con = consequent.simplify()
+        val alt = alternative.simplify()
 
-        return if (simplifiedCondition is CoreConstantExpression)
-            if (OpJumpIfFalse.isFalse(simplifiedCondition.value)) simplifiedAlternative else simplifiedConsequent
-        else
-            CoreIfExpression(simplifiedCondition, simplifiedConsequent, simplifiedAlternative)
+        return when {
+            test is CoreConstantExpression -> if (OpJumpIfFalse.isFalse(test.value)) alt else con
+            con == alt                     -> CoreExpression.sequence(test, con)
+            else                           -> CoreIfExpression(test, con, alt)
+        }
     }
 
     override fun toString() = "(if $condition $consequent $alternative)"

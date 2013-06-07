@@ -21,15 +21,15 @@ class CoreSequenceExpression (private val expressions: List<CoreExpression>) : C
     override fun toString() = "(begin $expressions)"
 
     override fun simplify(): CoreExpression {
-        val builder = listBuilder<CoreExpression>()
+        val exps = listBuilder<CoreExpression>()
         for (exp in expressions) {
             val sexp = exp.simplify()
             if (sexp is CoreSequenceExpression)
-                builder.addAll(sexp.expressions)
+                exps.addAll(sexp.expressions)
             else
-                builder.add(sexp)
+                exps.add(sexp)
         }
 
-        return CoreExpression.sequence(builder.build())
+        return CoreExpression.sequence(exps.build())
     }
 }

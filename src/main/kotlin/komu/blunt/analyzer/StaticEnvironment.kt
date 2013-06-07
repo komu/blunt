@@ -1,10 +1,11 @@
 package komu.blunt.analyzer
 
 import komu.blunt.objects.Symbol
+import java.util.HashMap
 
 class StaticEnvironment(private val parent: StaticEnvironment? = null) {
 
-    private val variables = hashMap<Symbol, VariableInfo>()
+    private val variables = HashMap<Symbol, VariableInfo>()
 
     val size: Int
         get() = variables.size
@@ -12,14 +13,10 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
     fun get(name: Symbol): VariableReference =
         get(name, 0)
 
-    fun get(name: Symbol, depth: Int): VariableReference {
-        val v = variables[name]
-        return when {
-            v != null      -> v.toReference(depth)
-            parent != null -> parent[name, depth+1]
-            else           -> throw UnboundVariableException(name)
-        }
-    }
+    fun get(name: Symbol, depth: Int): VariableReference =
+        variables[name]?.toReference(depth) ?:
+            parent?.get(name, depth+1) ?:
+            throw UnboundVariableException(name)
 
     fun define(name: Symbol): VariableReference {
         if (variables.containsKey(name))

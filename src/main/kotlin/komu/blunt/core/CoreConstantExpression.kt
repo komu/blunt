@@ -4,11 +4,6 @@ import komu.blunt.asm.*
 
 class CoreConstantExpression(val value: Any) : CoreExpression() {
 
-    class object {
-        val TRUE = CoreConstantExpression(true)
-        val FALSE = CoreConstantExpression(false)
-    }
-
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {
             loadConstant(target, value)
@@ -16,6 +11,6 @@ class CoreConstantExpression(val value: Any) : CoreExpression() {
         }
 
     override fun simplify() = this
-    override fun toString(): String = value.toString()
+    override fun toString() = value.toString()
 }
 
