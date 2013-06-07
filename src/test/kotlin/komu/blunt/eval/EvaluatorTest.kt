@@ -4,7 +4,6 @@ import java.math.BigInteger
 import komu.blunt.analyzer.AnalyzationException
 import komu.blunt.core.CoreExpression
 import komu.blunt.objects.CompoundProcedure
-import komu.blunt.parser.parseExpression
 import komu.blunt.stdlib.booleanToConstructor
 import kotlin.test.fail
 import org.hamcrest.CoreMatchers.anything
@@ -14,6 +13,7 @@ import org.hamcrest.Matcher
 import org.junit.Assert.assertThat
 import org.junit.BeforeClass as beforeclass
 import org.junit.Test as test
+import komu.blunt.parser.Parser
 
 public class EvaluatorTest {
 
@@ -151,6 +151,9 @@ public class EvaluatorTest {
 
     private fun evaluate(expr: String): Any? =
         evaluator.evaluate(parseExpression(expr))
+
+    private fun parseExpression(expr: String) =
+        Parser(expr).parseExpression()
 
     private fun produces(value: Long): Matcher<Any?> =
         isEqualTo<Any?>(BigInteger.valueOf(value))

@@ -31,7 +31,7 @@ public class ParserTest {
     }
     
     test fun lambdaExpression() {
-        assertThat(parsing("\\x -> y"), producesExpressionMatching("(lambda x y)"))
+        assertThat(parsing("\\x -> y"), producesExpressionMatching("(\\ x -> y)"))
     }
     
     test fun parenthesizedExpression() {
@@ -70,5 +70,5 @@ public class ParserTest {
     }
 
     private fun parsing(s: String) =
-        parseExpression(s)
+        Parser(s).parseExpression()
 }
