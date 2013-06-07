@@ -6,7 +6,7 @@ class CoreConstantExpression(val value: Any) : CoreExpression() {
 
     class object {
         val TRUE = CoreConstantExpression(true)
-        val FALSE = CoreConstantExpression(true)
+        val FALSE = CoreConstantExpression(false)
     }
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
