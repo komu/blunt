@@ -1,5 +1,5 @@
 package komu.blunt.objects
 
-trait PrimitiveProcedure : Procedure {
+interface  PrimitiveProcedure : Procedure {
     fun apply(arg: Any?): Any?
 }

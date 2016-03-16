@@ -1,4 +1,3 @@
 package komu.blunt.objects
 
-trait Procedure { }
-
+interface Procedure

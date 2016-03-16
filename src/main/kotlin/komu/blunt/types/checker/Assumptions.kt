@@ -1,13 +1,13 @@
 package komu.blunt.types.checker
 
-import java.util.Collections.emptyMap
-import java.util.Collections.singletonMap
-import java.util.HashMap
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.objects.Symbol
 import komu.blunt.types.Scheme
 import komu.blunt.types.TypeVariable
 import komu.blunt.types.Types
+import java.util.*
+import java.util.Collections.emptyMap
+import java.util.Collections.singletonMap
 
 class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions> {
 
@@ -17,10 +17,10 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
     fun find(name: Symbol): Scheme =
         mappings[name] ?: throw TypeCheckException("unbound identifier: '$name'")
 
-    fun toString() = mappings.toString()
+    override fun toString() = mappings.toString()
 
     override fun addTypeVariables(result: MutableSet<TypeVariable>) {
-        for (scheme in mappings.values())
+        for (scheme in mappings.values)
             scheme.addTypeVariables(result)
     }
 
@@ -33,7 +33,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
         return builder.build()
     }
 
-    class object {
+    companion object {
 
         fun builder() = Builder()
         fun empty() = Assumptions(emptyMap())
@@ -55,7 +55,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
             private var mappings = HashMap<Symbol,Scheme>()
             private var built = false
 
-            fun set(name: Symbol, scheme: Scheme) {
+            operator fun set(name: Symbol, scheme: Scheme) {
                 ensurePrivateCopy()
                 mappings[name] = scheme
             }

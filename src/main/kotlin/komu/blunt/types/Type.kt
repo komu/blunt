@@ -7,7 +7,7 @@ abstract class Type : Types<Type> {
     abstract val hnf: Boolean
     abstract val kind: Kind
 
-    fun toString() = toString(0)
+    override fun toString() = toString(0)
     fun toScheme() = Scheme(emptyList(), Qualified.simple(this))
 
     protected abstract fun toString(precedence: Int): String

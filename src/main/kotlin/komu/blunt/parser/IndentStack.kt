@@ -1,22 +1,21 @@
 package komu.blunt.parser
 
-import java.util.ArrayList
+import java.util.*
 
 final class IndentStack {
-    val indents = ArrayList<Int>()
+    private val indents = ArrayList<Int>()
 
     fun push(column: Int) {
         indents.add(column)
     }
 
-    fun popIf(column: Int): Boolean {
-        val last = indents.size - 1
-        if (!indents.empty && column <= indents[last]) {
-            indents.remove(last)
-            return true
+    fun popIf(column: Int): Boolean =
+        if (indents.any() && column <= indents.last()) {
+            indents.removeAt(indents.lastIndex)
+            true
+        } else {
+            false
         }
-        return false
-    }
 
     fun toList(): List<Int> =
         ArrayList(indents)

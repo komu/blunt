@@ -1,135 +1,132 @@
 package komu.blunt.eval;
 
-import java.math.BigInteger
 import komu.blunt.analyzer.AnalyzationException
 import komu.blunt.core.CoreExpression
 import komu.blunt.objects.CompoundProcedure
+import komu.blunt.parser.Parser
 import komu.blunt.stdlib.booleanToConstructor
-import kotlin.test.fail
 import org.hamcrest.CoreMatchers.anything
 import org.hamcrest.CoreMatchers.instanceOf
-import org.hamcrest.CoreMatchers.`is` as isEqualTo
 import org.hamcrest.Matcher
 import org.junit.Assert.assertThat
+import org.junit.Test
+import java.math.BigInteger
+import kotlin.test.fail
+import org.hamcrest.CoreMatchers.`is` as isEqualTo
 import org.junit.BeforeClass as beforeclass
-import org.junit.Test as test
-import komu.blunt.parser.Parser
 
-public class EvaluatorTest {
+class EvaluatorTest {
 
-    class object {
-        val evaluator = Evaluator();
-        {
-            evaluator.loadResource("prelude.blunt")
-        }
+    companion object {
+        val evaluator = Evaluator().apply { loadResource("prelude.blunt") }
     }
 
-    test fun selfEvaluatingObjects() {
+    @Test fun selfEvaluatingObjects() {
         assertThatEvaluating("42", produces(42))
         assertThatEvaluating("True", produces(true))
         assertThatEvaluating("False", produces(false))
     }
 
-    test fun primitiveOperators() {
+    @Test fun primitiveOperators() {
         assertThatEvaluating("1 + 2", produces(3))
     }
 
-    test fun patternsInLambdas() {
+    @Test fun patternsInLambdas() {
         assertThatEvaluating("(\\(a,b) -> a) (42, 24)", produces(42))
     }
 
-    test fun ifExpression() {
+    @Test fun ifExpression() {
         assertThatEvaluating("if True then 1 + 2 else 3 + 4", produces(3))
         assertThatEvaluating("if False then 1 + 2 else 3 + 4", produces(7))
     }
 
-    test fun lambdaExpression() {
-        assertThatEvaluating("\\ x -> x", instanceOf(javaClass<CompoundProcedure>()) as Matcher<Any?>)
+    @Test fun lambdaExpression() {
+        assertThatEvaluating("\\ x -> x", instanceOf<Any?>(CompoundProcedure::class.java))
         assertThatEvaluating("(\\ x -> x + 1) 2", produces(3))
         assertThatEvaluating("(\\ x -> \\ y -> x + y) 3 4", produces(7))
         assertThatEvaluating("(\\ x y -> x + y) 3 4", produces(7))
     }
 
-    test fun equality() {
+    @Test fun equality() {
         assertThatEvaluating("1 == 1", produces(true))
         assertThatEvaluating("1 == 2", produces(false))
     }
 
-    test fun nestedCalls() {
+    @Test fun nestedCalls() {
         assertThatEvaluating("2 * 3 + ((5 + 6) * 7 * 8)", produces(622))
     }
 
-    test fun polymorphicTypeWithDifferentInstantiations() {
+    @Test fun polymorphicTypeWithDifferentInstantiations() {
         assertThatEvaluating("True == (1 == 1)", produces(true))
     }
 
-    test fun equalityBetweenDifferentTypes() {
+    @Test fun equalityBetweenDifferentTypes() {
         assertStaticError("2 == \"foo\"")
     }
 
-    test fun accessingUnboundVariable() {
+    @Test fun accessingUnboundVariable() {
         assertStaticError("\\x -> y")
     }
 
-    test fun typeErrors() {
+    @Test fun typeErrors() {
         assertStaticError("if 0 then 1 else 2");
         assertStaticError("if true then 1 else false");
     }
 
-    test fun typeInference() {
-        assertThatEvaluating("\\n -> n", isEqualTo(anything<Any?>()))
+    @Test fun typeInference() {
+        assertThatEvaluating("\\n -> n", isEqualTo(anything()))
         assertThatEvaluating("(\\n -> n) 42", produces(42));
     }
 
-    test fun let() {
+    @Test fun let() {
         assertThatEvaluating("let x = 42 in x", produces(42));
         //assertThatEvaluating("let x = 42; y = 2 in x + y", produces(3));
         assertThatEvaluating("let x = 42 in let y = 3 in x+y", produces(45));
     }
 
-    test fun sequence() {
+    @Test fun sequence() {
         assertThatEvaluating("1; 2; 3", produces(3));
     }
 
-    test fun letRec() {
+    @Test fun letRec() {
         assertThatEvaluating("let rec f = \\n -> if 0 == n then 1 else n * f (n - 1) in f 10)", produces(3628800));
         assertThatEvaluating("let rec f n = if 0 == n then 1 else n * f (n - 1) in f 10)", produces(3628800));
     }
 
-    test fun letFunctions() {
+    @Test fun letFunctions() {
         assertThatEvaluating("let f x = x * x in f 4", produces(16));
     }
 
-    test fun pairs() {
+    @Test fun pairs() {
         assertThatEvaluating("fst (1, \"foo\")", produces(1));
         assertThatEvaluating("snd (1, \"foo\")", produces("foo"));
     }
 
-    test fun lists() {
+    @Test fun lists() {
         assertThatEvaluating("length [1,2,3]", produces(3));
     }
 
-    test fun simpleCase() {
+    @Test fun simpleCase() {
         assertThatEvaluating("case 4 of\n  n -> n\n", produces(4));
     }
 
-    test fun matchingUnit() {
+    @Test fun matchingUnit() {
         assertThatEvaluating("case () of\n  () -> 2\n", produces(2));
     }
 
-    test fun constructorMatchingCase() {
+    @Test fun constructorMatchingCase() {
         assertThatEvaluating("case Nothing of\n  Just x -> 1\n  Nothing -> 2\n", produces(2));
         assertThatEvaluating("case Just 3 of\n  Just x -> 1\n  Nothing -> 2\n", produces(1));
         assertThatEvaluating("case Just 3 of\n  Just x -> x\n  Nothing -> 2\n", produces(3));
     }
 
-    test fun listMatching() {
+    @Test fun listMatching() {
         assertThatEvaluating("case [] of\n  [] -> 42\n", produces(42));
         assertThatEvaluating("case [1] of\n  x:xs -> x\n", produces(1));
         assertThatEvaluating("case [1,2,3,4,5,6,7] of\n  x:_:y:_ -> x+y\n", produces(4));
     }
 
-    test fun matchingTuples() {
+    @Test fun matchingTuples() {
         assertThatEvaluating("case (1,2) of\n  (x,y) -> x+y\n", produces(3));
         assertThatEvaluating("case (1,2,\"foo\") of\n  (x,y,z) -> z\n", produces("foo"));
     }

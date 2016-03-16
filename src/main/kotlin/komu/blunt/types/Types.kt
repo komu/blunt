@@ -1,9 +1,9 @@
 package komu.blunt.types
 
-import java.util.LinkedHashSet
 import komu.blunt.types.checker.Substitution
+import java.util.*
 
-trait Types<T : Types<T>> {
+interface Types<out T : Types<T>> {
     fun addTypeVariables(result: MutableSet<TypeVariable>)
     fun apply(substitution: Substitution): T
 

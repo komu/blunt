@@ -1,19 +1,17 @@
 package komu.blunt.types
 
-import java.util.ArrayList
-import java.util.Collections.emptyList
-import java.util.HashMap
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.checker.UnificationException
 import komu.blunt.types.checker.Unifier
-import komu.blunt.utils.addAll
+import java.util.*
+import java.util.Collections.emptyList
 
 class ClassEnv {
 
     private val classes = HashMap<String,TypeClass>()
     private val defaults = ArrayList<Type>();
 
-    {
+    init {
         defaults.add(BasicType.INTEGER)
 
         addClass("Eq")
@@ -89,13 +87,13 @@ class ClassEnv {
 
     private fun bySuper(predicate: Predicate): List<Predicate> {
         val typeClass = getClass(predicate.className)
-        val result = listBuilder<Predicate>()
+        val result = ArrayList<Predicate>()
         result.add(predicate)
 
         for (superName in typeClass.superClasses)
             result.addAll(bySuper(isIn(superName, predicate.predicateType)))
 
-        return result.build()
+        return result
     }
 
     private fun byInstance(predicate: Predicate): List<Predicate>? {
@@ -113,7 +111,7 @@ class ClassEnv {
     }
 
     private fun toHfns(predicates: List<Predicate>): List<Predicate> {
-        val result = listBuilder<Predicate>()
+        val result = ArrayList<Predicate>()
 
         for (predicate in predicates) {
             if (predicate.inHnf) {
@@ -124,12 +122,12 @@ class ClassEnv {
             }
         }
 
-        return result.build()
+        return result
     }
 
     private fun simplify(ps: List<Predicate>): List<Predicate> {
-        val combinedPredicates = hashSet<Predicate>()
-        val result = listBuilder<Predicate>()
+        val combinedPredicates = HashSet<Predicate>()
+        val result = ArrayList<Predicate>()
 
         for (p in ps) {
             if (!combinedPredicates.entails(p)) {
@@ -138,7 +136,7 @@ class ClassEnv {
             }
         }
 
-        return result.build()
+        return result
     }
 
     // Returns true iff this collection of predicates entails "entailed".
@@ -156,8 +154,8 @@ class ClassEnv {
     fun split(fixedVariables: Set<TypeVariable>,
               quantifyVariables: Set<TypeVariable>,
               originalPredicates: List<Predicate>): Pair<List<Predicate>, List<Predicate>> {
-        val deferredPredicates = listBuilder<Predicate>()
-        val retainedPredicates = listBuilder<Predicate>()
+        val deferredPredicates = ArrayList<Predicate>()
+        val retainedPredicates = ArrayList<Predicate>()
 
         for (predicate in reduce(originalPredicates))
             if (fixedVariables.containsAll(predicate.typeVariables))
@@ -166,7 +164,7 @@ class ClassEnv {
                 retainedPredicates.add(predicate)
 
         // TODO: defaulted
-        return Pair(deferredPredicates.build(), retainedPredicates.build())
+        return Pair(deferredPredicates, retainedPredicates)
     }
 
     fun defined(name: String) =

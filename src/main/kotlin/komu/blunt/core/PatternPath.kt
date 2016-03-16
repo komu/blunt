@@ -1,8 +1,10 @@
 package komu.blunt.core
 
-class PatternPath private (private val parent: PatternPath?, private val index: Int) {
+import java.util.*
 
-    class object {
+class PatternPath private constructor(private val parent: PatternPath?, private val index: Int) {
+
+    companion object {
         val EMPTY = PatternPath(null, -1)
     }
 
@@ -10,7 +12,7 @@ class PatternPath private (private val parent: PatternPath?, private val index: 
 
     val indices: List<Int>
         get() {
-            val indices = listBuilder<Int>()
+            val indices = ArrayList<Int>()
 
             var p = this
             while (true) {
@@ -19,9 +21,10 @@ class PatternPath private (private val parent: PatternPath?, private val index: 
                 p = parent
             }
 
-            return indices.build().reverse()
+            indices.reverse()
+            return indices
         }
 
-    fun toString() = indices.toString()
+    override fun toString() = indices.toString()
 }
 

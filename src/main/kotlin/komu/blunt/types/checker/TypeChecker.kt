@@ -16,7 +16,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     private val patternTypeChecker = PatternTypeChecker(this)
     private var substitution = Substitutions.empty()
 
-    class object {
+    companion object {
 
         fun typeCheck(exp: ASTExpression, classEnv: ClassEnv, dataTypes: DataTypeDefinitions, ass: Assumptions): Qualified<Type> {
             val checker = TypeChecker(classEnv, dataTypes)
@@ -85,7 +85,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     fun applySubstitution(t: Assumptions): Assumptions =
       t.apply(substitution)
 
-    fun applySubstitution<T : Types<T>>(ts: Collection<T>): List<T> =
+    fun <T : Types<T>> applySubstitution(ts: Collection<T>): List<T> =
         ts.map { it.apply(substitution) }
 
     fun findConstructor(name: String): ConstructorDefinition =

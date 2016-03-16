@@ -2,11 +2,12 @@ package komu.blunt
 
 import komu.blunt.eval.Evaluator
 import komu.blunt.parser.Parser
-import org.junit.Test as test
+import org.junit.Test
 
 class BluntTestRunner {
 
-    test fun smokeTests() {
+    @Test
+    fun smokeTests() {
         val evaluator = Evaluator()
 
         evaluator.loadResource("prelude.blunt")

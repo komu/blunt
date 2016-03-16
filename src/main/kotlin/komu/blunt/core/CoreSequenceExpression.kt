@@ -1,14 +1,14 @@
 package komu.blunt.core
 
 import komu.blunt.asm.*
-import komu.blunt.utils.addAll
 import komu.blunt.utils.init
+import java.util.*
 
 class CoreSequenceExpression (private val expressions: List<CoreExpression>) : CoreExpression() {
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {
-            if (!expressions.empty) {
+            if (expressions.any()) {
                 for (exp in expressions.init)
                     instructionsOf(exp.assemble(asm, target, Linkage.NEXT))
 
@@ -21,7 +21,7 @@ class CoreSequenceExpression (private val expressions: List<CoreExpression>) : C
     override fun toString() = "(begin $expressions)"
 
     override fun simplify(): CoreExpression {
-        val exps = listBuilder<CoreExpression>()
+        val exps = ArrayList<CoreExpression>()
         for (exp in expressions) {
             val sexp = exp.simplify()
             if (sexp is CoreSequenceExpression)
@@ -30,6 +30,6 @@ class CoreSequenceExpression (private val expressions: List<CoreExpression>) : C
                 exps.add(sexp)
         }
 
-        return CoreExpression.sequence(exps.build())
+        return CoreExpression.sequence(exps)
     }
 }

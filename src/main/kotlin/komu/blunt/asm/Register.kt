@@ -3,12 +3,12 @@ package komu.blunt.asm
 import komu.blunt.eval.Environment
 import komu.blunt.objects.Procedure
 
-enum class Register (val name: String) {
-    VAL       : Register("val")
-    ENV       : Register("env")
-    PROCEDURE : Register("procedure")
-    ARG       : Register("arg")
-    PC        : Register("pc")
+enum class Register (val name_: String) {
+    VAL("val"),
+    ENV("env"),
+    PROCEDURE("procedure"),
+    ARG("arg"),
+    PC("pc");
 
     fun isValidValue(value: Any): Boolean =
         when (this) {
@@ -18,5 +18,5 @@ enum class Register (val name: String) {
             else      -> true
         }
 
-    fun toString() = name
+    override fun toString() = name_
 }

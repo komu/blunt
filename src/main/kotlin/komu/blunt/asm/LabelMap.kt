@@ -1,10 +1,9 @@
 package komu.blunt.asm
 
+import java.util.*
 import java.util.Collections.emptySet
-import java.util.HashMap
-import java.util.HashSet
 
-private class LabelMap {
+internal class LabelMap {
     private val labelMap = HashMap<Int,MutableSet<Label>>()
 
     fun add(label: Label) {
@@ -15,6 +14,6 @@ private class LabelMap {
     fun labelsAt(address: Int): Set<Label> =
         labelMap[address] ?: emptySet()
 
-    fun iterator(): Iterator<Label> =
-        labelMap.values().iterator().flatMap { it.iterator() }
+    operator fun iterator(): Iterator<Label> =
+        labelMap.values.asSequence().flatMap { it.asSequence() }.iterator()
 }

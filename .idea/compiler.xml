@@ -28,9 +28,11 @@
       <profile default="false" name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <processorPath useClasspath="true" />
-        <module name="blunt" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="blunt_main" target="1.8" />
+      <module name="blunt_test" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>
-

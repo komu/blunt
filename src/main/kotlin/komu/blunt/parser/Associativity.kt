@@ -1,6 +1,6 @@
 package komu.blunt.parser
 
 enum class Associativity {
-    LEFT
+    LEFT,
     RIGHT
 }

@@ -7,16 +7,16 @@ import komu.blunt.types.ConstructorDefinition
 class ConstructorArgumentCollector(private val ctor: ConstructorDefinition,
                                    private val args: Array<Any?>) : PrimitiveProcedure {
 
-    class object {
+    companion object {
         fun createConstructor(ctor: ConstructorDefinition): Any =
             if (ctor.arity == 0)
                 TypeConstructorValue(ctor.index, ctor.name)
             else
-                ConstructorArgumentCollector(ctor, array<Any?>())
+                ConstructorArgumentCollector(ctor, arrayOf<Any?>())
     }
 
     override fun apply(arg: Any?): Any? {
-        val newArgs = Array<Any?>(args.size+1) { i -> if (i < args.size) args[i] else arg }
+        val newArgs = Array(args.size+1) { i -> if (i < args.size) args[i] else arg }
         if (newArgs.size == ctor.arity)
             return TypeConstructorValue(ctor.index, ctor.name, newArgs)
         else

@@ -24,10 +24,10 @@ class IdentifierMapping(val parent: IdentifierMapping? = null) {
 
     private fun seq() = sequence
 
-    fun get(v: Symbol): Symbol =
+    operator fun get(v: Symbol): Symbol =
         mappings[v] ?: parent?.get(v) ?: v
 
-    fun set(oldName: Symbol, newName: Symbol) {
+    operator fun set(oldName: Symbol, newName: Symbol) {
         val old = mappings.put(oldName, newName)
         if (old != null)
             throw IllegalArgumentException("duplicate mapping for '$oldName'");

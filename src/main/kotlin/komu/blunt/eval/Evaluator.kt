@@ -3,7 +3,9 @@ package komu.blunt.eval
 import komu.blunt.analyzer.StaticEnvironment
 import komu.blunt.analyzer.analyze
 import komu.blunt.asm.*
-import komu.blunt.ast.*
+import komu.blunt.ast.ASTDataDefinition
+import komu.blunt.ast.ASTExpression
+import komu.blunt.ast.ASTValueDefinition
 import komu.blunt.core.CoreDefineExpression
 import komu.blunt.core.CoreExpression
 import komu.blunt.parser.Parser
@@ -19,7 +21,7 @@ class Evaluator() {
     private val classEnv = ClassEnv()
     var steps = 0.toLong();
 
-    {
+    init {
         BasicFunctions.register(rootBindings)
         //throw UnsupportedOperationException("registering basic functions")
         //NativeFunctionRegisterer(rootBindings).register(Class.forName("komu.blunt.stdlib.BasicFunctions"))

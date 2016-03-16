@@ -6,8 +6,8 @@ import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 
-public fun producesExpressionMatching(representation: String): Matcher<ASTExpression> =
-    object : ASTMatcher<ASTExpression>(javaClass<ASTExpression>()) {
+fun producesExpressionMatching(representation: String): Matcher<ASTExpression> =
+    object : ASTMatcher<ASTExpression>(ASTExpression::class.java) {
 
         override fun matches(exp: ASTExpression) =
             exp.toString() == representation
@@ -17,8 +17,8 @@ public fun producesExpressionMatching(representation: String): Matcher<ASTExpres
         }
     }
 
-public fun producesConstant(value: Any): Matcher<ASTExpression> =
-    object : ASTMatcher<ASTConstant>(javaClass<ASTConstant>()) {
+fun producesConstant(value: Any): Matcher<ASTExpression> =
+    object : ASTMatcher<ASTConstant>(ASTConstant::class.java) {
 
         override fun matches(exp: ASTConstant) =
             value == exp.value

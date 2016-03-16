@@ -6,9 +6,9 @@ import komu.blunt.objects.CompoundProcedure
 import komu.blunt.objects.EvaluationException
 import komu.blunt.objects.PrimitiveProcedure
 
-class OpApply private(private val tail: Boolean) : OpCode() {
+class OpApply private constructor(private val tail: Boolean) : OpCode() {
 
-    class object {
+    companion object {
         val NORMAL = OpApply(false)
         val TAIL   = OpApply(true)
     }

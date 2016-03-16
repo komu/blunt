@@ -1,9 +1,9 @@
 package komu.blunt.asm
 
-import java.util.ArrayList
 import komu.blunt.analyzer.VariableReference
 import komu.blunt.asm.opcodes.*
 import komu.blunt.core.PatternPath
+import java.util.*
 
 class Instructions {
     private val instructions = ArrayList<OpCode>()
@@ -29,7 +29,7 @@ class Instructions {
     }
 
     fun dump() {
-        for ((address, instruction) in instructions.withIndices()) {
+        instructions.forEachIndexed { address, instruction ->
             for (label in labelMap.labelsAt(address))
                 println("$label:")
 
@@ -44,7 +44,7 @@ class Instructions {
     val count: Int
         get() = instructions.size
 
-    fun get(pc: Int): OpCode = instructions[pc]
+    operator fun get(pc: Int): OpCode = instructions[pc]
 }
 
 fun instructions(block: Instructions.() -> Unit): Instructions {

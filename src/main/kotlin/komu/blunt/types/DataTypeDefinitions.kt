@@ -1,15 +1,15 @@
 package komu.blunt.types
 
-import java.util.*
 import komu.blunt.analyzer.AnalyzationException
 import komu.blunt.ast.ASTDataDefinition
 import komu.blunt.parser.TypeParser
+import java.util.*
 
 public class DataTypeDefinitions() {
 
     private val constructors = HashMap<String,ConstructorDefinition>();
 
-    {
+    init {
         register(0, ConstructorNames.UNIT, "()", 0)
         register(0, ConstructorNames.NIL, "[a]", 0)
         register(1, ConstructorNames.CONS, "a -> [a] -> [a]", 2)
@@ -44,5 +44,5 @@ public class DataTypeDefinitions() {
     }
 
     val declaredConstructors: Collection<ConstructorDefinition>
-        get() = constructors.values()
+        get() = constructors.values
 }

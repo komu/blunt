@@ -1,7 +1,8 @@
 package komu.blunt.core
 
 import komu.blunt.asm.*
-import komu.blunt.asm.Linkage.*
+import komu.blunt.asm.Linkage.Companion.NEXT
+import komu.blunt.asm.Linkage.Companion.RETURN
 import komu.blunt.asm.Register.*
 
 class CoreApplicationExpression(private val func: CoreExpression,

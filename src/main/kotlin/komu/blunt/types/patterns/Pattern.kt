@@ -4,9 +4,9 @@ import komu.blunt.objects.Symbol
 import komu.blunt.types.ConstructorNames
 
 abstract class Pattern {
-    abstract fun toString(): String
+    override abstract fun toString(): String
 
-    class object {
+    companion object {
         fun constructor(name: String, vararg args: Pattern): Pattern =
             ConstructorPattern(name, args.toList())
 
@@ -39,18 +39,18 @@ class ConstructorPattern(val name: String, val args: List<Pattern>) : Pattern() 
     fun map(f: (Pattern) -> Pattern) = ConstructorPattern(name, args.map(f))
 
     override fun toString(): String =
-        if (args.empty)
+        if (args.isEmpty())
             name
         else
-            args.makeString(" ", "($name", ")")
+            args.joinToString(" ", "($name", ")")
 
-    fun equals(obj: Any?) = obj is ConstructorPattern && name == obj.name && args == obj.args
-    fun hashCode() = name.hashCode() * 79 + args.hashCode()
+    override fun equals(obj: Any?) = obj is ConstructorPattern && name == obj.name && args == obj.args
+    override fun hashCode() = name.hashCode() * 79 + args.hashCode()
 }
 
-class WildcardPattern private () : Pattern() {
+class WildcardPattern private constructor() : Pattern() {
 
-    class object {
+    companion object {
         val INSTANCE = WildcardPattern()
     }
 
@@ -59,12 +59,12 @@ class WildcardPattern private () : Pattern() {
 
 class VariablePattern(val variable: Symbol) : Pattern() {
     override fun toString() = variable.toString()
-    fun equals(obj: Any?) = obj is VariablePattern && variable == obj.variable
-    fun hashCode() = variable.hashCode()
+    override fun equals(obj: Any?) = obj is VariablePattern && variable == obj.variable
+    override fun hashCode() = variable.hashCode()
 }
 
 class LiteralPattern(val value: Any) : Pattern() {
     override fun toString() = value.toString()
-    fun equals(obj: Any?) = obj is LiteralPattern && value == obj.value
-    fun hashCode() = value.hashCode()
+    override fun equals(obj: Any?) = obj is LiteralPattern && value == obj.value
+    override fun hashCode() = value.hashCode()
 }

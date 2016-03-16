@@ -8,7 +8,7 @@ import komu.blunt.types.ConstructorNames
 
 class OpJumpIfFalse(private val register: Register, private val label: Label) : OpCode() {
 
-    class object {
+    companion object {
         // TODO: move this
         fun isFalse(value: Any?): Boolean =
             false == value || (value is TypeConstructorValue && value.name == ConstructorNames.FALSE)

@@ -1,7 +1,7 @@
 package komu.blunt.parser
 
 import java.lang.Math.max
-import java.util.HashMap
+import java.util.*
 
 class OperatorSet() {
 
@@ -9,7 +9,7 @@ class OperatorSet() {
     private var maxPrecedence = 0
     private val DEFAULT_PRECEDENCE = 0
 
-    {
+    init {
         add(1, Associativity.RIGHT, "$")
         add(2, Associativity.RIGHT, ":")
         add(3, "==", "<", "<=", ">", ">=")
@@ -25,7 +25,7 @@ class OperatorSet() {
         addInternal(precedence, associativity, names)
     }
 
-    fun addInternal(precedence: Int, associativity: Associativity, names: Array<String>) {
+    fun addInternal(precedence: Int, associativity: Associativity, names: Array<out String>) {
         require(precedence >= 0)
 
         maxPrecedence = max(maxPrecedence, precedence)
@@ -33,7 +33,7 @@ class OperatorSet() {
             ops[name] = Operator(name, associativity, precedence)
     }
 
-    fun get(name: String): Operator =
+    operator fun get(name: String): Operator =
         ops[name] ?: Operator(name, Associativity.LEFT, DEFAULT_PRECEDENCE)
 
     val maxLevel: Int

@@ -7,7 +7,7 @@ import komu.blunt.types.Type
 abstract class ASTDefinition
 
 class ASTValueDefinition(val name: Symbol, val value: ASTExpression) : ASTDefinition() {
-    fun toString() = "(define $name $value)"
+    override fun toString() = "(define $name $value)"
 }
 
 class ASTDataDefinition(val name: String,
@@ -15,5 +15,5 @@ class ASTDataDefinition(val name: String,
                         val constructors: List<ConstructorDefinition>,
                         val derivedClasses: List<String>) : ASTDefinition() {
 
-    fun toString() = "data $name = $constructors"
+    override fun toString() = "data $name = $constructors"
 }

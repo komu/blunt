@@ -1,20 +1,20 @@
 package komu.blunt.objects
 
-import java.util.Arrays
+import java.util.*
 
 class TypeConstructorValue(val index: Int, val name: String, val items: Array<Any?> = TypeConstructorValue.EMPTY_ARRAY) : Comparable<TypeConstructorValue> {
 
-    {
-        require(index >= 0, "invalid index: $index")
+    init {
+        require(index >= 0) { "invalid index: $index" }
     }
 
-    class object {
+    companion object {
         private val EMPTY_ARRAY = Array<Any?>(0) { x -> null }
     }
 
     fun isTuple() = name.startsWith("(,")
 
-    fun toString(): String =
+    override fun toString(): String =
         when {
             items.size == 0 -> name
             isTuple()       -> toStringAsTuple()
@@ -53,13 +53,13 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
     }
 
     private fun toStringAsTuple() =
-        items.makeString(", ", "(", ")")
+        items.joinToString(", ", "(", ")")
 
-    fun equals(o: Any?) =
+    override fun equals(o: Any?) =
         o is TypeConstructorValue && index == o.index && Arrays.equals(items, o.items)
 
-    fun hashCode() =
-        Arrays.hashCode(items as Array<Any>)
+    override fun hashCode() =
+        Arrays.hashCode(items)
 
     override fun compareTo(other: TypeConstructorValue): Int {
 //        if (index != o.index)

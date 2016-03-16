@@ -1,12 +1,11 @@
 package komu.blunt.parser
 
-import java.util.ArrayList
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTDataDefinition
-import komu.blunt.parser.TokenType.*
 import komu.blunt.types.*
+import java.util.*
 
-private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
+internal class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 
     // data <type> <var>* = <constructor>+
     fun parseDataDefinition(): ASTDataDefinition  {
@@ -37,25 +36,25 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
     private fun parseConstructor(builder: DataTypeBuilder): Unit {
         val constructorName = lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME)
 
-        val args = listBuilder<Type>()
+        val args = ArrayList<Type>()
         while (!lexer.nextTokenIs(TokenType.OR) && !lexer.nextTokenIs(TokenType.END) && !lexer.nextTokenIs(TokenType.DERIVING))
             args.add(typeParser.parseTypePrimitive())
 
-        builder.addConstructor(constructorName, args.build())
+        builder.addConstructor(constructorName, args)
     }
 
     private class DataTypeBuilder(val typeName: String) {
 
         private val vars = ArrayList<TypeVariable>()
-        private val constructors = listBuilder<ConstructorDefinition>()
-        private val derivedClasses = listBuilder<String>()
+        private val constructors = ArrayList<ConstructorDefinition>()
+        private val derivedClasses = ArrayList<String>()
         private var constructorIndex = 0
 
-        public fun addVariable(variable: TypeVariable) {
+        fun addVariable(variable: TypeVariable) {
             vars.add(variable)
         }
 
-        public fun addConstructor(constructorName: String, args: List<Type>) {
+        fun addConstructor(constructorName: String, args: List<Type>) {
             val scheme = Qualified.simple(functionType(args, getType())).quantify(vars)
             constructors.add(ConstructorDefinition(constructorIndex++, constructorName, scheme, args.size))
         }
@@ -63,11 +62,11 @@ private class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
         private fun getType() =
             genericType(typeName, vars)
 
-        public fun addAutomaticallyDerivedClass(className: String) {
+        fun addAutomaticallyDerivedClass(className: String) {
             derivedClasses.add(className)
         }
 
-        public fun build(): ASTDataDefinition =
-            AST.data(typeName, getType(), constructors.build(), derivedClasses.build())
+        fun build(): ASTDataDefinition =
+            AST.data(typeName, getType(), constructors, derivedClasses)
     }
 }

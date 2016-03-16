@@ -82,14 +82,14 @@ class Analyzer(val dataTypes: DataTypeDefinitions) {
     }
 
     private fun createAlts(matchedObject: VariableReference, alts: List<ASTAlternative>, env: StaticEnvironment): CoreExpression =
-        if (alts.empty)
+        if (alts.isEmpty())
             analyze(AST.error("match failure"), env)
         else {
             val first = alts.first()
             val predicate = PatternAnalyzer.makePredicate(first.pattern, matchedObject)
             val extractor = PatternAnalyzer.makeExtractor(first.pattern, matchedObject, env)
             val body = CoreExpression.sequence(extractor, analyze(first.value, env))
-            val rest = createAlts(matchedObject, alts.tail, env)
+            val rest = createAlts(matchedObject, alts.drop(1), env)
             CoreIfExpression(predicate, body, rest)
         }
 }

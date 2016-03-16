@@ -6,5 +6,5 @@ import komu.blunt.asm.VM
 abstract class OpCode {
     abstract fun execute(vm: VM)
     abstract fun modifies(register: Register): Boolean
-    abstract fun toString(): String
+    abstract override fun toString(): String
 }

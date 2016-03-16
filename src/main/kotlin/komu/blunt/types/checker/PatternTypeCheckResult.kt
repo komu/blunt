@@ -8,5 +8,5 @@ class PatternTypeCheckResult<out T>(val predicates: List<Predicate>, val ass: As
 
     // TODO this(ass: Assumptions, value: T): this(Collections.emptyList<Predicate>().sure(), ass, value) { }
 
-    fun toString() = "$predicates/$ass/$value"
+    override fun toString() = "$predicates/$ass/$value"
 }

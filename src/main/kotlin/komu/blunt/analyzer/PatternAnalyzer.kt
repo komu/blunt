@@ -2,6 +2,7 @@ package komu.blunt.analyzer
 
 import komu.blunt.core.*
 import komu.blunt.types.patterns.*
+import java.util.*
 
 object PatternAnalyzer {
 
@@ -20,9 +21,9 @@ object PatternAnalyzer {
     }
 
     private fun constructorExtractor(pattern: ConstructorPattern, path: PatternPath, env: StaticEnvironment, matchedObject: VariableReference): CoreExpression =
-        CoreExpression.sequence(pattern.args.withIndices().map { p ->
-            makeExtractor(p.second, matchedObject, env, path.extend(p.first))
-        }.toList())
+        CoreExpression.sequence(pattern.args.mapIndexed { i, p ->
+            makeExtractor(p, matchedObject, env, path.extend(i))
+        })
 
     fun makePredicate(pattern: Pattern, matchedObject: VariableReference, path: PatternPath=PatternPath.EMPTY): CoreExpression =
         when (pattern) {
@@ -34,13 +35,14 @@ object PatternAnalyzer {
         }
 
     private fun constructorPredicate(pattern: ConstructorPattern, path: PatternPath, matchedObject: VariableReference): CoreExpression {
-        val exps = listBuilder<CoreExpression>()
+        val exps = ArrayList<CoreExpression>()
         exps.add(matchesConstructor(path, pattern.name, matchedObject))
 
-        for ((i,p) in pattern.args.withIndices())
+        pattern.args.forEachIndexed { i, p ->
             exps.add(makePredicate(p, matchedObject, path.extend(i)))
+        }
 
-        return CoreExpression.and(exps.build())
+        return CoreExpression.and(exps)
     }
 
     private fun matchesConstructor(path: PatternPath, name: String, matchedObject: VariableReference): CoreExpression =

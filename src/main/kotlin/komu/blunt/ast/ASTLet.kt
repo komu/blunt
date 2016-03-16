@@ -6,5 +6,5 @@ class ASTLet(val bindings: List<ImplicitBinding>, val body: ASTExpression) : AST
         ASTLet(bindings.map { it.simplify() }, body.simplify())
 
     override fun toString() =
-        "(let (${bindings.makeString(" ")}) $body)"
+        "(let (${bindings.joinToString(" ")}) $body)"
 }

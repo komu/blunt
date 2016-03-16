@@ -1,11 +1,11 @@
 package komu.blunt.types
 
-import java.util.Objects.hash
 import komu.blunt.types.checker.Substitution
+import java.util.Objects.hash
 
 class TypeConstructor(private val name: String, private val _kind: Kind) : Type() {
 
-    class object {
+    companion object {
         private val tuplePattern = java.util.regex.Pattern.compile("\\(,+\\)")
     }
 
@@ -16,10 +16,10 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
     override val kind = _kind
     override fun toString(precedence: Int) = name
 
-    fun equals(rhs: Any?) =
+    override fun equals(rhs: Any?) =
         rhs is TypeConstructor && name == rhs.name && kind == rhs.kind
 
-    fun hashCode() =
+    override fun hashCode() =
         hash(name, kind)
 
     internal fun toString(arguments: List<Type>, precedence: Int): String =
@@ -49,7 +49,7 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
     }
 
     private fun tupleToString(arguments: List<Type>) =
-        arguments.makeString(", ", "(", ")")
+        arguments.joinToString(", ", "(", ")")
 
     private fun functionToString(arguments: List<Type>, precedence: Int): String {
         val sb = StringBuilder()

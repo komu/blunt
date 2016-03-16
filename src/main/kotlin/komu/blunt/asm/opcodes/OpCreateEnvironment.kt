@@ -5,7 +5,7 @@ import komu.blunt.asm.VM
 
 class OpCreateEnvironment(private val envSize: Int) : OpCode() {
 
-    {
+    init {
         require(envSize >= 0)
     }
 

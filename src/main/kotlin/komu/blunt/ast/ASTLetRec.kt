@@ -7,5 +7,5 @@ class ASTLetRec(val bindings: List<ImplicitBinding>, val body: ASTExpression) : 
         ASTLetRec(bindings.map { it.simplify() }, body.simplify())
 
     override fun toString() =
-        "(letrec (${bindings.makeString(" ")}) $body)"
+        "(letrec (${bindings.joinToString(" ")}) $body)"
 }

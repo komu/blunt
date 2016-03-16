@@ -2,10 +2,10 @@ package komu.blunt.types
 
 import java.util.Objects.hash
 
-abstract class Kind protected () {
+abstract class Kind protected constructor() {
 
-    class object {
-        public val STAR: Kind = StarKind()
+    companion object {
+        val STAR: Kind = StarKind()
 
         fun arrow(left: Kind, right: Kind): Kind = ArrowKind(left, right)
 
@@ -16,7 +16,7 @@ abstract class Kind protected () {
         }
     }
 
-    fun toString() = toString(false)
+    override fun toString() = toString(false)
 
     protected abstract fun toString(l: Boolean): String
 }
@@ -27,8 +27,8 @@ class StarKind : Kind() {
 
 class ArrowKind(val left: Kind, val right: Kind) : Kind() {
 
-    fun equals(rhs: Any?) = rhs is ArrowKind && left == rhs.left && right == rhs.right
-    fun hashCode() = hash(left, right)
+    override fun equals(rhs: Any?) = rhs is ArrowKind && left == rhs.left && right == rhs.right
+    override fun hashCode() = hash(left, right)
 
     override fun toString(l: Boolean): String =
         if (l)

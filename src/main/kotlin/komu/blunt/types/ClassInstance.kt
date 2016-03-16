@@ -17,6 +17,6 @@ class ClassInstance(val qual: Qualified<Predicate>) : Types<ClassInstance> {
     override fun apply(substitution: Substitution): ClassInstance =
         ClassInstance(qual.apply(substitution))
 
-    fun toString() =
+    override fun toString() =
         qual.toString()
 }

@@ -1,10 +1,10 @@
 package komu.blunt.parser
 
-import java.util.HashMap
+import java.util.*
 
 open class TokenType<out T>(val name: String) {
 
-    class object {
+    companion object {
         fun keyword(name: String) = Keyword.keywords[name]
 
         val EOF               = TokenType<Unit>("<eof>")
@@ -37,19 +37,19 @@ open class TokenType<out T>(val name: String) {
         val BIG_RIGHT_ARROW   = Punctuation("=>")
     }
 
-    open fun toString() = name
+    override fun toString() = name
 }
 
 class Punctuation(name: String) : TokenType<Unit>(name)
 
 class Keyword(name: String) : TokenType<Unit>(name) {
-    {
+    init {
         keywords[name] = this
     }
 
     override fun toString() = "keyword '$name'"
 
-    class object {
+    companion object {
         val keywords = HashMap<String, Keyword>()
     }
 }

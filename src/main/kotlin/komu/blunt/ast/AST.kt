@@ -1,11 +1,11 @@
 package komu.blunt.ast
 
-import java.util.Collections.singletonList
 import komu.blunt.objects.Symbol
 import komu.blunt.types.ConstructorDefinition
 import komu.blunt.types.ConstructorNames
 import komu.blunt.types.Type
 import komu.blunt.types.patterns.Pattern
+import java.util.Collections.singletonList
 
 /**
  * Convenience functions for constructing syntax objects.
@@ -22,7 +22,7 @@ object AST {
     fun apply(func: ASTExpression, vararg args: ASTExpression): ASTExpression =
         apply2(func, args)
 
-    private fun apply2(func: ASTExpression, args: Array<ASTExpression>): ASTExpression {
+    private fun apply2(func: ASTExpression, args: Array<out ASTExpression>): ASTExpression {
         var exp = func
 
         for (arg in args)
@@ -41,13 +41,13 @@ object AST {
         ASTLambda(argument, body)
 
     fun lambda(arguments: List<Symbol>, body: ASTExpression): ASTExpression {
-        if (arguments.empty) throw IllegalArgumentException("no arguments for lambda")
+        if (arguments.isEmpty()) throw IllegalArgumentException("no arguments for lambda")
 
         val head = arguments.first()
         if (arguments.size == 1)
             return lambda(head, body)
         else
-            return lambda(head, lambda(arguments.tail, body))
+            return lambda(head, lambda(arguments.drop(1), body))
     }
 
     fun ifExp(test: ASTExpression, cons: ASTExpression, alt: ASTExpression): ASTExpression =
@@ -75,7 +75,7 @@ object AST {
         ASTSequence(exps.toList())
 
     fun tuple(exps: List<ASTExpression>): ASTExpression  {
-        if (exps.empty)
+        if (exps.isEmpty())
             return AST.constructor(ConstructorNames.UNIT)
         if (exps.size == 1)
             return exps.first()
@@ -99,7 +99,7 @@ object AST {
     fun list(exps: List<ASTExpression>): ASTExpression {
         var list = constructor(ConstructorNames.NIL)
 
-        for (exp in exps.reverse())
+        for (exp in exps.reversed())
             list = constructor(ConstructorNames.CONS, exp, list)
 
         return list

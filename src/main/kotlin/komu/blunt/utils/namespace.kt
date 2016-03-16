@@ -1,11 +1,11 @@
 package komu.blunt.utils
 
-import java.util.ArrayList
+import java.nio.charset.StandardCharsets
+import java.util.*
 import java.util.Collections.emptySet
-import java.util.HashSet
 
-fun intersection<T>(sets: Collection<Set<T>>): Set<T> {
-    if (sets.empty)
+fun <T> intersection(sets: Collection<Set<T>>): Set<T> {
+    if (sets.isEmpty())
         return emptySet()
 
     val it = sets.iterator()
@@ -25,12 +25,7 @@ fun <T> List<T>.concat(rhs: List<T>): List<T> {
 }
 
 val <T> List<T>.init: List<T>
-    get() = if (empty) this else subList(0, size-1)
-
-fun <T> ImmutableArrayListBuilder<T>.addAll(xs: Iterable<T>) {
-    for (x in xs)
-        add(x)
-}
+    get() = if (isEmpty()) this else subList(0, size-1)
 
 fun StringBuilder.appendTimes(s: String, count: Int): StringBuilder {
     for (i in 1..count)
@@ -38,12 +33,5 @@ fun StringBuilder.appendTimes(s: String, count: Int): StringBuilder {
     return this
 }
 
-fun ClassLoader.readResourceAsString(path: String): String? {
-    val stream = getResourceAsStream(path)
-    if (stream != null)
-        return stream.use { it.reader("UTF-8").readText() }
-    else
-        return null;
-}
-
-fun String.contains(ch: Char) = indexOf(ch) != -1
+fun ClassLoader.readResourceAsString(path: String): String? =
+    getResourceAsStream(path)?.use { it.reader(StandardCharsets.UTF_8).readText() }

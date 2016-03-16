@@ -1,21 +1,21 @@
 package komu.blunt.parser
 
-import java.util.ArrayList
-import java.util.Collections.singletonList
 import komu.blunt.ast.AST
 import komu.blunt.ast.ASTAlternative
 import komu.blunt.ast.ASTExpression
 import komu.blunt.objects.Symbol
 import komu.blunt.types.patterns.Pattern
 import komu.blunt.types.patterns.VariablePattern
+import java.util.*
+import java.util.Collections.singletonList
 
 class FunctionBuilder {
-    private val symbols = listBuilder<Symbol>()
+    private val symbols = ArrayList<Symbol>()
     private val exps = ArrayList<ASTExpression>()
     private val alternatives = ArrayList<ASTAlternative>()
 
     fun addAlternative(args: List<Pattern>, body: ASTExpression) {
-        if (exps.empty) {
+        if (exps.isEmpty()) {
             for (i in args.indices) {
                 val v = Symbol("\$arg$i") // TODO: fresh symbols
                 symbols.add(v)
@@ -36,7 +36,7 @@ class FunctionBuilder {
         return if (simpleVars != null)
             AST.lambda(simpleVars, alts.first().value)
         else
-            AST.lambda(symbols.build(), AST.caseExp(AST.tuple(exps), alts))
+            AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alts))
     }
 
     fun containsOnlyVariablePatterns(alts: List<ASTAlternative>): List<Symbol>? {

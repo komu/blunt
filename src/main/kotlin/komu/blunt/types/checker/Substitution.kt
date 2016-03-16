@@ -1,12 +1,12 @@
 package komu.blunt.types.checker
 
-import java.util.Collections.emptyMap
-import java.util.Collections.singletonMap
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.Type
 import komu.blunt.types.TypeGen
 import komu.blunt.types.TypeVariable
-import java.util.HashMap
+import java.util.*
+import java.util.Collections.emptyMap
+import java.util.Collections.singletonMap
 
 class Substitution(private val mapping: Map<TypeVariable,Type>) {
 
@@ -33,8 +33,8 @@ class Substitution(private val mapping: Map<TypeVariable,Type>) {
     }
 
     private fun agree(s2: Substitution): Boolean {
-        for (v in mapping.keySet())
-            if (s2.mapping.containsKey(v))
+        for (v in mapping.keys)
+            if (v in s2.mapping)
                 if (v.apply(this) != v.apply(s2))
                     return false
 
@@ -62,7 +62,7 @@ object Substitutions {
     fun empty() = Substitution(emptyMap())
 
     fun singleton(v: TypeVariable, t: Type): Substitution {
-        require(v.kind == t.kind, "kinds don't match")
+        require(v.kind == t.kind) { "kinds don't match" }
 
         return Substitution(singletonMap(v, t))
     }
@@ -70,8 +70,9 @@ object Substitutions {
     fun fromTypeVariables(variables: List<TypeVariable>): Substitution {
         val map = HashMap<TypeVariable,Type>()
 
-        for ((i,v) in variables.withIndices())
+        variables.forEachIndexed { i, v ->
             map[v] = TypeGen(i)
+        }
 
         return Substitution(map)
     }

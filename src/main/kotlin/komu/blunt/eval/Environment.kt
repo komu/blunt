@@ -1,35 +1,35 @@
 package komu.blunt.eval
 
-import java.lang.Math.max
-import java.util.Arrays
 import komu.blunt.analyzer.VariableReference
+import java.lang.Math.max
+import java.util.*
 
 abstract class Environment {
 
-    fun get(v: VariableReference) =
+    operator fun get(v: VariableReference) =
         get(v.frame, v.offset)
 
-    fun set(v: VariableReference, value: Any?) {
+    operator fun set(v: VariableReference, value: Any?) {
         set(v.frame, v.offset, value)
     }
 
-    protected abstract fun get(frame: Int, offset: Int): Any?
-    protected abstract fun set(frame: Int, offset: Int, value: Any?)
+    protected abstract operator fun get(frame: Int, offset: Int): Any?
+    protected abstract operator fun set(frame: Int, offset: Int, value: Any?)
 
     fun extend(envSize: Int, arg: Any?): Environment {
-        val args = Array<Any?>(envSize) { _ -> null }
+        val args = Array<Any?>(envSize) { null }
         args[0] = arg
         return NestedEnvironment(args, this)
     }
 
     fun extend(envSize: Int): Environment {
-        return NestedEnvironment(Array<Any?>(envSize) { _ -> null }, this)
+        return NestedEnvironment(Array<Any?>(envSize) { null }, this)
     }
 }
 
 class RootEnvironment : Environment() {
 
-    private var bindings = Array<Any?>(512) { _ -> null }
+    private var bindings = Array<Any?>(512) { null }
 
     override fun set(frame: Int, offset: Int, value: Any?) {
         checkFrame(frame)

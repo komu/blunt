@@ -1,9 +1,9 @@
 package komu.blunt.asm
 
-import java.util.ArrayList
 import komu.blunt.eval.Environment
 import komu.blunt.eval.RootEnvironment
 import komu.blunt.objects.Procedure
+import java.util.*
 
 class VM(private val instructions: Instructions, var env: Environment, val globalEnvironment: RootEnvironment) {
 
@@ -26,7 +26,7 @@ class VM(private val instructions: Instructions, var env: Environment, val globa
         return value
     }
 
-    fun get(register: Register): Any? =
+    operator fun get(register: Register): Any? =
         when (register) {
             Register.VAL       -> value
             Register.ARG       -> arg
@@ -35,7 +35,7 @@ class VM(private val instructions: Instructions, var env: Environment, val globa
             Register.PROCEDURE -> procedure
         }
 
-    fun set(register: Register, value: Any?) {
+    operator fun set(register: Register, value: Any?) {
         when (register) {
             Register.VAL       -> this.value = value
             Register.ARG       -> arg = value
@@ -50,5 +50,5 @@ class VM(private val instructions: Instructions, var env: Environment, val globa
     }
 
     fun pop(): Any? =
-        stack.remove(stack.size - 1)
+        stack.removeAt(stack.size - 1)
 }

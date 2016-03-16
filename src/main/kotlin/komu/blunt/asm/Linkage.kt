@@ -1,14 +1,14 @@
 package komu.blunt.asm
 
-class Linkage private(private val name: String, val label: Label?) {
+class Linkage private constructor(private val name: String, val label: Label?) {
 
-    class object {
+    companion object {
         val NEXT = Linkage("next", null);
         val RETURN = Linkage("return", null);
         fun jump(label: Label) = Linkage("jump", label)
     }
 
-    fun toString() =
+    override fun toString() =
         if (label != null)
             "$name $label"
         else

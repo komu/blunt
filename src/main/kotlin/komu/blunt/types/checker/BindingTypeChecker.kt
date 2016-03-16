@@ -1,13 +1,12 @@
 package komu.blunt.types.checker
 
-import java.util.ArrayList
-import java.util.HashSet
 import komu.blunt.ast.BindGroup
 import komu.blunt.ast.ExplicitBinding
 import komu.blunt.ast.ImplicitBinding
 import komu.blunt.ast.names
 import komu.blunt.types.*
 import komu.blunt.utils.intersection
+import java.util.*
 
 final class BindingTypeChecker(private val tc: TypeChecker) {
 
@@ -53,7 +52,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val typeVariables = tc.newTVars(bindings.size)
         val predicates = typeCheckAndUnifyBindings(bindings, typeVariables, ass)
 
-        val types = tc.applySubstitution<Type>(typeVariables)
+        val types = tc.applySubstitution(typeVariables)
         val fs = tc.applySubstitution(ass).typeVariables
 
         val vss = ArrayList<Set<TypeVariable>>()
@@ -80,7 +79,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
 
         val predicates = ArrayList<Predicate>()
 
-        for ((i, typ) in ts.withIndices()) {
+        ts.forEachIndexed { i, typ ->
             val (t, ps) = tc.typeCheck(bs[i].expr, as2)
 
             tc.unify(t, typ)

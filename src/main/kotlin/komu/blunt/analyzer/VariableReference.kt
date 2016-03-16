@@ -2,15 +2,15 @@ package komu.blunt.analyzer
 
 import komu.blunt.objects.Symbol
 
-class VariableReference private (val frame: Int, val offset: Int, val name: Symbol) {
+class VariableReference private constructor(val frame: Int, val offset: Int, val name: Symbol) {
 
-    {
-        require(frame >= GLOBAL_FRAME, "invalid frame $frame")
-        require(offset >= 0, "invalid offset $offset")
+    init {
+        require(frame >= GLOBAL_FRAME) { "invalid frame $frame" }
+        require(offset >= 0) { "invalid offset $offset" }
     }
 
-    class object {
-        public val GLOBAL_FRAME: Int = -1
+    companion object {
+        val GLOBAL_FRAME: Int = -1
 
         fun nested(frame: Int, offset: Int, name: Symbol) =
             VariableReference(frame, offset, name)
@@ -22,5 +22,5 @@ class VariableReference private (val frame: Int, val offset: Int, val name: Symb
     val global: Boolean
         get() = frame == GLOBAL_FRAME
 
-    fun toString() = if (global) "(GlobalVar $offset)" else "(LocalVar $frame:$offset)"
+    override fun toString() = if (global) "(GlobalVar $offset)" else "(LocalVar $frame:$offset)"
 }

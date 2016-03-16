@@ -24,8 +24,8 @@ abstract class OpLoad(private val target: Register) : OpCode() {
 
 class OpLoadConstant(target: Register, private val value: Any) : OpLoad(target) {
 
-    {
-        require(target.isValidValue(value), "invalid value for register $target: $value")
+    init {
+        require(target.isValidValue(value)) { "invalid value for register $target: $value" }
     }
 
     override fun load(vm: VM)= value

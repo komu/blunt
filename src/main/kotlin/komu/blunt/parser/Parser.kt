@@ -1,16 +1,15 @@
 package komu.blunt.parser
 
-import java.util.ArrayList
 import komu.blunt.ast.*
 import komu.blunt.objects.Symbol
-import komu.blunt.parser.TokenType.*
 import komu.blunt.types.ConstructorNames
 import komu.blunt.types.patterns.Pattern
+import java.util.*
 
 fun parseExpression(source: String) =
     Parser(source).parseExpression()
 
-public class Parser(source: String) {
+class Parser(source: String) {
 
     private val operators = OperatorSet()
     private val lexer = Lexer(source, operators)
@@ -22,12 +21,12 @@ public class Parser(source: String) {
         listOf(TokenType.IF, TokenType.LET, TokenType.LAMBDA, TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, TokenType.CASE)
 
     fun parseDefinitions(): List<ASTDefinition> {
-        val result = listBuilder<ASTDefinition>()
+        val result = ArrayList<ASTDefinition>()
 
         while (lexer.hasMoreTokens())
             result.add(parseDefinition())
 
-        return result.build()
+        return result
     }
 
     fun parseDefinition(): ASTDefinition =
@@ -86,11 +85,11 @@ public class Parser(source: String) {
         val functionBuilder = FunctionBuilder()
 
         var name: Symbol? = null
-        while (name == null || nextTokenIsIdentifier(name!!)) {
+        while (name == null || nextTokenIsIdentifier(name)) {
             lexer.pushBlockStartAtNextToken()
             name = parseIdentifier()
 
-            val args = listBuilder<Pattern>()
+            val args = ArrayList<Pattern>()
 
             while (!lexer.nextTokenIs(TokenType.ASSIGN))
                 args.add(patternParser.parseSimplePattern())
@@ -99,16 +98,16 @@ public class Parser(source: String) {
 
             val value = parseExpression()
             lexer.expectToken(TokenType.END)
-            functionBuilder.addAlternative(args.build(), value)
+            functionBuilder.addAlternative(args, value)
         }
 
-        return AST.define(name!!, functionBuilder.build())
+        return AST.define(name, functionBuilder.build())
     }
 
     private fun nextTokenIsIdentifier(name: Symbol) =
         lexer.nextTokenIs(TokenType.IDENTIFIER) && lexer.peekTokenValue(TokenType.IDENTIFIER) == name.toString()
 
-    public fun parseExpression(): ASTExpression {
+    fun parseExpression(): ASTExpression {
         var exp = parseExp(0)
 
         while (true) {
@@ -181,13 +180,13 @@ public class Parser(source: String) {
         val exp = parseExpression()
         lexer.expectToken(TokenType.OF)
 
-        val alts = listBuilder<ASTAlternative>()
+        val alts = ArrayList<ASTAlternative>()
         do {
             alts.add(parseAlternative())
         } while (!lexer.nextTokenIs(TokenType.END))
         lexer.expectToken(TokenType.END)
 
-        return AST.caseExp(exp, alts.build())
+        return AST.caseExp(exp, alts)
     }
 
     private fun parseAlternative(): ASTAlternative {
@@ -223,7 +222,7 @@ public class Parser(source: String) {
         lexer.expectToken(TokenType.IN)
         val body = parseExpression()
 
-        if (!args.empty)
+        if (args.any())
             value = AST.lambda(args, value)
 
         return AST.let(recursive, ImplicitBinding(name, value), body)
@@ -233,14 +232,14 @@ public class Parser(source: String) {
     private fun parseLambda(): ASTExpression {
         lexer.expectToken(TokenType.LAMBDA)
 
-        val args = listBuilder<Pattern>()
+        val args = ArrayList<Pattern>()
 
         do {
             args.add(patternParser.parseSimplePattern())
         } while (!lexer.readMatchingToken(TokenType.RIGHT_ARROW))
 
         val builder = FunctionBuilder()
-        builder.addAlternative(args.build(), parseExpression())
+        builder.addAlternative(args, parseExpression())
         return builder.build()
     }
 
@@ -274,7 +273,7 @@ public class Parser(source: String) {
     // []
     // [<exp> (,<exp>)*]
     private fun parseList(): ASTExpression {
-        val exps = listBuilder<ASTExpression>()
+        val exps = ArrayList<ASTExpression>()
 
         lexer.expectToken(TokenType.LBRACKET)
 
@@ -286,7 +285,7 @@ public class Parser(source: String) {
 
         lexer.expectToken(TokenType.RBRACKET)
 
-        return AST.list(exps.build())
+        return AST.list(exps)
     }
 
     private fun parseVariableOrConstructor(): ASTExpression {

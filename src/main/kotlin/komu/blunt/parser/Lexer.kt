@@ -1,34 +1,50 @@
 package komu.blunt.parser
 
+import komu.blunt.parser.TokenType.Companion.ASSIGN
+import komu.blunt.parser.TokenType.Companion.BIG_RIGHT_ARROW
+import komu.blunt.parser.TokenType.Companion.COMMA
+import komu.blunt.parser.TokenType.Companion.END
+import komu.blunt.parser.TokenType.Companion.EOF
+import komu.blunt.parser.TokenType.Companion.IDENTIFIER
+import komu.blunt.parser.TokenType.Companion.LAMBDA
+import komu.blunt.parser.TokenType.Companion.LBRACKET
+import komu.blunt.parser.TokenType.Companion.LITERAL
+import komu.blunt.parser.TokenType.Companion.LPAREN
+import komu.blunt.parser.TokenType.Companion.OPERATOR
+import komu.blunt.parser.TokenType.Companion.OR
+import komu.blunt.parser.TokenType.Companion.RBRACKET
+import komu.blunt.parser.TokenType.Companion.RIGHT_ARROW
+import komu.blunt.parser.TokenType.Companion.RPAREN
+import komu.blunt.parser.TokenType.Companion.SEMICOLON
+import komu.blunt.parser.TokenType.Companion.TYPE_OR_CTOR_NAME
+import komu.blunt.parser.TokenType.Companion.UNDERSCORE
 import java.math.BigInteger
-import komu.blunt.parser.TokenType.*
-import komu.blunt.utils.*
 
-public class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()) {
+class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()) {
 
     private val reader = SourceReader(source)
     private var nextToken: Token<Any>? = null
     private val indents = IndentStack()
 
-    public fun hasMoreTokens(): Boolean =
+    fun hasMoreTokens(): Boolean =
         !nextTokenIs(EOF)
 
-    public fun peekTokenType(): TokenType<Any> =
+    fun peekTokenType(): TokenType<Any> =
         peekToken().tokenType
 
-    public fun expectIndentStartToken(typ: TokenType<Any>) {
+    fun expectIndentStartToken(typ: TokenType<Any>) {
         val token = readToken(typ)
         indents.push(token.location.column)
     }
 
-    public fun pushBlockStartAtNextToken() {
+    fun pushBlockStartAtNextToken() {
         indents.push(peekToken().location.column)
     }
 
-    public fun nextTokenIs(typ: TokenType<Any>): Boolean =
+    fun nextTokenIs(typ: TokenType<Any>): Boolean =
         peekTokenType() == typ
 
-    public fun nextTokenIsOneOf(types: Collection<TokenType<Any>>): Boolean =
+    fun nextTokenIsOneOf(types: Collection<TokenType<Any>>): Boolean =
         types.contains(peekTokenType())
 
     private fun peekToken(): Token<Any> {
@@ -42,8 +58,8 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
         }
     }
 
-    public fun peekTokenValue<T>(typ: TokenType<T>): T =
-        peekToken().asType<T>(typ).value
+    fun <T> peekTokenValue(typ: TokenType<T>): T =
+        peekToken().asType(typ).value
 
     private fun readToken(): Token<Any> {
         val token = nextToken
@@ -55,20 +71,20 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
         }
     }
 
-    private fun readToken<T>(typ: TokenType<T>): Token<T> =
+    private fun <T : Any> readToken(typ: TokenType<T>): Token<T> =
         if (nextTokenIs(typ))
             readToken().asType(typ)
         else
             throw expectFailure("token of type $typ")
 
-    public fun readTokenValue<T>(typ: TokenType<T>): T =
+    fun <T : Any> readTokenValue(typ: TokenType<T>): T =
         readToken(typ).value
 
-    public fun expectToken(expected: TokenType<Any>) {
+    fun expectToken(expected: TokenType<Any>) {
         readToken(expected)
     }
 
-    public fun readMatchingToken(t: TokenType<Any>): Boolean {
+    fun readMatchingToken(t: TokenType<Any>): Boolean {
         if (peekTokenType() == t) {
             readToken()
             return true
@@ -77,7 +93,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
         }
     }
 
-    public fun readOperatorMatchingLevel(level: Int): Operator? {
+    fun readOperatorMatchingLevel(level: Int): Operator? {
         if (nextTokenIs(OPERATOR)) {
             val op = peekTokenValue(OPERATOR)
 
@@ -97,9 +113,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
         if (indents.popIf(reader.column))
             return Token.ofType(END, location)
 
-        val ch = peek()
-        if (ch == null)
-            return Token.ofType(EOF, location)
+        val ch = peek() ?: return Token.ofType(EOF, location)
 
         when (ch) {
             '"' ->   return readString()
@@ -152,7 +166,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
         }
     }
 
-    private fun isWhitespace(ch: Char?) =
+    private fun isWhitespace(ch: Char?): Boolean =
         ch != null && ch.isWhitespace()
 
     private fun isIdentifierStart(ch: Char) =
@@ -240,7 +254,7 @@ public class Lexer(source: String, private val operatorSet: OperatorSet = Operat
             throw parseError("unexpected char: " + ch)
     }
 
-    public fun save(): LexerState =
+    fun save(): LexerState =
         LexerState(reader.save(), indents.toList(), nextToken)
 
     fun restore(state: LexerState) {

@@ -1,7 +1,7 @@
 package komu.blunt.analyzer
 
 import komu.blunt.objects.Symbol
-import java.util.HashMap
+import java.util.*
 
 class StaticEnvironment(private val parent: StaticEnvironment? = null) {
 
@@ -10,7 +10,7 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
     val size: Int
         get() = variables.size
 
-    fun get(name: Symbol): VariableReference =
+    operator fun get(name: Symbol): VariableReference =
         get(name, 0)
 
     fun get(name: Symbol, depth: Int): VariableReference =

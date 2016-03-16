@@ -1,7 +1,8 @@
 package komu.blunt.asm.opcodes
 
 import komu.blunt.analyzer.VariableReference
-import komu.blunt.asm.*
+import komu.blunt.asm.Register
+import komu.blunt.asm.VM
 
 class OpStoreVariable(private val variable: VariableReference, private val register: Register) : OpCode() {
 

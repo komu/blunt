@@ -12,11 +12,11 @@ object Main {
     fun repl(evaluator: Evaluator) {
         val prompt = Prompt()
 
-        while (true) {
+        loop@while (true) {
             try {
                 val exp = prompt.readExpression(">>> ")
                 when {
-                    exp.isSymbol("exit") -> break
+                    exp.isSymbol("exit") -> break@loop
                     exp.isSymbol("dump") -> evaluator.dump()
                     else                 -> evaluator.evaluateAndPrint(exp)
                 }

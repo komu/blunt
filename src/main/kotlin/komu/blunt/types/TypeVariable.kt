@@ -17,9 +17,9 @@ class TypeVariable(private val name: String, private val _kind: Kind) : Type() {
         result.add(this)
     }
 
-    fun equals(obj: Any?) =
+    override fun equals(obj: Any?) =
         obj is TypeVariable && name == obj.name && kind == obj.kind
 
-    fun hashCode() =
+    override fun hashCode() =
         hash(name, kind)
 }

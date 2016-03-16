@@ -1,15 +1,18 @@
 package komu.blunt.core
 
+import komu.blunt.asm.Assembler
+import komu.blunt.asm.Instructions
+import komu.blunt.asm.Linkage
+import komu.blunt.asm.Register
 import java.util.Collections.emptyList
-import komu.blunt.asm.*
 
 abstract class CoreExpression {
 
     abstract fun simplify(): CoreExpression
     abstract fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions
-    open fun toString(): String = "<core-expression>"
+    override fun toString(): String = "<core-expression>"
 
-    class object {
+    companion object {
 
         val TRUE  = CoreConstantExpression(true)
         val FALSE = CoreConstantExpression(false)
@@ -24,7 +27,7 @@ abstract class CoreExpression {
             when (exps.size) {
                 0    -> TRUE
                 1    -> exps.first()
-                else -> CoreIfExpression(exps.first(), and(exps.tail), FALSE)
+                else -> CoreIfExpression(exps.first(), and(exps.drop(1)), FALSE)
             }
     }
 }

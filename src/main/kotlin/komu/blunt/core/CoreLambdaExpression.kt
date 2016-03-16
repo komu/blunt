@@ -4,7 +4,7 @@ import komu.blunt.asm.*
 
 class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpression) : CoreExpression() {
 
-    {
+    init {
         require(envSize >= 0)
     }
 

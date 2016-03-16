@@ -6,12 +6,12 @@ import komu.blunt.types.Predicate
 
 class TypeCheckResult<out T>(val value: T, val predicates: List<Predicate>) {
 
-    class object {
-        fun builder<T>() = Builder<T>()
+    companion object {
+        fun <T> builder() = Builder<T>()
 
-        fun of<T>(value: T) = TypeCheckResult(value, emptyList())
-        fun of<T>(value: T, predicates: List<Predicate>) = TypeCheckResult(value, predicates)
-        fun of<T>(value: T, vararg predicateCollections: Collection<Predicate>): TypeCheckResult<T> {
+        fun <T> of(value: T) = TypeCheckResult(value, emptyList())
+        fun <T> of(value: T, predicates: List<Predicate>) = TypeCheckResult(value, predicates)
+        fun <T> of(value: T, vararg predicateCollections: Collection<Predicate>): TypeCheckResult<T> {
             val list = ArrayList<Predicate>()
             for (ps in predicateCollections)
                 list.addAll(ps)
@@ -30,8 +30,8 @@ class TypeCheckResult<out T>(val value: T, val predicates: List<Predicate>) {
         }
     }
 
-    fun component1() = value
-    fun component2() = predicates
+    operator fun component1() = value
+    operator fun component2() = predicates
 
     fun withAddedPredicates(predicates: List<Predicate>): TypeCheckResult<T> {
         val builder = builder<T>()
@@ -40,5 +40,5 @@ class TypeCheckResult<out T>(val value: T, val predicates: List<Predicate>) {
         return builder.build(value)
     }
 
-    fun toString() = "$predicates => $value"
+    override fun toString() = "$predicates => $value"
 }
