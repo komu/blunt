@@ -19,6 +19,7 @@ import komu.blunt.parser.TokenType.Companion.SEMICOLON
 import komu.blunt.parser.TokenType.Companion.TYPE_OR_CTOR_NAME
 import komu.blunt.parser.TokenType.Companion.UNDERSCORE
 import java.math.BigInteger
+import java.util.*
 
 class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()) {
 
@@ -84,7 +85,7 @@ class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()
         readToken(expected)
     }
 
-    fun readMatchingToken(t: TokenType<Any>): Boolean {
+    fun readMatchingToken(t: TokenType<*>): Boolean {
         if (peekTokenType() == t) {
             readToken()
             return true
@@ -267,5 +268,27 @@ class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()
         throw SyntaxException("[${reader.location}] $message")
 
     fun expectFailure(expected: String): Nothing =
-        throw parseError("expected $expected, but got ${readToken()}")
+        parseError("expected $expected, but got ${readToken()}")
+
+    fun <T> sepBy(separator: TokenType<*>, parser: () -> T): List<T> {
+        val result = ArrayList<T>()
+        do {
+            result.add(parser())
+        } while (readMatchingToken(separator))
+        return result
+    }
+
+    fun <T> inParens(parser: () -> T): T {
+        expectToken(LPAREN)
+        val result = parser()
+        expectToken(RPAREN)
+        return result
+    }
+
+    fun <T> inBrackets(parser: () -> T): T {
+        expectToken(LBRACKET)
+        val result = parser()
+        expectToken(RBRACKET)
+        return result
+    }
 }

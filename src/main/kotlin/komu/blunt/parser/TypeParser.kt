@@ -1,45 +1,50 @@
 package komu.blunt.parser
 
+import komu.blunt.parser.TokenType.Companion.BIG_RIGHT_ARROW
+import komu.blunt.parser.TokenType.Companion.COMMA
+import komu.blunt.parser.TokenType.Companion.IDENTIFIER
+import komu.blunt.parser.TokenType.Companion.LBRACKET
+import komu.blunt.parser.TokenType.Companion.LPAREN
+import komu.blunt.parser.TokenType.Companion.RIGHT_ARROW
+import komu.blunt.parser.TokenType.Companion.RPAREN
+import komu.blunt.parser.TokenType.Companion.TYPE_OR_CTOR_NAME
 import komu.blunt.types.*
 import java.util.*
 import java.util.Collections.emptyList
 
 class TypeParser(val lexer: Lexer) {
 
-    private val START_TOKENS =
-        listOf(TokenType.LPAREN, TokenType.LBRACKET, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME)
+    constructor(s: String): this(Lexer(s)) { }
 
     companion object {
-        fun parseType(s: String): Type =
-            TypeParser(Lexer(s)).parseType()
+        private val START_TOKENS =
+            listOf(LPAREN, LBRACKET, IDENTIFIER, TYPE_OR_CTOR_NAME)
 
         fun parseScheme(s: String): Scheme =
             parseQualified(s).quantifyAll()
 
         fun parseQualified(s: String): Qualified<Type> =
-            TypeParser(Lexer(s)).parseQualified()
+            TypeParser(s).parseQualified()
     }
 
     private fun parseQualified(): Qualified<Type> {
         val predicates = parseOptionalPredicates()
-        val typ = parseType()
-        return Qualified(predicates, typ)
+        val type = parseType()
+        return Qualified(predicates, type)
     }
 
     private fun parseOptionalPredicates(): List<Predicate> {
         val lexerState = lexer.save()
         try {
-            val predicates = ArrayList<Predicate>()
-            if (lexer.readMatchingToken(TokenType.LPAREN)) {
-                do {
-                    predicates.add(parsePredicate())
-                } while (lexer.readMatchingToken(TokenType.COMMA))
-                lexer.expectToken(TokenType.RPAREN)
-            } else {
-                predicates.add(parsePredicate())
-            }
-            lexer.expectToken(TokenType.BIG_RIGHT_ARROW)
+            val predicates = if (lexer.peekTokenType() == LPAREN)
+                lexer.inParens { lexer.sepBy(COMMA) { parsePredicate() } }
+            else
+                listOf(parsePredicate())
+
+            lexer.expectToken(BIG_RIGHT_ARROW)
+
             return predicates
+
         } catch (e: SyntaxException) {
             lexer.restore(lexerState)
             return emptyList()
@@ -47,42 +52,42 @@ class TypeParser(val lexer: Lexer) {
     }
 
     private fun parsePredicate(): Predicate {
-        val className = lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME)
-        val typ = parseType()
-        return isIn(className, typ)
+        val className = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
+        val type = parseType()
+        return isIn(className, type)
     }
 
     fun parseType(): Type {
-        var typ = parseBasic()
+        var type = parseBasic()
 
-        while (lexer.readMatchingToken(TokenType.RIGHT_ARROW))
-            typ = functionType(typ, parseType())
+        while (lexer.readMatchingToken(RIGHT_ARROW))
+            type = functionType(type, parseType())
 
-        return typ
+        return type
     }
 
     private fun parseBasic(): Type =
-        if (lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME))
+        if (lexer.nextTokenIs(TYPE_OR_CTOR_NAME))
             parseTypeConcrete()
         else
             parseTypePrimitive()
 
     fun parseTypePrimitive(): Type =
         when {
-            lexer.nextTokenIs(TokenType.LPAREN) ->
+            lexer.nextTokenIs(LPAREN) ->
                 parseParens()
-            lexer.nextTokenIs(TokenType.LBRACKET) ->
+            lexer.nextTokenIs(LBRACKET) ->
                 parseBrackets()
-            lexer.nextTokenIs(TokenType.IDENTIFIER) ->
+            lexer.nextTokenIs(IDENTIFIER) ->
                 parseTypeVariable()
-            lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME) ->
-                genericType(lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME))
+            lexer.nextTokenIs(TYPE_OR_CTOR_NAME) ->
+                genericType(lexer.readTokenValue(TYPE_OR_CTOR_NAME))
             else ->
                 lexer.expectFailure("type")
         }
 
     fun parseTypeConcrete(): Type {
-        val name = lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME)
+        val name = lexer.readTokenValue(TYPE_OR_CTOR_NAME)
 
         val args = ArrayList<Type>()
         while (lexer.nextTokenIsOneOf(START_TOKENS))
@@ -91,34 +96,20 @@ class TypeParser(val lexer: Lexer) {
         return genericType(name, args)
     }
 
-    private fun parseParens(): Type {
-        lexer.expectToken(TokenType.LPAREN)
+    private fun parseParens(): Type =
+        lexer.inParens {
+            if (lexer.nextTokenIs(RPAREN)) {
+                BasicType.UNIT
+            } else {
+                val types = lexer.sepBy(COMMA) { parseType() }
+                types.singleOrNull() ?: tupleType(types)
+            }
+        }
 
-        if (lexer.readMatchingToken(TokenType.RPAREN))
-            return BasicType.UNIT
+    private fun parseBrackets(): Type =
+        listType(lexer.inBrackets { parseType() })
 
-        val types = ArrayList<Type>()
-        types.add(parseType())
-
-        while (lexer.readMatchingToken(TokenType.COMMA))
-            types.add(parseType())
-
-        lexer.expectToken(TokenType.RPAREN)
-
-        return if (types.size == 1) types.first() else tupleType(types)
-    }
-
-    private fun parseBrackets(): Type {
-        lexer.expectToken(TokenType.LBRACKET)
-        val elementType = parseType()
-        lexer.expectToken(TokenType.RBRACKET)
-
-        return listType(elementType)
-    }
-
-    fun parseTypeVariable(): TypeVariable {
-        val name = lexer.readTokenValue(TokenType.IDENTIFIER)
-        return typeVariable(name)
-    }
+    fun parseTypeVariable(): TypeVariable =
+        typeVariable(lexer.readTokenValue(IDENTIFIER))
 }
 
