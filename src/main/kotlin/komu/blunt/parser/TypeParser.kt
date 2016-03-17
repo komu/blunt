@@ -78,7 +78,7 @@ class TypeParser(val lexer: Lexer) {
             lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME) ->
                 genericType(lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME))
             else ->
-                throw lexer.expectFailure("type")
+                lexer.expectFailure("type")
         }
 
     fun parseTypeConcrete(): Type {

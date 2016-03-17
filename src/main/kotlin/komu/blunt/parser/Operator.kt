@@ -6,7 +6,7 @@ class Operator(val name: String, val associativity: Associativity, val precedenc
 
     fun toSymbol() = Symbol(name)
     override fun toString() = name
-    override fun equals(rhs: Any?) = rhs is Operator && name == rhs.name
+    override fun equals(other: Any?) = other is Operator && name == other.name
     override fun hashCode() = name.hashCode()
 
     val isConstructor: Boolean

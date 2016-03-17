@@ -6,7 +6,7 @@ import java.util.Objects.hash
 class TypeConstructor(private val name: String, private val _kind: Kind) : Type() {
 
     companion object {
-        private val tuplePattern = java.util.regex.Pattern.compile("\\(,+\\)")
+        private val tuplePattern = Regex("\\(,+\\)")
     }
 
     override fun apply(substitution: Substitution) = this
@@ -16,11 +16,8 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
     override val kind = _kind
     override fun toString(precedence: Int) = name
 
-    override fun equals(rhs: Any?) =
-        rhs is TypeConstructor && name == rhs.name && kind == rhs.kind
-
-    override fun hashCode() =
-        hash(name, kind)
+    override fun equals(other: Any?) = other is TypeConstructor && name == other.name && kind == other.kind
+    override fun hashCode() =  hash(name, kind)
 
     internal fun toString(arguments: List<Type>, precedence: Int): String =
         when {
@@ -28,7 +25,7 @@ class TypeConstructor(private val name: String, private val _kind: Kind) : Type(
                 functionToString(arguments, precedence);
             name.equals("[]") && arguments.size == 1 ->
                 "[" + arguments.first() + "]"
-            tuplePattern.matcher(name).matches() ->
+            name.matches(tuplePattern) ->
                 tupleToString(arguments)
             else ->
                 defaultToString(arguments, precedence)

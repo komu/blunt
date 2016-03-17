@@ -8,6 +8,7 @@ class Token<out T>(val tokenType: TokenType<T>, val value: T, val location: Sour
 
     override fun toString() = tokenType.toString()
 
+    @Suppress("CAST_NEVER_SUCCEEDS")
     fun <U> asType(t: TokenType<U>): Token<U> =
         if (tokenType == t)
             this as Token<U>

@@ -151,7 +151,7 @@ class Parser(source: String) {
 
     private fun parsePrimitive(): ASTExpression =
         when (lexer.peekTokenType()) {
-            TokenType.EOF      -> throw parseError("unexpected eof")
+            TokenType.EOF      -> parseError("unexpected eof")
             TokenType.IF       -> parseIf()
             TokenType.LET      -> parseLet()
             TokenType.LAMBDA   -> parseLambda()
@@ -302,7 +302,7 @@ class Parser(source: String) {
             return operatorExp(op)
         }
 
-        throw lexer.expectFailure("identifier or type constructor")
+        lexer.expectFailure("identifier or type constructor")
     }
 
     private fun parseIdentifier(): Symbol {
@@ -315,10 +315,10 @@ class Parser(source: String) {
             return op.toSymbol()
         }
 
-        throw lexer.expectFailure("identifier")
+        lexer.expectFailure("identifier")
     }
 
-    private fun parseError(s: String): SyntaxException =
+    private fun parseError(s: String): Nothing =
         lexer.parseError(s)
 
     private fun binary(op: Operator, lhs: ASTExpression, rhs: ASTExpression): ASTExpression {

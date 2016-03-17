@@ -75,7 +75,7 @@ class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()
         if (nextTokenIs(typ))
             readToken().asType(typ)
         else
-            throw expectFailure("token of type $typ")
+            expectFailure("token of type $typ")
 
     fun <T : Any> readTokenValue(typ: TokenType<T>): T =
         readToken(typ).value
@@ -130,7 +130,7 @@ class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()
             ch.isDigit()            -> readNumber()
             isOperatorCharacter(ch) -> readOperator()
             isIdentifierStart(ch)   -> readIdentifierOrKeyword()
-            else                    -> throw parseError("unexpected token: '${read()}'")
+            else                    -> parseError("unexpected token: '${read()}'")
         }
     }
 
@@ -243,7 +243,7 @@ class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()
     }
 
     private fun read(): Char =
-        reader.read() ?: throw parseError("unexpected EOF")
+        reader.read() ?: parseError("unexpected EOF")
 
     private fun peek(): Char? =
         reader.peek()
@@ -251,7 +251,7 @@ class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()
     private fun expect(expected: Char) {
         val ch = read()
         if (ch != expected)
-            throw parseError("unexpected char: " + ch)
+            parseError("unexpected char: " + ch)
     }
 
     fun save(): LexerState =
@@ -263,9 +263,9 @@ class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()
         nextToken = state.nextToken
     }
 
-    fun parseError(message: String): SyntaxException =
-        SyntaxException("[${reader.location}] $message")
+    fun parseError(message: String): Nothing =
+        throw SyntaxException("[${reader.location}] $message")
 
-    fun expectFailure(expected: String): SyntaxException =
-        parseError("expected $expected, but got ${readToken()}")
+    fun expectFailure(expected: String): Nothing =
+        throw parseError("expected $expected, but got ${readToken()}")
 }

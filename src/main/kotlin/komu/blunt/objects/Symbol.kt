@@ -5,6 +5,6 @@ class Symbol (private val name: String) {
         require(!name.isEmpty()) { "empty name" }
     }
     override fun toString() = name
-    override fun equals(obj: Any?) = obj is Symbol && name == obj.name
+    override fun equals(other: Any?) = other is Symbol && name == other.name
     override fun hashCode() = name.hashCode()
 }

@@ -5,7 +5,6 @@ import komu.blunt.ast.ASTAlternative
 import komu.blunt.ast.ASTExpression
 import komu.blunt.objects.Symbol
 import komu.blunt.types.patterns.Pattern
-import komu.blunt.types.patterns.VariablePattern
 import java.util.*
 import java.util.Collections.singletonList
 
@@ -46,7 +45,7 @@ class FunctionBuilder {
     }
 
     private fun variablePattern(pattern: Pattern): List<Symbol>? {
-        if (pattern is VariablePattern)
+        if (pattern is Pattern.Variable)
             return singletonList(pattern.variable)
 
         /*

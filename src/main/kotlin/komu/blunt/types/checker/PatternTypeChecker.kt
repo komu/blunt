@@ -11,19 +11,19 @@ class PatternTypeChecker(private val tc: TypeChecker) {
 
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
         when (pattern) {
-            is VariablePattern    -> typeCheckVariable(pattern)
-            is WildcardPattern    -> PatternTypeCheckResult(emptyList(), Assumptions.empty(), tc.newTVar())
-            is LiteralPattern     -> PatternTypeCheckResult(emptyList(), Assumptions.empty(), typeFromObject(pattern.value))
-            is ConstructorPattern -> typeCheckConstructor(pattern)
+            is Pattern.Variable -> typeCheckVariable(pattern)
+            is Pattern.Wildcard -> PatternTypeCheckResult(emptyList(), Assumptions.empty(), tc.newTVar())
+            is Pattern.Literal -> PatternTypeCheckResult(emptyList(), Assumptions.empty(), typeFromObject(pattern.value))
+            is Pattern.Constructor -> typeCheckConstructor(pattern)
             else                  -> throw Exception("invalid pattern $pattern")
         }
 
-    private fun typeCheckVariable(pattern: VariablePattern): PatternTypeCheckResult<Type> {
+    private fun typeCheckVariable(pattern: Pattern.Variable): PatternTypeCheckResult<Type> {
         val tv = tc.newTVar()
         return PatternTypeCheckResult(emptyList(), Assumptions.singleton(pattern.variable, tv.toScheme()), tv)
     }
 
-    private fun typeCheckConstructor(pattern: ConstructorPattern): PatternTypeCheckResult<Type> {
+    private fun typeCheckConstructor(pattern: Pattern.Constructor): PatternTypeCheckResult<Type> {
         val constructor = tc.findConstructor(pattern.name)
 
         if (pattern.args.size != constructor.arity)

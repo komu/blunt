@@ -10,16 +10,12 @@ class TypeVariable(private val name: String, private val _kind: Kind) : Type() {
     override val kind = _kind
     override fun instantiate(vars: List<TypeVariable>) = this
 
-    override fun apply(substitution: Substitution): Type =
-        substitution.lookup(this) ?: this
+    override fun apply(substitution: Substitution): Type = substitution.lookup(this) ?: this
 
     override fun addTypeVariables(result: MutableSet<TypeVariable>) {
         result.add(this)
     }
 
-    override fun equals(obj: Any?) =
-        obj is TypeVariable && name == obj.name && kind == obj.kind
-
-    override fun hashCode() =
-        hash(name, kind)
+    override fun equals(other: Any?) = other is TypeVariable && name == other.name && kind == other.kind
+    override fun hashCode() = hash(name, kind)
 }

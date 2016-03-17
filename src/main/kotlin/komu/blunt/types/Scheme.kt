@@ -14,6 +14,6 @@ class Scheme(val kinds: List<Kind>, val `type`: Qualified<Type>) : Types<Scheme>
 
     override fun toString() = `type`.toString()
 
-    override fun equals(obj: Any?) = obj is Scheme && kinds == obj.kinds && `type` == obj.`type`
+    override fun equals(other: Any?) = other is Scheme && kinds == other.kinds && `type` == other.`type`
     override fun hashCode() = Objects.hash(kinds, `type`)
 }

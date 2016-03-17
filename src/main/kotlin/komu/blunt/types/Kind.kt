@@ -27,7 +27,7 @@ class StarKind : Kind() {
 
 class ArrowKind(val left: Kind, val right: Kind) : Kind() {
 
-    override fun equals(rhs: Any?) = rhs is ArrowKind && left == rhs.left && right == rhs.right
+    override fun equals(other: Any?) = other is ArrowKind && left == other.left && right == other.right
     override fun hashCode() = hash(left, right)
 
     override fun toString(l: Boolean): String =

@@ -51,8 +51,8 @@ object AST {
     }
 
     fun ifExp(test: ASTExpression, cons: ASTExpression, alt: ASTExpression): ASTExpression =
-        caseExp(test, alternative(Pattern.constructor(ConstructorNames.TRUE), cons),
-                      alternative(Pattern.constructor(ConstructorNames.FALSE), alt))
+        caseExp(test, alternative(Pattern.Constructor(ConstructorNames.TRUE), cons),
+                      alternative(Pattern.Constructor(ConstructorNames.FALSE), alt))
 
     fun caseExp(exp: ASTExpression, alts: List<ASTAlternative>): ASTExpression =
         ASTCase(exp, alts)

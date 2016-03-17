@@ -35,8 +35,8 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : T
         return sb.toString()
     }
 
-    override fun equals(rhs: Any?) =
-        rhs is Qualified<*> && value == rhs.value && predicates == rhs.predicates
+    override fun equals(other: Any?) =
+        other is Qualified<*> && value == other.value && predicates == other.predicates
 
     override fun hashCode() = hash(predicates, value)
 }

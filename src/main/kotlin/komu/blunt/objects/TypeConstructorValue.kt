@@ -55,8 +55,8 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
     private fun toStringAsTuple() =
         items.joinToString(", ", "(", ")")
 
-    override fun equals(o: Any?) =
-        o is TypeConstructorValue && index == o.index && Arrays.equals(items, o.items)
+    override fun equals(other: Any?) =
+        other is TypeConstructorValue && index == other.index && Arrays.equals(items, other.items)
 
     override fun hashCode() =
         Arrays.hashCode(items)

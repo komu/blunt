@@ -95,9 +95,8 @@ private fun IdentifierMapping.renameAlternative(alt: ASTAlternative): ASTAlterna
 
 private fun IdentifierMapping.renamePattern(pattern: Pattern): Pattern =
     when (pattern) {
-        is WildcardPattern    -> pattern
-        is LiteralPattern     -> pattern
-        is VariablePattern    -> Pattern.variable(freshMappingFor(pattern.variable))
-        is ConstructorPattern -> pattern.map { renamePattern(it) }
-        else                  -> throw AnalyzationException("invalid pattern '$pattern'")
+        is Pattern.Wildcard     -> pattern
+        is Pattern.Literal      -> pattern
+        is Pattern.Variable     -> Pattern.Variable(freshMappingFor(pattern.variable))
+        is Pattern.Constructor  -> pattern.map { renamePattern(it) }
     }
