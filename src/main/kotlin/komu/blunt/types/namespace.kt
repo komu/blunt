@@ -3,13 +3,12 @@ package komu.blunt.types
 import java.math.BigInteger
 
 object BasicType {
-    //val UNIT = basicType("Unit")
-    public val UNIT: Type = basicType("Unit")
+    val UNIT = basicType("Unit")
     val INTEGER = basicType("Integer")
     val STRING = basicType("String")
 
     private fun basicType(name: String): Type =
-        TypeConstructor(name, Kind.STAR)
+        TypeConstructor(name, Kind.Star)
 }
 
 fun typeFromObject(o: Any): Type =
@@ -28,7 +27,7 @@ fun typeFromObject(o: Any): Type =
 //}
 
 fun typeVariable(name: String): TypeVariable =
-    typeVariable(name, Kind.STAR)
+    typeVariable(name, Kind.Star)
 
 fun typeVariable(name: String, kind: Kind): TypeVariable =
     TypeVariable(name, kind)
@@ -38,7 +37,7 @@ fun listType(t: Type) =
 
 
 fun basicType(name: String): Type =
-    TypeConstructor(name, Kind.STAR)
+    TypeConstructor(name, Kind.Star)
 
 fun functionType(argumentType: Type, returnType: Type) =
     genericType("->", argumentType, returnType)

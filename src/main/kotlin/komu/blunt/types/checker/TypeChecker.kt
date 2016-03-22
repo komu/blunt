@@ -53,7 +53,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         scheme.`type`.instantiate(newTVars(scheme.kinds))
 
     fun newTVar(): TypeVariable =
-        newTVar(Kind.STAR)
+        newTVar(Kind.Star)
 
     fun newTVar(kind: Kind): TypeVariable =
         typeVariable(typeName(typeSequence++), kind)

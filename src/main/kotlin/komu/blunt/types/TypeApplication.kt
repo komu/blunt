@@ -1,9 +1,9 @@
 package komu.blunt.types
 
-import java.util.LinkedList
-import java.util.Objects.hash
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.checker.Substitution
+import java.util.*
+import java.util.Objects.hash
 
 class TypeApplication(val left: Type, val right: Type) : Type() {
 
@@ -24,7 +24,7 @@ class TypeApplication(val left: Type, val right: Type) : Type() {
     override val kind: Kind
         get() {
             val kind = left.kind
-            if (kind is ArrowKind)
+            if (kind is Kind.Arrow)
                 return kind.right
             else
                 throw TypeCheckException("invalid kind: $left")
