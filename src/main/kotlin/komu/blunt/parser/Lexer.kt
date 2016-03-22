@@ -264,6 +264,13 @@ class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()
         nextToken = state.nextToken
     }
 
+    inline fun <T> withSavedState(callback: () -> T): T {
+        val state = save()
+        val result = callback()
+        restore(state)
+        return result
+    }
+
     fun parseError(message: String): Nothing =
         throw SyntaxException("[${reader.location}] $message")
 

@@ -34,8 +34,7 @@ class TypeParser(val lexer: Lexer) {
     }
 
     private fun parseOptionalPredicates(): List<Predicate> {
-        val lexerState = lexer.save()
-        try {
+        if (hasPredicate()) {
             val predicates = if (lexer.peekTokenType() == LPAREN)
                 lexer.inParens { lexer.sepBy(COMMA) { parsePredicate() } }
             else
@@ -45,11 +44,21 @@ class TypeParser(val lexer: Lexer) {
 
             return predicates
 
-        } catch (e: SyntaxException) {
-            lexer.restore(lexerState)
+        } else {
             return emptyList()
         }
     }
+
+    private fun hasPredicate(): Boolean =
+        lexer.withSavedState {
+            try {
+                lexer.readMatchingToken(LPAREN)
+                parsePredicate()
+                true
+            } catch (e: SyntaxException) {
+                false
+            }
+        }
 
     private fun parsePredicate(): Predicate {
         val className = lexer.readTokenValue(TYPE_OR_CTOR_NAME)

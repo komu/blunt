@@ -2,6 +2,14 @@ package komu.blunt.parser
 
 import komu.blunt.ast.*
 import komu.blunt.objects.Symbol
+import komu.blunt.parser.TokenType.Companion.CASE
+import komu.blunt.parser.TokenType.Companion.EOF
+import komu.blunt.parser.TokenType.Companion.IF
+import komu.blunt.parser.TokenType.Companion.LAMBDA
+import komu.blunt.parser.TokenType.Companion.LBRACKET
+import komu.blunt.parser.TokenType.Companion.LET
+import komu.blunt.parser.TokenType.Companion.LITERAL
+import komu.blunt.parser.TokenType.Companion.LPAREN
 import komu.blunt.types.ConstructorNames
 import komu.blunt.types.patterns.Pattern
 import java.util.*
@@ -18,7 +26,7 @@ class Parser(source: String) {
     private val dataTypeParser = DataTypeParser(lexer, typeParser)
 
     private val EXPRESSION_START_TOKENS =
-        listOf(TokenType.IF, TokenType.LET, TokenType.LAMBDA, TokenType.LPAREN, TokenType.LBRACKET, TokenType.LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, TokenType.CASE)
+        listOf(IF, LET, LAMBDA, LPAREN, LBRACKET, LITERAL, TokenType.IDENTIFIER, TokenType.TYPE_OR_CTOR_NAME, CASE)
 
     fun parseDefinitions(): List<ASTDefinition> {
         val result = ArrayList<ASTDefinition>()
@@ -35,21 +43,34 @@ class Parser(source: String) {
         else
             parseValueDefinition()
 
-    private fun parseValueDefinition(): ASTValueDefinition {
-        val lexerState = lexer.save()
-        try {
-            try {
-                return parseSimpleDefinition()
-            } catch (e: SyntaxException) {
-                lexer.restore(lexerState)
-                return parseOperatorDefinition()
-            }
-
-        } catch (e: SyntaxException) {
-            lexer.restore(lexerState)
-            return parseNormalValueDefinition()
-        }
+    private fun parseValueDefinition(): ASTValueDefinition = when {
+        isSimpleDefinition() ->
+            parseSimpleDefinition()
+        isOperatorDefinition() ->
+            parseOperatorDefinition()
+        else ->
+            parseNormalValueDefinition()
     }
+
+    private fun isSimpleDefinition(): Boolean =
+        lexer.withSavedState {
+            try {
+                parseIdentifier()
+                lexer.nextTokenIs(TokenType.ASSIGN)
+            } catch (e: SyntaxException) {
+                false
+            }
+        }
+
+    private fun isOperatorDefinition(): Boolean =
+        lexer.withSavedState {
+            try {
+                patternParser.parseSimplePattern()
+                lexer.nextTokenIs(TokenType.OPERATOR)
+            } catch (e: SyntaxException) {
+                false
+            }
+        }
 
     private fun parseSimpleDefinition(): ASTValueDefinition {
         lexer.pushBlockStartAtNextToken()
@@ -130,13 +151,10 @@ class Parser(source: String) {
         var exp = parseExp(level + 1)
 
         while (true) {
-            val op = lexer.readOperatorMatchingLevel(level)
-            if (op != null) {
-                val rhs = parseExp(if (op.associativity == Associativity.LEFT) level+1 else level)
-                exp = binary(op, exp, rhs)
-            } else {
-                return exp
-            }
+            val op = lexer.readOperatorMatchingLevel(level) ?: return exp
+
+            val rhs = parseExp(if (op.associativity == Associativity.LEFT) level + 1 else level)
+            exp = binary(op, exp, rhs)
         }
     }
 
@@ -151,20 +169,20 @@ class Parser(source: String) {
 
     private fun parsePrimitive(): ASTExpression =
         when (lexer.peekTokenType()) {
-            TokenType.EOF      -> parseError("unexpected eof")
-            TokenType.IF       -> parseIf()
-            TokenType.LET      -> parseLet()
-            TokenType.LAMBDA   -> parseLambda()
-            TokenType.CASE     -> parseCase()
-            TokenType.LPAREN   -> parseParens()
-            TokenType.LBRACKET -> parseList()
-            TokenType.LITERAL  -> AST.constant(lexer.readTokenValue(TokenType.LITERAL))
-            else     -> parseVariableOrConstructor()
+            EOF         -> parseError("unexpected eof")
+            IF          -> parseIf()
+            LET         -> parseLet()
+            LAMBDA      -> parseLambda()
+            CASE        -> parseCase()
+            LPAREN      -> parseParens()
+            LBRACKET    -> parseList()
+            LITERAL     -> AST.constant(lexer.readTokenValue(LITERAL))
+            else        -> parseVariableOrConstructor()
         }
 
     // if <expr> then <expr> else <expr>
     private fun parseIf(): ASTExpression {
-        lexer.expectToken(TokenType.IF)
+        lexer.expectToken(IF)
         val test = parseExpression()
         lexer.expectToken(TokenType.THEN)
         val cons = parseExpression()
@@ -176,7 +194,7 @@ class Parser(source: String) {
 
     // case <exp> of <alternative>+
     private fun parseCase(): ASTExpression {
-        lexer.expectIndentStartToken(TokenType.CASE)
+        lexer.expectIndentStartToken(CASE)
         val exp = parseExpression()
         lexer.expectToken(TokenType.OF)
 
@@ -199,7 +217,7 @@ class Parser(source: String) {
 
     // let [rec] <ident> <ident>* = <expr> in <expr>
     private fun parseLet(): ASTExpression {
-        lexer.expectToken(TokenType.LET)
+        lexer.expectToken(LET)
         val recursive = lexer.readMatchingToken(TokenType.REC)
 
         var name = parseIdentifier()
@@ -230,7 +248,7 @@ class Parser(source: String) {
 
     // \ <ident> -> expr
     private fun parseLambda(): ASTExpression {
-        lexer.expectToken(TokenType.LAMBDA)
+        lexer.expectToken(LAMBDA)
 
         val args = ArrayList<Pattern>()
 
@@ -245,7 +263,7 @@ class Parser(source: String) {
 
     // () | (<op>) | ( <expr> )
     private fun parseParens(): ASTExpression {
-        lexer.expectToken(TokenType.LPAREN)
+        lexer.expectToken(LPAREN)
         if (lexer.readMatchingToken(TokenType.RPAREN))
             return AST.constructor(ConstructorNames.UNIT)
 
@@ -275,7 +293,7 @@ class Parser(source: String) {
     private fun parseList(): ASTExpression {
         val exps = ArrayList<ASTExpression>()
 
-        lexer.expectToken(TokenType.LBRACKET)
+        lexer.expectToken(LBRACKET)
 
         if (!lexer.nextTokenIs(TokenType.RBRACKET)) {
             do {
@@ -295,7 +313,7 @@ class Parser(source: String) {
         if (lexer.nextTokenIs(TokenType.TYPE_OR_CTOR_NAME))
             return AST.constructor(lexer.readTokenValue(TokenType.TYPE_OR_CTOR_NAME))
 
-        if (lexer.readMatchingToken(TokenType.LPAREN)) {
+        if (lexer.readMatchingToken(LPAREN)) {
             val op = lexer.readTokenValue(TokenType.OPERATOR)
             lexer.expectToken(TokenType.RPAREN)
 
@@ -309,7 +327,7 @@ class Parser(source: String) {
         if (lexer.nextTokenIs(TokenType.IDENTIFIER))
             return Symbol(lexer.readTokenValue(TokenType.IDENTIFIER))
 
-        if (lexer.readMatchingToken(TokenType.LPAREN)) {
+        if (lexer.readMatchingToken(LPAREN)) {
             val op = lexer.readTokenValue(TokenType.OPERATOR)
             lexer.expectToken(TokenType.RPAREN)
             return op.toSymbol()
