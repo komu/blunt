@@ -1,6 +1,5 @@
 package komu.blunt.parser
 
-import komu.blunt.ast.ASTConstant
 import komu.blunt.ast.ASTExpression
 import org.hamcrest.BaseMatcher
 import org.hamcrest.Description
@@ -18,9 +17,9 @@ fun producesExpressionMatching(representation: String): Matcher<ASTExpression> =
     }
 
 fun producesConstant(value: Any): Matcher<ASTExpression> =
-    object : ASTMatcher<ASTConstant>(ASTConstant::class.java) {
+    object : ASTMatcher<ASTExpression.Constant>(ASTExpression.Constant::class.java) {
 
-        override fun matches(exp: ASTConstant) =
+        override fun matches(exp: ASTExpression.Constant) =
             value == exp.value
 
         override fun describeTo(description: Description) {

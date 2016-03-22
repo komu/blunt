@@ -1,6 +1,8 @@
 package komu.blunt.analyzer
 
-import komu.blunt.ast.*
+import komu.blunt.ast.AST
+import komu.blunt.ast.ASTAlternative
+import komu.blunt.ast.ASTExpression
 import komu.blunt.core.*
 import komu.blunt.objects.TypeConstructorValue
 import komu.blunt.types.DataTypeDefinitions
@@ -18,26 +20,25 @@ class Analyzer(val dataTypes: DataTypeDefinitions) {
 
     fun analyze(exp: ASTExpression, env: StaticEnvironment): CoreExpression =
       when (exp) {
-          is ASTConstant    -> CoreConstantExpression(exp.value)
-          is ASTVariable    -> CoreVariableExpression(env[exp.name])
-          is ASTSet         -> CoreSetExpression(env[exp.variable], analyze(exp.exp, env))
-          is ASTSequence    -> CoreExpression.sequence(exp.exps.map { analyze(it, env) })
-          is ASTApplication -> CoreApplicationExpression(analyze(exp.func, env), analyze(exp.arg, env))
-          is ASTLambda      -> analyzeLambda(exp, env)
-          is ASTLet         -> analyzeLet(exp, env)
-          is ASTLetRec      -> analyzeLetRec(exp, env)
-          is ASTConstructor -> analyzeConstructor(exp, env)
-          is ASTCase        -> analyzeCase(exp, env)
-          else              -> throw AnalyzationException("unknown expression '$exp'")
+          is ASTExpression.Constant -> CoreConstantExpression(exp.value)
+          is ASTExpression.Variable -> CoreVariableExpression(env[exp.name])
+          is ASTExpression.Set -> CoreSetExpression(env[exp.variable], analyze(exp.exp, env))
+          is ASTExpression.Sequence -> CoreExpression.sequence(exp.exps.map { analyze(it, env) })
+          is ASTExpression.Application -> CoreApplicationExpression(analyze(exp.func, env), analyze(exp.arg, env))
+          is ASTExpression.Lambda -> analyzeLambda(exp, env)
+          is ASTExpression.Let -> analyzeLet(exp, env)
+          is ASTExpression.LetRec -> analyzeLetRec(exp, env)
+          is ASTExpression.Constructor -> analyzeConstructor(exp, env)
+          is ASTExpression.Case -> analyzeCase(exp, env)
       }
 
-    private fun analyzeLambda(lambda: ASTLambda, env: StaticEnvironment): CoreExpression {
+    private fun analyzeLambda(lambda: ASTExpression.Lambda, env: StaticEnvironment): CoreExpression {
         val newEnv = env.extend(lambda.argument)
         val body = analyze(lambda.body, newEnv)
         return CoreLambdaExpression(newEnv.size, body)
     }
 
-    private fun analyzeConstructor(constructor: ASTConstructor, ctx: StaticEnvironment): CoreExpression {
+    private fun analyzeConstructor(constructor: ASTExpression.Constructor, ctx: StaticEnvironment): CoreExpression {
         val ctor = dataTypes.findConstructor(constructor.name)
 
         return if (ctor.arity == 0)
@@ -46,7 +47,7 @@ class Analyzer(val dataTypes: DataTypeDefinitions) {
             analyze(AST.variable(ctor.name), ctx)
     }
 
-    private fun analyzeLet(let: ASTLet, env: StaticEnvironment): CoreExpression {
+    private fun analyzeLet(let: ASTExpression.Let, env: StaticEnvironment): CoreExpression {
         if (let.bindings.size != 1)
             throw UnsupportedOperationException("multi-var let is not supported")
 
@@ -59,7 +60,7 @@ class Analyzer(val dataTypes: DataTypeDefinitions) {
         return CoreLetExpression(v, expr, body)
     }
 
-    private fun analyzeLetRec(let: ASTLetRec, env: StaticEnvironment): CoreExpression {
+    private fun analyzeLetRec(let: ASTExpression.LetRec, env: StaticEnvironment): CoreExpression {
         if (let.bindings.size != 1)
             throw UnsupportedOperationException("multi-var letrec is not supported")
 
@@ -72,11 +73,11 @@ class Analyzer(val dataTypes: DataTypeDefinitions) {
         return CoreLetExpression(v, expr, body)
     }
 
-    private fun analyzeCase(astCase: ASTCase, env: StaticEnvironment): CoreExpression {
-        val exp = analyze(astCase.exp, env)
+    private fun analyzeCase(case: ASTExpression.Case, env: StaticEnvironment): CoreExpression {
+        val exp = analyze(case.exp, env)
 
         val matchedObject = env.define(sequence.nextSymbol("\$match"))
-        val body = createAlts(matchedObject, astCase.alternatives, env)
+        val body = createAlts(matchedObject, case.alternatives, env)
 
         return CoreLetExpression(matchedObject, exp, body)
     }

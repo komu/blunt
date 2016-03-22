@@ -2,7 +2,6 @@ package komu.blunt
 
 import komu.blunt.analyzer.AnalyzationException
 import komu.blunt.ast.ASTExpression
-import komu.blunt.ast.ASTVariable
 import komu.blunt.eval.Evaluator
 import komu.blunt.objects.EvaluationException
 import komu.blunt.parser.SyntaxException
@@ -38,7 +37,7 @@ object Main {
     }
 
     fun ASTExpression.isSymbol(name: String) =
-        this is ASTVariable && name == this.name.toString()
+        this is ASTExpression.Variable && name == this.name.toString()
 }
 
 fun main(args : Array<String>) {

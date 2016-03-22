@@ -15,9 +15,9 @@ object AST {
     fun data(name: String, typ: Type, constructors: List<ConstructorDefinition>, derivedClasses: List<String>) =
         ASTDataDefinition(name, typ, constructors, derivedClasses)
 
-    fun constant(value: Any): ASTExpression   = ASTConstant(value)
-    fun variable(name: Symbol): ASTExpression = ASTVariable(name)
-    fun variable(name: String): ASTExpression = ASTVariable(Symbol(name))
+    fun constant(value: Any): ASTExpression   = ASTExpression.Constant(value)
+    fun variable(name: Symbol): ASTExpression = ASTExpression.Variable(name)
+    fun variable(name: String): ASTExpression = ASTExpression.Variable(Symbol(name))
 
     fun apply(func: ASTExpression, vararg args: ASTExpression): ASTExpression =
         apply2(func, args)
@@ -26,7 +26,7 @@ object AST {
         var exp = func
 
         for (arg in args)
-            exp = ASTApplication(exp, arg)
+            exp = ASTExpression.Application(exp, arg)
 
         return exp.simplify()
     }
@@ -35,10 +35,10 @@ object AST {
         AST.apply(AST.variable("error"), AST.constant(message))
 
     fun constructor(name: String, vararg args: ASTExpression): ASTExpression =
-        apply2(ASTConstructor(name), args)
+        apply2(ASTExpression.Constructor(name), args)
 
     fun lambda(argument: Symbol, body: ASTExpression): ASTExpression =
-        ASTLambda(argument, body)
+        ASTExpression.Lambda(argument, body)
 
     fun lambda(arguments: List<Symbol>, body: ASTExpression): ASTExpression {
         if (arguments.isEmpty()) throw IllegalArgumentException("no arguments for lambda")
@@ -55,24 +55,24 @@ object AST {
                       alternative(Pattern.Constructor(ConstructorNames.FALSE), alt))
 
     fun caseExp(exp: ASTExpression, alts: List<ASTAlternative>): ASTExpression =
-        ASTCase(exp, alts)
+        ASTExpression.Case(exp, alts)
 
     fun caseExp(exp: ASTExpression, vararg alts: ASTAlternative): ASTExpression =
-        ASTCase(exp, alts.toList())
+        ASTExpression.Case(exp, alts.toList())
 
     fun alternative(pattern: Pattern, exp: ASTExpression): ASTAlternative =
         ASTAlternative(pattern, exp);
 
     fun letRec(name: Symbol, value: ASTExpression, body: ASTExpression): ASTExpression =
-        ASTLetRec(singletonList(ImplicitBinding(name, value)), body)
+        ASTExpression.LetRec(singletonList(ImplicitBinding(name, value)), body)
 
     fun let(recursive: Boolean, binding: ImplicitBinding, body: ASTExpression): ASTExpression {
         val bindings = singletonList(binding)
-        return if (recursive) ASTLetRec(bindings, body) else ASTLet(bindings, body)
+        return if (recursive) ASTExpression.LetRec(bindings, body) else ASTExpression.Let(bindings, body)
     }
 
-    fun sequence(vararg exps: ASTExpression): ASTSequence =
-        ASTSequence(exps.toList())
+    fun sequence(vararg exps: ASTExpression): ASTExpression.Sequence =
+        ASTExpression.Sequence(exps.toList())
 
     fun tuple(exps: List<ASTExpression>): ASTExpression  {
         if (exps.isEmpty())
@@ -85,13 +85,13 @@ object AST {
         var call = constructor(name)
 
         for (exp in exps)
-            call = ASTApplication(call, exp)
+            call = ASTExpression.Application(call, exp)
 
         return call
     }
 
     fun set(name: Symbol, exp: ASTExpression): ASTExpression =
-        ASTSet(name, exp)
+        ASTExpression.Set(name, exp)
 
     fun define(name: Symbol, value: ASTExpression): ASTValueDefinition =
         ASTValueDefinition(name, value)

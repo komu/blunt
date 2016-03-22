@@ -1,10 +1,12 @@
 package komu.blunt.analyzer
 
-import komu.blunt.ast.*
+import komu.blunt.ast.ASTAlternative
+import komu.blunt.ast.ASTExpression
+import komu.blunt.ast.ImplicitBinding
 import komu.blunt.objects.Symbol
-import komu.blunt.types.patterns.*
+import komu.blunt.types.patterns.Pattern
 import komu.blunt.utils.Sequence
-import java.util.HashMap
+import java.util.*
 
 /**
  * Walks the AST to perform α-conversion on all expressions. After performing this conversion, the
@@ -47,17 +49,16 @@ class IdentifierMapping(val parent: IdentifierMapping? = null) {
 
 private fun IdentifierMapping.rename(exp: ASTExpression): ASTExpression =
     when (exp) {
-        is ASTConstant    -> exp
-        is ASTConstructor -> exp
-        is ASTSequence    -> exp.map { rename(it) }
-        is ASTApplication -> exp.map { rename(it) }
-        is ASTSet         -> ASTSet(this[exp.variable], rename(exp.exp))
-        is ASTVariable    -> ASTVariable(this[exp.name])
-        is ASTLet         -> renameLet(false, exp.bindings, exp.body)
-        is ASTLetRec      -> renameLet(true, exp.bindings, exp.body)
-        is ASTLambda      -> renameLambda(exp)
-        is ASTCase        -> renameCase(exp)
-        else              -> throw AnalyzationException("unknown expression '$exp'")
+        is ASTExpression.Constant -> exp
+        is ASTExpression.Constructor -> exp
+        is ASTExpression.Sequence -> exp.map { rename(it) }
+        is ASTExpression.Application -> exp.map { rename(it) }
+        is ASTExpression.Set -> ASTExpression.Set(this[exp.variable], rename(exp.exp))
+        is ASTExpression.Variable -> ASTExpression.Variable(this[exp.name])
+        is ASTExpression.Let -> renameLet(false, exp.bindings, exp.body)
+        is ASTExpression.LetRec -> renameLet(true, exp.bindings, exp.body)
+        is ASTExpression.Lambda -> renameLambda(exp)
+        is ASTExpression.Case -> renameCase(exp)
     }
 
 private fun IdentifierMapping.renameLet(recursive: Boolean,
@@ -74,19 +75,19 @@ private fun IdentifierMapping.renameLet(recursive: Boolean,
     val newBody = newCtx.rename(body)
 
     return if (recursive)
-        ASTLetRec(newBindings, newBody)
+        ASTExpression.LetRec(newBindings, newBody)
     else
-        ASTLet(newBindings, newBody)
+        ASTExpression.Let(newBindings, newBody)
 }
 
-private fun IdentifierMapping.renameLambda(lambda: ASTLambda): ASTExpression {
+private fun IdentifierMapping.renameLambda(lambda: ASTExpression.Lambda): ASTExpression {
     val newCtx = createChildContext()
     val fresh = newCtx.freshMappingFor(lambda.argument)
-    return ASTLambda(fresh, newCtx.rename(lambda.body))
+    return ASTExpression.Lambda(fresh, newCtx.rename(lambda.body))
 }
 
-private fun IdentifierMapping.renameCase(astCase: ASTCase) =
-    ASTCase(rename(astCase.exp), astCase.alternatives.map { renameAlternative(it) })
+private fun IdentifierMapping.renameCase(case: ASTExpression.Case) =
+    ASTExpression.Case(rename(case.exp), case.alternatives.map { renameAlternative(it) })
 
 private fun IdentifierMapping.renameAlternative(alt: ASTAlternative): ASTAlternative {
     val newCtx = createChildContext()
