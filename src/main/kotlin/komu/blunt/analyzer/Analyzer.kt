@@ -42,9 +42,9 @@ class Analyzer(val dataTypes: DataTypeDefinitions) {
         val ctor = dataTypes.findConstructor(constructor.name)
 
         return if (ctor.arity == 0)
-            analyze(AST.constant(TypeConstructorValue(ctor.index, ctor.name)), ctx)
+            analyze(ASTExpression.Constant(TypeConstructorValue(ctor.index, ctor.name)), ctx)
         else
-            analyze(AST.variable(ctor.name), ctx)
+            analyze(ASTExpression.Variable(ctor.name), ctx)
     }
 
     private fun analyzeLet(let: ASTExpression.Let, env: StaticEnvironment): CoreExpression {

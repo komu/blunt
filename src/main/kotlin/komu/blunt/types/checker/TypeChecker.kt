@@ -41,16 +41,14 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     fun typeCheckBindGroup(bindGroup: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions> =
         bindingTypeChecker.typeCheckBindGroup(bindGroup, ass)
 
-    fun typeCheck(define: ASTValueDefinition, ass: Assumptions): TypeCheckResult<Type> {
-        val let = AST.letRec(define.name, define.value, AST.variable(define.name))
-        return typeCheck(let, ass)
-    }
+    fun typeCheck(define: ASTValueDefinition, ass: Assumptions): TypeCheckResult<Type> =
+        typeCheck(ASTExpression.LetRec(define.name, define.value, ASTExpression.Variable(define.name)), ass)
 
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
         patternTypeChecker.typeCheck(pattern)
 
     fun freshInstance(scheme: Scheme): Qualified<Type> =
-        scheme.`type`.instantiate(newTVars(scheme.kinds))
+        scheme.type.instantiate(newTVars(scheme.kinds))
 
     fun newTVar(): TypeVariable =
         newTVar(Kind.Star)

@@ -18,13 +18,13 @@ class FunctionBuilder {
             for (i in args.indices) {
                 val v = Symbol("\$arg$i") // TODO: fresh symbols
                 symbols.add(v)
-                exps.add(AST.variable(v))
+                exps.add(ASTExpression.Variable(v))
             }
         } else if (args.size != exps.size) {
             throw SyntaxException("invalid amount of arguments")
         }
 
-        alternatives.add(AST.alternative(Pattern.tuple(args), body))
+        alternatives.add(ASTAlternative(Pattern.tuple(args), body))
     }
 
     fun build(): ASTExpression {
@@ -35,7 +35,7 @@ class FunctionBuilder {
         return if (simpleVars != null)
             AST.lambda(simpleVars, alts.first().value)
         else
-            AST.lambda(symbols, AST.caseExp(AST.tuple(exps), alts))
+            AST.lambda(symbols, ASTExpression.Case(ASTExpression.tuple(exps), alts))
     }
 
     fun containsOnlyVariablePatterns(alts: List<ASTAlternative>): List<Symbol>? {

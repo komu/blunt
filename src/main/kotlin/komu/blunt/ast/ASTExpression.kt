@@ -1,11 +1,39 @@
 package komu.blunt.ast
 
 import komu.blunt.objects.Symbol
+import komu.blunt.types.ConstructorNames
 import komu.blunt.types.typeFromObject
 
 sealed class ASTExpression {
     abstract override fun toString(): String
     open fun simplify(): ASTExpression = this
+
+    companion object {
+        fun list(exps: List<ASTExpression>): ASTExpression {
+            var list = AST.constructor(ConstructorNames.NIL)
+
+            for (exp in exps.reversed())
+                list = AST.constructor(ConstructorNames.CONS, exp, list)
+
+            return list
+        }
+
+        fun tuple(exps: List<ASTExpression>): ASTExpression  {
+            if (exps.isEmpty())
+                return AST.constructor(ConstructorNames.UNIT)
+            if (exps.size == 1)
+                return exps.first()
+
+            val name = ConstructorNames.tupleName(exps.size)
+
+            var call = AST.constructor(name)
+
+            for (exp in exps)
+                call = ASTExpression.Application(call, exp)
+
+            return call
+        }
+    }
 
     class Application(val func: ASTExpression, val arg: ASTExpression) : ASTExpression() {
 
@@ -26,6 +54,10 @@ sealed class ASTExpression {
     }
 
     class Case(val exp: ASTExpression, val alternatives: List<ASTAlternative>) : ASTExpression() {
+
+        constructor(exp: ASTExpression, vararg alts: ASTAlternative) : this(exp, alts.asList()) {
+        }
+
         override fun toString() = "case $exp of $alternatives"
         override fun simplify() = Case(exp.simplify(), alternatives.map { it.simplify() })
     }
@@ -53,6 +85,9 @@ sealed class ASTExpression {
 
     class LetRec(val bindings: List<ImplicitBinding>, val body: ASTExpression) : ASTExpression() {
 
+        constructor(name: Symbol, value: ASTExpression, body: ASTExpression) : this(listOf(ImplicitBinding(name, value)), body) {
+        }
+
         // TODO: convert letrecs to lets if variable is not referenced in binding
         override fun simplify() =
                 LetRec(bindings.map { it.simplify() }, body.simplify())
@@ -62,6 +97,8 @@ sealed class ASTExpression {
     }
 
     class Sequence(val exps: List<ASTExpression>) : ASTExpression() {
+
+        constructor(vararg exps: ASTExpression): this(exps.asList()) { }
 
         fun map(f: (ASTExpression) -> ASTExpression) = Sequence(exps.map(f))
 
@@ -79,6 +116,7 @@ sealed class ASTExpression {
     }
 
     class Variable(val name: Symbol) : ASTExpression() {
+        constructor(name: String): this(Symbol(name)) { }
         override fun toString() = name.toString()
         override fun simplify() = this
     }
