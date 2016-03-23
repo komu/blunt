@@ -13,7 +13,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     private val expressionVisitor = ExpressionTypeCheckVisitor(this)
     private val bindingTypeChecker = BindingTypeChecker(this)
     private val patternTypeChecker = PatternTypeChecker(this)
-    private var substitution = Substitutions.empty()
+    private var substitution = Substitutions.empty
 
     companion object {
 

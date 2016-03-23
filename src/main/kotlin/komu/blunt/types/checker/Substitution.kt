@@ -57,7 +57,7 @@ class Substitution(private val mapping: Map<Type.Var,Type>) {
 
 object Substitutions {
 
-    fun empty() = Substitution(emptyMap())
+    val empty = Substitution(emptyMap())
 
     fun singleton(v: Type.Var, t: Type): Substitution {
         require(v.kind == t.kind) { "kinds don't match" }
