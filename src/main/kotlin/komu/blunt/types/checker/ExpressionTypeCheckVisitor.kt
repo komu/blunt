@@ -43,7 +43,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
     private fun visit(lambda: ASTExpression.Lambda, ass: Assumptions): TypeCheckResult<Type> {
         val argumentType = tc.newTVar()
         val as2 = Assumptions.singleton(lambda.argument, argumentType.toScheme() )
-        val (resultType, predicates) = typeCheck(lambda.body, ass.join(as2))
+        val (resultType, predicates) = typeCheck(lambda.body, ass + as2)
 
         return TypeCheckResult.of(functionType(argumentType, resultType), predicates)
     }
@@ -59,7 +59,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
         val as2 = Assumptions.singleton(arg, expResult.value.toScheme())
 
-        val bodyResult = typeCheck(let.body, ass.join(as2))
+        val bodyResult = typeCheck(let.body, ass + as2)
 
         return TypeCheckResult.of(bodyResult.value, expResult.predicates, bodyResult.predicates)
     }
@@ -69,7 +69,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
         val rs = tc.typeCheckBindGroup(bindGroup, ass)
 
-        return typeCheck(letRec.body, ass.join(rs.value))
+        return typeCheck(letRec.body, ass + rs.value)
     }
 
     private fun visit(sequence: ASTExpression.Sequence, ass: Assumptions): TypeCheckResult<Type> {
@@ -86,7 +86,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         TypeCheckResult.of(BasicType.UNIT)
 
     private fun visit(variable: ASTExpression.Variable, ass: Assumptions): TypeCheckResult<Type> {
-        val scheme = ass.find(variable.name)
+        val scheme = ass[variable.name]
         val inst = tc.freshInstance(scheme)
         return TypeCheckResult.of(inst.value, inst.predicates)
     }
@@ -111,7 +111,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
             tc.unify(expResult.value, patternResult.value)
             result.addPredicates(patternResult.predicates)
 
-            val valueResult = tc.typeCheck(alt.value, patternResult.ass.join(ass))
+            val valueResult = tc.typeCheck(alt.value, patternResult.ass + ass)
             tc.unify(typ, valueResult.value)
             result.addPredicates(valueResult.predicates)
         }

@@ -2,24 +2,17 @@ package komu.blunt.types
 
 import komu.blunt.types.checker.Substitution
 import komu.blunt.types.checker.Substitutions
-import java.util.*
 import java.util.Collections.emptyList
 import java.util.Objects.hash
 
-class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : Types<Qualified<T>> {
-
-    val predicates: List<Predicate> = ArrayList<Predicate>(predicates)
+class Qualified<out T : Types<T>>(val predicates: List<Predicate>, val value: T) : Types<Qualified<T>> {
 
     companion object {
         fun <T : Types<T>> simple(value: T) = Qualified(emptyList(), value)
     }
 
-    override fun addTypeVariables(result: MutableSet<Type.Var>) {
-        for (p in predicates)
-            p.addTypeVariables(result)
-
-        value.addTypeVariables(result)
-    }
+    override fun typeVars(): Sequence<Type.Var> =
+        predicates.asSequence().flatMap { it.typeVars() } + value.typeVars()
 
     override fun apply(substitution: Substitution): Qualified<T> =
         Qualified(predicates.map { it.apply(substitution) }, value.apply(substitution))
@@ -45,9 +38,10 @@ fun Qualified<Type>.instantiate(ts: List<Type.Var>): Qualified<Type> =
     Qualified(predicates.map { it.instantiate(ts) }, value.instantiate(ts))
 
 fun Qualified<Type>.quantifyAll(): Scheme =
-    quantify(typeVariables)
+    quantify(typeVarsSet())
 
 fun Qualified<Type>.quantify(vs: Collection<Type.Var>): Scheme {
-    val vars = typeVariables.filter { it in vs }
-    return Scheme(vars.kinds(), apply(Substitutions.fromTypeVariables(vars)))
+    val vars = typeVars().filter { it in vs }.toSet()
+    val kinds = vars.map { it.kind }
+    return Scheme(kinds, apply(Substitutions.fromTypeVariables(vars)))
 }

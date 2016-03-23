@@ -1,21 +1,23 @@
 package komu.blunt.types.checker
 
-import java.util.ArrayList
-import java.util.Collections.emptyList
 import komu.blunt.eval.TypeCheckException
-import komu.blunt.types.*
-import komu.blunt.types.patterns.*
+import komu.blunt.types.Predicate
+import komu.blunt.types.Type
+import komu.blunt.types.functionType
+import komu.blunt.types.patterns.Pattern
+import komu.blunt.types.typeFromObject
 import komu.blunt.utils.concat
+import java.util.*
+import java.util.Collections.emptyList
 
 class PatternTypeChecker(private val tc: TypeChecker) {
 
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
         when (pattern) {
-            is Pattern.Variable -> typeCheckVariable(pattern)
-            is Pattern.Wildcard -> PatternTypeCheckResult(emptyList(), Assumptions.empty(), tc.newTVar())
-            is Pattern.Literal -> PatternTypeCheckResult(emptyList(), Assumptions.empty(), typeFromObject(pattern.value))
+            is Pattern.Variable    -> typeCheckVariable(pattern)
+            is Pattern.Wildcard    -> PatternTypeCheckResult(emptyList(), Assumptions.empty, tc.newTVar())
+            is Pattern.Literal     -> PatternTypeCheckResult(emptyList(), Assumptions.empty, typeFromObject(pattern.value))
             is Pattern.Constructor -> typeCheckConstructor(pattern)
-            else                  -> throw Exception("invalid pattern $pattern")
         }
 
     private fun typeCheckVariable(pattern: Pattern.Variable): PatternTypeCheckResult<Type> {
@@ -43,15 +45,14 @@ class PatternTypeChecker(private val tc: TypeChecker) {
 
     private fun assumptionsFrom(patterns: List<Pattern>): PatternTypeCheckResult<List<Type>> {
         val predicates = ArrayList<Predicate>()
-        var ass = Assumptions.empty()
-        val types = ArrayList<Type>()
+        var ass = Assumptions.empty
 
-        for (pattern in patterns) {
+        val types = patterns.map { pattern ->
             val result = tc.typeCheck(pattern)
 
             predicates.addAll(result.predicates)
-            ass = ass.join(result.ass)
-            types.add(result.value)
+            ass += result.ass
+            result.value
         }
 
         return PatternTypeCheckResult(predicates, ass, types)

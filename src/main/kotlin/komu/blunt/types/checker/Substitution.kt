@@ -65,13 +65,6 @@ object Substitutions {
         return Substitution(singletonMap(v, t))
     }
 
-    fun fromTypeVariables(variables: List<Type.Var>): Substitution {
-        val map = HashMap<Type.Var,Type>()
-
-        variables.forEachIndexed { i, v ->
-            map[v] = Type.Gen(i)
-        }
-
-        return Substitution(map)
-    }
+    fun fromTypeVariables(variables: Iterable<Type.Var>): Substitution =
+        Substitution(variables.mapIndexed { i, v -> Pair(v, Type.Gen(i)) }.toMap())
 }

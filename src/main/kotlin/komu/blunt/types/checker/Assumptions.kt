@@ -11,18 +11,16 @@ import java.util.Collections.singletonMap
 
 class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions> {
 
-    fun join(ass: Assumptions) =
+    operator fun plus(ass: Assumptions) =
         builder().addAll(ass).addAll(this).build()
 
-    fun find(name: Symbol): Scheme =
+    operator fun get(name: Symbol): Scheme =
         mappings[name] ?: throw TypeCheckException("unbound identifier: '$name'")
 
     override fun toString() = mappings.toString()
 
-    override fun addTypeVariables(result: MutableSet<Type.Var>) {
-        for (scheme in mappings.values)
-            scheme.addTypeVariables(result)
-    }
+    override fun typeVars(): Sequence<Type.Var> =
+        mappings.values.asSequence().flatMap { it.typeVars() }
 
     override fun apply(substitution: Substitution): Assumptions {
         val builder = builder()
@@ -36,16 +34,14 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
     companion object {
 
         fun builder() = Builder()
-        fun empty() = Assumptions(emptyMap())
+        val empty = Assumptions(emptyMap())
         fun singleton(arg: Symbol, scheme: Scheme) = Assumptions(singletonMap(arg, scheme))
 
-        fun from(names: List<Symbol>, schemes: List<Scheme>): Assumptions {
-            if (names.size != schemes.size)
-                throw IllegalArgumentException("${names.size} != ${schemes.size}")
-
+        fun from(pairs: Iterable<Pair<Symbol,Scheme>>): Assumptions {
             val builder = Builder()
-            for (i in names.indices)
-                builder[names[i]] = schemes[i]
+
+            for ((name, scheme) in pairs)
+                builder[name] = scheme
 
             return builder.build()
         }
@@ -71,7 +67,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
                 return Assumptions(mappings)
             }
 
-            fun build(ass: Assumptions) = build().join(ass)
+            fun build(ass: Assumptions) = build() + ass
 
             private fun ensurePrivateCopy() {
                 if (built) {

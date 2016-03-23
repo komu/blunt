@@ -26,10 +26,7 @@ sealed class Type : Types<Type> {
         override val hnf: Boolean
             get() = left.hnf
 
-        override fun addTypeVariables(result: MutableSet<Var>) {
-            left.addTypeVariables(result)
-            right.addTypeVariables(result)
-        }
+        override fun typeVars(): Sequence<Var> = left.typeVars() + right.typeVars()
 
         override val kind: Kind
             get() {
@@ -65,7 +62,7 @@ sealed class Type : Types<Type> {
         override fun apply(substitution: Substitution) = this
         override val hnf = false
         override fun instantiate(vars: List<Var>) = this
-        override fun addTypeVariables(result: MutableSet<Var>) { }
+        override fun typeVars(): Sequence<Var> = emptySequence()
         override val kind = _kind
         override fun toString(precedence: Int) = name
 
@@ -118,7 +115,7 @@ sealed class Type : Types<Type> {
 
         override fun apply(substitution: Substitution) = this
         override fun instantiate(vars: List<Var>) = vars[index]
-        override fun addTypeVariables(result: MutableSet<Var>) { }
+        override fun typeVars(): Sequence<Var> = emptySequence()
         override val kind: Kind
             get() = throw RuntimeException("can't access kind of TypeGen")
         override val hnf: Boolean
@@ -135,14 +132,9 @@ sealed class Type : Types<Type> {
 
         override fun apply(substitution: Substitution): Type = substitution.lookup(this) ?: this
 
-        override fun addTypeVariables(result: MutableSet<Var>) {
-            result.add(this)
-        }
+        override fun typeVars(): Sequence<Var> = sequenceOf(this)
 
         override fun equals(other: Any?) = other is Var && name == other.name && kind == other.kind
         override fun hashCode() = Objects.hash(name, kind)
     }
 }
-
-fun List<Type>.kinds() = map { it.kind }
-

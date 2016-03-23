@@ -51,7 +51,7 @@ object Unifier {
     private fun varBind(u: Type.Var, t: Type): Substitution =
         when {
             t == u               -> Substitutions.empty
-            u in t.typeVariables -> unificationFailure("occurs check fails", u, t)
+            u in t.typeVars() -> unificationFailure("occurs check fails", u, t)
             u.kind != t.kind     -> unificationFailure("kinds do not match", u, t)
             else                 -> Substitutions.singleton(u, t)
         }

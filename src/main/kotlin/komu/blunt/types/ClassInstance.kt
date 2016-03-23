@@ -10,9 +10,7 @@ class ClassInstance(val qual: Qualified<Predicate>) : Types<ClassInstance> {
     val predicate: Predicate
         get() = qual.value
 
-    override fun addTypeVariables(result: MutableSet<Type.Var>) {
-        qual.addTypeVariables(result)
-    }
+    override fun typeVars(): Sequence<Type.Var> = qual.typeVars()
 
     override fun apply(substitution: Substitution): ClassInstance =
         ClassInstance(qual.apply(substitution))

@@ -11,9 +11,7 @@ data class Predicate(val className: String, val predicateType: Type) : Types<Pre
     val inHnf: Boolean
         get() = predicateType.hnf
 
-    override fun addTypeVariables(result: MutableSet<Type.Var>) {
-        predicateType.addTypeVariables(result)
-    }
+    override fun typeVars(): Sequence<Type.Var> = predicateType.typeVars()
 
     override fun apply(substitution: Substitution): Predicate =
         Predicate(className, predicateType.apply(substitution))

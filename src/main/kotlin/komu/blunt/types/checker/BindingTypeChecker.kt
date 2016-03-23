@@ -1,9 +1,6 @@
 package komu.blunt.types.checker
 
-import komu.blunt.ast.BindGroup
-import komu.blunt.ast.ExplicitBinding
-import komu.blunt.ast.ImplicitBinding
-import komu.blunt.ast.names
+import komu.blunt.ast.*
 import komu.blunt.types.Predicate
 import komu.blunt.types.Qualified
 import komu.blunt.types.Type
@@ -16,12 +13,12 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
     fun typeCheckBindGroup(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions> {
         val explicitAssumptions = bindings.assumptionFromExplicitBindings()
 
-        val (implicitAssumptions, predicates) = typeCheckImplicits(bindings, ass.join(explicitAssumptions))
-        val joinedAssumptions = implicitAssumptions.join(explicitAssumptions)
+        val (implicitAssumptions, predicates) = typeCheckImplicits(bindings, ass + explicitAssumptions)
+        val joinedAssumptions = implicitAssumptions + explicitAssumptions
 
         val result = TypeCheckResult.builder<Assumptions>()
         result.addPredicates(predicates)
-        result.addPredicates(typeCheckExplicits(bindings, ass.join(joinedAssumptions)))
+        result.addPredicates(typeCheckExplicits(bindings, ass + joinedAssumptions))
         return result.build(joinedAssumptions)
     }
 
@@ -38,14 +35,8 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         return result.build(assumptions.build())
     }
 
-    private fun typeCheckExplicits(bindGroup: BindGroup, ass: Assumptions): List<Predicate> {
-        val predicates = ArrayList<Predicate>()
-
-        for (binding in bindGroup.explicitBindings)
-            predicates.addAll(typeCheck(binding, ass))
-
-        return predicates
-    }
+    private fun typeCheckExplicits(bindGroup: BindGroup, ass: Assumptions): List<Predicate> =
+        bindGroup.explicitBindings.flatMap { typeCheck(it, ass) }
 
     private fun typeCheck(binding: ExplicitBinding, ass: Assumptions): List<Predicate> {
         throw UnsupportedOperationException("explicit bindings are not implemented")
@@ -53,16 +44,18 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
 
     private fun typeCheckImplicitGroup(bindings: List<ImplicitBinding>, ass: Assumptions): TypeCheckResult<Assumptions> {
         val typeVariables = tc.newTVars(bindings.size)
-        val predicates = typeCheckAndUnifyBindings(bindings, typeVariables, ass)
+
+        val bindingsAndVars = bindings.zip(typeVariables)
+        val predicates = typeCheckAndUnifyBindings(bindingsAndVars, ass)
 
         val types = tc.applySubstitution(typeVariables)
-        val fs = tc.applySubstitution(ass).typeVariables
+        val fs = tc.applySubstitution(ass).typeVarsSet()
 
         val vss = ArrayList<Set<Type.Var>>()
 
         val genericVariables = HashSet<Type.Var>()
         for (t in types) {
-            val vars = t.typeVariables
+            val vars = t.typeVarsSet()
             vss.add(vars)
             genericVariables.addAll(vars)
         }
@@ -73,22 +66,19 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
 
         val finalSchemes = types.map { Qualified(retainedPredicates, it).quantify(genericVariables) }
 
-        val finalAssumptions = Assumptions.from(bindings.names(), finalSchemes)
+        val finalAssumptions = Assumptions.from(bindings.names().zip(finalSchemes))
         return TypeCheckResult.of(finalAssumptions, deferredPredicates)
     }
 
-    private fun typeCheckAndUnifyBindings(bs: List<ImplicitBinding>, ts: List<Type>, ass: Assumptions): List<Predicate> {
-        val as2 = Assumptions.from(bs.names(), ts.map { it.toScheme() }).join(ass)
+    private fun typeCheckAndUnifyBindings(bindingsWithTypes: List<Pair<ImplicitBinding, Type>>, ass: Assumptions): List<Predicate> {
+        val augmentedAssumptions = Assumptions.from(bindingsWithTypes.instantiate()) + ass
 
-        val predicates = ArrayList<Predicate>()
+        return tc.applySubstitution(bindingsWithTypes.flatMap {
+            val (binding, type) = it
 
-        ts.forEachIndexed { i, typ ->
-            val (t, ps) = tc.typeCheck(bs[i].expr, as2)
-
-            tc.unify(t, typ)
-            predicates.addAll(ps)
-        }
-
-        return tc.applySubstitution(predicates)
+            val (t, ps) = tc.typeCheck(binding.expr, augmentedAssumptions)
+            tc.unify(t, type)
+            ps
+        })
     }
 }
