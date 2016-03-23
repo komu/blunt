@@ -6,31 +6,12 @@ import org.hamcrest.Description
 import org.hamcrest.Matcher
 
 fun producesExpressionMatching(representation: String): Matcher<ASTExpression> =
-    object : ASTMatcher<ASTExpression>(ASTExpression::class.java) {
-
-        override fun matches(exp: ASTExpression) =
-            exp.toString() == representation
-
-        override fun describeTo(description: Description) {
-            description.appendValue(representation)
-        }
-    }
+    astExpression<ASTExpression>(representation) { it.toString() == representation }
 
 fun producesConstant(value: Any): Matcher<ASTExpression> =
-    object : ASTMatcher<ASTExpression.Constant>(ASTExpression.Constant::class.java) {
+    astExpression<ASTExpression.Constant>("constant $value") { value == it.value }
 
-        override fun matches(exp: ASTExpression.Constant) =
-            value == exp.value
-
-        override fun describeTo(description: Description) {
-            description.appendText("constant ").appendValue(value)
-        }
-    }
-
-abstract class ASTMatcher<T : ASTExpression>(val typ: Class<T>) : BaseMatcher<ASTExpression>() {
-
-    override fun matches(o: Any?): Boolean =
-        typ.isInstance(o) && matches(typ.cast(o)!!)
-
-    protected abstract fun matches(exp: T): Boolean
+private inline fun <reified T : ASTExpression> astExpression(desc: String, crossinline predicate: (T) -> Boolean): BaseMatcher<ASTExpression> = object : BaseMatcher<ASTExpression>() {
+    override fun matches(o: Any?) = o is T && predicate(o)
+    override fun describeTo(description: Description) { description.appendValue(desc) }
 }
