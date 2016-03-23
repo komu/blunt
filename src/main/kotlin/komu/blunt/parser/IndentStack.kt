@@ -22,6 +22,6 @@ final class IndentStack {
 
     fun reset(indents: List<Int>) {
         this.indents.clear()
-        this.indents.addAll(indents)
+        this.indents += indents
     }
 }

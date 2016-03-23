@@ -10,15 +10,15 @@ object Unifier {
             lhs is Type.App && rhs is Type.App               -> unifyApplication(lhs, rhs)
             lhs is Type.Var                                  -> varBind(lhs, rhs)
             rhs is Type.Var                                  -> varBind(rhs, lhs)
-            lhs is Type.Con && rhs is Type.Con && lhs == rhs -> Substitutions.empty
+            lhs is Type.Con && rhs is Type.Con && lhs == rhs -> Substitution.empty
             else -> unificationFailure("types do not unify", lhs, rhs)
         }
 
     fun match(lhs: Type, rhs: Type): Substitution =
         when {
             lhs is Type.App && rhs is Type.App               -> matchApplication(lhs, rhs)
-            lhs is Type.Var && lhs.kind == rhs.kind          -> Substitutions.singleton(lhs, rhs)
-            lhs is Type.Con && rhs is Type.Con && lhs == rhs -> Substitutions.empty
+            lhs is Type.Var && lhs.kind == rhs.kind          -> Substitution.singleton(lhs, rhs)
+            lhs is Type.Con && rhs is Type.Con && lhs == rhs -> Substitution.empty
             else -> unificationFailure("types do not match", lhs, rhs)
         }
 
@@ -50,10 +50,10 @@ object Unifier {
 
     private fun varBind(u: Type.Var, t: Type): Substitution =
         when {
-            t == u               -> Substitutions.empty
+            t == u               -> Substitution.empty
             u in t.typeVars() -> unificationFailure("occurs check fails", u, t)
             u.kind != t.kind     -> unificationFailure("kinds do not match", u, t)
-            else                 -> Substitutions.singleton(u, t)
+            else                 -> Substitution.singleton(u, t)
         }
 
     private fun unificationFailure(message: String, u: Any, t: Any) =

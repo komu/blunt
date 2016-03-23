@@ -6,65 +6,56 @@ import komu.blunt.ast.ExplicitBinding
 import komu.blunt.types.BasicType
 import komu.blunt.types.Predicate
 import komu.blunt.types.Type
-import komu.blunt.types.functionType
+import komu.blunt.types.typeFromObject
 import komu.blunt.utils.init
 import java.util.*
 
 class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
 
-    fun typeCheck(exp: ASTExpression, ctx: Assumptions): TypeCheckResult<Type> =
-      when (exp) {
-        is ASTExpression.Application -> visit(exp, ctx)
-        is ASTExpression.Constant -> visit(exp)
-        is ASTExpression.Lambda -> visit(exp, ctx)
-        is ASTExpression.Let -> visit(exp, ctx)
-        is ASTExpression.LetRec -> visit(exp, ctx)
-        is ASTExpression.Sequence -> visit(exp, ctx)
-        is ASTExpression.Set -> visit(exp, ctx)
-        is ASTExpression.Variable -> visit(exp, ctx)
-        is ASTExpression.Constructor -> visit(exp)
-        is ASTExpression.Case -> visit(exp, ctx)
-      }
-
-    private fun visit(application: ASTExpression.Application, ass: Assumptions): TypeCheckResult<Type> {
-        val te = typeCheck(application.func, ass)
-        val tf = typeCheck(application.arg, ass);
-
-        val t = tc.newTVar()
-
-        tc.unify(functionType(tf.value, t), te.value)
-
-        return TypeCheckResult.of(t, te.predicates, tf.predicates)
+    fun typeCheck(exp: ASTExpression, ctx: Assumptions): TypeCheckResult<Type> = when (exp) {
+        is ASTExpression.Application -> typeCheckApplication(exp, ctx)
+        is ASTExpression.Case        -> typeCheckCase(exp, ctx)
+        is ASTExpression.Constant    -> typeCheckConstant(exp)
+        is ASTExpression.Constructor -> typeCheckConstructor(exp)
+        is ASTExpression.Lambda      -> typeCheckLambda(exp, ctx)
+        is ASTExpression.Let         -> typeCheckLet(exp, ctx)
+        is ASTExpression.LetRec      -> typeCheckLetRec(exp, ctx)
+        is ASTExpression.Sequence    -> typeCheckSequence(exp, ctx)
+        is ASTExpression.Set         -> typeCheckSet(exp, ctx)
+        is ASTExpression.Variable    -> typeCheckVariable(exp, ctx)
     }
 
-    private fun visit(constant: ASTExpression.Constant): TypeCheckResult<Type> =
-        TypeCheckResult.of(constant.valueType())
+    private fun typeCheckApplication(application: ASTExpression.Application, ass: Assumptions): TypeCheckResult<Type> {
+        val type = tc.newTVar()
+        val tf = typeCheck(application.func, ass)
+        val ta = typeCheck(application.arg, ass);
 
-    private fun visit(lambda: ASTExpression.Lambda, ass: Assumptions): TypeCheckResult<Type> {
+        tc.unify(tf.value, Type.function(ta.value, type))
+
+        return TypeCheckResult(type, tf.predicates + ta.predicates)
+    }
+
+    private fun typeCheckConstant(constant: ASTExpression.Constant): TypeCheckResult<Type> =
+        TypeCheckResult(typeFromObject(constant.value))
+
+    private fun typeCheckLambda(lambda: ASTExpression.Lambda, ass: Assumptions): TypeCheckResult<Type> {
         val argumentType = tc.newTVar()
-        val as2 = Assumptions.singleton(lambda.argument, argumentType.toScheme() )
-        val (resultType, predicates) = typeCheck(lambda.body, ass + as2)
+        val (resultType, predicates) = typeCheck(lambda.body, ass.augment(lambda.argument, argumentType.toScheme()))
 
-        return TypeCheckResult.of(functionType(argumentType, resultType), predicates)
+        return TypeCheckResult(Type.function(argumentType, resultType), predicates)
     }
 
-    private fun visit(let: ASTExpression.Let, ass: Assumptions): TypeCheckResult<Type> {
-        if (let.bindings.size != 1)
-            throw UnsupportedOperationException("multi-var let is not supported")
-
-        val arg = let.bindings.first().name
-        val exp = let.bindings.first().expr
+    private fun typeCheckLet(let: ASTExpression.Let, ass: Assumptions): TypeCheckResult<Type> {
+        val (arg, exp) = let.bindings.singleOrNull() ?: throw UnsupportedOperationException("multi-var let is not supported")
 
         val expResult = typeCheck(exp, ass)
 
-        val as2 = Assumptions.singleton(arg, expResult.value.toScheme())
+        val bodyResult = typeCheck(let.body, ass.augment(arg, expResult.value.toScheme()))
 
-        val bodyResult = typeCheck(let.body, ass + as2)
-
-        return TypeCheckResult.of(bodyResult.value, expResult.predicates, bodyResult.predicates)
+        return TypeCheckResult(bodyResult.value, expResult.predicates + bodyResult.predicates)
     }
 
-    private fun visit(letRec: ASTExpression.LetRec, ass: Assumptions): TypeCheckResult<Type> {
+    private fun typeCheckLetRec(letRec: ASTExpression.LetRec, ass: Assumptions): TypeCheckResult<Type> {
         val bindGroup = BindGroup(ArrayList<ExplicitBinding>(), letRec.bindings)
 
         val rs = tc.typeCheckBindGroup(bindGroup, ass)
@@ -72,50 +63,45 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
         return typeCheck(letRec.body, ass + rs.value)
     }
 
-    private fun visit(sequence: ASTExpression.Sequence, ass: Assumptions): TypeCheckResult<Type> {
-        val predicates = ArrayList<Predicate>()
+    private fun typeCheckSequence(sequence: ASTExpression.Sequence, ass: Assumptions): TypeCheckResult<Type> {
+        val predicates = sequence.exps.init.flatMap { typeCheck(it, ass).predicates }
 
-        for (exp in sequence.exps.init)
-            predicates.addAll(typeCheck(exp, ass).predicates)
-
-        return typeCheck(sequence.exps.last(), ass).withAddedPredicates(predicates)
+        return typeCheck(sequence.exps.last(), ass) + predicates
     }
 
-    private fun visit(set: ASTExpression.Set, ass: Assumptions): TypeCheckResult<Type> =
+    private fun typeCheckSet(set: ASTExpression.Set, ass: Assumptions): TypeCheckResult<Type> =
         //// TODO: assume sets is always correct since it's auto-generated
-        TypeCheckResult.of(BasicType.UNIT)
+        TypeCheckResult(BasicType.UNIT)
 
-    private fun visit(variable: ASTExpression.Variable, ass: Assumptions): TypeCheckResult<Type> {
+    private fun typeCheckVariable(variable: ASTExpression.Variable, ass: Assumptions): TypeCheckResult<Type> {
         val scheme = ass[variable.name]
         val inst = tc.freshInstance(scheme)
-        return TypeCheckResult.of(inst.value, inst.predicates)
+        return TypeCheckResult(inst.value, inst.predicates)
     }
 
-    private fun visit(constructor: ASTExpression.Constructor): TypeCheckResult<Type> {
+    private fun typeCheckConstructor(constructor: ASTExpression.Constructor): TypeCheckResult<Type> {
         val ctor = tc.findConstructor(constructor.name)
-
         val inst = tc.freshInstance(ctor.scheme)
-        return TypeCheckResult.of(inst.value, inst.predicates)
+        return TypeCheckResult(inst.value, inst.predicates)
     }
 
-    private fun visit(case: ASTExpression.Case, ass: Assumptions): TypeCheckResult<Type> {
+    private fun typeCheckCase(case: ASTExpression.Case, ass: Assumptions): TypeCheckResult<Type> {
         val expResult = typeCheck(case.exp, ass)
 
-        val typ = tc.newTVar()
-
-        val result = TypeCheckResult.builder<Type>()
+        val type = tc.newTVar()
+        val predicates = ArrayList<Predicate>()
 
         for (alt in case.alternatives) {
             val patternResult = tc.typeCheck(alt.pattern)
 
             tc.unify(expResult.value, patternResult.value)
-            result.addPredicates(patternResult.predicates)
+            predicates += patternResult.predicates
 
             val valueResult = tc.typeCheck(alt.value, patternResult.ass + ass)
-            tc.unify(typ, valueResult.value)
-            result.addPredicates(valueResult.predicates)
+            tc.unify(type, valueResult.value)
+            predicates += valueResult.predicates
         }
 
-        return result.build(typ)
+        return TypeCheckResult(type, predicates)
     }
 }

@@ -11,8 +11,15 @@ import java.util.Collections.singletonMap
 
 class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions> {
 
-    operator fun plus(ass: Assumptions) =
-        builder().addAll(ass).addAll(this).build()
+    operator fun plus(ass: Assumptions): Assumptions {
+        val b = builder()
+        b += ass
+        b += this
+        return b.build()
+    }
+
+    fun augment(arg: Symbol, scheme: Scheme): Assumptions =
+        this + singleton(arg, scheme)
 
     operator fun get(name: Symbol): Scheme =
         mappings[name] ?: throw TypeCheckException("unbound identifier: '$name'")
@@ -56,10 +63,9 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
                 mappings[name] = scheme
             }
 
-            fun addAll(ass: Assumptions): Builder {
+            operator fun plusAssign(ass: Assumptions) {
                 ensurePrivateCopy()
                 mappings.putAll(ass.mappings)
-                return this
             }
 
             fun build(): Assumptions {

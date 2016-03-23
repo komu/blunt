@@ -25,9 +25,9 @@ class CoreSequenceExpression (private val expressions: List<CoreExpression>) : C
         for (exp in expressions) {
             val sexp = exp.simplify()
             if (sexp is CoreSequenceExpression)
-                exps.addAll(sexp.expressions)
+                exps += sexp.expressions
             else
-                exps.add(sexp)
+                exps += sexp
         }
 
         return CoreExpression.sequence(exps)

@@ -13,7 +13,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     private val expressionVisitor = ExpressionTypeCheckVisitor(this)
     private val bindingTypeChecker = BindingTypeChecker(this)
     private val patternTypeChecker = PatternTypeChecker(this)
-    private var substitution = Substitutions.empty
+    private var substitution = Substitution.empty
 
     companion object {
 
@@ -53,10 +53,10 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
         newTVar(Kind.Star)
 
     fun newTVar(kind: Kind): Type.Var =
-        typeVariable(typeName(typeSequence++), kind)
+        Type.Var(typeName(typeSequence++), kind)
 
     fun newTVars(size: Int): List<Type.Var> =
-        (1..size).toList().map { newTVar() }
+        (1..size).map { newTVar() }
 
     fun newTVars(kinds: List<Kind>): List<Type.Var> =
         kinds.map { newTVar(it) }

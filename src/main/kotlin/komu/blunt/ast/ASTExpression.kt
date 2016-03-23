@@ -2,7 +2,6 @@ package komu.blunt.ast
 
 import komu.blunt.objects.Symbol
 import komu.blunt.types.ConstructorNames
-import komu.blunt.types.typeFromObject
 
 sealed class ASTExpression {
     abstract override fun toString(): String
@@ -63,7 +62,6 @@ sealed class ASTExpression {
     }
 
     class Constant(val value: Any) : ASTExpression() {
-        fun valueType() = typeFromObject(value)
         override fun toString() = value.toString()
         override fun simplify() = this
     }

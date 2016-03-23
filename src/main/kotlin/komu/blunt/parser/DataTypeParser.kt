@@ -9,7 +9,10 @@ import komu.blunt.parser.TokenType.Companion.DERIVING
 import komu.blunt.parser.TokenType.Companion.END
 import komu.blunt.parser.TokenType.Companion.OR
 import komu.blunt.parser.TokenType.Companion.TYPE_OR_CTOR_NAME
-import komu.blunt.types.*
+import komu.blunt.types.ConstructorDefinition
+import komu.blunt.types.Qualified
+import komu.blunt.types.Type
+import komu.blunt.types.quantify
 import java.util.*
 
 internal class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
@@ -62,18 +65,18 @@ internal class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
         }
 
         fun addConstructor(constructorName: String, args: List<Type>) {
-            val scheme = Qualified.simple(functionType(args, getType())).quantify(vars)
+            val scheme = Qualified.simple(Type.function(args, type)).quantify(vars)
             constructors.add(ConstructorDefinition(constructorIndex++, constructorName, scheme, args.size))
         }
 
-        private fun getType() =
-            genericType(typeName, vars)
+        private val type: Type
+            get() = Type.generic(typeName, vars)
 
         fun addAutomaticallyDerivedClass(className: String) {
             derivedClasses.add(className)
         }
 
         fun build(): ASTDataDefinition =
-            AST.data(typeName, getType(), constructors, derivedClasses)
+            AST.data(typeName, type, constructors, derivedClasses)
     }
 }

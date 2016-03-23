@@ -18,7 +18,7 @@ abstract class CoreExpression {
         val FALSE = CoreConstantExpression(false)
         val EMPTY = CoreSequenceExpression(emptyList())
 
-        fun sequence(vararg exps: CoreExpression) = sequence(exps.toList())
+        fun sequence(vararg exps: CoreExpression) = sequence(exps.asList())
 
         fun sequence(exps: List<CoreExpression>): CoreExpression =
             if (exps.size == 1) exps.first() else CoreSequenceExpression(exps)

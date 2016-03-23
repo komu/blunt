@@ -9,62 +9,41 @@ import java.util.Collections.singletonMap
 class Substitution(private val mapping: Map<Type.Var,Type>) {
 
     fun compose(s2: Substitution): Substitution {
-        val map = HashMap<Type.Var,Type>()
-
-        for ((key, value) in s2.mapping)
-            map[key] = value.apply(this)
+        val map = s2.mapping.mapValuesTo(HashMap()) { it.value.apply(this) }
 
         map.putAll(mapping)
 
         return Substitution(map)
     }
 
-    fun merge(s2: Substitution): Substitution {
-        if (agree(s2)) {
-            val map = HashMap<Type.Var,Type>()
-            map.putAll(mapping)
-            map.putAll(s2.mapping)
-
-            return Substitution(map)
-        } else
+    fun merge(s2: Substitution): Substitution =
+        if (agree(s2))
+            Substitution(mapping + s2.mapping)
+        else
             throw TypeCheckException("merge failed")
-    }
 
-    private fun agree(s2: Substitution): Boolean {
-        for (v in mapping.keys)
-            if (v in s2.mapping)
-                if (v.apply(this) != v.apply(s2))
-                    return false
-
-        return true
-    }
+    private fun agree(s2: Substitution): Boolean =
+        mapping.keys.all { it in s2.mapping && it.apply(this) != it.apply(s2) }
 
     fun apply(types: List<Type>): List<Type> =
         types.map { it.apply(this) }
 
-    fun apply(subst: Substitution): Substitution {
-        val map = HashMap<Type.Var,Type>()
+    fun apply(subst: Substitution): Substitution =
+        Substitution(mapping.mapValues { it.value.apply(subst) })
 
-        for ((key, value) in mapping)
-            map[key] = value.apply(subst)
-
-        return Substitution(map)
-    }
-
-    fun lookup(variable: Type.Var): Type? =
+    operator fun get(variable: Type.Var): Type? =
         mapping[variable]
-}
 
-object Substitutions {
+    companion object {
+        val empty = Substitution(emptyMap())
 
-    val empty = Substitution(emptyMap())
+        fun singleton(v: Type.Var, t: Type): Substitution {
+            require(v.kind == t.kind) { "kinds don't match" }
 
-    fun singleton(v: Type.Var, t: Type): Substitution {
-        require(v.kind == t.kind) { "kinds don't match" }
+            return Substitution(singletonMap(v, t))
+        }
 
-        return Substitution(singletonMap(v, t))
+        fun fromTypeVariables(variables: Iterable<Type.Var>): Substitution =
+            Substitution(variables.mapIndexed { i, v -> Pair(v, Type.Gen(i)) }.toMap())
     }
-
-    fun fromTypeVariables(variables: Iterable<Type.Var>): Substitution =
-        Substitution(variables.mapIndexed { i, v -> Pair(v, Type.Gen(i)) }.toMap())
 }

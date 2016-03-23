@@ -12,7 +12,7 @@ class Instructions {
     fun append(rhs: Instructions) {
         val relocationOffset = instructions.size
 
-        instructions.addAll(rhs.instructions)
+        instructions += rhs.instructions
 
         for (label in rhs.labelMap) {
             label.relocateBy(relocationOffset)

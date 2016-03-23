@@ -4,7 +4,7 @@ import komu.blunt.objects.Symbol
 import komu.blunt.types.Scheme
 import komu.blunt.types.Type
 
-class ImplicitBinding(val name: Symbol, val expr: ASTExpression) {
+data class ImplicitBinding(val name: Symbol, val expr: ASTExpression) {
     override fun toString() = "[$name $expr]"
     fun simplify() = ImplicitBinding(name, expr.simplify())
 }

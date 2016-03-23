@@ -14,25 +14,22 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val explicitAssumptions = bindings.assumptionFromExplicitBindings()
 
         val (implicitAssumptions, predicates) = typeCheckImplicits(bindings, ass + explicitAssumptions)
-        val joinedAssumptions = implicitAssumptions + explicitAssumptions
 
-        val result = TypeCheckResult.builder<Assumptions>()
-        result.addPredicates(predicates)
-        result.addPredicates(typeCheckExplicits(bindings, ass + joinedAssumptions))
-        return result.build(joinedAssumptions)
+        return TypeCheckResult(implicitAssumptions + explicitAssumptions,
+                predicates + typeCheckExplicits(bindings, ass + (implicitAssumptions + explicitAssumptions)))
     }
 
     private fun typeCheckImplicits(bindings: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions> {
-        val result = TypeCheckResult.builder<Assumptions>()
+        val resultPredicates = ArrayList<Predicate>()
         val assumptions = Assumptions.builder()
 
         for (bindingGroup in bindings.implicitBindings) {
             val (newAssumptions, predicates) = typeCheckImplicitGroup(bindingGroup, assumptions.build(ass))
-            result.addPredicates(predicates)
-            assumptions.addAll(newAssumptions)
+            resultPredicates += predicates
+            assumptions += newAssumptions
         }
 
-        return result.build(assumptions.build())
+        return TypeCheckResult(assumptions.build(), resultPredicates)
     }
 
     private fun typeCheckExplicits(bindGroup: BindGroup, ass: Assumptions): List<Predicate> =
@@ -67,7 +64,7 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val finalSchemes = types.map { Qualified(retainedPredicates, it).quantify(genericVariables) }
 
         val finalAssumptions = Assumptions.from(bindings.names().zip(finalSchemes))
-        return TypeCheckResult.of(finalAssumptions, deferredPredicates)
+        return TypeCheckResult(finalAssumptions, deferredPredicates)
     }
 
     private fun typeCheckAndUnifyBindings(bindingsWithTypes: List<Pair<ImplicitBinding, Type>>, ass: Assumptions): List<Predicate> {

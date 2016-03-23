@@ -44,24 +44,24 @@ class ClassEnv {
         addInstance(isIn("Ord", BasicType.INTEGER))
         addInstance(isIn("Ord", BasicType.STRING))
 
-        addInstance(listOf(isIn("Ord", typeVariable("a")), isIn("Ord", typeVariable("b"))),
-                    isIn("Ord", tupleType(typeVariable("a"), typeVariable("b"))))
+        addInstance(listOf(isIn("Ord", Type.Var("a")), isIn("Ord", Type.Var("b"))),
+                    isIn("Ord", Type.tuple(Type.Var("a"), Type.Var("b"))))
 
-        addInstance(listOf(isIn("Eq", typeVariable("a")), isIn("Eq", typeVariable("b"))),
-                    isIn("Eq", tupleType(typeVariable("a"), typeVariable("b"))))
+        addInstance(listOf(isIn("Eq", Type.Var("a")), isIn("Eq", Type.Var("b"))),
+                    isIn("Eq", Type.tuple(Type.Var("a"), Type.Var("b"))))
 
-        addInstance(listOf(isIn("Eq", typeVariable("a"))),
-                    isIn("Eq", listType(typeVariable("a"))))
+        addInstance(listOf(isIn("Eq", Type.Var("a"))),
+                    isIn("Eq", Type.list(Type.Var("a"))))
 
-        addInstance(listOf(isIn("Eq", typeVariable("a"))),
-                    isIn("Eq", genericType("Maybe", typeVariable("a"))))
+        addInstance(listOf(isIn("Eq", Type.Var("a"))),
+                    isIn("Eq", Type.generic("Maybe", Type.Var("a"))))
     }
 
-    public fun addInstance(predicate: Predicate) {
+    fun addInstance(predicate: Predicate) {
         addInstance(emptyList(), predicate)
     }
 
-    public fun addInstance(predicates: List<Predicate>, predicate: Predicate) {
+    fun addInstance(predicates: List<Predicate>, predicate: Predicate) {
         val typeClass = getClass(predicate.className)
 
         if (predicate.overlapsAny(typeClass.instancePredicates))
@@ -70,11 +70,11 @@ class ClassEnv {
         typeClass.addInstance(Qualified(predicates, predicate))
     }
 
-    public fun addClass(name: String, vararg superClasses: String) {
-        addClass(name, TypeClass(superClasses.toList()))
+    fun addClass(name: String, vararg superClasses: String) {
+        addClass(name, TypeClass(superClasses.asList()))
     }
 
-    public fun addClass(name: String, cl: TypeClass) {
+    fun addClass(name: String, cl: TypeClass) {
         if (defined(name))
             throw RuntimeException("class already defined: '$name'")
 
@@ -91,7 +91,7 @@ class ClassEnv {
         result.add(predicate)
 
         for (superName in typeClass.superClasses)
-            result.addAll(bySuper(isIn(superName, predicate.predicateType)))
+            result += bySuper(isIn(superName, predicate.predicateType))
 
         return result
     }
@@ -115,10 +115,10 @@ class ClassEnv {
 
         for (predicate in predicates) {
             if (predicate.inHnf) {
-                result.add(predicate)
+                result += predicate
             } else {
                 val qs = byInstance(predicate) ?: throw TypeCheckException("could not find instance of ${predicate.className} for type ${predicate.predicateType}")
-                result.addAll(toHfns(qs))
+                result += toHfns(qs)
             }
         }
 
@@ -131,8 +131,8 @@ class ClassEnv {
 
         for (p in ps) {
             if (!combinedPredicates.entails(p)) {
-                combinedPredicates.add(p)
-                result.add(p)
+                combinedPredicates += p
+                result += p
             }
         }
 
@@ -140,13 +140,8 @@ class ClassEnv {
     }
 
     // Returns true iff this collection of predicates entails "entailed".
-    private fun Collection<Predicate>.entails(entailed: Predicate): Boolean {
-        if (this.any { entailed in bySuper(it) })
-            return true
-
-        val qs = byInstance(entailed)
-        return qs != null && qs.all { entails(it) }
-    }
+    private fun Collection<Predicate>.entails(entailed: Predicate): Boolean =
+            this.any { entailed in bySuper(it) } || byInstance(entailed)?.all { entails(it) } ?: false
 
     fun reduce(ps: List<Predicate>): List<Predicate> =
         simplify(toHfns(ps))
@@ -168,7 +163,7 @@ class ClassEnv {
     }
 
     fun defined(name: String) =
-        classes.containsKey(name)
+        name in classes
 
     private fun getClass(name: String): TypeClass =
         classes[name] ?: throw RuntimeException("unknown class '$name'");

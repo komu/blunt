@@ -1,7 +1,6 @@
 package komu.blunt.types
 
 import komu.blunt.types.checker.Substitution
-import komu.blunt.types.checker.Substitutions
 import java.util.Collections.emptyList
 import java.util.Objects.hash
 
@@ -17,16 +16,11 @@ class Qualified<out T : Types<T>>(val predicates: List<Predicate>, val value: T)
     override fun apply(substitution: Substitution): Qualified<T> =
         Qualified(predicates.map { it.apply(substitution) }, value.apply(substitution))
 
-    override fun toString(): String {
-        val sb = StringBuilder()
-
+    override fun toString(): String =
         if (predicates.any())
-            predicates.joinTo(sb, ", ", "(", ") => ")
-
-        sb.append(value)
-
-        return sb.toString()
-    }
+            predicates.joinToString(", ", "(", ") => $value")
+        else
+            value.toString()
 
     override fun equals(other: Any?) =
         other is Qualified<*> && value == other.value && predicates == other.predicates
@@ -43,5 +37,5 @@ fun Qualified<Type>.quantifyAll(): Scheme =
 fun Qualified<Type>.quantify(vs: Collection<Type.Var>): Scheme {
     val vars = typeVars().filter { it in vs }.toSet()
     val kinds = vars.map { it.kind }
-    return Scheme(kinds, apply(Substitutions.fromTypeVariables(vars)))
+    return Scheme(kinds, apply(Substitution.fromTypeVariables(vars)))
 }

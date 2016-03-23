@@ -17,13 +17,6 @@ fun <T> intersection(sets: Collection<Set<T>>): Set<T> {
     return result
 }
 
-fun <T> List<T>.concat(rhs: List<T>): List<T> {
-    val result = ArrayList<T>(this.size + rhs.size)
-    result.addAll(this)
-    result.addAll(rhs)
-    return result
-}
-
 val <T> List<T>.init: List<T>
     get() = if (isEmpty()) this else subList(0, size-1)
 

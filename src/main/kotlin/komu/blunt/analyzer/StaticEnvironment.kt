@@ -37,7 +37,7 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
             VariableReference.nested(frame, offset, name)
 
     fun extend(vararg names: Symbol) =
-        extend(names.toList())
+        extend(names.asList())
 
     fun extend(symbols: Iterable<Symbol>): StaticEnvironment {
         val env = StaticEnvironment(this)

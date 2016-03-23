@@ -3,26 +3,23 @@ package komu.blunt.types.checker
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.Predicate
 import komu.blunt.types.Type
-import komu.blunt.types.functionType
 import komu.blunt.types.patterns.Pattern
 import komu.blunt.types.typeFromObject
-import komu.blunt.utils.concat
 import java.util.*
-import java.util.Collections.emptyList
 
 class PatternTypeChecker(private val tc: TypeChecker) {
 
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =
         when (pattern) {
             is Pattern.Variable    -> typeCheckVariable(pattern)
-            is Pattern.Wildcard    -> PatternTypeCheckResult(emptyList(), Assumptions.empty, tc.newTVar())
-            is Pattern.Literal     -> PatternTypeCheckResult(emptyList(), Assumptions.empty, typeFromObject(pattern.value))
+            is Pattern.Wildcard    -> PatternTypeCheckResult(tc.newTVar())
+            is Pattern.Literal     -> PatternTypeCheckResult(typeFromObject(pattern.value))
             is Pattern.Constructor -> typeCheckConstructor(pattern)
         }
 
     private fun typeCheckVariable(pattern: Pattern.Variable): PatternTypeCheckResult<Type> {
         val tv = tc.newTVar()
-        return PatternTypeCheckResult(emptyList(), Assumptions.singleton(pattern.variable, tv.toScheme()), tv)
+        return PatternTypeCheckResult(tv, Assumptions.singleton(pattern.variable, tv.toScheme()))
     }
 
     private fun typeCheckConstructor(pattern: Pattern.Constructor): PatternTypeCheckResult<Type> {
@@ -36,11 +33,9 @@ class PatternTypeChecker(private val tc: TypeChecker) {
 
         val q = tc.freshInstance(constructor.scheme)
 
-        tc.unify(q.value, functionType(result.value, t))
+        tc.unify(q.value, Type.function(result.value, t))
 
-        val predicates = result.predicates.concat(q.predicates)
-
-        return PatternTypeCheckResult(predicates, result.ass, t)
+        return PatternTypeCheckResult(t, result.ass, result.predicates + q.predicates)
     }
 
     private fun assumptionsFrom(patterns: List<Pattern>): PatternTypeCheckResult<List<Type>> {
@@ -50,11 +45,11 @@ class PatternTypeChecker(private val tc: TypeChecker) {
         val types = patterns.map { pattern ->
             val result = tc.typeCheck(pattern)
 
-            predicates.addAll(result.predicates)
+            predicates += result.predicates
             ass += result.ass
             result.value
         }
 
-        return PatternTypeCheckResult(predicates, ass, types)
+        return PatternTypeCheckResult(types, ass, predicates)
     }
 }

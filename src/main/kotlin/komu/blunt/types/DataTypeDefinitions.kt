@@ -39,8 +39,8 @@ public class DataTypeDefinitions() {
         constructors[name] ?: throw AnalyzationException("unknown type constructor '$name'")
 
     private fun tupleConstructorScheme(arity: Int): Scheme {
-        val types = (0..arity-1).toList().map { typeVariable("t$it")}
-        return Qualified.simple(functionType(types, tupleType(types))).quantifyAll()
+        val types = (0..arity-1).toList().map { Type.Var("t$it") }
+        return Qualified.simple(Type.function(types, Type.tuple(types))).quantifyAll()
     }
 
     val declaredConstructors: Collection<ConstructorDefinition>

@@ -102,14 +102,40 @@ sealed class Type : Types<Type> {
         override fun toString(precedence: Int) = "TypeGen[$index]"
     }
 
-    class Var(private val name: String, private val _kind: Kind) : Type() {
+    class Var(private val name: String, override val kind: Kind = Kind.Star) : Type() {
         override val hnf = true
         override fun toString(precedence: Int) = name
-        override val kind = _kind
         override fun instantiate(vars: List<Var>) = this
-        override fun apply(substitution: Substitution): Type = substitution.lookup(this) ?: this
+        override fun apply(substitution: Substitution): Type = substitution[this] ?: this
         override fun typeVars(): Sequence<Var> = sequenceOf(this)
         override fun equals(other: Any?) = other is Var && name == other.name && kind == other.kind
         override fun hashCode() = Objects.hash(name, kind)
+    }
+
+    companion object {
+        fun list(t: Type) =
+                Type.App(Type.Con("[]", Kind.ofParams(1)), t)
+
+        fun function(argumentType: Type, returnType: Type) =
+                generic("->", argumentType, returnType)
+
+        fun function(args: List<Type>, resultType: Type): Type =
+            if (args.isEmpty())
+                resultType
+            else
+                function(args.first(), function(args.drop(1), resultType))
+
+        fun tuple(vararg types: Type): Type =
+                tuple(types.asList())
+
+        fun tuple(types: List<Type>): Type =
+                generic(ConstructorNames.tupleName(types.size), types)
+
+        fun generic(name: String, vararg params: Type): Type =
+                generic(name, params.asList())
+
+        fun generic(name: String, params: List<Type>): Type =
+                params.fold(Type.Con(name, Kind.ofParams(params.size)) as Type) { l, r -> Type.App(l, r) }
+
     }
 }
