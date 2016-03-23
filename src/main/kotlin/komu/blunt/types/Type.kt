@@ -18,10 +18,10 @@ sealed class Type : Types<Type> {
     class App(val left: Type, val right: Type) : Type() {
 
         override fun apply(substitution: Substitution) =
-                App(left.apply(substitution), right.apply(substitution))
+            App(left.apply(substitution), right.apply(substitution))
 
         override fun instantiate(vars: List<Var>) =
-                App(left.instantiate(vars), right.instantiate(vars))
+            App(left.instantiate(vars), right.instantiate(vars))
 
         override val hnf: Boolean
             get() = left.hnf
@@ -38,14 +38,14 @@ sealed class Type : Types<Type> {
             }
 
         override fun toString(precedence: Int): String =
-                toString(LinkedList<Type>(), precedence)
+            toString(LinkedList<Type>(), precedence)
 
         private fun toString(arguments: LinkedList<Type>, precedence: Int): String {
             arguments.addFirst(right)
             return when (left) {
                 is App -> left.toString(arguments, precedence)
                 is Con -> left.toString(arguments, precedence)
-                else               -> return "($left $arguments)"
+                else   -> return "($left $arguments)"
             }
         }
 
@@ -53,7 +53,7 @@ sealed class Type : Types<Type> {
         override fun hashCode() = Objects.hash(left, right)
     }
 
-    class Con(private val name: String, private val _kind: Kind) : Type() {
+    class Con(private val name: String, override val kind: Kind) : Type() {
 
         companion object {
             private val tuplePattern = Regex("\\(,+\\)")
@@ -63,56 +63,35 @@ sealed class Type : Types<Type> {
         override val hnf = false
         override fun instantiate(vars: List<Var>) = this
         override fun typeVars(): Sequence<Var> = emptySequence()
-        override val kind = _kind
         override fun toString(precedence: Int) = name
-
         override fun equals(other: Any?) = other is Con && name == other.name && kind == other.kind
         override fun hashCode() = Objects.hash(name, kind)
 
-        internal fun toString(arguments: List<Type>, precedence: Int): String =
-                when {
-                    name == "->" && arguments.size == 2 ->
-                        functionToString(arguments, precedence);
-                    name.equals("[]") && arguments.size == 1 ->
-                        "[" + arguments.first() + "]"
-                    name.matches(tuplePattern) ->
-                        tupleToString(arguments)
-                    else ->
-                        defaultToString(arguments, precedence)
-                }
-
-        private fun defaultToString(arguments: List<Type>, precedence: Int): String {
-            val sb = StringBuilder()
-
-            if (precedence != 0) sb.append("(")
-            sb.append(name)
-
-            for (arg in arguments)
-                sb.append(' ').append(arg.toString(1))
-
-            if (precedence != 0) sb.append(")")
-
-            return sb.toString()
+        internal fun toString(arguments: List<Type>, precedence: Int): String = when {
+            name == "->" && arguments.size == 2 ->
+                functionToString(arguments, precedence);
+            name.equals("[]") && arguments.size == 1 ->
+                "[${arguments.first()}]"
+            name.matches(tuplePattern) ->
+                tupleToString(arguments)
+            else ->
+                defaultToString(arguments, precedence)
         }
+
+        private fun defaultToString(arguments: List<Type>, precedence: Int): String =
+            arguments.joinToString(" ", name) { it.toString(1) }.parensIfNeeded(precedence)
 
         private fun tupleToString(arguments: List<Type>) =
-                arguments.joinToString(", ", "(", ")")
+            arguments.joinToString(", ", "(", ")")
 
-        private fun functionToString(arguments: List<Type>, precedence: Int): String {
-            val sb = StringBuilder()
+        private fun functionToString(arguments: List<Type>, precedence: Int): String =
+            "${arguments[0].toString(1)} -> ${arguments[1].toString(0)}".parensIfNeeded(precedence)
 
-            if (precedence != 0) sb.append("(")
-            sb.append(arguments[0].toString(1))
-            sb.append(" -> ")
-            sb.append(arguments[1].toString(0))
-            if (precedence != 0) sb.append(")")
-
-            return sb.toString()
-        }
+        private fun String.parensIfNeeded(precedence: Int): String =
+            if (precedence != 0) "($this)" else this
     }
 
     class Gen(private val index: Int) : Type() {
-
         override fun apply(substitution: Substitution) = this
         override fun instantiate(vars: List<Var>) = vars[index]
         override fun typeVars(): Sequence<Var> = emptySequence()
@@ -124,16 +103,12 @@ sealed class Type : Types<Type> {
     }
 
     class Var(private val name: String, private val _kind: Kind) : Type() {
-
         override val hnf = true
         override fun toString(precedence: Int) = name
         override val kind = _kind
         override fun instantiate(vars: List<Var>) = this
-
         override fun apply(substitution: Substitution): Type = substitution.lookup(this) ?: this
-
         override fun typeVars(): Sequence<Var> = sequenceOf(this)
-
         override fun equals(other: Any?) = other is Var && name == other.name && kind == other.kind
         override fun hashCode() = Objects.hash(name, kind)
     }
