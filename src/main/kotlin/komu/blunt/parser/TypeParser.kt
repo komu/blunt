@@ -20,6 +20,9 @@ class TypeParser(val lexer: Lexer) {
         private val START_TOKENS =
             listOf(LPAREN, LBRACKET, IDENTIFIER, TYPE_OR_CTOR_NAME)
 
+        fun parseType(s: String): Type =
+            TypeParser(Lexer(s)).parseType()
+
         fun parseScheme(s: String): Scheme =
             parseQualified(s).quantifyAll()
 
