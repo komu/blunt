@@ -8,6 +8,12 @@ import komu.blunt.types.patterns.Pattern
 import java.util.*
 import java.util.Collections.singletonList
 
+fun buildFunction(args: List<Pattern>, body: ASTExpression): ASTExpression {
+    val builder = FunctionBuilder()
+    builder.addAlternative(args, body)
+    return builder.build()
+}
+
 class FunctionBuilder {
     private val symbols = ArrayList<Symbol>()
     private val exps = ArrayList<ASTExpression>()

@@ -131,6 +131,9 @@ sealed class Type : Types<Type> {
         fun tuple(types: List<Type>): Type =
                 generic(ConstructorNames.tupleName(types.size), types)
 
+        fun tupleOrSingle(types: List<Type>): Type =
+                types.singleOrNull() ?: tuple(types)
+
         fun generic(name: String, vararg params: Type): Type =
                 generic(name, params.asList())
 

@@ -277,6 +277,8 @@ class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()
     fun expectFailure(expected: String): Nothing =
         parseError("expected $expected, but got ${readToken()}")
 
+    fun <T> commaSep(parser: () -> T): List<T> = sepBy(COMMA, parser)
+
     fun <T> sepBy(separator: TokenType<*>, parser: () -> T): List<T> {
         val result = ArrayList<T>()
         do {
@@ -297,5 +299,18 @@ class Lexer(source: String, private val operatorSet: OperatorSet = OperatorSet()
         val result = parser()
         expectToken(RBRACKET)
         return result
+    }
+
+    fun <T> listOf(parser: () -> T?): List<T> {
+        val result = ArrayList<T>()
+        while (true)
+            result += parser() ?: return result
+    }
+
+    fun <T> listOf1(parser: () -> T?): List<T> {
+        val result = ArrayList<T>()
+        result += parser()!!
+        while (true)
+            result += parser() ?: return result
     }
 }

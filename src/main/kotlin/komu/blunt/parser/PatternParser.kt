@@ -1,7 +1,6 @@
 package komu.blunt.parser
 
 import komu.blunt.objects.Symbol
-import komu.blunt.parser.TokenType.Companion.COMMA
 import komu.blunt.parser.TokenType.Companion.IDENTIFIER
 import komu.blunt.parser.TokenType.Companion.LBRACKET
 import komu.blunt.parser.TokenType.Companion.LITERAL
@@ -68,7 +67,7 @@ final class PatternParser(val lexer: Lexer) {
             if (lexer.nextTokenIs(RBRACKET))
                 Pattern.Constructor(ConstructorNames.NIL)
             else
-                createList(lexer.sepBy(TokenType.COMMA) { parsePattern() })
+                createList(lexer.commaSep { parsePattern() })
         }
 
     private fun createList(patterns: List<Pattern>): Pattern {
@@ -84,7 +83,7 @@ final class PatternParser(val lexer: Lexer) {
         if (lexer.nextTokenIs(RPAREN)) {
             Pattern.Constructor(ConstructorNames.UNIT)
         } else {
-            val patterns = lexer.sepBy(COMMA) { parsePattern() }
+            val patterns = lexer.commaSep { parsePattern() }
             patterns.singleOrNull() ?: Pattern.Constructor(ConstructorNames.tupleName(patterns.size), patterns)
         }
     }

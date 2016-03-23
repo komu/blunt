@@ -1,7 +1,6 @@
 package komu.blunt.parser
 
 import komu.blunt.parser.TokenType.Companion.BIG_RIGHT_ARROW
-import komu.blunt.parser.TokenType.Companion.COMMA
 import komu.blunt.parser.TokenType.Companion.IDENTIFIER
 import komu.blunt.parser.TokenType.Companion.LBRACKET
 import komu.blunt.parser.TokenType.Companion.LPAREN
@@ -39,7 +38,7 @@ class TypeParser(val lexer: Lexer) {
     private fun parseOptionalPredicates(): List<Predicate> {
         if (hasPredicate()) {
             val predicates = if (lexer.peekTokenType() == LPAREN)
-                lexer.inParens { lexer.sepBy(COMMA) { parsePredicate() } }
+                lexer.inParens { lexer.commaSep { parsePredicate() } }
             else
                 listOf(parsePredicate())
 
@@ -110,12 +109,10 @@ class TypeParser(val lexer: Lexer) {
 
     private fun parseParens(): Type =
         lexer.inParens {
-            if (lexer.nextTokenIs(RPAREN)) {
+            if (lexer.nextTokenIs(RPAREN))
                 BasicType.UNIT
-            } else {
-                val types = lexer.sepBy(COMMA) { parseType() }
-                types.singleOrNull() ?: Type.tuple(types)
-            }
+            else
+                Type.tupleOrSingle(lexer.commaSep { parseType() })
         }
 
     private fun parseBrackets(): Type =
