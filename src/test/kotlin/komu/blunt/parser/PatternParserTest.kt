@@ -1,76 +1,77 @@
 package komu.blunt.parser
 
-public class PatternParserTest {
-/*
+import komu.blunt.types.ConstructorNames.CONS
+import komu.blunt.types.ConstructorNames.NIL
+import komu.blunt.types.ConstructorNames.UNIT
+import komu.blunt.types.patterns.Pattern
+import komu.blunt.types.patterns.Pattern.*
+import org.junit.Test
+import java.math.BigInteger
+import kotlin.test.assertEquals
+
+class PatternParserTest {
+
     @Test
-    public void variablePatterns() {
-        assertParse("a", variable("a"));
-        assertParse("foo", variable("foo"));
+    fun variablePatterns() {
+        assertParse("a", Variable("a"))
+        assertParse("foo", Variable("foo"))
     }
 
     @Test
-    public void wildcardPattern() {
-        assertParse("_", wildcard());
+    fun wildcardPattern() {
+        assertParse("_", Wildcard)
     }
 
     @Test
-    public void intLiterals() {
-        assertParse("42", literal(BigInteger.valueOf(42)));
+    fun intLiterals() {
+        assertParse("42", Literal(BigInteger.valueOf(42)))
     }
 
     @Test
-    public void stringLiteral() {
-        assertParse("\"foo\"", literal("foo"));
+    fun stringLiteral() {
+        assertParse("\"foo\"", Literal("foo"))
     }
 
     @Test
-    public void unitPattern() {
-        assertParse("()", constructor(UNIT));
+    fun unitPattern() {
+        assertParse("()", Constructor(UNIT))
     }
 
     @Test
-    public void consPatterns() {
-        assertParse("[]", constructor(NIL));
-        assertParse("x:y", constructor(CONS, variable("x"), variable("y")));
+    fun consPatterns() {
+        assertParse("[]", Constructor(NIL))
+        assertParse("x:y", Constructor(CONS, Variable("x"), Variable("y")))
         assertParse("x:y:z",
-                constructor(CONS, variable("x"),
-                        constructor(CONS, variable("y"),
-                                variable("z"))));
+                Constructor(CONS, Variable("x"),
+                        Constructor(CONS, Variable("y"),
+                                Variable("z"))))
     }
 
     @Test
-    public void listPatterns() {
+    fun listPatterns() {
         assertParse("[x, y, z]",
-                constructor(CONS, variable("x"),
-                        constructor(CONS, variable("y"),
-                                constructor(CONS, variable("z"),
-                                        constructor(NIL)))));
+                Constructor(CONS, Variable("x"),
+                        Constructor(CONS, Variable("y"),
+                                Constructor(CONS, Variable("z"),
+                                        Constructor(NIL)))))
     }
 
     @Test
-    public void tuplePatterns() {
-        assertParse("(x,y)", constructor("(,)", variable("x"), variable("y")));
-        assertParse("(x,y,z)", constructor("(,,)", variable("x"), variable("y"), variable("z")));
-        assertParse("(x,y,z,w)", constructor("(,,,)", variable("x"), variable("y"), variable("z"), variable("w")));
+    fun tuplePatterns() {
+        assertParse("(x,y)", Constructor("(,)", Variable("x"), Variable("y")))
+        assertParse("(x,y,z)", Constructor("(,,)", Variable("x"), Variable("y"), Variable("z")))
+        assertParse("(x,y,z,w)", Constructor("(,,,)", Variable("x"), Variable("y"), Variable("z"), Variable("w")))
     }
 
     @Test
-    public void constructorPattern() {
-        assertParse("Foo", constructor("Foo"));
-        assertParse("Foo x y", constructor("Foo", variable("x"), variable("y")));
-        assertParse("Foo Bar Baz", constructor("Foo", constructor("Bar"), constructor("Baz")));
+    fun constructorPattern() {
+        assertParse("Foo", Constructor("Foo"))
+        assertParse("Foo x y", Constructor("Foo", Variable("x"), Variable("y")))
+        assertParse("Foo Bar Baz", Constructor("Foo", Constructor("Bar"), Constructor("Baz")))
     }
 
-    @Test
-    public void complexPatterns() {
+    private fun assertParse(source: String, expected: Pattern) {
+        assertEquals(expected, PatternParser(Lexer(source)).parsePattern())
     }
-
-    private static void assertParse(String source, Pattern expected) {
-        PatternParser parser = new PatternParser(new Lexer(source));
-
-        Pattern pattern = parser.parsePattern();
-        assertThat(pattern, is(expected));
-    }
-    */
 }
 

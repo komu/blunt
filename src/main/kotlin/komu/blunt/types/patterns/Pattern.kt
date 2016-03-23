@@ -40,6 +40,7 @@ sealed class Pattern {
     }
 
     class Variable(val variable: Symbol) : Pattern() {
+        constructor(variable: String): this(Symbol(variable)) { }
         override fun toString() = variable.toString()
         override fun equals(other: Any?) = other is Variable && variable == other.variable
         override fun hashCode() = variable.hashCode()
