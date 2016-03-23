@@ -52,12 +52,12 @@ internal class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 
     private class DataTypeBuilder(val typeName: String) {
 
-        private val vars = ArrayList<TypeVariable>()
+        private val vars = ArrayList<Type.Var>()
         private val constructors = ArrayList<ConstructorDefinition>()
         private val derivedClasses = ArrayList<String>()
         private var constructorIndex = 0
 
-        fun addVariable(variable: TypeVariable) {
+        fun addVariable(variable: Type.Var) {
             vars.add(variable)
         }
 

@@ -1,6 +1,5 @@
 package komu.blunt.types.checker
 
-import komu.blunt.ast.AST
 import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.ASTValueDefinition
 import komu.blunt.ast.BindGroup
@@ -50,16 +49,16 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     fun freshInstance(scheme: Scheme): Qualified<Type> =
         scheme.type.instantiate(newTVars(scheme.kinds))
 
-    fun newTVar(): TypeVariable =
+    fun newTVar(): Type.Var =
         newTVar(Kind.Star)
 
-    fun newTVar(kind: Kind): TypeVariable =
+    fun newTVar(kind: Kind): Type.Var =
         typeVariable(typeName(typeSequence++), kind)
 
-    fun newTVars(size: Int): List<TypeVariable> =
+    fun newTVars(size: Int): List<Type.Var> =
         (1..size).toList().map { newTVar() }
 
-    fun newTVars(kinds: List<Kind>): List<TypeVariable> =
+    fun newTVars(kinds: List<Kind>): List<Type.Var> =
         kinds.map { newTVar(it) }
 
     private fun typeName(index: Int): String =

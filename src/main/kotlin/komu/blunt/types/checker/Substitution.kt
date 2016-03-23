@@ -2,16 +2,14 @@ package komu.blunt.types.checker
 
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.Type
-import komu.blunt.types.TypeGen
-import komu.blunt.types.TypeVariable
 import java.util.*
 import java.util.Collections.emptyMap
 import java.util.Collections.singletonMap
 
-class Substitution(private val mapping: Map<TypeVariable,Type>) {
+class Substitution(private val mapping: Map<Type.Var,Type>) {
 
     fun compose(s2: Substitution): Substitution {
-        val map = HashMap<TypeVariable,Type>()
+        val map = HashMap<Type.Var,Type>()
 
         for ((key, value) in s2.mapping)
             map[key] = value.apply(this)
@@ -23,7 +21,7 @@ class Substitution(private val mapping: Map<TypeVariable,Type>) {
 
     fun merge(s2: Substitution): Substitution {
         if (agree(s2)) {
-            val map = HashMap<TypeVariable,Type>()
+            val map = HashMap<Type.Var,Type>()
             map.putAll(mapping)
             map.putAll(s2.mapping)
 
@@ -45,7 +43,7 @@ class Substitution(private val mapping: Map<TypeVariable,Type>) {
         types.map { it.apply(this) }
 
     fun apply(subst: Substitution): Substitution {
-        val map = HashMap<TypeVariable,Type>()
+        val map = HashMap<Type.Var,Type>()
 
         for ((key, value) in mapping)
             map[key] = value.apply(subst)
@@ -53,7 +51,7 @@ class Substitution(private val mapping: Map<TypeVariable,Type>) {
         return Substitution(map)
     }
 
-    fun lookup(variable: TypeVariable): Type? =
+    fun lookup(variable: Type.Var): Type? =
         mapping[variable]
 }
 
@@ -61,17 +59,17 @@ object Substitutions {
 
     fun empty() = Substitution(emptyMap())
 
-    fun singleton(v: TypeVariable, t: Type): Substitution {
+    fun singleton(v: Type.Var, t: Type): Substitution {
         require(v.kind == t.kind) { "kinds don't match" }
 
         return Substitution(singletonMap(v, t))
     }
 
-    fun fromTypeVariables(variables: List<TypeVariable>): Substitution {
-        val map = HashMap<TypeVariable,Type>()
+    fun fromTypeVariables(variables: List<Type.Var>): Substitution {
+        val map = HashMap<Type.Var,Type>()
 
         variables.forEachIndexed { i, v ->
-            map[v] = TypeGen(i)
+            map[v] = Type.Gen(i)
         }
 
         return Substitution(map)

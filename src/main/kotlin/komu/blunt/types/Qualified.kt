@@ -14,7 +14,7 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : T
         fun <T : Types<T>> simple(value: T) = Qualified(emptyList(), value)
     }
 
-    override fun addTypeVariables(result: MutableSet<TypeVariable>) {
+    override fun addTypeVariables(result: MutableSet<Type.Var>) {
         for (p in predicates)
             p.addTypeVariables(result)
 
@@ -41,13 +41,13 @@ class Qualified<out T : Types<T>>(predicates: List<Predicate>, val value: T) : T
     override fun hashCode() = hash(predicates, value)
 }
 
-fun Qualified<Type>.instantiate(ts: List<TypeVariable>): Qualified<Type> =
+fun Qualified<Type>.instantiate(ts: List<Type.Var>): Qualified<Type> =
     Qualified(predicates.map { it.instantiate(ts) }, value.instantiate(ts))
 
 fun Qualified<Type>.quantifyAll(): Scheme =
     quantify(typeVariables)
 
-fun Qualified<Type>.quantify(vs: Collection<TypeVariable>): Scheme {
+fun Qualified<Type>.quantify(vs: Collection<Type.Var>): Scheme {
     val vars = typeVariables.filter { it in vs }
     return Scheme(vars.kinds(), apply(Substitutions.fromTypeVariables(vars)))
 }

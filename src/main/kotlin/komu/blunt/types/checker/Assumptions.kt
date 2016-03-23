@@ -3,7 +3,7 @@ package komu.blunt.types.checker
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.objects.Symbol
 import komu.blunt.types.Scheme
-import komu.blunt.types.TypeVariable
+import komu.blunt.types.Type
 import komu.blunt.types.Types
 import java.util.*
 import java.util.Collections.emptyMap
@@ -19,7 +19,7 @@ class Assumptions (private val mappings: Map<Symbol,Scheme>) : Types<Assumptions
 
     override fun toString() = mappings.toString()
 
-    override fun addTypeVariables(result: MutableSet<TypeVariable>) {
+    override fun addTypeVariables(result: MutableSet<Type.Var>) {
         for (scheme in mappings.values)
             scheme.addTypeVariables(result)
     }

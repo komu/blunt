@@ -4,7 +4,10 @@ import komu.blunt.ast.BindGroup
 import komu.blunt.ast.ExplicitBinding
 import komu.blunt.ast.ImplicitBinding
 import komu.blunt.ast.names
-import komu.blunt.types.*
+import komu.blunt.types.Predicate
+import komu.blunt.types.Qualified
+import komu.blunt.types.Type
+import komu.blunt.types.quantify
 import komu.blunt.utils.intersection
 import java.util.*
 
@@ -55,9 +58,9 @@ final class BindingTypeChecker(private val tc: TypeChecker) {
         val types = tc.applySubstitution(typeVariables)
         val fs = tc.applySubstitution(ass).typeVariables
 
-        val vss = ArrayList<Set<TypeVariable>>()
+        val vss = ArrayList<Set<Type.Var>>()
 
-        val genericVariables = HashSet<TypeVariable>()
+        val genericVariables = HashSet<Type.Var>()
         for (t in types) {
             val vars = t.typeVariables
             vss.add(vars)

@@ -11,14 +11,14 @@ data class Predicate(val className: String, val predicateType: Type) : Types<Pre
     val inHnf: Boolean
         get() = predicateType.hnf
 
-    override fun addTypeVariables(result: MutableSet<TypeVariable>) {
+    override fun addTypeVariables(result: MutableSet<Type.Var>) {
         predicateType.addTypeVariables(result)
     }
 
     override fun apply(substitution: Substitution): Predicate =
         Predicate(className, predicateType.apply(substitution))
 
-    fun instantiate(ts: List<TypeVariable>) =
+    fun instantiate(ts: List<Type.Var>) =
         Predicate(className, predicateType.instantiate(ts))
 
     fun overlapsAny(predicates: Collection<Predicate>) =

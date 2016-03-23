@@ -121,7 +121,7 @@ class TypeParser(val lexer: Lexer) {
     private fun parseBrackets(): Type =
         listType(lexer.inBrackets { parseType() })
 
-    fun parseTypeVariable(): TypeVariable =
+    fun parseTypeVariable(): Type.Var =
         typeVariable(lexer.readTokenValue(IDENTIFIER))
 }
 

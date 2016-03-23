@@ -8,7 +8,7 @@ object BasicType {
     val STRING = basicType("String")
 
     private fun basicType(name: String): Type =
-        TypeConstructor(name, Kind.Star)
+        Type.Con(name, Kind.Star)
 }
 
 fun typeFromObject(o: Any): Type =
@@ -26,18 +26,18 @@ fun typeFromObject(o: Any): Type =
 //: type.getSimpleName();
 //}
 
-fun typeVariable(name: String): TypeVariable =
+fun typeVariable(name: String): Type.Var =
     typeVariable(name, Kind.Star)
 
-fun typeVariable(name: String, kind: Kind): TypeVariable =
-    TypeVariable(name, kind)
+fun typeVariable(name: String, kind: Kind): Type.Var =
+    Type.Var(name, kind)
 
 fun listType(t: Type) =
-    TypeApplication(TypeConstructor("[]", Kind.ofParams(1)), t)
+    Type.App(Type.Con("[]", Kind.ofParams(1)), t)
 
 
 fun basicType(name: String): Type =
-    TypeConstructor(name, Kind.Star)
+    Type.Con(name, Kind.Star)
 
 fun functionType(argumentType: Type, returnType: Type) =
     genericType("->", argumentType, returnType)
@@ -58,10 +58,10 @@ fun genericType(name: String, vararg params: Type): Type =
     genericType(name, params.toList())
 
 fun genericType(name: String, params: List<Type>): Type {
-    var t: Type = TypeConstructor(name, Kind.ofParams(params.size))
+    var t: Type = Type.Con(name, Kind.ofParams(params.size))
 
     for (param in params)
-        t = TypeApplication(t, param)
+        t = Type.App(t, param)
 
     return t
 }

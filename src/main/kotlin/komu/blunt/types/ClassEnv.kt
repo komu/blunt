@@ -151,8 +151,8 @@ class ClassEnv {
     fun reduce(ps: List<Predicate>): List<Predicate> =
         simplify(toHfns(ps))
 
-    fun split(fixedVariables: Set<TypeVariable>,
-              quantifyVariables: Set<TypeVariable>,
+    fun split(fixedVariables: Set<Type.Var>,
+              quantifyVariables: Set<Type.Var>,
               originalPredicates: List<Predicate>): Pair<List<Predicate>, List<Predicate>> {
         val deferredPredicates = ArrayList<Predicate>()
         val retainedPredicates = ArrayList<Predicate>()
