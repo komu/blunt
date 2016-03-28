@@ -8,7 +8,7 @@ class CoreDefineExpression(private val variable: VariableReference, private val 
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {
-            instructionsOf(expression.assemble(asm, target, Linkage.NEXT))
+            instructionsOf(expression.assemble(asm, target, Linkage.Next))
             storeVariable(variable, target)
 
             loadConstant(target, BasicValues.UNIT)

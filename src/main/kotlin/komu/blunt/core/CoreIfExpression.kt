@@ -12,12 +12,12 @@ class CoreIfExpression(val condition: CoreExpression,
             val after = asm.newLabel("if-after")
             val falseBranch = asm.newLabel("if-false")
 
-            val trueLinkage = if (linkage == Linkage.NEXT) Linkage.jump(after) else linkage
+            val trueLinkage = if (linkage == Linkage.Next) Linkage.Jump(after) else linkage
 
             // Since the target register is safe to overwrite, we borrow it
             // for evaluating the condition as well.
 
-            instructionsOf(condition.assemble(asm, target, Linkage.NEXT))
+            instructionsOf(condition.assemble(asm, target, Linkage.Next))
 
             jumpIfFalse(target, falseBranch)
 

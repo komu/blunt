@@ -15,14 +15,14 @@ class CoreLambdaExpression(private val envSize: Int, private val body: CoreExpre
             val afterLambda = asm.newLabel("after-lambda")
 
             loadLambda(target, lambda)
-            if (linkage == Linkage.NEXT)
+            if (linkage == Linkage.Next)
                 jump(afterLambda)
             else
                 finishWithLinkage(linkage)
 
             label(lambda)
             createEnvironment(envSize)
-            instructionsOf(body.assemble(asm, Register.VAL, Linkage.RETURN))
+            instructionsOf(body.assemble(asm, Register.VAL, Linkage.Return))
             label(afterLambda)
         }
 

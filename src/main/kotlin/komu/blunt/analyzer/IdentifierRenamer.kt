@@ -45,59 +45,57 @@ class IdentifierMapping(val parent: IdentifierMapping? = null) {
         this[name] = v
         return v
     }
-}
 
-private fun IdentifierMapping.rename(exp: ASTExpression): ASTExpression =
-    when (exp) {
-        is ASTExpression.Constant -> exp
-        is ASTExpression.Constructor -> exp
-        is ASTExpression.Sequence -> exp.map { rename(it) }
-        is ASTExpression.Application -> exp.map { rename(it) }
-        is ASTExpression.Set -> ASTExpression.Set(this[exp.variable], rename(exp.exp))
-        is ASTExpression.Variable -> ASTExpression.Variable(this[exp.name])
-        is ASTExpression.Let -> renameLet(false, exp.bindings, exp.body)
-        is ASTExpression.LetRec -> renameLet(true, exp.bindings, exp.body)
-        is ASTExpression.Lambda -> renameLambda(exp)
-        is ASTExpression.Case -> renameCase(exp)
+    fun rename(exp: ASTExpression): ASTExpression = when (exp) {
+        is ASTExpression.Constant       -> exp
+        is ASTExpression.Constructor    -> exp
+        is ASTExpression.Sequence       -> exp.map { rename(it) }
+        is ASTExpression.Application    -> exp.map { rename(it) }
+        is ASTExpression.Set            -> ASTExpression.Set(this[exp.variable], rename(exp.exp))
+        is ASTExpression.Variable       -> ASTExpression.Variable(this[exp.name])
+        is ASTExpression.Let            -> renameLet(exp.bindings, exp.body, recursive = false)
+        is ASTExpression.LetRec         -> renameLet(exp.bindings, exp.body, recursive = true)
+        is ASTExpression.Lambda         -> renameLambda(exp)
+        is ASTExpression.Case           -> renameCase(exp)
     }
 
-private fun IdentifierMapping.renameLet(recursive: Boolean,
-                                        bindings: List<ImplicitBinding>,
-                                        body: ASTExpression): ASTExpression {
-    val newCtx = createChildContext()
-    val bindingExprCtx = if (recursive) newCtx else this
+    private fun renameLet(bindings: List<ImplicitBinding>,
+                          body: ASTExpression,
+                          recursive: Boolean): ASTExpression {
+        val newCtx = createChildContext()
+        val bindingExprCtx = if (recursive) newCtx else this
 
-    val newBindings = bindings.map { binding ->
-        val v = newCtx.freshMappingFor(binding.name)
-        ImplicitBinding(v, bindingExprCtx.rename(binding.expr))
+        val newBindings = bindings.map { binding ->
+            val v = newCtx.freshMappingFor(binding.name)
+            ImplicitBinding(v, bindingExprCtx.rename(binding.expr))
+        }
+
+        val newBody = newCtx.rename(body)
+
+        return if (recursive)
+            ASTExpression.LetRec(newBindings, newBody)
+        else
+            ASTExpression.Let(newBindings, newBody)
     }
 
-    val newBody = newCtx.rename(body)
+    private fun renameLambda(lambda: ASTExpression.Lambda): ASTExpression {
+        val newCtx = createChildContext()
+        val fresh = newCtx.freshMappingFor(lambda.argument)
+        return ASTExpression.Lambda(fresh, newCtx.rename(lambda.body))
+    }
 
-    return if (recursive)
-        ASTExpression.LetRec(newBindings, newBody)
-    else
-        ASTExpression.Let(newBindings, newBody)
-}
+    private fun renameCase(case: ASTExpression.Case) =
+        ASTExpression.Case(rename(case.exp), case.alternatives.map { renameAlternative(it) })
 
-private fun IdentifierMapping.renameLambda(lambda: ASTExpression.Lambda): ASTExpression {
-    val newCtx = createChildContext()
-    val fresh = newCtx.freshMappingFor(lambda.argument)
-    return ASTExpression.Lambda(fresh, newCtx.rename(lambda.body))
-}
+    private fun renameAlternative(alt: ASTAlternative): ASTAlternative {
+        val newCtx = createChildContext()
+        return ASTAlternative(newCtx.renamePattern(alt.pattern), newCtx.rename(alt.value))
+    }
 
-private fun IdentifierMapping.renameCase(case: ASTExpression.Case) =
-    ASTExpression.Case(rename(case.exp), case.alternatives.map { renameAlternative(it) })
-
-private fun IdentifierMapping.renameAlternative(alt: ASTAlternative): ASTAlternative {
-    val newCtx = createChildContext()
-    return ASTAlternative(newCtx.renamePattern(alt.pattern), newCtx.rename(alt.value))
-}
-
-private fun IdentifierMapping.renamePattern(pattern: Pattern): Pattern =
-    when (pattern) {
+    private fun renamePattern(pattern: Pattern): Pattern = when (pattern) {
         is Pattern.Wildcard     -> pattern
         is Pattern.Literal      -> pattern
         is Pattern.Variable     -> Pattern.Variable(freshMappingFor(pattern.variable))
         is Pattern.Constructor  -> pattern.map { renamePattern(it) }
     }
+}

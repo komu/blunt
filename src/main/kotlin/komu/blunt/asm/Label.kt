@@ -8,17 +8,15 @@ class Label(private val name: String) {
         address += offset
     }
 
-    private var _address = -1;
-
-    var address: Int
+    var address: Int = -1
         get() {
-            check(_address != -1) { "address not initialized" }
-            return _address
+            check(field != -1) { "address not initialized" }
+            return field
         }
 
         set(value) {
             require(value >= 0) { "negative address: $value" }
-            _address = value
+            field = value
         }
 
     override fun toString() = name

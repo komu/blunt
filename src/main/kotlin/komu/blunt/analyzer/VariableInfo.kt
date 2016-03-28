@@ -2,7 +2,7 @@ package komu.blunt.analyzer
 
 import komu.blunt.objects.Symbol
 
-class VariableInfo(val name: Symbol, val offset: Int) {
+data class VariableInfo(val name: Symbol, val offset: Int) {
 
     init {
         require(offset >= 0) { "negative offset $offset" }

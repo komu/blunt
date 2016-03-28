@@ -81,7 +81,7 @@ class Evaluator() {
     private fun run(expression: CoreExpression, env: Environment): Any? {
         val pos = instructions.count
 
-        instructions.append(expression.simplify().assemble(Assembler(), Register.VAL, Linkage.NEXT))
+        instructions += expression.simplify().assemble(Assembler(), Register.VAL, Linkage.Next)
 
         val vm = VM(instructions, env, rootBindings.runtimeEnvironment)
         vm.pc = pos
@@ -90,10 +90,10 @@ class Evaluator() {
         return result
     }
 
-    public fun evaluate(exp: ASTExpression): Any? =
+    fun evaluate(exp: ASTExpression): Any? =
         evaluateWithType(exp).first
 
-    public fun evaluateWithType(exp: ASTExpression): Pair<Any?, Qualified<Type>> {
+    fun evaluateWithType(exp: ASTExpression): Pair<Any?, Qualified<Type>> {
         val env = rootBindings.staticEnvironment.extend()
         val typ = typeCheck(exp)
         val expression = toCore(exp, env);

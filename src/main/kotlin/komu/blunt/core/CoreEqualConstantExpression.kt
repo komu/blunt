@@ -6,7 +6,7 @@ class CoreEqualConstantExpression(private val value: Any, private val expression
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {
-            instructionsOf(expression.assemble(asm, target, Linkage.NEXT))
+            instructionsOf(expression.assemble(asm, target, Linkage.Next))
             equalConstant(target, target, value)
             finishWithLinkage(linkage)
         }

@@ -9,8 +9,8 @@ import komu.blunt.objects.PrimitiveProcedure
 class OpApply private constructor(private val tail: Boolean) : OpCode() {
 
     companion object {
-        val NORMAL = OpApply(false)
-        val TAIL   = OpApply(true)
+        val NORMAL = OpApply(tail = false)
+        val TAIL   = OpApply(tail = true)
     }
 
     override fun execute(vm: VM) {
@@ -19,12 +19,12 @@ class OpApply private constructor(private val tail: Boolean) : OpCode() {
         when (procedure) {
             is PrimitiveProcedure -> executePrimitive(vm, procedure)
             is CompoundProcedure  -> executeCompound(vm, procedure)
-            else                  -> throw EvaluationException("invalid proceduce '$procedure'")
+            else                  -> throw EvaluationException("invalid procedure '$procedure'")
         }
     }
 
     private fun executePrimitive(vm: VM, procedure: PrimitiveProcedure) {
-        vm.value = procedure.apply(vm.arg)
+        vm.value = procedure(vm.arg)
         vm.pc = vm.pop() as Int
     }
 

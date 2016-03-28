@@ -2,7 +2,7 @@ package komu.blunt.analyzer
 
 import komu.blunt.objects.Symbol
 
-class VariableReference private constructor(val frame: Int, val offset: Int, val name: Symbol) {
+data class VariableReference private constructor(val frame: Int, val offset: Int, val name: Symbol) {
 
     init {
         require(frame >= GLOBAL_FRAME) { "invalid frame $frame" }
@@ -14,9 +14,6 @@ class VariableReference private constructor(val frame: Int, val offset: Int, val
 
         fun nested(frame: Int, offset: Int, name: Symbol) =
             VariableReference(frame, offset, name)
-
-        fun global(offset: Int, name: Symbol) =
-            VariableReference(GLOBAL_FRAME, offset, name)
     }
 
     val global: Boolean

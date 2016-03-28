@@ -15,7 +15,7 @@ class ConstructorArgumentCollector(private val ctor: ConstructorDefinition,
                 ConstructorArgumentCollector(ctor, arrayOf<Any?>())
     }
 
-    override fun apply(arg: Any?): Any? {
+    override fun invoke(arg: Any?): Any? {
         val newArgs = Array(args.size+1) { i -> if (i < args.size) args[i] else arg }
         if (newArgs.size == ctor.arity)
             return TypeConstructorValue(ctor.index, ctor.name, newArgs)

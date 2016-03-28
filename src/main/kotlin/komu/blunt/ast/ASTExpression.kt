@@ -2,35 +2,25 @@ package komu.blunt.ast
 
 import komu.blunt.objects.Symbol
 import komu.blunt.types.ConstructorNames
+import komu.blunt.types.ConstructorNames.CONS
+import komu.blunt.types.ConstructorNames.NIL
+import komu.blunt.types.ConstructorNames.UNIT
 
 sealed class ASTExpression {
     abstract override fun toString(): String
     open fun simplify(): ASTExpression = this
 
     companion object {
-        fun list(exps: List<ASTExpression>): ASTExpression {
-            var list = AST.constructor(ConstructorNames.NIL)
+        fun list(exps: List<ASTExpression>): ASTExpression =
+            exps.foldRight(AST.constructor(NIL)) { exp, list -> AST.constructor(CONS, exp, list) }
 
-            for (exp in exps.reversed())
-                list = AST.constructor(ConstructorNames.CONS, exp, list)
-
-            return list
-        }
-
-        fun tuple(exps: List<ASTExpression>): ASTExpression  {
-            if (exps.isEmpty())
-                return AST.constructor(ConstructorNames.UNIT)
-            if (exps.size == 1)
-                return exps.first()
-
-            val name = ConstructorNames.tupleName(exps.size)
-
-            var call = AST.constructor(name)
-
-            for (exp in exps)
-                call = ASTExpression.Application(call, exp)
-
-            return call
+        fun tuple(exps: List<ASTExpression>): ASTExpression = when (exps.size) {
+            0 ->
+                AST.constructor(UNIT)
+            1 ->
+                exps.first()
+            else ->
+                exps.fold(AST.constructor(ConstructorNames.tupleName(exps.size))) { call, exp -> ASTExpression.Application(call, exp) }
         }
     }
 
@@ -44,11 +34,12 @@ sealed class ASTExpression {
             val simplifiedFunc = func.simplify()
             val simplifiedArg = arg.simplify()
 
-            if (simplifiedFunc is Lambda) {
+            return if (simplifiedFunc is Lambda) {
                 val bindings = listOf(ImplicitBinding(simplifiedFunc.argument, simplifiedArg))
-                return Let(bindings, simplifiedFunc.body).simplify()
-            } else
-                return Application(simplifiedFunc, simplifiedArg)
+                Let(bindings, simplifiedFunc.body).simplify()
+            } else {
+                Application(simplifiedFunc, simplifiedArg)
+            }
         }
     }
 

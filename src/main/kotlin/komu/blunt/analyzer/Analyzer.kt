@@ -12,29 +12,30 @@ import komu.blunt.utils.Sequence
  * Converts ASTExpressions to CoreExpressions.
  */
 fun analyze(exp: ASTExpression, dataTypes: DataTypeDefinitions, env: StaticEnvironment): CoreExpression =
-    Analyzer(dataTypes).analyze(renameIdentifiers(exp).simplify(), env)
+    Analyzer(dataTypes).run {
+        renameIdentifiers(exp).simplify().analyze(env)
+    }
 
 class Analyzer(val dataTypes: DataTypeDefinitions) {
 
     private val sequence = Sequence()
 
-    fun analyze(exp: ASTExpression, env: StaticEnvironment): CoreExpression =
-      when (exp) {
-          is ASTExpression.Constant -> CoreConstantExpression(exp.value)
-          is ASTExpression.Variable -> CoreVariableExpression(env[exp.name])
-          is ASTExpression.Set -> CoreSetExpression(env[exp.variable], analyze(exp.exp, env))
-          is ASTExpression.Sequence -> CoreExpression.sequence(exp.exps.map { analyze(it, env) })
-          is ASTExpression.Application -> CoreApplicationExpression(analyze(exp.func, env), analyze(exp.arg, env))
-          is ASTExpression.Lambda -> analyzeLambda(exp, env)
-          is ASTExpression.Let -> analyzeLet(exp, env)
-          is ASTExpression.LetRec -> analyzeLetRec(exp, env)
-          is ASTExpression.Constructor -> analyzeConstructor(exp, env)
-          is ASTExpression.Case -> analyzeCase(exp, env)
-      }
+    fun ASTExpression.analyze(env: StaticEnvironment): CoreExpression = when (this) {
+        is ASTExpression.Constant       -> CoreConstantExpression(value)
+        is ASTExpression.Variable       -> CoreVariableExpression(env[name])
+        is ASTExpression.Set            -> CoreSetExpression(env[variable], exp.analyze(env))
+        is ASTExpression.Sequence       -> CoreExpression.sequence(exps.map { it.analyze(env) })
+        is ASTExpression.Application    -> CoreApplicationExpression(func.analyze(env), arg.analyze(env))
+        is ASTExpression.Lambda         -> analyzeLambda(this, env)
+        is ASTExpression.Let            -> analyzeLet(this, env)
+        is ASTExpression.LetRec         -> analyzeLetRec(this, env)
+        is ASTExpression.Constructor    -> analyzeConstructor(this, env)
+        is ASTExpression.Case           -> analyzeCase(this, env)
+    }
 
     private fun analyzeLambda(lambda: ASTExpression.Lambda, env: StaticEnvironment): CoreExpression {
         val newEnv = env.extend(lambda.argument)
-        val body = analyze(lambda.body, newEnv)
+        val body = lambda.body.analyze(newEnv)
         return CoreLambdaExpression(newEnv.size, body)
     }
 
@@ -42,39 +43,33 @@ class Analyzer(val dataTypes: DataTypeDefinitions) {
         val ctor = dataTypes.findConstructor(constructor.name)
 
         return if (ctor.arity == 0)
-            analyze(ASTExpression.Constant(TypeConstructorValue(ctor.index, ctor.name)), ctx)
+            ASTExpression.Constant(TypeConstructorValue(ctor.index, ctor.name)).analyze(ctx)
         else
-            analyze(ASTExpression.Variable(ctor.name), ctx)
+            ASTExpression.Variable(ctor.name).analyze(ctx)
     }
 
     private fun analyzeLet(let: ASTExpression.Let, env: StaticEnvironment): CoreExpression {
-        if (let.bindings.size != 1)
-            throw UnsupportedOperationException("multi-var let is not supported")
-
-        val binding = let.bindings.first()
+        val binding = let.bindings.singleOrNull() ?: throw UnsupportedOperationException("multi-var let is not supported")
         val v = env.define(binding.name)
 
-        val expr = analyze(binding.expr, env)
-        val body = analyze(let.body, env)
+        val expr = binding.expr.analyze(env)
+        val body = let.body.analyze(env)
 
         return CoreLetExpression(v, expr, body)
     }
 
     private fun analyzeLetRec(let: ASTExpression.LetRec, env: StaticEnvironment): CoreExpression {
-        if (let.bindings.size != 1)
-            throw UnsupportedOperationException("multi-var letrec is not supported")
-
-        val binding = let.bindings.first()
+        val binding = let.bindings.singleOrNull() ?: throw UnsupportedOperationException("multi-var letrec is not supported")
         val v = env.define(binding.name)
 
-        val expr = analyze(binding.expr, env)
-        val body = analyze(let.body, env)
+        val expr = binding.expr.analyze(env)
+        val body = let.body.analyze(env)
 
         return CoreLetExpression(v, expr, body)
     }
 
     private fun analyzeCase(case: ASTExpression.Case, env: StaticEnvironment): CoreExpression {
-        val exp = analyze(case.exp, env)
+        val exp = case.exp.analyze(env)
 
         val matchedObject = env.define(sequence.nextSymbol("\$match"))
         val body = createAlts(matchedObject, case.alternatives, env)
@@ -84,12 +79,12 @@ class Analyzer(val dataTypes: DataTypeDefinitions) {
 
     private fun createAlts(matchedObject: VariableReference, alts: List<ASTAlternative>, env: StaticEnvironment): CoreExpression =
         if (alts.isEmpty())
-            analyze(AST.error("match failure"), env)
+            AST.error("match failure").analyze(env)
         else {
             val first = alts.first()
             val predicate = PatternAnalyzer.makePredicate(first.pattern, matchedObject)
             val extractor = PatternAnalyzer.makeExtractor(first.pattern, matchedObject, env)
-            val body = CoreExpression.sequence(extractor, analyze(first.value, env))
+            val body = CoreExpression.sequence(extractor, first.value.analyze(env))
             val rest = createAlts(matchedObject, alts.drop(1), env)
             CoreIfExpression(predicate, body, rest)
         }

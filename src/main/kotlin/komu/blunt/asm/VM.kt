@@ -50,5 +50,5 @@ class VM(private val instructions: Instructions, var env: Environment, val globa
     }
 
     fun pop(): Any? =
-        stack.removeAt(stack.size - 1)
+        stack.removeAt(stack.lastIndex)
 }

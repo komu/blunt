@@ -9,7 +9,7 @@ class Instructions {
     private val instructions = ArrayList<OpCode>()
     private val labelMap = LabelMap()
 
-    fun append(rhs: Instructions) {
+    operator fun plusAssign(rhs: Instructions) {
         val relocationOffset = instructions.size
 
         instructions += rhs.instructions
@@ -54,7 +54,7 @@ fun instructions(block: Instructions.() -> Unit): Instructions {
 }
 
 fun Instructions.instructionsOf(instructions: Instructions) {
-    append(instructions)
+    this += instructions
 }
 
 /**
@@ -78,9 +78,9 @@ fun Instructions.preserving(register: Register, block: Instructions.() -> Unit) 
 
 fun Instructions.finishWithLinkage(linkage: Linkage) {
     when (linkage) {
-        Linkage.NEXT   -> { }
-        Linkage.RETURN -> popRegister(Register.PC)
-        else           -> jump(linkage.label!!)
+        is Linkage.Next   -> { }
+        is Linkage.Return -> popRegister(Register.PC)
+        is Linkage.Jump   -> jump(linkage.label)
     }
 }
 
@@ -89,19 +89,19 @@ fun Instructions.jumpIfFalse(register: Register, label: Label) {
 }
 
 fun Instructions.loadConstant(target: Register, value: Any) {
-    this.add(OpLoadConstant(target, value))
+    this.add(OpLoad.Constant(target, value))
 }
 
 fun Instructions.loadVariable(target: Register, v: VariableReference) {
-    this.add(OpLoadVariable(target, v))
+    this.add(if (v.global) OpLoad.GlobalVariable(target, v) else OpLoad.LocalVariable(target, v))
 }
 
-fun Instructions.storeVariable(v: VariableReference, value: Register) {
-    this.add(OpStoreVariable(v, value))
+fun Instructions.storeVariable(v: VariableReference, register: Register) {
+    this.add(if (v.global) OpStore.GlobalVariable(register, v) else OpStore.LocalVariable(register, v))
 }
 
 fun Instructions.loadLambda(target: Register, label: Label) {
-    this.add(OpLoadLambda(target, label))
+    this.add(OpLoad.Lambda(target, label))
 }
 
 fun Instructions.createEnvironment(envSize: Int) {
@@ -109,11 +109,11 @@ fun Instructions.createEnvironment(envSize: Int) {
 }
 
 fun Instructions.loadExtracted(target: Register, source: Register, path: PatternPath) {
-    this.add(OpLoadExtracted(target, source, path))
+    this.add(OpLoad.Extracted(target, source, path))
 }
 
 fun Instructions.loadTag(target: Register, source: Register, path: PatternPath) {
-    this.add(OpLoadTag(target, source, path))
+    this.add(OpLoad.Tag(target, source, path))
 }
 
 fun Instructions.jump(label: Label) {

@@ -1,8 +1,6 @@
 package komu.blunt.core
 
 import komu.blunt.asm.*
-import komu.blunt.asm.Linkage.Companion.NEXT
-import komu.blunt.asm.Linkage.Companion.RETURN
 import komu.blunt.asm.Register.*
 
 class CoreApplicationExpression(private val func: CoreExpression,
@@ -10,26 +8,26 @@ class CoreApplicationExpression(private val func: CoreExpression,
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {
-            instructionsOf(func.assemble(asm, PROCEDURE, NEXT))
+            instructionsOf(func.assemble(asm, PROCEDURE, Linkage.Next))
 
             preserving(PROCEDURE) {
-                instructionsOf(arg.assemble(asm, ARG, NEXT))
+                instructionsOf(arg.assemble(asm, ARG, Linkage.Next))
             }
 
-            if (linkage == RETURN && target == VAL) {
+            if (linkage == Linkage.Return && target == VAL) {
                 applyTail()
 
             } else {
                 val afterCall = asm.newLabel("afterCall");
 
                 // TODO: make pushing env the responsibility of called procedure
-                if (linkage != RETURN) pushRegister(ENV)
+                if (linkage != Linkage.Return) pushRegister(ENV)
 
                 // TODO: use label from linkage if possible (depends on callee saving env)
                 pushLabel(afterCall)
                 apply()
                 label(afterCall)
-                if (linkage != RETURN) popRegister(ENV)
+                if (linkage != Linkage.Return) popRegister(ENV)
 
                 if (target != VAL)
                     copy(target, VAL)

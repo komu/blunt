@@ -15,11 +15,11 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
 
     fun get(name: Symbol, depth: Int): VariableReference =
         variables[name]?.toReference(depth) ?:
-            parent?.get(name, depth+1) ?:
+            parent?.get(name, depth + 1) ?:
             throw UnboundVariableException(name)
 
     fun define(name: Symbol): VariableReference {
-        if (variables.containsKey(name))
+        if (name in variables)
             throw AnalyzationException("Variable '$name' is already defined in this scope.")
 
         val v = VariableInfo(name, variables.size)
@@ -29,12 +29,6 @@ class StaticEnvironment(private val parent: StaticEnvironment? = null) {
 
     fun lookupInCurrentScopeOrDefine(name: Symbol): VariableReference =
         variables[name]?.toReference(0) ?: define(name)
-
-    private fun reference(frame: Int, offset: Int, name: Symbol): VariableReference =
-        if (parent == null)
-            VariableReference.global(offset, name)
-        else
-            VariableReference.nested(frame, offset, name)
 
     fun extend(vararg names: Symbol) =
         extend(names.asList())

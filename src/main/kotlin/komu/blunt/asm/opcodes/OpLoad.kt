@@ -8,7 +8,7 @@ import komu.blunt.core.PatternPath
 import komu.blunt.objects.CompoundProcedure
 import komu.blunt.objects.TypeConstructorValue
 
-abstract class OpLoad(private val target: Register) : OpCode() {
+sealed class OpLoad(private val target: Register) : OpCode() {
 
     override fun execute(vm: VM) {
         vm[target] = load(vm)
@@ -18,58 +18,63 @@ abstract class OpLoad(private val target: Register) : OpCode() {
     abstract fun description(): String
 
     override fun modifies(register: Register) = register == target
-
     override fun toString() = "(load $target ${description()})"
-}
 
-class OpLoadConstant(target: Register, private val value: Any) : OpLoad(target) {
+    class Constant(target: Register, private val value: Any) : OpLoad(target) {
 
-    init {
-        require(target.isValidValue(value)) { "invalid value for register $target: $value" }
+        init {
+            require(target.isValidValue(value)) { "invalid value for register $target: $value" }
+        }
+
+        override fun load(vm: VM)= value
+        override fun description() = "(constant $value)"
     }
 
-    override fun load(vm: VM)= value
-    override fun description() = "(constant $value)"
-}
+    class Extracted(target: Register, private val source: Register, private val path: PatternPath) : OpLoad(target) {
 
-class OpLoadExtracted(target: Register, private val source: Register, private val path: PatternPath) : OpLoad(target) {
+        override fun load(vm: VM): Any? =
+            path.indices.fold(vm[source]) { obj, index ->
+                (obj as TypeConstructorValue).items[index]
+            }
 
-    override fun load(vm: VM): Any? {
-        var obj = vm[source]
-        for (index in path.indices)
-            obj = (obj as TypeConstructorValue).items[index]
-        return obj
+        override fun description() = "(extract $source $path)"
     }
 
-    override fun description() = "(extract $source $path)"
-}
+    class Tag(target: Register, private val source: Register, private val path: PatternPath) : OpLoad(target) {
 
-class OpLoadTag(target: Register, private val source: Register, private val path: PatternPath) : OpLoad(target) {
+        override fun load(vm: VM): Any? =
+            path.indices.fold(vm[source] as TypeConstructorValue) { obj, index ->
+                obj.items[index] as TypeConstructorValue
+            }.name
 
-    override fun load(vm: VM): Any? {
-        var obj = vm[source] as TypeConstructorValue
-        for (index in path.indices)
-            obj = obj.items[index] as TypeConstructorValue
-        return obj.name
+        override fun description() = "(tag $source $path)"
     }
 
-    override fun description() = "(tag $source $path)"
-}
+    class LocalVariable(target: Register, private val variable: VariableReference) : OpLoad(target) {
 
-class OpLoadVariable(target: Register, private val variable: VariableReference) : OpLoad(target) {
+        init {
+            require(!variable.global)
+        }
 
-    override fun load(vm: VM): Any? {
-        val env = if (variable.global) vm.globalEnvironment else vm.env
-        return env[variable]
+        override fun load(vm: VM) = vm.env[variable]
+        override fun description() = "(variable ${variable.frame} ${variable.offset}) ; ${variable.name}"
     }
 
-    override fun description() = "(variable ${variable.frame} ${variable.offset}) ; ${variable.name}"
-}
+    class GlobalVariable(target: Register, private val variable: VariableReference) : OpLoad(target) {
 
-class OpLoadLambda(target: Register, private val label: Label) : OpLoad(target) {
+        init {
+            require(variable.global)
+        }
 
-    override fun load(vm: VM) =
-        CompoundProcedure(label.address, vm.env)
+        override fun load(vm: VM) = vm.globalEnvironment[variable]
+        override fun description() = "(global-variable ${variable.offset}) ; ${variable.name}"
+    }
 
-    override fun description() = "(lambda $label ${Register.ENV})"
+    class Lambda(target: Register, private val label: Label) : OpLoad(target) {
+
+        override fun load(vm: VM) =
+            CompoundProcedure(label.address, vm.env)
+
+        override fun description() = "(lambda $label ${Register.ENV})"
+    }
 }

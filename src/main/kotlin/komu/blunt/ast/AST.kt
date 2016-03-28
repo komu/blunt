@@ -17,14 +17,8 @@ object AST {
     fun apply(func: ASTExpression, vararg args: ASTExpression): ASTExpression =
         apply2(func, args)
 
-    private fun apply2(func: ASTExpression, args: Array<out ASTExpression>): ASTExpression {
-        var exp = func
-
-        for (arg in args)
-            exp = ASTExpression.Application(exp, arg)
-
-        return exp.simplify()
-    }
+    private fun apply2(func: ASTExpression, args: Array<out ASTExpression>): ASTExpression =
+        args.fold(func) { exp, arg -> ASTExpression.Application(exp, arg) }.simplify()
 
     fun error(message: String): ASTExpression =
         AST.apply(ASTExpression.Variable("error"), ASTExpression.Constant(message))
@@ -45,8 +39,6 @@ object AST {
                     ASTAlternative(Pattern.Constructor(ConstructorNames.TRUE), cons),
                     ASTAlternative(Pattern.Constructor(ConstructorNames.FALSE), alt))
 
-    fun let(recursive: Boolean, binding: ImplicitBinding, body: ASTExpression): ASTExpression {
-        val bindings = listOf(binding)
-        return if (recursive) ASTExpression.LetRec(bindings, body) else ASTExpression.Let(bindings, body)
-    }
+    fun let(recursive: Boolean, binding: ImplicitBinding, body: ASTExpression): ASTExpression =
+        if (recursive) ASTExpression.LetRec(listOf(binding), body) else ASTExpression.Let(listOf(binding), body)
 }

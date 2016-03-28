@@ -10,7 +10,7 @@ class CoreSequenceExpression (private val expressions: List<CoreExpression>) : C
         instructions {
             if (expressions.any()) {
                 for (exp in expressions.init)
-                    instructionsOf(exp.assemble(asm, target, Linkage.NEXT))
+                    instructionsOf(exp.assemble(asm, target, Linkage.Next))
 
                 instructionsOf(expressions.last().assemble(asm, target, linkage))
             } else {
