@@ -1,54 +1,35 @@
 package komu.blunt.eval;
 
-public class EvaluatorPerformanceTest {
-/*
-    private static final Evaluator evaluator = new Evaluator();
+import komu.blunt.parser.parseExpression
+import org.junit.Before
+import org.junit.Test
+import kotlin.system.measureTimeMillis
+import kotlin.test.fail
 
-    @Rule
-    public final Profiler profiler = new Profiler();
-    
-    @BeforeClass
-    public static void loadPrelude() throws IOException {
+class EvaluatorPerformanceTest {
+
+    val evaluator = Evaluator()
+
+    @Before
+    fun loadPrelude() {
         evaluator.loadResource("prelude.blunt");
     }
     
     @Test
-    @MaxSteps(2_021_216)
-    public void sorting() {
-        evaluate("sort (range 0 500)");
+    fun sorting() {
+        evaluate("sort (range 0 500)", maxSteps = 2021216)
     }
 
-    private static Object evaluate(String expr) {
-        return evaluator.evaluate(Parser.ClassObject$.$instance.parseExpression(expr));
-    }
-
-    private static class Profiler extends TestWatcher {
-
-        private long startTime;
-        private long startSteps;
-        
-        @Override
-        protected void starting(Description description) {
-            startTime = System.currentTimeMillis();
-            startSteps = evaluator.getSteps();
+    fun evaluate(expr: String, maxSteps: Long) {
+        val startSteps = evaluator.steps
+        val total = measureTimeMillis {
+            evaluator.evaluate(parseExpression(expr))
         }
+        val steps = evaluator.steps - startSteps
 
-        @Override
-        protected void finished(Description description) {
-            long elapsedTime = System.currentTimeMillis() - startTime;
-            long elapsedSteps = evaluator.getSteps() - startSteps;
+        print("evaluation of '$expr' took $steps steps in ${total}ms")
 
-            System.out.printf("%s: %,d steps in %dms\n", description.getMethodName(), elapsedSteps, elapsedTime);
-
-            MaxSteps maxSteps = description.getAnnotation(MaxSteps.class);
-            if (maxSteps != null && elapsedSteps > maxSteps.value())
-                fail(format("expected maximum %,d steps, but got %,d", maxSteps.value(), elapsedSteps));
-        }
+        if (steps > maxSteps)
+            fail("expected maximum $maxSteps steps, but got $steps")
     }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    private @interface MaxSteps {
-        long value();
-    }
-    */
 }
