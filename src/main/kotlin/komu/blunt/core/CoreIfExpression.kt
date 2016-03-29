@@ -17,7 +17,7 @@ class CoreIfExpression(val condition: CoreExpression,
             // Since the target register is safe to overwrite, we borrow it
             // for evaluating the condition as well.
 
-            instructionsOf(condition.assemble(asm, target, Linkage.Next))
+            instructionsOf(condition.assemble(asm, target))
 
             jumpIfFalse(target, falseBranch)
 

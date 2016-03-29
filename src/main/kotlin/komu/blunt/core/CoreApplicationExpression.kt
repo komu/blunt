@@ -8,10 +8,10 @@ class CoreApplicationExpression(private val func: CoreExpression,
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {
-            instructionsOf(func.assemble(asm, PROCEDURE, Linkage.Next))
+            instructionsOf(func.assemble(asm, PROCEDURE))
 
             preserving(PROCEDURE) {
-                instructionsOf(arg.assemble(asm, ARG, Linkage.Next))
+                instructionsOf(arg.assemble(asm, ARG))
             }
 
             if (linkage == Linkage.Return && target == VAL) {

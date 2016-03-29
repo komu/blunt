@@ -9,7 +9,7 @@ class CoreLetExpression(private val variable: VariableReference,
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {
-            instructionsOf(CoreSetExpression(variable, value).assemble(asm, target, Linkage.Next))
+            instructionsOf(CoreSetExpression(variable, value).assemble(asm, target))
             instructionsOf(body.assemble(asm, target, linkage))
         }
 

@@ -2,7 +2,10 @@ package komu.blunt.eval
 
 import komu.blunt.analyzer.StaticEnvironment
 import komu.blunt.analyzer.analyze
-import komu.blunt.asm.*
+import komu.blunt.asm.Assembler
+import komu.blunt.asm.Instructions
+import komu.blunt.asm.Register
+import komu.blunt.asm.VM
 import komu.blunt.ast.ASTDataDefinition
 import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.ASTValueDefinition
@@ -81,7 +84,7 @@ class Evaluator() {
     private fun run(expression: CoreExpression, env: Environment): Any? {
         val pos = instructions.count
 
-        instructions += expression.simplify().assemble(Assembler(), Register.VAL, Linkage.Next)
+        instructions += expression.simplify().assemble(Assembler(), Register.VAL)
 
         val vm = VM(instructions, env, rootBindings.runtimeEnvironment)
         vm.pc = pos

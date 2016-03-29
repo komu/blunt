@@ -7,7 +7,7 @@ class CoreSetExpression(private val variable: VariableReference, private val exp
 
     override fun assemble(asm: Assembler, target: Register, linkage: Linkage) =
         instructions {
-            instructionsOf(exp.assemble(asm, Register.VAL, Linkage.Next))
+            instructionsOf(exp.assemble(asm, Register.VAL))
             storeVariable(variable, Register.VAL)
             finishWithLinkage(linkage)
         }

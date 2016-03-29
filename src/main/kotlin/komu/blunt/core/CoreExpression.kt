@@ -9,7 +9,7 @@ import java.util.Collections.emptyList
 abstract class CoreExpression {
 
     abstract fun simplify(): CoreExpression
-    abstract fun assemble(asm: Assembler, target: Register, linkage: Linkage): Instructions
+    abstract fun assemble(asm: Assembler, target: Register, linkage: Linkage = Linkage.Next): Instructions
     override fun toString(): String = "<core-expression>"
 
     companion object {
