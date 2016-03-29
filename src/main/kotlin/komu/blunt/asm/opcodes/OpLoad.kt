@@ -18,7 +18,7 @@ sealed class OpLoad(private val target: Register) : OpCode() {
     abstract fun description(): String
 
     override fun modifies(register: Register) = register == target
-    override fun toString() = "(load $target ${description()})"
+    override fun toString() = "load $target ${description()}"
 
     class Constant(target: Register, private val value: Any) : OpLoad(target) {
 

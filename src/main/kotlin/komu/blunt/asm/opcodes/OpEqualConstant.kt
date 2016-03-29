@@ -12,5 +12,5 @@ class OpEqualConstant(private val target: Register, private val source: Register
 
     override fun modifies(register: Register) = register == target
 
-    override fun toString() = "(load $target (= $source $value))"
+    override fun toString() = "load $target (= $source $value)"
 }

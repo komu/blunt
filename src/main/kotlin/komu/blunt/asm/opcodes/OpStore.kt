@@ -18,7 +18,7 @@ sealed class OpStore() : OpCode() {
             vm.env[variable] = vm[register]
         }
 
-        override fun toString() = "(store (variable ${variable.frame} ${variable.offset}) $register) ; ${variable.name}"
+        override fun toString() = "store (variable ${variable.frame} ${variable.offset}) $register ; ${variable.name}"
     }
 
     class GlobalVariable(val register: Register, val variable: VariableReference) : OpStore() {
@@ -31,6 +31,6 @@ sealed class OpStore() : OpCode() {
             vm.globalEnvironment[variable] = vm[register]
         }
 
-        override fun toString() = "(store (global-variable ${variable.offset}) $register) ; ${variable.name}"
+        override fun toString() = "store (global-variable ${variable.offset}) $register ; ${variable.name}"
     }
 }

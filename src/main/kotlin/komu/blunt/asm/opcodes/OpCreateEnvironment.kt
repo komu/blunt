@@ -14,6 +14,6 @@ class OpCreateEnvironment(private val envSize: Int) : OpCode() {
     }
 
     override fun modifies(register: Register) = register == Register.ENV
-    override fun toString() = "(load ${Register.ENV} (create-env ${Register.ENV} ${Register.ENV} $envSize))"
+    override fun toString() = "load ${Register.ENV} (create-env ${Register.ENV} ${Register.ENV} $envSize)"
 }
 

@@ -36,6 +36,6 @@ class OpApply private constructor(private val tail: Boolean) : OpCode() {
     // Though the application itself will only modify PC, ENV or VAL, the called code could modify anything.
     override fun modifies(register: Register) = true
 
-    override fun toString() = "(${if (tail) "tail-call" else "call"} ${Register.PROCEDURE} ${Register.ARG})"
+    override fun toString() = "${if (tail) "tail-call" else "call"} ${Register.PROCEDURE} ${Register.ARG}"
 }
 

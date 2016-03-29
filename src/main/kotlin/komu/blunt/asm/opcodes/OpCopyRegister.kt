@@ -1,6 +1,7 @@
 package komu.blunt.asm.opcodes
 
-import komu.blunt.asm.*
+import komu.blunt.asm.Register
+import komu.blunt.asm.VM
 
 class OpCopyRegister(private val target: Register, private val source: Register) : OpCode() {
 
@@ -9,5 +10,5 @@ class OpCopyRegister(private val target: Register, private val source: Register)
     }
 
     override fun modifies(register: Register) = register == target
-    override fun toString() = "(copy $target $source)"
+    override fun toString() = "copy $target $source"
 }

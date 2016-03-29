@@ -22,6 +22,6 @@ class OpJumpIfFalse(private val register: Register, private val label: Label) : 
 
     override fun modifies(register: Register) = register == Register.PC
 
-    override fun toString() = "(jump-if-false $register $label)"
+    override fun toString() = "jump-if-false $register $label"
 }
 
