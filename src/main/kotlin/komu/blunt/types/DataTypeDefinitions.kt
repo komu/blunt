@@ -1,7 +1,7 @@
 package komu.blunt.types
 
 import komu.blunt.analyzer.AnalyzationException
-import komu.blunt.ast.ASTDataDefinition
+import komu.blunt.ast.ASTDefinition
 import komu.blunt.parser.TypeParser
 import java.util.*
 
@@ -23,7 +23,7 @@ public class DataTypeDefinitions() {
         register(ConstructorDefinition(index, name, TypeParser.parseScheme(scheme), arity))
     }
 
-    fun register(definition: ASTDataDefinition) {
+    fun register(definition: ASTDefinition.Data) {
         for (constructor in definition.constructors)
             register(constructor)
     }

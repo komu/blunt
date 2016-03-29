@@ -9,4 +9,3 @@ class ConstructorDefinition(val index: Int, val name: String, val scheme: Scheme
 
     override fun toString() = "$name :: $scheme"
 }
-

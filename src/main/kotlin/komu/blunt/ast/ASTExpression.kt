@@ -68,6 +68,9 @@ sealed class ASTExpression {
     }
 
     class Let(val bindings: List<ImplicitBinding>, val body: ASTExpression) : ASTExpression() {
+        constructor(name: Symbol, value: ASTExpression, body: ASTExpression) : this(listOf(ImplicitBinding(name, value)), body) {
+        }
+
         override fun toString() = "(let (${bindings.joinToString(" ")}) $body)"
         override fun simplify() = Let(bindings.map { it.simplify() }, body.simplify())
     }

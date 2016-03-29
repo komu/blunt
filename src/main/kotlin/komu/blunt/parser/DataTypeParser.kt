@@ -1,7 +1,6 @@
 package komu.blunt.parser
 
-import komu.blunt.ast.AST
-import komu.blunt.ast.ASTDataDefinition
+import komu.blunt.ast.ASTDefinition
 import komu.blunt.parser.TokenType.Companion.ASSIGN
 import komu.blunt.parser.TokenType.Companion.COMMA
 import komu.blunt.parser.TokenType.Companion.DATA
@@ -18,7 +17,7 @@ import java.util.*
 internal class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
 
     // data <type> <var>* = <constructor>+
-    fun parseDataDefinition(): ASTDataDefinition  {
+    fun parseDataDefinition(): ASTDefinition.Data {
         lexer.expectIndentStartToken(DATA)
 
         val builder = DataTypeBuilder(lexer.readTokenValue(TYPE_OR_CTOR_NAME))
@@ -76,7 +75,7 @@ internal class DataTypeParser(val lexer: Lexer, val typeParser: TypeParser) {
             derivedClasses.add(className)
         }
 
-        fun build(): ASTDataDefinition =
-            AST.data(typeName, type, constructors, derivedClasses)
+        fun build(): ASTDefinition.Data =
+            ASTDefinition.Data(typeName, type, constructors, derivedClasses)
     }
 }

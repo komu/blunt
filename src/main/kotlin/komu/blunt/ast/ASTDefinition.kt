@@ -4,16 +4,13 @@ import komu.blunt.objects.Symbol
 import komu.blunt.types.ConstructorDefinition
 import komu.blunt.types.Type
 
-abstract class ASTDefinition
+sealed class ASTDefinition {
 
-class ASTValueDefinition(val name: Symbol, val value: ASTExpression) : ASTDefinition() {
-    override fun toString() = "(define $name $value)"
-}
+    class Value(val name: Symbol, val value: ASTExpression) : ASTDefinition() {
+        override fun toString() = "(define $name $value)"
+    }
 
-class ASTDataDefinition(val name: String,
-                        val typ: Type,
-                        val constructors: List<ConstructorDefinition>,
-                        val derivedClasses: List<String>) : ASTDefinition() {
-
-    override fun toString() = "data $name = $constructors"
+    class Data(val name: String, val type: Type, val constructors: List<ConstructorDefinition>, val derivedClasses: List<String>) : ASTDefinition() {
+        override fun toString() = "data $name = $constructors"
+    }
 }

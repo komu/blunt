@@ -1,6 +1,9 @@
 package komu.blunt.parser
 
-import komu.blunt.ast.*
+import komu.blunt.ast.AST
+import komu.blunt.ast.ASTAlternative
+import komu.blunt.ast.ASTDefinition
+import komu.blunt.ast.ASTExpression
 import komu.blunt.objects.Symbol
 import komu.blunt.parser.TokenType.Companion.ASSIGN
 import komu.blunt.parser.TokenType.Companion.CASE
@@ -54,7 +57,7 @@ class Parser(source: String) {
         else
             parseValueDefinition()
 
-    private fun parseValueDefinition(): ASTValueDefinition = when {
+    private fun parseValueDefinition(): ASTDefinition.Value = when {
         isSimpleDefinition() ->
             parseSimpleDefinition()
         isOperatorDefinition() ->
@@ -83,7 +86,7 @@ class Parser(source: String) {
             }
         }
 
-    private fun parseSimpleDefinition(): ASTValueDefinition {
+    private fun parseSimpleDefinition(): ASTDefinition.Value {
         lexer.pushBlockStartAtNextToken()
 
         val name = parseIdentifier()
@@ -91,11 +94,12 @@ class Parser(source: String) {
         lexer.expectToken(ASSIGN)
         val value = parseExpression()
         lexer.expectToken(END)
-        return ASTValueDefinition(name, value)
+
+        return ASTDefinition.Value(name, value)
     }
 
     // <pattern> <op> <pattern> = <exp> ;;
-    private fun parseOperatorDefinition(): ASTValueDefinition {
+    private fun parseOperatorDefinition(): ASTDefinition.Value {
         lexer.pushBlockStartAtNextToken()
 
         val left = patternParser.parseSimplePattern()
@@ -107,11 +111,11 @@ class Parser(source: String) {
         val value = parseExpression()
         lexer.expectToken(END)
 
-        return ASTValueDefinition(op.toSymbol(), buildFunction(listOf(left, right), value))
+        return ASTDefinition.Value(op.toSymbol(), buildFunction(listOf(left, right), value))
     }
 
     // <ident> <pattern>+ = <exp> ;;
-    private fun parseNormalValueDefinition(): ASTValueDefinition {
+    private fun parseNormalValueDefinition(): ASTDefinition.Value {
         val functionBuilder = FunctionBuilder()
 
         var name: Symbol? = null
@@ -133,7 +137,7 @@ class Parser(source: String) {
             functionBuilder.addAlternative(args, value)
         }
 
-        return ASTValueDefinition(name, functionBuilder.build())
+        return ASTDefinition.Value(name, functionBuilder.build())
     }
 
     private fun nextTokenIsIdentifier(name: Symbol) =
@@ -257,7 +261,10 @@ class Parser(source: String) {
         if (args.any())
             value = AST.lambda(args, value)
 
-        return AST.let(recursive, ImplicitBinding(name, value), body)
+        return if (recursive)
+            ASTExpression.LetRec(name, value, body)
+        else
+            ASTExpression.Let(name, value, body)
     }
 
     // \ <ident> -> expr

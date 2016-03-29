@@ -21,14 +21,14 @@ abstract class CoreExpression {
         fun sequence(vararg exps: CoreExpression) = sequence(exps.asList())
 
         fun sequence(exps: List<CoreExpression>): CoreExpression =
-            if (exps.size == 1) exps.first() else CoreSequenceExpression(exps)
+            exps.singleOrNull() ?: CoreSequenceExpression(exps)
 
         fun and(exps: List<CoreExpression>): CoreExpression =
             when (exps.size) {
                 0    -> TRUE
                 1    -> exps.first()
                 else -> CoreIfExpression(exps.first(), and(exps.drop(1)), FALSE)
-            }
+            }.simplify()
     }
 }
 

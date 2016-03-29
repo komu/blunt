@@ -6,9 +6,8 @@ import komu.blunt.asm.Assembler
 import komu.blunt.asm.Instructions
 import komu.blunt.asm.Register
 import komu.blunt.asm.VM
-import komu.blunt.ast.ASTDataDefinition
+import komu.blunt.ast.ASTDefinition
 import komu.blunt.ast.ASTExpression
-import komu.blunt.ast.ASTValueDefinition
 import komu.blunt.core.CoreDefineExpression
 import komu.blunt.core.CoreExpression
 import komu.blunt.parser.Parser
@@ -26,8 +25,6 @@ class Evaluator() {
 
     init {
         BasicFunctions.register(rootBindings)
-        //throw UnsupportedOperationException("registering basic functions")
-        //NativeFunctionRegisterer(rootBindings).register(Class.forName("komu.blunt.stdlib.BasicFunctions"))
 
         for (constructor in rootBindings.dataTypes.declaredConstructors)
             createConstructorFunction(constructor)
@@ -43,13 +40,12 @@ class Evaluator() {
 
         for (define in parser.parseDefinitions())
             when (define) {
-                is ASTValueDefinition -> processDefinition(define)
-                is ASTDataDefinition  -> register(define)
-                else -> throw Exception("invalid definition $define")
+                is ASTDefinition.Value -> processDefinition(define)
+                is ASTDefinition.Data  -> register(define)
             }
     }
 
-    private fun processDefinition(definition: ASTValueDefinition) {
+    private fun processDefinition(definition: ASTDefinition.Value) {
         try {
             val typ = TypeChecker.typeCheck(definition, classEnv, rootBindings.dataTypes, rootBindings.createAssumptions())
 
@@ -66,19 +62,19 @@ class Evaluator() {
         }
     }
 
-    private fun register(definition: ASTDataDefinition) {
+    private fun register(definition: ASTDefinition.Data) {
         rootBindings.dataTypes.register(definition)
 
         for (ctor in definition.constructors)
             createConstructorFunction(ctor)
 
         for (className in definition.derivedClasses)
-            classEnv.addInstance(isIn(className, definition.typ))
+            classEnv.addInstance(isIn(className, definition.type))
     }
 
     private fun createConstructorFunction(ctor: ConstructorDefinition) {
         if (ctor.arity != 0)
-            rootBindings.bind(ctor.name, ctor.scheme, ConstructorArgumentCollector.createConstructor(ctor));
+            rootBindings.bind(ctor.name, ctor.scheme, createConstructor(ctor));
     }
 
     private fun run(expression: CoreExpression, env: Environment): Any? {

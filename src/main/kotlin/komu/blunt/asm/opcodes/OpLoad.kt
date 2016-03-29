@@ -30,24 +30,28 @@ sealed class OpLoad(private val target: Register) : OpCode() {
         override fun description() = "(constant $value)"
     }
 
-    class Extracted(target: Register, private val source: Register, private val path: PatternPath) : OpLoad(target) {
+    class Extracted(target: Register, private val source: Register, path: PatternPath) : OpLoad(target) {
+
+        private val pathIndices = path.indices
 
         override fun load(vm: VM): Any? =
-            path.indices.fold(vm[source]) { obj, index ->
+            pathIndices.fold(vm[source]) { obj, index ->
                 (obj as TypeConstructorValue).items[index]
             }
 
-        override fun description() = "(extract $source $path)"
+        override fun description() = "(extract $source $pathIndices)"
     }
 
-    class Tag(target: Register, private val source: Register, private val path: PatternPath) : OpLoad(target) {
+    class Tag(target: Register, private val source: Register, path: PatternPath) : OpLoad(target) {
+
+        private val pathIndices = path.indices
 
         override fun load(vm: VM): Any? =
-            path.indices.fold(vm[source] as TypeConstructorValue) { obj, index ->
+            pathIndices.fold(vm[source] as TypeConstructorValue) { obj, index ->
                 obj.items[index] as TypeConstructorValue
             }.name
 
-        override fun description() = "(tag $source $path)"
+        override fun description() = "(tag $source $pathIndices)"
     }
 
     class LocalVariable(target: Register, private val variable: VariableReference) : OpLoad(target) {

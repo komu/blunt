@@ -1,7 +1,7 @@
 package komu.blunt.types.checker
 
+import komu.blunt.ast.ASTDefinition
 import komu.blunt.ast.ASTExpression
-import komu.blunt.ast.ASTValueDefinition
 import komu.blunt.ast.BindGroup
 import komu.blunt.eval.TypeCheckException
 import komu.blunt.types.*
@@ -22,9 +22,8 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
             return checker.normalize(checker.typeCheck(exp, ass))
         }
 
-        fun typeCheck(exp: ASTValueDefinition, classEnv: ClassEnv, dataTypes: DataTypeDefinitions, ass: Assumptions): Scheme {
+        fun typeCheck(exp: ASTDefinition.Value, classEnv: ClassEnv, dataTypes: DataTypeDefinitions, ass: Assumptions): Scheme {
             val checker = TypeChecker(classEnv, dataTypes)
-
             return checker.normalize(checker.typeCheck(exp, ass)).quantifyAll()
         }
     }
@@ -40,7 +39,7 @@ class TypeChecker(val classEnv: ClassEnv, private val dataTypes: DataTypeDefinit
     fun typeCheckBindGroup(bindGroup: BindGroup, ass: Assumptions): TypeCheckResult<Assumptions> =
         bindingTypeChecker.typeCheckBindGroup(bindGroup, ass)
 
-    fun typeCheck(define: ASTValueDefinition, ass: Assumptions): TypeCheckResult<Type> =
+    fun typeCheck(define: ASTDefinition.Value, ass: Assumptions): TypeCheckResult<Type> =
         typeCheck(ASTExpression.LetRec(define.name, define.value, ASTExpression.Variable(define.name)), ass)
 
     fun typeCheck(pattern: Pattern): PatternTypeCheckResult<Type> =

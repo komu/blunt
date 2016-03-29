@@ -153,11 +153,11 @@ class EvaluatorTest {
         Parser(expr).parseExpression()
 
     private fun produces(value: Long): Matcher<Any?> =
-        isEqualTo<Any?>(BigInteger.valueOf(value))
+        isEqualTo(BigInteger.valueOf(value))
 
     private fun produces(value: String): Matcher<Any?> =
-        isEqualTo<Any?>(value)
+        isEqualTo(value)
 
     private fun produces(value: Boolean): Matcher<Any?> =
-        isEqualTo<Any?>(booleanToConstructor(value))
+        isEqualTo(booleanToConstructor(value))
 }

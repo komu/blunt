@@ -36,7 +36,7 @@ class CoreIfExpression(val condition: CoreExpression,
 
         return when {
             test is CoreConstantExpression -> if (OpJumpIfFalse.isFalse(test.value)) alt else con
-            con == alt                     -> CoreExpression.sequence(test, con)
+            con == alt                     -> CoreExpression.sequence(test, con).simplify()
             else                           -> CoreIfExpression(test, con, alt)
         }
     }
