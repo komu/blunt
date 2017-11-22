@@ -9,14 +9,14 @@ class TypeConstructorValue(val index: Int, val name: String, val items: Array<An
     }
 
     companion object {
-        private val EMPTY_ARRAY = Array<Any?>(0) { x -> null }
+        private val EMPTY_ARRAY = arrayOfNulls<Any>(0)
     }
 
     fun isTuple() = name.startsWith("(,")
 
     override fun toString(): String =
         when {
-            items.size == 0 -> name
+            items.isEmpty() -> name
             isTuple()       -> toStringAsTuple()
             name == ":"     -> toStringAsList()
             else            -> toStringDefault()

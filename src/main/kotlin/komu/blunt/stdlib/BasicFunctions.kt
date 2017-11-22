@@ -37,7 +37,7 @@ object BasicFunctions {
     fun show(s: Any): String = s.toString()
 
     @LibraryFunction("error", "String -> a")
-    fun error(s: Any) = throw Exception(s.toString())
+    fun error(s: Any): Nothing = throw Exception(s.toString())
 
     @LibraryFunction("print", "a -> Unit")
     fun primitivePrint(s: Any) = print(s)
@@ -58,5 +58,5 @@ object BasicFunctions {
     fun primitiveOpDivide(x: BigInteger, y: BigInteger): BigInteger = x / y
 
     @LibraryFunction("primitiveMod", "Num a => (a,a) -> a")
-    fun primitiveOpMod(x: BigInteger, y: BigInteger): BigInteger = x % y
+    fun primitiveOpMod(x: BigInteger, y: BigInteger): BigInteger = x.mod(y)
 }

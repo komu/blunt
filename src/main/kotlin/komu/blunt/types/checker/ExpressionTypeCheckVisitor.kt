@@ -2,7 +2,6 @@ package komu.blunt.types.checker
 
 import komu.blunt.ast.ASTExpression
 import komu.blunt.ast.BindGroup
-import komu.blunt.ast.ExplicitBinding
 import komu.blunt.types.BasicType
 import komu.blunt.types.Predicate
 import komu.blunt.types.Type
@@ -56,7 +55,7 @@ class ExpressionTypeCheckVisitor(private val tc: TypeChecker) {
     }
 
     private fun typeCheckLetRec(letRec: ASTExpression.LetRec, ass: Assumptions): TypeCheckResult<Type> {
-        val bindGroup = BindGroup(ArrayList<ExplicitBinding>(), letRec.bindings)
+        val bindGroup = BindGroup(ArrayList(), letRec.bindings)
 
         val rs = tc.typeCheckBindGroup(bindGroup, ass)
 

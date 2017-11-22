@@ -14,7 +14,7 @@ object Unifier {
             else -> unificationFailure("types do not unify", lhs, rhs)
         }
 
-    fun match(lhs: Type, rhs: Type): Substitution =
+    private fun match(lhs: Type, rhs: Type): Substitution =
         when {
             lhs is Type.App && rhs is Type.App               -> matchApplication(lhs, rhs)
             lhs is Type.Var && lhs.kind == rhs.kind          -> Substitution.singleton(lhs, rhs)
@@ -56,7 +56,7 @@ object Unifier {
             else                 -> Substitution.singleton(u, t)
         }
 
-    private fun unificationFailure(message: String, u: Any, t: Any) =
+    private fun unificationFailure(message: String, u: Any, t: Any): Nothing =
         throw UnificationException("$message: $u - $t")
 }
 

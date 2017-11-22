@@ -13,8 +13,8 @@ abstract class Environment {
         set(v.frame, v.offset, value)
     }
 
-    protected abstract operator fun get(frame: Int, offset: Int): Any?
-    protected abstract operator fun set(frame: Int, offset: Int, value: Any?)
+    abstract operator fun get(frame: Int, offset: Int): Any?
+    abstract operator fun set(frame: Int, offset: Int, value: Any?)
 
     fun extend(envSize: Int, arg: Any?): Environment {
         val args = Array<Any?>(envSize) { null }
@@ -22,9 +22,8 @@ abstract class Environment {
         return NestedEnvironment(args, this)
     }
 
-    fun extend(envSize: Int): Environment {
-        return NestedEnvironment(Array<Any?>(envSize) { null }, this)
-    }
+    fun extend(envSize: Int): Environment =
+        NestedEnvironment(Array(envSize) { null }, this)
 }
 
 class RootEnvironment : Environment() {
@@ -47,7 +46,7 @@ class RootEnvironment : Environment() {
         checkFrame(v.frame)
 
         if (v.offset >= bindings.size)
-            bindings = Arrays.copyOf<Any?>(bindings, max(v.offset + 1, bindings.size * 2))
+            bindings = Arrays.copyOf(bindings, max(v.offset + 1, bindings.size * 2))
 
         bindings[v.offset] = value
     }
