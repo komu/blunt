@@ -2,35 +2,15 @@ A simple compiler/interpreter.
 
 The main flow:
 
-           String
-             |
-             |  parser.Lexer
-             |
-             v
-     parser.Token sequence
-             |
-             |  parser.Parser
-             |
-             v
-      ast.ASTExpression
-             |
-             |  types.checker.TypeChecker
-             |
-             v
-      ast.ASTExpression
-             |
-             |  analyzer.Analyzer
-             |
-             v
-      core.CoreExpression
-             |
-             |  CoreExpression.assemble
-             |
-             v
-       asm.Instructions
-             |
-             |  asm.VM.run
-             o
+```mermaid
+graph TD
+    A[String] -->|parser.Lexer| B[parser.Token sequence]
+    B -->|parser.Parser| C[ast.ASTExpression]
+    C -->|types.checker.TypeChecker| D[ast.ASTExpression]
+    D -->|analyzer.Analyzer| E[core.CoreExpression]
+    E -->|CoreExpression.assemble| F[asm.Instructions]
+    F -->|asm.VM.run| G[Output]
+```
 
 Things to do:
 
